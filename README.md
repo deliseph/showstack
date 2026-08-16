@@ -4,10 +4,10 @@
 
 The protocols, standards, software, hardware and vocabulary that live shows actually run on, in one machine-readable place, with a citation on every fact.
 
-[![validate](https://github.com/OWNER/showstack/actions/workflows/validate.yml/badge.svg)](https://github.com/OWNER/showstack/actions/workflows/validate.yml)
+[![validate](https://github.com/deliseph/showstack/actions/workflows/validate.yml/badge.svg)](https://github.com/deliseph/showstack/actions/workflows/validate.yml)
 [![data licence: CC BY 4.0](https://img.shields.io/badge/data-CC--BY--4.0-7dd3c0)](./LICENSE-DATA)
 [![code licence: MIT](https://img.shields.io/badge/code-MIT-7dd3c0)](./LICENSE)
-[![good first issues](https://img.shields.io/github/issues/OWNER/showstack/good%20first%20issue?color=f0b866&label=good%20first%20issues)](https://github.com/OWNER/showstack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![good first issues](https://img.shields.io/github/issues/deliseph/showstack/good%20first%20issue?color=f0b866&label=good%20first%20issues)](https://github.com/deliseph/showstack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 
 ---
 
@@ -93,7 +93,7 @@ This index is only as good as the people who run shows make it. **Every entry cr
 
 The fastest path is about five minutes and needs no local setup:
 
-1. Find something missing. The [gaps list](https://github.com/OWNER/showstack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) is generated from the data, so it is never stale.
+1. Find something missing. The [gaps list](https://github.com/deliseph/showstack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) is generated from the data, so it is never stale.
 2. Click **Edit this entry** on the site, or add a new file in `data/<collection>/<id>.yaml`.
 3. Copy the shape of a neighbouring file. Fill in what you know. **Leave out what you cannot cite.**
 4. Add your handle to `contributed_by`.

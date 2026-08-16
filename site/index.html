@@ -99,7 +99,7 @@
     <div class="brand">
       <h1>show<span>stack</span></h1>
       <p>the open index of live entertainment technology</p>
-      <a class="ghlink" id="ghtop" href="https://github.com/OWNER/showstack">GitHub</a>
+      <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
     </div>
     <div class="searchrow">
       <input id="q" placeholder="search protocols, ports, software, standards, 中文術語…  try: 5568, psn, 吊桿, safety curtain" autocomplete="off" spellcheck="false">
@@ -113,7 +113,7 @@
   <div class="wrap">
     <div class="cta">
       <h2>Every entry cites its source. Every gap is an open issue.</h2>
-      <p>This index is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/OWNER/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
+      <p>This index is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/deliseph/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
     </div>
     <p class="hint" id="hint"></p>
     <div class="grid" id="results"></div>
@@ -130,7 +130,7 @@
 
 <script>
 const DATA = /*__SHOWSTACK_DATA__*/null;
-const REPO = "https://github.com/OWNER/showstack";
+const REPO = "https://github.com/deliseph/showstack";
 
 const COLS = [
   {key:"protocols", label:"protocols"},
@@ -240,7 +240,7 @@ function render(){
 
 function boot(){
   if (!DATA){ $("#results").innerHTML = `<div class="empty">Run <code>npm run build</code> to generate the index.</div>`; return; }
-  document.querySelectorAll("#ghtop,#ctalink").forEach(a => a.href = a.href.replace("https://github.com/OWNER/showstack", REPO));
+  document.querySelectorAll("#ghtop,#ctalink").forEach(a => a.href = a.href.replace("https://github.com/deliseph/showstack", REPO));
   $("#tabs").innerHTML = [{key:"all",label:"all"}, ...COLS].map(c =>
     `<button class="tab" role="tab" data-k="${c.key}" aria-selected="${c.key === active}">${c.label}<b>${c.key === "all" ? ITEMS.length : (DATA[c.key] ?? []).length}</b></button>`).join("");
   $("#tabs").addEventListener("click", e => {

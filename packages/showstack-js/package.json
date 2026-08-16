@@ -16,9 +16,9 @@
     "lighting", "theatre", "theater", "live-events", "entertainment-technology",
     "psn", "posistagenet", "timecode", "esta", "rigging", "av"
   ],
-  "repository": { "type": "git", "url": "git+https://github.com/OWNER/showstack.git" },
-  "homepage": "https://github.com/OWNER/showstack#readme",
-  "bugs": { "url": "https://github.com/OWNER/showstack/issues" },
+  "repository": { "type": "git", "url": "git+https://github.com/deliseph/showstack.git" },
+  "homepage": "https://github.com/deliseph/showstack#readme",
+  "bugs": { "url": "https://github.com/deliseph/showstack/issues" },
   "license": "MIT",
   "sideEffects": false
 }

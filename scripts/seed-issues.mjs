@@ -20,7 +20,7 @@ import { writeFileSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadCollection, ROOT } from './lib/load.mjs'
 
-const REPO = process.env.SHOWSTACK_REPO ?? 'OWNER/showstack'
+const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
 
 /** Entries that should exist. Each becomes one self-contained issue. */
 const WISHLIST = {

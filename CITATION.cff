@@ -5,7 +5,7 @@ type: dataset
 authors:
   - name: "showstack contributors"
 license: CC-BY-4.0
-repository-code: "https://github.com/OWNER/showstack"
+repository-code: "https://github.com/deliseph/showstack"
 abstract: >-
   An open, machine-readable index of the protocols, standards, software,
   hardware and bilingual vocabulary used in live entertainment production,

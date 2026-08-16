@@ -1,4 +1,4 @@
-# Applied with: npx github-label-sync --labels .github/labels.yml OWNER/showstack
+# Applied with: npx github-label-sync --labels .github/labels.yml deliseph/showstack
 - name: "good first issue"
   color: "7057ff"
   description: "One file, one field, one source. No local setup needed."

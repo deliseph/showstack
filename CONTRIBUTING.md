@@ -127,7 +127,7 @@ The glossary exists because translation software gets stage vocabulary wrong in 
 ## Running it locally (optional)
 
 ```bash
-git clone https://github.com/OWNER/showstack
+git clone https://github.com/deliseph/showstack
 cd showstack
 npm install
 npm run validate

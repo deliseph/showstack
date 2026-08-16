@@ -26,7 +26,7 @@ def main() -> int:
         hits = ss.by_port(rest)
         if not hits:
             print(f"Nothing indexed on port {rest}. If you know what uses it, "
-                  "that is a five minute pull request: github.com/OWNER/showstack")
+                  "that is a five minute pull request: github.com/deliseph/showstack")
             return 1
         for p in hits:
             ports = ", ".join(f"{x['transport']}/{x['number']}" for x in p.get("default_ports", []))

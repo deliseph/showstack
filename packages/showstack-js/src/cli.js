@@ -28,7 +28,7 @@ ${c.b('showstack')} ${c.dim('— the open index of live entertainment technology
   ${c.g('showstack stats')}                what is in the index
 
 ${c.dim(`${ss.meta.total} entries, built ${ss.meta.generated}. Data CC BY 4.0.`)}
-${c.dim('Something wrong or missing? github.com/OWNER/showstack')}
+${c.dim('Something wrong or missing? github.com/deliseph/showstack')}
 `)
 }
 
@@ -55,7 +55,7 @@ switch (cmd) {
     const hits = ss.byPort(arg)
     if (!hits.length) {
       console.log(`\nNothing indexed on port ${arg}.`)
-      console.log(c.dim(`If you know what uses it, that is a five minute pull request: github.com/OWNER/showstack\n`))
+      console.log(c.dim(`If you know what uses it, that is a five minute pull request: github.com/deliseph/showstack\n`))
       process.exit(1)
     }
     for (const p of hits) showProtocol(p)
@@ -117,7 +117,7 @@ switch (cmd) {
     const g = ss.missing(arg || undefined)
     console.log(`\n${c.b(g.length + ' entries have missing fields')}\n`)
     for (const x of g.slice(0, 60)) console.log(`  ${c.dim((x.collection + '/').padEnd(11))}${c.b(x.id.padEnd(24))} ${c.y(x.missing.join(', '))}`)
-    console.log(`\n${c.dim('Each one is a five minute pull request: github.com/OWNER/showstack')}\n`)
+    console.log(`\n${c.dim('Each one is a five minute pull request: github.com/deliseph/showstack')}\n`)
     break
   }
   case 'stats': {

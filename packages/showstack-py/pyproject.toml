@@ -21,9 +21,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/OWNER/showstack"
-Source = "https://github.com/OWNER/showstack"
-Issues = "https://github.com/OWNER/showstack/issues"
+Homepage = "https://github.com/deliseph/showstack"
+Source = "https://github.com/deliseph/showstack"
+Issues = "https://github.com/deliseph/showstack/issues"
 
 [project.scripts]
 showstack = "showstack.cli:main"
