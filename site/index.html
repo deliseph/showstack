@@ -252,7 +252,7 @@ function boot(){
   $("#stats").innerHTML = `<span><b>${DATA.total}</b> entries</span>
     <span><b>${Math.round((DATA.verified_share ?? 0) * 100)}%</b> verified against a primary source</span>
     <span><b>${DATA.open_gaps}</b> open gaps</span>
-    <span><b>${DATA.contributors}</b> contributors</span>
+    <span><b>${(DATA.contributors ?? []).length}</b> contributors</span>
     <span>built ${DATA.generated}</span>`;
   $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
   $("#q").addEventListener("input", render);
