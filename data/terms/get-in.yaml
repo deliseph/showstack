@@ -1,0 +1,55 @@
+id: get-in
+en: Get-in
+zh_hant: 入台
+zh_hans: 入台
+domain: production-management
+definition_en: >-
+  The British and Hong Kong word for load-in: the production arriving at the
+  venue and going up. The same word also names the physical access route, so
+  "what is the get-in like" is a question about the dock, the doors and the
+  lift, not about the schedule.
+definition_zh_hant: >-
+  英式和香港說法的裝台：製作進場、把演出裝起來。同一個字也指實體進場路線，所以問「get-in
+  怎麼樣」是在問卸貨區、大門和貨梯，不是在問進度表。
+regional_variants:
+  - region: UK
+    term: Get-in
+  - region: HK
+    term: 入台
+    note: 香港的入台進度表在英文文件裡寫 move-in schedule。
+  - region: US
+    term: Load-in
+  - region: TW
+    term: 裝台
+  - region: AU / NZ
+    term: Bump-in
+false_friends:
+  - >-
+    Get-in names both the process and the access route. A rider asking for
+    get-in dimensions wants door and dock sizes, not a timetable.
+  - 香港的「入台」涵蓋整段進場期間，臺灣的「裝台」比較偏實際搭建的動作。
+  - >-
+    Get-in and fit-up are not the same. Fit-up is assembling the set; the
+    get-in is the whole arrival.
+see_also:
+  - load-in
+  - load-out
+  - strike
+safety_critical: false
+confidence: reported
+tags:
+  - scheduling
+  - production
+  - vocabulary
+sources:
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+    primary: true
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

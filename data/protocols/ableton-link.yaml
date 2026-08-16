@@ -1,0 +1,102 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ableton-link
+name: Ableton Link
+aka:
+  - Link
+category: timecode-sync
+summary: >-
+  Ableton's peer-to-peer protocol for sharing tempo, beat and phase between
+  music applications on a local network. There is no master and no clock owner:
+  any peer can change the tempo and everyone else follows within a beat.
+
+transport:
+  - udp
+default_ports:
+  - number: 20808
+    transport: udp
+    role: Link discovery and session state messages
+    note: The same port is used for the IPv4 and the IPv6 multicast endpoints in the reference implementation.
+
+multicast:
+  used: true
+  ranges:
+    - 224.76.78.75 (IPv4)
+    - ff12::8080 (IPv6)
+  note: >-
+    Taken from multicastEndpointV4() and multicastEndpointV6() in the Ableton
+    Link source. Peers announce and discover each other on this group, so
+    anything that blocks local multicast makes Link look broken.
+
+openness: open-published
+spec_url:
+  url: https://github.com/Ableton/link
+  label: Ableton Link reference implementation (there is no separate wire specification)
+steward: Ableton AG
+status: current
+
+typical_use:
+  - Keeping laptops and tablets running different music software on one tempo
+  - DJ software and a live performance rig sharing a grid
+  - Lighting and VJ software following a musical tempo rather than timecode
+  - Ad-hoc jam setups where nobody wants to nominate a master clock
+
+gotchas:
+  - >-
+    There is no master. Any peer joining a session adopts the session tempo, and
+    any peer can then change tempo for everyone. If someone nudges a tempo
+    control on the wrong machine, the whole room moves.
+  - >-
+    Discovery is multicast on 224.76.78.75 port 20808. Client isolation on guest
+    wifi, a VPN client, or a firewall silently blocking multicast all produce the
+    same symptom: zero peers found and no error message.
+  - >-
+    Link does not work over a VPN or over Bluetooth. Ableton state this directly.
+    A tethered phone or a corporate VPN left running is the usual reason one
+    machine cannot see the others.
+  - >-
+    On recent macOS versions the local network permission must be granted to
+    each application. If it is not, the app finds nothing and gives no clue why.
+  - >-
+    Link carries tempo, beat and phase only. Start/stop sync is an optional
+    feature that applications must opt into, so do not assume pressing play on
+    one device starts the others.
+  - >-
+    It is not timecode. There is no absolute position and no relationship to
+    SMPTE, so Link will keep a band in time with each other but will not lock
+    them to a video playback or a show timeline.
+
+implementations:
+  - name: Ableton Link
+    url: https://github.com/Ableton/link
+    language: C++
+    license: GPL-2.0-or-later
+    role: both
+
+confidence: verified
+tags:
+  - tempo
+  - music
+  - multicast
+  - sync
+
+sources:
+  - title: Ableton Link source — multicast endpoints (224.76.78.75 and ff12::8080, port 20808)
+    url: https://github.com/Ableton/link/blob/master/include/ableton/discovery/IpInterface.hpp
+    publisher: Ableton AG
+    accessed: 2026-08-16
+    primary: true
+  - title: Link Troubleshooting (port 20808, multicast, no VPN, no Bluetooth, macOS local network permission)
+    url: https://help.ableton.com/hc/en-us/articles/209073069-Link-Troubleshooting
+    publisher: Ableton AG
+    accessed: 2026-08-16
+    primary: true
+  - title: Ableton Link repository and licence
+    url: https://github.com/Ableton/link
+    publisher: Ableton AG
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,45 @@
+id: focus
+en: Focus
+zh_hant: 對燈
+zh_hans: 对灯
+domain: lighting
+definition_en: >-
+  Pointing and shaping each lighting fixture: where the beam lands, how hard
+  the edge is, what it has to miss. A focus session is a scheduled call with
+  the designer on the deck and electrics up ladders, not something squeezed in
+  while other departments work underneath.
+definition_zh_hant: >-
+  把每一盞燈調到位：光打在哪裡、邊緣多硬、要避開什麼。對燈是排定的工作時段，設計在台上、燈光組在梯上，底下不能同時有別的部門在做事。
+regional_variants:
+  - region: HK / TW
+    term: 對燈
+    note: 兩地口語一致，不用「對焦」。
+false_friends:
+  - 「對焦」和「聚焦」是相機用語。跟華語劇組講「對焦」，來的可能是影像組。
+  - >-
+    In moving light programming a focus can also be a stored pan and tilt
+    position recalled by name. The activity and the stored value are different.
+  - >-
+    Soft focus describes the beam edge. It does not mean the fixture is
+    incorrectly focused.
+see_also:
+  - gel
+  - gobo
+  - plot
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - vocabulary
+sources:
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 請走、拉fly、下舞台？劇場黑話大破解
+    url: https://www.thenewslens.com/article/67015
+    publisher: The News Lens 關鍵評論網
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

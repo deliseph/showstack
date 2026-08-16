@@ -1,0 +1,42 @@
+id: ansi-e1-6-1
+designation: ANSI E1.6-1-2021
+title: Entertainment Technology - Powered Hoist Systems
+body: ESTA
+domain: machinery
+year: 2021
+scope: >-
+  Requirements for the design, manufacture, installation, inspection, and
+  maintenance of powered hoist systems used to lift and suspend loads for
+  performance, presentation, and theatrical production. It excludes structural
+  attachment points, the rigging of the load itself, performer flying systems,
+  welded link chain hoists, and manually powered hoists.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+notes: >-
+  Performer flying is deliberately out of scope here and is covered by ANSI
+  E1.43 instead. Read the exclusion list before quoting this document in a
+  method statement, because a hoist that lifts scenery and a hoist that lifts a
+  person are held to different standards.
+confidence: verified
+tags:
+  - esta
+  - rigging
+  - hoists
+  - safety
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.6-1-2021 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie12021
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

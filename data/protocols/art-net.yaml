@@ -1,0 +1,94 @@
+id: art-net
+name: Art-Net
+aka:
+  - ArtNet
+  - Art-Net 4
+category: lighting-control
+summary: >-
+  Artistic Licence's royalty-free protocol for carrying DMX512 over UDP/IP. It
+  predates sACN, is implemented by almost every lighting product ever made, and
+  is still the default lingua franca when two unfamiliar devices need to talk.
+
+transport:
+  - udp
+default_ports:
+  - number: 6454
+    transport: udp
+    role: All Art-Net traffic (ArtDmx, ArtPoll, ArtPollReply, ArtSync, ...)
+    note: 6454 is 0x1936 in hex, which is the year Artistic Licence chose as a nod to the first television broadcast.
+
+multicast:
+  used: false
+  note: >-
+    Art-Net is broadcast or unicast, not multicast. Art-Net 4 added the ability
+    to hand off to sACN for the streaming portion, which is where multicast
+    enters the picture.
+
+universe_model: >-
+  15-bit Port-Address split into Net (7 bits), Sub-Net (4 bits) and Universe
+  (4 bits), giving 32768 addressable universes of 512 slots.
+
+openness: open-published
+spec_url:
+  url: https://art-net.org.uk/downloads/art-net.pdf
+  label: Art-Net 4 specification (PDF)
+steward: Artistic Licence Engineering Ltd
+first_published: 1998
+status: current
+
+typical_use:
+  - Console or media server to DMX gateway over ethernet
+  - Pixel mapping and LED processing
+  - Small installs and touring racks where sACN multicast config is not worth the trouble
+  - Discovery of nodes on an unknown network via ArtPoll
+
+gotchas:
+  - >-
+    Classic Art-Net broadcasts to 2.255.255.255 or 10.255.255.255, which is why
+    the old convention is 2.x.x.x addressing with a /8 mask. Putting Art-Net on
+    a 192.168.x.x network works, but broadcast then hits every device on the
+    subnet.
+  - >-
+    Net/Sub-Net/Universe versus a flat universe number is the classic patch
+    error. A device showing "universe 0" may mean Port-Address 0, which many
+    consoles display as universe 1.
+  - >-
+    ArtSync exists to avoid tearing on large pixel rigs, but many nodes ignore
+    it. If pixels shear across a fade, check sync support before blaming the
+    switch.
+
+implementations:
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: both
+  - name: StupidArtnet
+    url: https://github.com/cpvalente/stupidArtnet
+    language: Python
+    license: MIT
+    role: sender
+  - name: artnet (Node.js)
+    url: https://github.com/hobbyquaker/artnet
+    language: JavaScript
+    license: MIT
+    role: sender
+
+confidence: verified
+tags:
+  - lighting
+  - dmx-over-ip
+  - broadcast
+
+sources:
+  - title: Art-Net 4 Protocol Release — specification document
+    url: https://art-net.org.uk/downloads/art-net.pdf
+    publisher: Artistic Licence Engineering Ltd
+    primary: true
+  - title: Art-Net homepage and licensing terms
+    url: https://art-net.org.uk/
+    publisher: Artistic Licence Engineering Ltd
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

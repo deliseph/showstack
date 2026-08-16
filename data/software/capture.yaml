@@ -1,0 +1,90 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: capture
+name: Capture
+vendor: Capture Visualisation AB
+category: previsualisation
+summary: >-
+  Lighting design, documentation and visualisation software that renders a rig in
+  real time from live DMX. It covers lighting, video, laser, moving scenery and
+  water effects in one model.
+
+license: proprietary
+price_model: one-off-purchase
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: art-net
+    direction: in
+    note: One of the two recommended network DMX inputs.
+    confidence: verified
+  - protocol: sacn
+    direction: in
+    confidence: verified
+  - protocol: citp
+    direction: bidirectional
+    note: Adds DMX talkback, selection sync and patch exchange with consoles that implement MSEX.
+    confidence: verified
+  - protocol: osc
+    direction: bidirectional
+    note: Documented as supporting DMX talkback with ETC Eos consoles.
+    confidence: reported
+
+homepage:
+  url: https://www.capture.se/Products/Capture
+  label: capture.se
+
+status: current
+typical_use:
+  - Offline programming against a rendered rig before the fixtures arrive
+  - Producing plots and reports that update with the design
+  - Selling a look to a designer or client before load-in
+  - Checking beam angles, focus and coverage in a modelled venue
+
+gotchas:
+  - >-
+    Editions are capped by universe count. Solo is one universe, Duet two, Quartet
+    four and Symphony unlimited, and the cap applies to documentation as well as
+    visualisation, so a small licence limits the paperwork too.
+  - >-
+    CITP/MSEX gives selection sync and patch exchange, but only with consoles that
+    implement it. On everything else you are back to plain Art-Net or sACN and
+    manual patch matching.
+  - >-
+    Wi-Fi is explicitly advised against for the console link. Run a cable, or
+    expect visualisation that lags the desk under load.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - documentation
+
+sources:
+  - title: Capture — Overview
+    url: https://www.capture.se/Products/Capture
+    publisher: Capture Visualisation AB
+    accessed: 2026-08-16
+    primary: true
+  - title: Capture — Console Connectivity
+    url: https://www.capture.se/Support/Connectivity
+    publisher: Capture Visualisation AB
+    accessed: 2026-08-16
+    primary: true
+  - title: Capture — Pricing and editions
+    url: https://www.capture.se/Products/Capture/Pricing
+    publisher: Capture Visualisation AB
+    accessed: 2026-08-16
+    primary: true
+  - title: Capture 2026 Reference Manual — Universes Tab
+    url: https://www.capture.se/Manual/en-UK/2026/UniversesTab.html
+    publisher: Capture Visualisation AB
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,47 @@
+id: front-of-house
+en: Front of house (FOH)
+zh_hant: 前台（觀眾服務）／FOH 控制位（音響）
+zh_hans: 前台／FOH 控制位
+domain: general
+definition_en: >-
+  In theatre, front of house is everything on the audience side of the
+  proscenium plus the staff who run it: box office, ushers, bars, and the duty
+  manager who owns the decision to hold the curtain. In live sound, FOH is the
+  mix position out in the house and the main system it drives.
+definition_zh_hant: >-
+  在劇場，前台指台口以外觀眾這一側的所有空間和負責的人：售票、帶位、酒吧，以及有權決定延後開演的值班經理。在演唱會音響裡，FOH
+  指觀眾席中的混音位置和它推動的主擴系統。
+regional_variants:
+  - region: HK / TW
+    term: 前台
+    note: 音響組講 FOH 時通常不翻譯，直接說 FOH。
+false_friends:
+  - 同一封 email 裡的兩個 FOH 常常不是同一件事。音響組指混音位置，前台組指觀眾服務，要先問清楚。
+  - >-
+    An FOH bar in a UK theatre sells drinks. An FOH bar in lighting is a
+    lighting position over the auditorium. Same two words, different trade.
+  - >-
+    An FOH engineer and a house manager are unrelated roles even though both
+    are described as front of house.
+see_also:
+  - house
+  - green-room
+  - iron-safety-curtain
+safety_critical: false
+confidence: reported
+tags:
+  - venue
+  - audio
+  - vocabulary
+sources:
+  - title: Front of house
+    url: https://en.wikipedia.org/wiki/Front_of_house
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Hong Kong City Hall Theatre — technical specification
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/en/hkch-th-lfe.pdf
+    publisher: Leisure and Cultural Services Department
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

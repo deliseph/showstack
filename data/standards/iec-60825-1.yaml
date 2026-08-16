@@ -1,0 +1,41 @@
+id: iec-60825-1
+designation: IEC 60825-1:2014
+title: "Safety of laser products - Part 1: Equipment classification and requirements"
+body: IEC
+domain: laser
+year: 2014
+scope: >-
+  Covers the safety of laser products emitting laser radiation in the
+  wavelength range 180 nm to 1 mm. It sets the classification scheme that
+  produces the Class 1 to Class 4 labels found on show lasers, along with the
+  manufacturer's requirements for labelling, engineering controls, and
+  accessible emission limits.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/3587
+  label: IEC Webstore (purchase, CHF 405 as listed)
+jurisdiction:
+  - International
+notes: >-
+  Edition 3.0, published 15 May 2014, with interpretation sheets from December
+  2017. This part classifies the product. It does not by itself authorise
+  audience-scanning or set the exposure limits an operator has to work to, and
+  national regulators add their own requirements on top.
+confidence: verified
+tags:
+  - iec
+  - laser
+  - safety
+sources:
+  - title: IEC 60825-1:2014 publication page
+    url: https://webstore.iec.ch/en/publication/3587
+    publisher: IEC
+    accessed: 2026-08-16
+    primary: true
+  - title: IECEE listing for IEC 60825-1:2014
+    url: https://www.iecee.org/certification/iec-standards/iec-60825-12014
+    publisher: IECEE
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

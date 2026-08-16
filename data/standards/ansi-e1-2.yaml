@@ -1,0 +1,42 @@
+id: ansi-e1-2
+designation: ANSI E1.2-2021
+title: >-
+  Entertainment Technology - Design, Manufacture and Use of Aluminum Trusses
+  and Towers
+body: ESTA
+domain: rigging-structural
+year: 2021
+scope: >-
+  Covers the design, manufacture, and use of aluminium trusses, towers, and
+  associated aluminium structural components such as head blocks, sleeve
+  blocks, bases, and corner blocks used in portable structures in the
+  entertainment industry.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+notes: >-
+  This is the document behind the load tables printed in truss manufacturers'
+  catalogues. A truss span rating means nothing without the loading assumptions
+  the rating was produced under.
+confidence: verified
+tags:
+  - esta
+  - rigging
+  - truss
+  - safety
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.2-2021 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie12021-2440346
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

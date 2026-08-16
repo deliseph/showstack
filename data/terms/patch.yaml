@@ -1,0 +1,48 @@
+id: patch
+en: Patch
+zh_hant: 配接（patch）
+zh_hans: 配接
+domain: lighting
+definition_en: >-
+  The mapping between a control channel and the thing it drives. On a lighting
+  desk it is which DMX address a fixture answers to and which profile the desk
+  applies to it. In audio and video it is which physical input arrives on which
+  channel.
+definition_zh_hant: >-
+  控制通道和被控制對象之間的對應關係。在燈光控台上，是燈具用哪個 DMX
+  位址、控台套哪個燈庫檔。在音響和影像則是哪個實體輸入進到哪個通道。
+regional_variants:
+  - region: HK / TW
+    term: Patch
+    note: 口語直接用英文，書面寫「配接」或「位址設定」。
+false_friends:
+  - >-
+    A soft patch lives in the desk's show file. A hard patch is physical
+    cabling or a dimmer rack assignment. Changing one does not change the other.
+  - 「跳線」在中文通常指實體接線。燈光控台上的 patch 是軟體對應，兩者不要混用。
+  - >-
+    In audio a patchbay is a physical panel. Telling a sound engineer to
+    "repatch it" may send someone to a rack rather than to a laptop.
+see_also:
+  - plot
+  - gobo
+related_protocols:
+  - dmx512
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - control
+  - vocabulary
+sources:
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

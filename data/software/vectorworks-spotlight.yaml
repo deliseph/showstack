@@ -1,0 +1,60 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: vectorworks-spotlight
+name: Vectorworks Spotlight
+aka:
+  - Spotlight
+vendor: Vectorworks, Inc.
+category: cad-drafting
+summary: >-
+  CAD and 3D design package aimed at lighting, scenic and event work, with a
+  fixture and truss library and automatic paperwork. It is where most lighting
+  plots and hanging plots in theatre and events are actually drawn.
+
+license: proprietary
+
+homepage:
+  url: https://www.vectorworks.net/en-US/spotlight
+  label: Vectorworks Spotlight
+status: current
+typical_use:
+  - Drawing light plots, section and hanging plots
+  - Generating channel hookups, instrument schedules and equipment lists from the drawing
+  - Exchanging a rig with a console or visualiser using GDTF and MVR
+  - Scenic modelling and event layout including seating and tables
+
+gotchas:
+  - >-
+    Worksheets are generated from the objects in the drawing. A fixture with an
+    incomplete record produces a report that looks correct and quietly omits it, so
+    check counts against the plot before sending paperwork out.
+  - >-
+    Braceworks rigging analysis and Vision previsualisation are separate products,
+    not Spotlight features. Budget for them separately if the job needs load
+    calculations or previs.
+  - >-
+    GDTF and MVR round-tripping depends on both ends supporting the same revision.
+    Test the export against the actual console before relying on it to carry patch.
+
+confidence: reported
+tags:
+  - cad
+  - lighting-design
+  - paperwork
+  - gdtf
+
+sources:
+  - title: Vectorworks Spotlight product page
+    url: https://www.vectorworks.net/en-US/spotlight
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-16
+    primary: true
+  - title: Vectorworks Spotlight Capabilities
+    url: https://www.vectorworks.net/en-US/spotlight/capabilities
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

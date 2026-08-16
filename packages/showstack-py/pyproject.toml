@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "showstack"
+version = "0.1.0"
+description = "The open index of live entertainment technology: protocols, standards, software, hardware and bilingual vocabulary, with a citation on every fact."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "showstack contributors" }]
+keywords = ["dmx", "dmx512", "sacn", "art-net", "osc", "show-control", "lighting", "theatre", "entertainment-technology", "psn", "timecode", "esta", "av"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia",
+  "Topic :: System :: Networking",
+]
+
+[project.urls]
+Homepage = "https://github.com/OWNER/showstack"
+Source = "https://github.com/OWNER/showstack"
+Issues = "https://github.com/OWNER/showstack/issues"
+
+[project.scripts]
+showstack = "showstack.cli:main"
+
+[tool.setuptools]
+packages = ["showstack"]
+
+[tool.setuptools.package-data]
+showstack = ["showstack.json"]

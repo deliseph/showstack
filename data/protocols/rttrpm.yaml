@@ -1,0 +1,91 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rttrpm
+name: RTTrPM
+aka:
+  - Real Time Tracking Protocol Motion
+  - RTTrP Motion
+  - BlackTrax protocol
+category: tracking-position
+summary: >-
+  The packet format BlackTrax uses to stream tracked position and orientation to
+  third party systems. It carries centroid and individual point positions,
+  quaternion or Euler orientation, velocity, acceleration and zone collisions
+  for lighting, video and audio consumers.
+
+transport:
+  - udp
+
+openness: open-published
+spec_url:
+  url: https://rttrp.github.io/RTTrP-Wiki/RTTrPM.html
+  label: RTTrPM packet structure and module definitions
+steward: CAST Group (BlackTrax)
+status: current
+
+typical_use:
+  - BlackTrax feeding media servers for projection onto moving objects
+  - Driving moving lights and followspot systems from beacon positions
+  - Positioning sources in object-based audio renderers
+  - Triggering show events from zone collision detection
+
+gotchas:
+  - >-
+    The RTTrP header carries both a big-endian signature (0x4154) and a
+    little-endian one (0x5441). Read the signature first and byte-swap the rest
+    of the packet accordingly, or every position you decode looks like noise.
+  - >-
+    A packet is a header plus a variable list of modules, each with its own type
+    and size. Do not assume fixed offsets. Walk the module list by declared
+    size or you will break on the next firmware release.
+  - >-
+    Centroid position and tracked point position are separate module types. A
+    beacon taped to a performer's shoulder is not the centroid of the trackable,
+    and consuming the wrong one puts the light in the wrong place.
+  - >-
+    RTTrPM (motion) and RTTrPL (lighting) share the same header. Motion is a
+    fixed-rate stream, lighting is event-driven, so a receiver that assumes a
+    steady packet rate will time out on the lighting side.
+  - >-
+    The wiki documents no default port and no default address. Whatever the
+    BlackTrax output configuration says is the truth, so get it from the
+    tracking operator rather than guessing.
+
+implementations:
+  - name: RTTrP reference stub code (C++ and Python)
+    url: https://github.com/RTTrP/RTTrP-v1.8.7.0
+    language: C++
+    license: MIT
+    role: receiver
+  - name: RTTrPMtoOSC bridge
+    url: https://github.com/bastidererste/RTTrPMtoOSC
+    language: C++
+    role: receiver
+
+confidence: reported
+tags:
+  - tracking
+  - position
+  - blacktrax
+  - cast
+
+sources:
+  - title: Real-Time Tracking Protocol — RTTrPM
+    url: https://rttrp.github.io/RTTrP-Wiki/RTTrPM.html
+    publisher: CAST Group
+    accessed: 2026-08-16
+    primary: true
+  - title: Real-Time Tracking Protocol (RTTrP overview, RTTrPM vs RTTrPL)
+    url: https://rttrp.github.io/RTTrP-Wiki/index.html
+    publisher: CAST Group
+    accessed: 2026-08-16
+    primary: true
+  - title: BlackTrax developer resources (simulator, UDP player, sample code)
+    url: https://blacktrax.cast-soft.com/developers/
+    publisher: CAST Group
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

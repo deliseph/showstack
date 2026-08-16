@@ -1,0 +1,84 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: resolume-arena
+name: Resolume Arena
+aka:
+  - Arena
+vendor: Resolume
+category: media-server
+summary: >-
+  Clip-based video playback and mixing software with projection mapping, soft
+  edge blending and DMX fixture output. Arena is the upper tier above Avenue and
+  carries the features a show with projectors or LED actually needs.
+
+license: proprietary
+price_model: one-off-purchase
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: art-net
+    direction: out
+    note: Pixel and fixture output to lights uses Art-Net. Enttec USB DMX devices are not supported from Arena 6 onward.
+    confidence: verified
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    confidence: reported
+
+homepage:
+  url: https://resolume.com/
+  label: resolume.com
+docs:
+  url: https://resolume.com/support/en/
+  label: Resolume support and manual
+
+status: current
+typical_use:
+  - Club and festival VJ playback
+  - Multi-projector mapping with soft edge blending
+  - Pixel mapping LED battens and strips from video content
+  - Timecoded video playback in a show with a fixed running order
+
+gotchas:
+  - >-
+    Projection mapping, edge blending, DMX control, DMX fixture output, SMPTE
+    timecode input, groups and slice transforms are Arena-only. A show designed in
+    Arena will not open usefully on an Avenue seat.
+  - >-
+    DMX output from Arena is Art-Net. Enttec USB DMX widgets stopped being
+    supported at Arena 6, so an old USB interface in the case is dead weight.
+  - >-
+    Licences are perpetual and per computer, so a spare machine on the truck needs
+    its own licence rather than a copy of the show file.
+
+confidence: reported
+tags:
+  - video
+  - vj
+  - projection-mapping
+  - pixel-mapping
+
+sources:
+  - title: Resolume support — DMX
+    url: https://www.resolume.com/support/en/dmx
+    publisher: Resolume
+    accessed: 2026-08-16
+    primary: true
+  - title: Difference between Avenue and Arena
+    url: https://resolume.com/support/en/avenue-arena-difference
+    publisher: Resolume
+    accessed: 2026-08-16
+    primary: true
+  - title: Resolume Avenue & Arena product page
+    url: https://www.resolume.com/software/avenue-arena
+    publisher: Resolume
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

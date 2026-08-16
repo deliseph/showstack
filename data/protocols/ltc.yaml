@@ -1,0 +1,91 @@
+id: ltc
+name: LTC
+aka:
+  - Linear Timecode
+  - Longitudinal Timecode
+  - SMPTE timecode
+  - SMPTE
+category: timecode-sync
+summary: >-
+  SMPTE time and control code encoded as a biphase-mark audio signal, 80 bits
+  per frame, so it runs down any audio path in the building. It is still the
+  least fragile way to hand one clock to lighting, sound, video and automation
+  at the same time.
+
+transport:
+  - other
+
+multicast:
+  used: false
+
+openness: open-published
+spec_url:
+  url: https://pub.smpte.org/pub/st12-1/st0012-1-2014.pdf
+  label: SMPTE ST 12-1 — Time and Control Code
+steward: SMPTE (Society of Motion Picture and Television Engineers)
+status: current
+
+typical_use:
+  - Master clock from a timecode generator to lighting, sound and video
+  - Locking playback, automation and pyro to a backing track
+  - Striping a reference clock onto a spare track of a multitrack
+  - Feeding a console's timecode-triggered cue list from front of house
+
+gotchas:
+  - >-
+    The 80-bit word carries no frame-rate field. The reader infers the rate from
+    the incoming bit rate, so a 25 fps generator into a 30 fps reader produces
+    numbers that look plausible and quietly drift.
+  - >-
+    Drop-frame at 29.97 skips frame numbers, not time. Cue sheets written
+    non-drop against a drop-frame master run out by roughly 3.6 seconds an hour,
+    and the error is invisible in the first five minutes of a tech.
+  - >-
+    ST 12-1 asks for 1 to 2 V peak-to-peak with 40 microsecond rise and fall
+    times. Route LTC through a compressor, a de-esser, a lossy codec or a
+    consumer wireless link and the edges round off until the reader loses lock.
+  - >-
+    LTC is unreadable at very low transport speeds because there are no
+    transitions to clock from. A paused master stops sending position entirely,
+    so downstream devices either freewheel or drop out.
+  - >-
+    It is an audio signal, so it bleeds. Keep it off adjacent channels, out of
+    foldback and out of anything that goes to a speaker; a burst of LTC in the
+    PA during a quiet scene is a career moment.
+  - >-
+    The eight four-bit user groups are free-form and every manufacturer fills
+    them differently. Do not assume date or reel data survives a round trip
+    through a converter or a distribution amp.
+
+implementations:
+  - name: libltc
+    url: https://github.com/x42/libltc
+    language: C
+    license: LGPL-3.0
+    role: both
+
+confidence: verified
+tags:
+  - timecode
+  - smpte
+  - audio
+  - sync
+
+sources:
+  - title: SMPTE ST 12-1:2014 — Time and Control Code
+    url: https://pub.smpte.org/pub/st12-1/st0012-1-2014.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: Setting the Standards Free — SMPTE opens its full standards library at no cost
+    url: https://www.smpte.org/setting-the-standards-free
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: libltc — Linear/Longitudinal Time Code library
+    url: https://github.com/x42/libltc
+    publisher: Robin Gareus
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

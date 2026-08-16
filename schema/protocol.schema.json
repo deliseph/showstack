@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/protocol.schema.json",
+  "title": "Protocol",
+  "description": "A wire protocol, transport, or data format used to move control, timing, media, or position data around a live entertainment system.",
+  "type": "object",
+  "required": ["id", "name", "category", "summary", "openness", "status", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.defs.json#/definitions/slug" },
+    "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "aka": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 100 },
+      "uniqueItems": true,
+      "description": "Other names people actually use on headset. Include the ones that are technically wrong but universally said."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lighting-control",
+        "audio-transport",
+        "audio-control",
+        "video-transport",
+        "video-control",
+        "media-control",
+        "show-control",
+        "timecode-sync",
+        "tracking-position",
+        "machinery-motion",
+        "network-transport",
+        "device-management",
+        "power-monitoring"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 30,
+      "maxLength": 400,
+      "description": "Two sentences maximum. What it carries, and what it is actually used for on a real job."
+    },
+    "transport": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["udp", "tcp", "ethernet-l2", "rs485", "rs232", "midi-din", "usb", "http", "websocket", "fibre", "wireless-rf", "other"]
+      },
+      "uniqueItems": true
+    },
+    "default_ports": {
+      "type": "array",
+      "items": { "$ref": "common.defs.json#/definitions/port" }
+    },
+    "multicast": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "used": { "type": "boolean" },
+        "ranges": { "type": "array", "items": { "type": "string", "maxLength": 60 } },
+        "note": { "type": "string", "maxLength": 300 }
+      }
+    },
+    "universe_model": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "For lighting-control protocols: how addressing works. e.g. '512 slots per universe, universes 1-63999'."
+    },
+    "openness": {
+      "type": "string",
+      "enum": [
+        "open-published",
+        "open-free-registration",
+        "published-paid",
+        "proprietary-documented",
+        "proprietary-closed",
+        "reverse-engineered"
+      ],
+      "description": "Can an integrator legally get the spec, and at what cost? This is the field people most often need and least often find."
+    },
+    "spec_url": { "$ref": "common.defs.json#/definitions/link" },
+    "standards": {
+      "type": "array",
+      "items": { "$ref": "common.defs.json#/definitions/slug" },
+      "uniqueItems": true,
+      "description": "IDs of entries in data/standards/ that define this protocol."
+    },
+    "steward": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Organisation or company that controls the spec. ESTA, AES, SMPTE, Audinate, MA Lighting, ..."
+    },
+    "first_published": { "type": "integer", "minimum": 1960, "maximum": 2100 },
+    "status": { "$ref": "common.defs.json#/definitions/status" },
+    "superseded_by": { "$ref": "common.defs.json#/definitions/slug" },
+    "typical_use": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 160 },
+      "maxItems": 8
+    },
+    "gotchas": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 300 },
+      "maxItems": 8,
+      "description": "The things that bite you at 2am. Be specific and cite where you can."
+    },
+    "implementations": {
+      "type": "array",
+      "description": "Open source libraries that speak this protocol, so an integrator does not have to start from zero.",
+      "items": {
+        "type": "object",
+        "required": ["name", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "maxLength": 100 },
+          "url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+          "language": { "type": "string", "maxLength": 40 },
+          "license": { "$ref": "common.defs.json#/definitions/spdxOrProprietary" },
+          "role": { "type": "string", "enum": ["sender", "receiver", "both", "analyser"] }
+        }
+      }
+    },
+    "confidence": { "$ref": "common.defs.json#/definitions/confidence" },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "uniqueItems": true },
+    "sources": { "$ref": "common.defs.json#/definitions/sources" },
+    "contributed_by": { "$ref": "common.defs.json#/definitions/contributors" },
+    "updated": { "type": "string", "format": "date" }
+  }
+}

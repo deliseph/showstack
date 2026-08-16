@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/common.defs.json",
+  "definitions": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60,
+      "description": "Lower-case kebab-case identifier. Must match the filename."
+    },
+    "source": {
+      "type": "object",
+      "description": "Where this information came from. Prefer the primary source: the standard itself, the vendor's own documentation, or the project's own repo.",
+      "required": ["title", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "publisher": { "type": "string", "maxLength": 120 },
+        "accessed": { "type": "string", "format": "date" },
+        "primary": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if this is the authoritative document, not a summary of it."
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/source" },
+      "description": "At least one source is required on every entry. An entry with no source is an opinion, not data."
+    },
+    "githubHandle": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$"
+    },
+    "contributors": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/githubHandle" },
+      "uniqueItems": true,
+      "description": "GitHub handles of everyone who added or materially corrected this entry. Add yourself when you contribute."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["verified", "reported", "unverified"],
+      "default": "reported",
+      "description": "verified = checked against the primary standard or tested on real hardware. reported = documented by the vendor or a credible secondary source. unverified = community knowledge, needs checking."
+    },
+    "port": {
+      "type": "object",
+      "required": ["number", "transport"],
+      "additionalProperties": false,
+      "properties": {
+        "number": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "transport": { "type": "string", "enum": ["udp", "tcp", "sctp"] },
+        "role": { "type": "string", "maxLength": 120 },
+        "iana_registered": { "type": "boolean" },
+        "note": { "type": "string", "maxLength": 300 }
+      }
+    },
+    "spdxOrProprietary": {
+      "type": "string",
+      "maxLength": 60,
+      "description": "SPDX identifier (MIT, Apache-2.0, GPL-3.0-or-later, ...) or 'proprietary'."
+    },
+    "link": {
+      "type": "object",
+      "required": ["url"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri", "pattern": "^https?://" },
+        "label": { "type": "string", "maxLength": 120 }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["current", "draft", "superseded", "deprecated", "historical"]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+id: ansi-e1-11
+designation: ANSI E1.11-2024
+title: >-
+  Entertainment Technology - USITT DMX512-A Asynchronous Serial Digital Data
+  Transmission Standard for Controlling Lighting Equipment and Accessories
+body: ESTA
+domain: control-data
+year: 2024
+scope: >-
+  Defines the DMX512-A method of digital data transmission for control of
+  lighting equipment and accessories, covering the electrical layer, connector
+  and pinout, packet timing, start codes, and the alternate start code
+  mechanism that later standards such as RDM build on.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+  - International
+related_protocols:
+  - dmx512
+notes: >-
+  The document descends from the USITT DMX512/1990 protocol. The 2024 edition
+  replaces the long-lived 2008 text and its R2013 and R2018 reaffirmations.
+  Earlier editions remain downloadable from the ESTA page, which matters when
+  you are working on equipment built to the older text.
+confidence: verified
+tags:
+  - esta
+  - lighting
+  - dmx
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.11-2024 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie1112024
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

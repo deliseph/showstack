@@ -1,0 +1,20 @@
+name: Propose a schema change
+description: The index cannot express something it should
+title: "[schema] "
+labels: ["schema", "discussion"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What can you not currently record
+      description: Describe the real situation that the schema cannot express, not the field you want.
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed field or enum value
+  - type: textarea
+    id: examples
+    attributes:
+      label: Two or three real entries that would use it
+      description: If only one entry would ever use it, it probably belongs in `gotchas` or `tags` instead.

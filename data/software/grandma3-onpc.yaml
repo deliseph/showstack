@@ -1,0 +1,96 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: grandma3-onpc
+name: grandMA3 onPC
+aka:
+  - MA3 onPC
+vendor: MA Lighting
+category: lighting-control
+summary: >-
+  The grandMA3 console software running on a Windows or macOS computer, free to
+  download. It is the standard way to pre-program a grandMA3 show without tying
+  up a console.
+
+license: proprietary
+price_model: free
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: sacn
+    direction: bidirectional
+    note: One of the two Ethernet DMX protocols grandMA3 supports for sending and receiving.
+    confidence: verified
+  - protocol: art-net
+    direction: bidirectional
+    note: Documented at Art-Net revision 1.4db. Unicast is used until more than five receivers subscribe to a universe.
+    confidence: verified
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: psn
+    direction: in
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    confidence: reported
+
+homepage:
+  url: https://www.malighting.com/special/grandma3-software/
+  label: grandMA3 software
+docs:
+  url: https://help.malighting.com/grandMA3/
+  label: grandMA3 online manuals
+
+status: current
+typical_use:
+  - Offline programming and plotting before a show goes into the room
+  - Small rigs run from a laptop with an onPC node for DMX output
+  - Backup and understudy station in a grandMA3 session
+  - Training and rehearsal without a console
+
+gotchas:
+  - >-
+    DMX output from onPC needs grandMA3 onPC solutions hardware connected to the
+    computer. The free download on its own is a programming tool, not an output
+    device.
+  - >-
+    Joining a session with grandMA3 consoles raises the memory requirement to at
+    least 16 GB, or 24 GB unified memory on Apple silicon. A minimum-spec laptop
+    will run onPC standalone and then fall over in session.
+  - >-
+    grandMA3 supports only sACN and Art-Net for network DMX. There is no Pathport
+    or ShowNet path, so a house running another protocol needs a gateway.
+
+confidence: reported
+tags:
+  - lighting
+  - offline-programming
+  - grandma3
+
+sources:
+  - title: The free-of-cost grandMA3 software
+    url: https://www.malighting.com/special/grandma3-software/
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 User Manual — System Requirements grandMA3 onPC
+    url: https://help.malighting.com/grandMA3/2.0/HTML/onpc_system_requirements.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 User Manual — Ethernet DMX
+    url: https://help.malighting.com/grandMA3/2.0/HTML/dmx_ethernet.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 User Manual — Protocol Details
+    url: https://help.malighting.com/grandMA3/2.2/HTML/network_design_protocols.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,109 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: avb-milan
+name: AVB / Milan
+aka:
+  - AVB
+  - Audio Video Bridging
+  - Milan
+  - TSN for pro audio
+category: audio-transport
+summary: >-
+  IEEE 802.1 Audio Video Bridging with the Avnu Milan profile on top: Layer 2
+  ethernet media streams with bandwidth reserved hop by hop and clocked by gPTP.
+  It is used where the network has to behave like a fixed wiring loom, mostly in
+  touring PA rigs built around Avid, Meyer, d&b and L-Acoustics gear.
+
+transport:
+  - ethernet-l2
+
+multicast:
+  used: true
+  note: >-
+    Streams are addressed with Layer 2 multicast MAC addresses allocated by
+    MAAP, not with IP multicast groups. There is no IGMP involved and nothing
+    for an IP-only network tool to show you.
+
+openness: open-free-registration
+spec_url:
+  url: https://avnu.org/resource/milan-specification/
+  label: Milan Specification (free download behind a registration form)
+steward: Avnu Alliance (Milan profile) on top of IEEE 802.1 and IEEE 1722
+first_published: 2018
+status: current
+
+typical_use:
+  - Console to amplifier and loudspeaker networks in touring PA
+  - Redundant audio paths where a single cable failure must not be audible
+  - Deterministic low-latency links between stage and front of house
+  - Discovery, connection management and control via AVDECC (IEEE 1722.1)
+
+gotchas:
+  - >-
+    Every switch in the path has to be AVB capable. One ordinary switch, one
+    media converter or one unmanaged patch in the middle and the bandwidth
+    reservation never completes, so the stream simply never establishes.
+  - >-
+    AVB is Layer 2. It does not route. You cannot carry it across a subnet
+    boundary, a VPN or a WAN link, which rules it out for anything spread across
+    a campus without dedicated fibre.
+  - >-
+    gPTP (IEEE 802.1AS) is its own PTP profile running over Layer 2. It will not
+    share a grandmaster with the IP-based IEEE 1588 clocks used by AES67, Dante
+    and ST 2110 without a device that deliberately bridges the two.
+  - >-
+    "AVB capable" and "Milan certified" are different claims. Milan is a profile
+    over IEEE 1722 and 1722.1 that pins down stream formats, media clocking and
+    redundancy, and generic AVB gear may not meet it.
+  - >-
+    The Milan document is free after registration, but the IEEE standards it
+    normatively references (802.1AS, 802.1Q, 802.1BA, 1722, 1722.1) are paid.
+    A full implementation is not a zero-cost read.
+  - >-
+    Connection state lives in the endpoints, managed over AVDECC. Power-cycling
+    a switch is usually survivable, but a device swapped for a spare comes back
+    with no streams until it is reconnected in the controller.
+
+implementations:
+  - name: OpenAvnu
+    url: https://github.com/Avnu/OpenAvnu
+    language: C
+    role: both
+  - name: L-Acoustics AVDECC (IEEE 1722.1)
+    url: https://github.com/L-Acoustics/avdecc
+    language: C++
+    license: LGPL-3.0-or-later
+    role: both
+
+confidence: reported
+tags:
+  - audio
+  - layer-2
+  - avb
+  - tsn
+  - avnu
+
+sources:
+  - title: Milan Specification
+    url: https://avnu.org/resource/milan-specification/
+    publisher: Avnu Alliance
+    accessed: 2026-08-16
+    primary: true
+  - title: Avnu Alliance Specifications
+    url: https://avnu.org/specifications/
+    publisher: Avnu Alliance
+    accessed: 2026-08-16
+    primary: true
+  - title: OpenAvnu — gPTP, MAAP, mrpd and AVTP pipeline components
+    url: https://github.com/Avnu/OpenAvnu
+    publisher: Avnu Alliance
+    accessed: 2026-08-16
+    primary: true
+  - title: Industry Leaders Join to Launch Milan Network Protocol Based on AVB for Pro AV Interoperability
+    url: https://www.prnewswire.com/news-releases/industry-leaders-join-to-launch-milan-network-protocol-based-on-avb-for-pro-av-interoperability-300659833.html
+    publisher: Avnu Alliance via PR Newswire
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

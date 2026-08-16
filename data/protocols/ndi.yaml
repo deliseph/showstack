@@ -1,0 +1,114 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ndi
+name: NDI
+aka:
+  - Network Device Interface
+  - NDI HX
+category: video-transport
+summary: >-
+  Vizrt's video-over-IP protocol carrying compressed video, audio and metadata
+  between applications and devices on an ordinary ethernet LAN. It is how
+  graphics machines, capture software, PTZ cameras and switchers move pictures
+  around a venue without pulling SDI.
+
+transport:
+  - tcp
+  - udp
+default_ports:
+  - number: 5353
+    transport: udp
+    role: mDNS discovery
+    note: Always used for multicast discovery sending.
+  - number: 5959
+    transport: tcp
+    role: NDI Discovery Server
+    note: Optional centralised alternative to mDNS, for when sources must cross subnets.
+  - number: 5960
+    transport: tcp
+    role: Remote source query and enumeration on a machine
+    note: NDI 5 and later also use a small number of UDP ports from 5960 up for Reliable UDP.
+  - number: 5961
+    transport: tcp
+    role: Base of the per-stream TCP connections
+    note: >-
+      One port per NDI stream from 5961 upward. Additional ports from 6960 up
+      (multi-TCP or UDP receiving) and 7960 up (multi-TCP, unicast UDP or
+      multicast UDP sending) are used per connection.
+
+multicast:
+  used: true
+  note: >-
+    NDI is unicast by default. Multicast sending is optional and uses ports from
+    7960 up, and mDNS discovery on 5353 is multicast regardless. Do not enable
+    multicast NDI on a switch without IGMP snooping and a querier.
+
+openness: proprietary-documented
+spec_url:
+  url: https://docs.ndi.video/
+  label: NDI documentation and SDK (free, royalty-free proprietary licence)
+steward: Vizrt (NDI AB), originally NewTek
+first_published: 2015
+status: current
+
+typical_use:
+  - Playback, graphics and capture software feeding a switcher over the house LAN
+  - PTZ cameras and encoders delivering to production software
+  - Screen and program feeds between control room machines
+  - Monitoring and multiviewer feeds without extra SDI infrastructure
+
+gotchas:
+  - >-
+    Discovery is mDNS, which is link-local. NDI sources do not appear across a
+    router. If you need cross-subnet sources you must run the NDI Discovery
+    Server on TCP 5959 and point every device at it explicitly.
+  - >-
+    Opening only 5960 and 5961 in a firewall gets you discovery and no video.
+    Each connection also grabs ports from the 6960 and 7960 blocks, so the rule
+    has to cover those ranges.
+  - >-
+    NDI HX is a different thing to full NDI. It is hardware H.264 or HEVC, much
+    lower bitrate and noticeably more latency, and it is what most cheap PTZ
+    cameras actually send.
+  - >-
+    Full-bandwidth NDI is roughly 100 Mbit/s for 1080i per stream. A gigabit
+    uplink shared with anything else runs out faster than people expect, and NDI
+    degrades by dropping frames rather than by failing cleanly.
+  - >-
+    The SDK is royalty-free but proprietary, and the licence requires visible
+    NDI attribution in your application. There is no published wire format, so
+    every implementation goes through Vizrt's binary SDK.
+
+implementations:
+  - name: DistroAV (formerly obs-ndi)
+    url: https://github.com/DistroAV/DistroAV
+    language: C++
+    license: GPL-2.0-or-later
+    role: both
+
+confidence: verified
+tags:
+  - video
+  - video-over-ip
+  - vizrt
+  - mdns
+
+sources:
+  - title: NDI Related Network Ports
+    url: https://docs.ndi.video/all/getting-started/white-paper/ndi-related-network-ports
+    publisher: Vizrt / NDI
+    accessed: 2026-08-16
+    primary: true
+  - title: NDI SDK Licensing
+    url: https://docs.ndi.video/all/developing-with-ndi/sdk/licensing
+    publisher: Vizrt / NDI
+    accessed: 2026-08-16
+    primary: true
+  - title: Network Device Interface (announcement date, NDI HX, NDI Bridge)
+    url: https://en.wikipedia.org/wiki/Network_Device_Interface
+    publisher: Wikipedia
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,133 @@
+id: osc
+name: OSC
+aka:
+  - Open Sound Control
+  - OpenSoundControl
+category: show-control
+summary: >-
+  A transport-independent message format carrying named, typed messages such as
+  /cue/5/go with int, float, string and blob arguments, optionally grouped into
+  timestamped bundles. On a show it is the glue between QLab, lighting consoles,
+  control surfaces and anything with a scripting port.
+
+transport:
+  - udp
+  - tcp
+
+default_ports:
+  - number: 53000
+    transport: udp
+    role: QLab default OSC listening port
+    note: >-
+      An application default, not part of OSC. Figure 53 document it as the port
+      QLab listens on, changeable per workspace.
+  - number: 3032
+    transport: tcp
+    role: ETC Eos default OSC TCP port (OSC 1.0 packet-length framing)
+    note: >-
+      An application default, not part of OSC. Bidirectional, so no separate
+      transmit port is needed.
+  - number: 3037
+    transport: tcp
+    role: ETC Eos third-party OSC port using OSC 1.1 SLIP framing
+    note: >-
+      Added in Eos v3.1.0. Separate from 3032 because the two stream framings
+      cannot be auto-detected.
+
+multicast:
+  used: false
+  note: >-
+    The specification says nothing about addressing. Products send unicast UDP
+    or open a TCP stream; broadcast is occasionally used for discovery.
+
+openness: open-published
+spec_url:
+  url: https://opensoundcontrol.stanford.edu/spec-1_0.html
+  label: The Open Sound Control 1.0 Specification
+steward: CNMAT, University of California Berkeley
+first_published: 2002
+status: current
+
+typical_use:
+  - Cue triggering between QLab and a lighting console, in both directions
+  - Control surfaces, tablets and stream-deck style panels driving playback
+  - Digital audio console fader, mute and snapshot recall from show control
+  - Software-to-software links where neither end speaks a lighting protocol
+
+gotchas:
+  - >-
+    OSC defines no port and no transport. Every product picks its own, and the
+    receiver usually needs telling the reply port as well as the listen port, so
+    a link that "works" one way often has no return path at all.
+  - >-
+    Over TCP or serial there are two incompatible framings. OSC 1.0 prefixes
+    each packet with a 32-bit length; OSC 1.1 uses SLIP. ETC put them on
+    separate TCP ports (3032 and 3037) precisely because you cannot detect which
+    is which.
+  - >-
+    There is no formal 1.1 specification document, only a NIME 2009 paper. When
+    a datasheet claims "OSC 1.1 support" it can mean SLIP framing, the new
+    argument types, or almost nothing.
+  - >-
+    Address patterns support wildcards on the receiving side, so a stray
+    /eos/chan/* reaches far more than one channel. Test pattern messages against
+    a rehearsal state, never against a running show.
+  - >-
+    Bundle time tags are 64-bit NTP timestamps and assume the two machines agree
+    on time. Many entertainment implementations ignore the tag entirely and
+    execute on arrival, so do not build sample-accurate timing on it.
+  - >-
+    UDP has no delivery guarantee and OSC adds none. A single lost GO is simply
+    gone with no error anywhere. If the cue matters, use a TCP link where the
+    product offers one.
+
+implementations:
+  - name: liblo
+    url: https://github.com/radarsat1/liblo
+    language: C
+    license: LGPL-2.1-or-later
+    role: both
+  - name: python-osc
+    url: https://github.com/attwad/python-osc
+    language: Python
+    license: Unlicense
+    role: both
+  - name: oscpack
+    url: https://github.com/RossBencina/oscpack
+    language: C++
+    role: both
+
+confidence: verified
+tags:
+  - show-control
+  - messaging
+  - cnmat
+  - transport-independent
+
+sources:
+  - title: The Open Sound Control 1.0 Specification
+    url: https://opensoundcontrol.stanford.edu/spec-1_0.html
+    publisher: CNMAT / Stanford CCRMA
+    accessed: 2026-08-16
+    primary: true
+  - title: OpenSoundControl.org — history, authorship and versions
+    url: https://opensoundcontrol.stanford.edu/index.html
+    publisher: CNMAT / Stanford CCRMA
+    accessed: 2026-08-16
+    primary: true
+  - title: OSC 1.1 — there is no 1.1 specification in the style of 1.0
+    url: https://opensoundcontrol.stanford.edu/spec-1_1.html
+    publisher: CNMAT / Stanford CCRMA
+    accessed: 2026-08-16
+    primary: true
+  - title: TCP port for OSC communication with Eos software
+    url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/Software_and_Programming/TCP_port_for_OSC_communication_with_Eos_Software
+    publisher: Electronic Theatre Controls
+    accessed: 2026-08-16
+  - title: QLab 5 OSC Dictionary
+    url: https://qlab.app/docs/v5/scripting/osc-dictionary-v5/
+    publisher: Figure 53
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

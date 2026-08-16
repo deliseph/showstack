@@ -1,0 +1,99 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: smpte-st-2110
+name: SMPTE ST 2110
+aka:
+  - ST 2110
+  - "2110"
+  - SMPTE 2110
+category: video-transport
+summary: >-
+  A suite of SMPTE standards for carrying uncompressed video, audio and
+  ancillary data as separate RTP streams over a managed IP network, all locked
+  to PTP. It is the broadcast plant replacement for an SDI router, used in OB
+  trucks, studios and large arena control rooms.
+
+transport:
+  - udp
+
+multicast:
+  used: true
+  note: >-
+    Streams are normally multicast, but the suite does not reserve an address
+    range. Addresses are assigned by the facility and handed to receivers in the
+    SDP, usually via a broadcast controller rather than typed in by hand.
+
+openness: published-paid
+spec_url:
+  url: https://www.smpte.org/standards/st2110
+  label: SMPTE ST 2110 suite of standards
+steward: SMPTE (Society of Motion Picture and Television Engineers)
+first_published: 2017
+status: current
+
+typical_use:
+  - IP video routing in broadcast facilities and OB trucks
+  - Arena and stadium control rooms replacing large SDI routers
+  - Carrying camera, replay and graphics feeds on shared network infrastructure
+  - Audio (ST 2110-30) alongside video on the same physical network
+
+gotchas:
+  - >-
+    Video, audio and ancillary data are separate streams with separate multicast
+    addresses. Losing one leaves the others running, so "no audio" or "no
+    timecode" can present as a perfectly healthy video path.
+  - >-
+    Everything hangs off PTP. ST 2110-10 defines the system timing model, so a
+    grandmaster that steps, or two grandmasters fighting, takes the whole plant
+    out at once rather than degrading gracefully.
+  - >-
+    ST 2110-20 video is genuinely uncompressed. Bandwidth is set by raster and
+    frame rate, not by an average bitrate, so plan link capacity from the video
+    format and leave headroom before you commit to a switch.
+  - >-
+    ST 2110-21 defines sender traffic shaping types. A sender and a receiver
+    with mismatched shaping expectations gives intermittent picture breakup
+    under load, not a clean failure you can point at.
+  - >-
+    ST 2110-30 audio is closely related to AES67 but the two do not
+    automatically interoperate. Packet time and channel count profiles have to
+    match on both ends before anything passes.
+  - >-
+    The suite is a dozen separate documents (ST 2110-10, -20, -21, -22, -30,
+    -31, -40, -41, -43, plus RPs) and they are priced individually. Budget for
+    the whole set, not one part number.
+
+implementations:
+  - name: EBU LIST (pi-list)
+    url: https://github.com/ebu/pi-list
+    language: C++
+    license: GPL-3.0-or-later
+    role: analyser
+
+confidence: reported
+tags:
+  - video
+  - video-over-ip
+  - broadcast
+  - smpte
+  - ptp
+
+sources:
+  - title: ST 2110 Suite of Standards
+    url: https://www.smpte.org/standards/st2110
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE ST 2110 FAQ
+    url: https://www.smpte.org/smpte-st-2110-faq
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE Publishes ST 2110 Standards for Professional Media Over Managed IP Networks
+    url: https://www.tvtechnology.com/the-wire-blog/9354-509354
+    publisher: TV Tech
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

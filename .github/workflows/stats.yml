@@ -1,0 +1,37 @@
+name: contributor-stats
+
+# Keeps a live count of unique contributors in the repo, so progress toward
+# a healthy contributor base is visible rather than guessed at.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/github-script@v7
+        id: count
+        with:
+          script: |
+            const owner = context.repo.owner, repo = context.repo.repo
+            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'closed', per_page: 100 })
+            const merged = prs.filter(p => p.merged_at)
+            const externals = new Set(
+              merged.filter(p => p.user && p.user.login !== owner && p.user.type !== 'Bot').map(p => p.user.login)
+            )
+            const summary = [
+              `Merged PRs: ${merged.length}`,
+              `Unique external contributors with a merged PR: ${externals.size}`,
+              ``,
+              [...externals].sort().map(h => `- @${h}`).join('\n')
+            ].join('\n')
+            core.summary.addRaw(summary).write()
+            console.log(summary)

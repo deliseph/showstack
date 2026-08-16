@@ -1,0 +1,51 @@
+id: call
+en: Call
+zh_hant: 報 cue（叫戲）／集合時間
+zh_hans: 报 cue／集合时间
+domain: stage-management
+definition_en: >-
+  Two different jobs share one word. To call the show is to speak the standbys
+  and the gos over comms so every department executes together. A call is also
+  the time crew or cast have to be in the building, and the announcement that
+  brings people to the stage.
+definition_zh_hant: >-
+  同一個字兩件事。Call the show 是在通話系統上報 standby 和 go，讓各部門一起動作。Call
+  也指工作人員或演員必須到場的時間，以及叫人上台的廣播。
+regional_variants:
+  - region: HK
+    term: Call time／入台時間
+    note: 香港製作在時間表上直接寫 call time。
+  - region: TW
+    term: 集合時間
+    note: 臺灣的通告表多寫集合時間，口語仍會講 call。
+false_friends:
+  - >-
+    "Call time" and "calling the show" are unrelated jobs. Confirm which one is
+    meant before you accept a call.
+  - 把 call 直譯成「打電話」會誤事。Headset 上的 call 不是通話，是報點。
+  - >-
+    In the UK the deputy stage manager calls the show. In the US the stage
+    manager does. Same word, different person holding the book.
+  - >-
+    A five-minute call is an announcement to the company. A five-minute standby
+    is a warning to a department. They are not interchangeable.
+see_also:
+  - cue
+  - deputy-stage-manager
+safety_critical: false
+confidence: reported
+tags:
+  - stage-management
+  - vocabulary
+sources:
+  - title: Prompt corner
+    url: https://en.wikipedia.org/wiki/Prompt_corner
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

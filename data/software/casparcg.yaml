@@ -1,0 +1,93 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: casparcg
+name: CasparCG Server
+aka:
+  - CasparCG
+vendor: CasparCG project
+category: media-server
+summary: >-
+  Open-source playout server for video, audio and HTML graphics, controlled over
+  a text protocol called AMCP on TCP. Built at SVT for broadcast and used widely
+  as a free graphics and playback engine in live production.
+
+license: GPL-3.0-or-later
+price_model: open-source
+platforms:
+  - windows
+  - linux
+
+speaks:
+  - protocol: osc
+    direction: out
+    note: Sends per-layer status and playback position. Default port 6250 in casparcg.config.
+    confidence: verified
+  - protocol: ndi
+    direction: bidirectional
+    note: NDI consumer and producer are both present in the shipped configuration.
+    confidence: reported
+  - protocol: art-net
+    direction: out
+    note: An ArtNet consumer is documented in the shipped casparcg.config.
+    confidence: reported
+
+homepage:
+  url: https://casparcg.com/
+  label: casparcg.com
+repo:
+  url: https://github.com/CasparCG/server
+  label: CasparCG/server
+docs:
+  url: https://github.com/CasparCG/help/wiki
+  label: CasparCG help wiki
+
+status: current
+typical_use:
+  - Lower-third and full-screen graphics playout driven from an automation system
+  - Free video playback engine behind a show control layer
+  - Blackmagic DeckLink SDI output in a broadcast or streaming rack
+
+gotchas:
+  - >-
+    AMCP commands must be terminated with both carriage return and linefeed. A
+    client that sends only a newline will appear to connect and then do nothing.
+  - >-
+    The server needs an OpenGL 4.5 capable GPU. Integrated graphics on an old
+    laptop will start the process and then fail at the first composite.
+  - >-
+    Configuration lives entirely in casparcg.config next to the binary. There is no
+    UI, so a channel that is missing from that file does not exist as far as AMCP
+    is concerned.
+
+confidence: reported
+tags:
+  - video
+  - playout
+  - broadcast
+  - open-source
+
+sources:
+  - title: CasparCG/server source repository
+    url: https://github.com/CasparCG/server
+    publisher: CasparCG project
+    accessed: 2026-08-16
+    primary: true
+  - title: casparcg.config default configuration
+    url: https://github.com/CasparCG/server/blob/master/src/shell/casparcg.config
+    publisher: CasparCG project
+    accessed: 2026-08-16
+    primary: true
+  - title: CasparCG help wiki — Protocols
+    url: https://github.com/CasparCG/help/wiki/Protocols
+    publisher: CasparCG project
+    accessed: 2026-08-16
+    primary: true
+  - title: CasparCG help wiki — AMCP Protocol
+    url: https://github.com/CasparCG/help/wiki/AMCP-Protocol
+    publisher: CasparCG project
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

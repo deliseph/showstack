@@ -1,0 +1,41 @@
+id: iec-61508
+designation: IEC 61508-1:2010
+title: >-
+  Functional safety of electrical/electronic/programmable electronic
+  safety-related systems - Part 1: General requirements
+body: IEC
+domain: machinery
+year: 2010
+scope: >-
+  Part 1 of the seven-part IEC 61508 series. It sets out the overall safety
+  lifecycle and the general requirements for electrical, electronic, and
+  programmable electronic systems that carry out safety functions, and it is
+  the basic safety publication from which sector-specific functional safety
+  standards are derived.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/5515
+  label: IEC Webstore (purchase, CHF 380 as listed)
+jurisdiction:
+  - International
+notes: >-
+  Edition 2.0, published 30 April 2010. This is where the Safety Integrity
+  Level concept comes from, which is why stage machinery control specifications
+  quote SIL ratings for emergency stops and load monitoring. A SIL number on a
+  machinery data sheet is a claim about the whole safety function, not about a
+  single component, so ask what function was assessed.
+confidence: verified
+tags:
+  - iec
+  - functional-safety
+  - automation
+  - sil
+sources:
+  - title: IEC 61508-1:2010 publication page
+    url: https://webstore.iec.ch/en/publication/5515
+    publisher: IEC
+    accessed: 2026-08-16
+    primary: true
+contributed_by: []
+updated: 2026-08-16

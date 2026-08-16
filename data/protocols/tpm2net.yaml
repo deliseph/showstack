@@ -1,0 +1,115 @@
+id: tpm2net
+name: TPM2.net
+aka:
+  - TPM2
+  - tpm2net
+  - TPM2 Net
+category: lighting-control
+summary: >-
+  A minimal LED matrix protocol from the ledstyles.de community: a start byte, a
+  block type, a 16-bit frame size and raw pixel bytes, sent over UDP. It turns
+  up whenever Jinx! or cheap ESP-based matrix hardware meets a real show and
+  something has to feed it.
+
+transport:
+  - udp
+  - rs232
+
+default_ports:
+  - number: 65506
+    transport: udp
+    role: TPM2.net data frames
+    note: 0xFFE2. This is the port WLED and other receivers listen on.
+  - number: 65442
+    transport: udp
+    role: Receiver responses back to the sender
+    note: 0xFFA2. Many receivers never answer at all, so do not depend on it.
+
+multicast:
+  used: false
+  note: >-
+    Sent unicast or broadcast. The protocol description assumes a small flat
+    network with no routers and expects packets to arrive in the order they were
+    sent.
+
+universe_model: >-
+  No universes. A frame is raw pixel bytes split across numbered packets, with a
+  one-based packet number and total packet count from 1 to 255 telling the
+  receiver where each chunk belongs.
+
+openness: open-published
+spec_url:
+  url: https://gist.github.com/jblang/89e24e2655be6c463c56
+  label: TPM2 and TPM2.net protocol description (English translation of the original)
+steward: ledstyles.de community; no formal standards body
+status: current
+
+typical_use:
+  - Jinx! and similar matrix software driving DIY LED controllers
+  - ESP8266 and ESP32 LED controllers taking a live pixel feed
+  - Small scenic LED panels where a full DMX-over-IP stack is overkill
+  - Bench testing pixel hardware without a lighting console in the room
+
+gotchas:
+  - >-
+    The serial and network variants use different start bytes: 0xC9 for TPM2
+    over serial, 0x9C for TPM2.net. A parser written for one silently rejects
+    the other and you get a dead matrix with clean traffic on the wire.
+  - >-
+    Packet number and total packet count are one-based, 1 to 255. A mapper that
+    counts panels from zero puts the first chunk of every frame in the wrong
+    place, which looks like a wiring fault.
+  - >-
+    There is no acknowledgement, no sequence recovery and no discovery. The
+    protocol assumes a small flat switch, so the first wifi hop or router in the
+    path turns it into a slideshow.
+  - >-
+    Nothing in the header describes colour order. RGB versus GRB is a receiver
+    setting, so a matrix with the wrong colours is almost never the sender's
+    fault.
+  - >-
+    Frame size is a 16-bit field, so one packet cannot carry an arbitrarily
+    large matrix. Big panels have to be split and reassembled in order by the
+    receiver, with no help if a packet goes missing.
+  - >-
+    The specification is a forum post, originally in German, with no conformance
+    test. Implementations differ in small ways, so budget time for a packet
+    capture against any receiver you have not used before.
+
+implementations:
+  - name: tpm2net (ESP8266)
+    url: https://github.com/rehrbar/tpm2net
+    language: C++
+    license: MIT
+    role: receiver
+  - name: WLED
+    url: https://github.com/wled/WLED
+    language: C++
+    license: EUPL-1.2
+    role: receiver
+
+confidence: reported
+tags:
+  - lighting
+  - pixel
+  - led
+  - diy
+  - udp
+
+sources:
+  - title: TPM2 Protocol Description (English translation; serial 0xC9 vs net 0x9C, ports 65506 and 65442, packet numbering)
+    url: https://gist.github.com/jblang/89e24e2655be6c463c56
+    publisher: jblang, translating the original ledstyles.de thread
+    accessed: 2026-08-16
+    primary: true
+  - title: UDP Realtime / tpm2.net — WLED documentation (listen port 65506)
+    url: https://kno.wled.ge/interfaces/udp-realtime/
+    publisher: WLED Project
+    accessed: 2026-08-16
+  - title: tpm2net — ESP8266 receiver implementation
+    url: https://github.com/rehrbar/tpm2net
+    publisher: rehrbar
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

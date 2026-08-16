@@ -1,0 +1,43 @@
+id: ansi-e1-17
+designation: ANSI E1.17-2015 (R2025)
+title: Entertainment Technology - Architecture for Control Networks (ACN)
+body: ESTA
+domain: control-data
+year: 2015
+scope: >-
+  A suite of documents specifying an architecture, protocols, and a device
+  description language for networked control of entertainment equipment. It is
+  transport agnostic but is normally run over UDP/IP, and it supplies the root
+  layer and PDU structure that ANSI E1.31 (sACN) reuses for streaming DMX512
+  data.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+  - International
+related_protocols:
+  - sacn
+notes: >-
+  ESTA lists the current edition as ANSI E1.17-2015 reaffirmed in 2025. Full
+  ACN is implemented far less often than sACN, but sACN cannot be read properly
+  without the root layer definitions that live here.
+confidence: verified
+tags:
+  - esta
+  - networking
+  - control
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.17-2015 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ANSIE1172015
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

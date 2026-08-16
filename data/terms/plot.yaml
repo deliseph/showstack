@@ -1,0 +1,50 @@
+id: plot
+en: Plot
+zh_hant: 燈圖（圖面）／Cue 表（提示表）
+zh_hans: 灯图／Cue 表
+domain: lighting
+definition_en: >-
+  In British usage a plot is the list of cues belonging to a department, and
+  plotting is the session at the desk where those cues get built. In American
+  usage the light plot is the drawing showing where every fixture hangs. One
+  word, two documents, produced weeks apart by different people.
+definition_zh_hant: >-
+  英式用法裡 plot 是某個部門的 cue 表，plotting 是在控台前編 cue 的工作時段。美式用法裡 light plot
+  是標示每盞燈掛在哪裡的圖面。同一個字，兩份完全不同的文件。
+regional_variants:
+  - region: UK
+    term: Plot / plotting session
+    note: The cue list, and the session where cues are recorded.
+  - region: US
+    term: Light plot
+    note: The hanging drawing, produced in pre-production.
+false_friends:
+  - >-
+    Asking for "the plot" gets you whichever document the person grew up with.
+    Say cue list or hanging plan and the ambiguity disappears.
+  - 中文「燈圖」通常指圖面，也就是美式 light plot。要 cue 表就直接說 cue 表或提示表。
+  - >-
+    A sound plot in the UK is the cue list. In some US houses a sound plot is
+    the loudspeaker plan. Same trap, different department.
+see_also:
+  - cue
+  - tech-rehearsal
+  - patch
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - paperwork
+  - vocabulary
+sources:
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

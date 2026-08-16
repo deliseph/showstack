@@ -1,0 +1,56 @@
+id: fly
+en: Fly
+zh_hant: 吊桿／拉 fly
+zh_hans: 吊杆／拉 fly
+domain: rigging
+definition_en: >-
+  To move scenery, lighting bars or people vertically on a suspension system,
+  and by extension the bar itself. Flying happens over people's heads, so the
+  word carries a standing instruction with it: call it, clear underneath, and
+  watch the load all the way to its dead.
+definition_zh_hant: >-
+  用懸吊系統把佈景、燈桿或人上下移動，也用來指吊桿本身。吊桿在人頭上作業，所以講到 fly
+  就一定要先喊、先清底下的人、再看著它走到定位。
+regional_variants:
+  - region: HK
+    term: 吊杆
+    note: 康文署官方中文技術資料寫「吊杆」。
+  - region: TW
+    term: 吊桿
+    note: 臺中國家歌劇院技術資料寫「吊桿」。
+  - region: TW
+    term: 拉 Fly
+    note: 臺灣現場口語，指操作吊桿升降。
+false_friends:
+  - 香港官方中文寫「吊杆」，臺灣寫「吊桿」，是同一件設備的不同寫法，不是兩種東西。
+  - >-
+    In audio "fly it" can mean rig a line array, and on tour "fly" can mean air
+    freight. In a venue with a grid, assume a bar is about to move.
+  - >-
+    Flying a performer is a different trade from flying scenery, with its own
+    standard and its own competence requirements. Do not merge the two calls.
+see_also:
+  - dead
+  - spike
+safety_critical: true
+confidence: reported
+tags:
+  - rigging
+  - flying
+  - vocabulary
+sources:
+  - title: Fly system
+    url: https://en.wikipedia.org/wiki/Fly_system
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 香港大會堂劇院詳細技術設施資料（中文）
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/b5/hkch-th-lfc.pdf
+    publisher: 康樂及文化事務署
+    accessed: 2026-08-16
+  - title: 臺中國家歌劇院 技術資料
+    url: https://www.npac-ntt.org/venuehire/technical
+    publisher: 臺中國家歌劇院
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

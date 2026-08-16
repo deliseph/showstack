@@ -1,0 +1,49 @@
+id: dead
+en: Dead
+zh_hant: 定位高度（dead）
+zh_hans: 定位高度
+domain: rigging
+definition_en: >-
+  The fixed height a flown bar is set to and marked at. A piece has an in dead
+  and an out dead. "Take it to its dead" means run it to that mark and stop
+  there. British and Hong Kong usage. North American crews call the same thing
+  a trim.
+definition_zh_hant: >-
+  吊桿升降時預先設定並做好記號的固定高度。一件景有下定位和上定位；「去 dead」是走到那個記號就停。這是英式和香港的用法，北美叫
+  trim。
+regional_variants:
+  - region: UK / HK
+    term: Dead
+    note: 高低兩個位置分別是 in dead 和 out dead。
+  - region: US / CA
+    term: Trim
+    note: North American houses say high trim and low trim for the same marks.
+false_friends:
+  - >-
+    "Dead" also means de-energised. From an electrician, "the bar is dead" means
+    no power. From a flyman it means the bar is at its mark. Confirm which.
+  - >-
+    A US electrician saying "trim it" wants the height changed. A UK flyman
+    saying "on its dead" means the height is already correct. Opposite actions.
+  - 中文直譯成「死」會被聽成故障或斷電，所以實務上多半直接講英文 dead。
+see_also:
+  - fly
+  - spike
+safety_critical: true
+confidence: reported
+tags:
+  - rigging
+  - flying
+  - vocabulary
+sources:
+  - title: Fly system
+    url: https://en.wikipedia.org/wiki/Fly_system
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Fly crew
+    url: https://en.wikipedia.org/wiki/Fly_crew
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

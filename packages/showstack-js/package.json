@@ -1,0 +1,24 @@
+{
+  "name": "showstack",
+  "version": "0.1.0",
+  "description": "The open index of live entertainment technology: protocols, standards, software, hardware and bilingual vocabulary, with a citation on every fact.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./data": "./showstack.json"
+  },
+  "bin": { "showstack": "./src/cli.js" },
+  "files": ["src", "showstack.json", "README.md"],
+  "engines": { "node": ">=18" },
+  "keywords": [
+    "dmx", "dmx512", "sacn", "e1.31", "art-net", "osc", "show-control",
+    "lighting", "theatre", "theater", "live-events", "entertainment-technology",
+    "psn", "posistagenet", "timecode", "esta", "rigging", "av"
+  ],
+  "repository": { "type": "git", "url": "git+https://github.com/OWNER/showstack.git" },
+  "homepage": "https://github.com/OWNER/showstack#readme",
+  "bugs": { "url": "https://github.com/OWNER/showstack/issues" },
+  "license": "MIT",
+  "sideEffects": false
+}

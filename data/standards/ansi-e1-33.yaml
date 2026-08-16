@@ -1,0 +1,45 @@
+id: ansi-e1-33
+designation: ANSI E1.33-2019
+title: >-
+  Entertainment Technology - (RDMnet) - Message Transport and Device Management
+  of ANSI E1.20 (RDM) compatible and similar devices over IP Networks
+body: ESTA
+domain: control-data
+year: 2019
+scope: >-
+  Carries RDM messaging over IP networks rather than over a DMX512 line,
+  defining broker-based discovery, TCP transport of RDM messages, and the
+  component roles that let a controller manage E1.20 compatible and similar
+  devices across a network.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+  - International
+related_protocols:
+  - dmx512
+notes: >-
+  ESTA ships the download as a ZIP bundled with an index of other standards
+  that define RDM parameter messages usable with E1.33. RDMnet is management
+  traffic, not level data; it does not replace sACN or Art-Net for driving
+  fixtures.
+confidence: verified
+tags:
+  - esta
+  - networking
+  - rdm
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.33-2019 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie1332019
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,50 @@
+id: house
+en: House
+zh_hant: 觀眾席
+zh_hans: 观众席
+domain: general
+definition_en: >-
+  The part of the building the audience occupies. "House open" means the
+  audience may come in, which fixes the moment work on stage has to stop. The
+  word also attaches to anything belonging to the venue rather than to the
+  visiting production.
+definition_zh_hant: >-
+  觀眾所在的區域。「開 house」是放觀眾入場，也就是台上工作必須停下來的時間點。這個字也用來指場地自備、而不是製作帶來的東西。
+regional_variants:
+  - region: HK
+    term: 觀眾席
+    note: 康文署官方中文技術資料使用「觀眾席」，英文版寫 auditorium。
+  - region: TW
+    term: 觀眾席
+false_friends:
+  - >-
+    House left and house right are read from the audience's seat and are the
+    mirror image of stage left and stage right. This reverses on every call.
+  - >-
+    House lights, house sound and house rig mean the venue's own equipment.
+    None of them refer to the seating area.
+  - 中文「前台」偏向觀眾服務單位，「觀眾席」才是 house 這個空間，兩者不能互換。
+see_also:
+  - front-of-house
+  - blackout
+safety_critical: false
+confidence: reported
+tags:
+  - venue
+  - vocabulary
+sources:
+  - title: Parts of a theatre
+    url: https://en.wikipedia.org/wiki/Parts_of_a_theatre
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 香港大會堂劇院詳細技術設施資料（中文）
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/b5/hkch-th-lfc.pdf
+    publisher: 康樂及文化事務署
+    accessed: 2026-08-16
+  - title: Hong Kong City Hall Theatre — technical specification
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/en/hkch-th-lfe.pdf
+    publisher: Leisure and Cultural Services Department
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

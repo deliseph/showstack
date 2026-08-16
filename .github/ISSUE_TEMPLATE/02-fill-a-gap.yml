@@ -1,0 +1,26 @@
+name: Fill a missing field
+description: An entry exists but a field is empty
+title: "[gap] "
+labels: ["good first issue", "data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        These are the best first contributions: one file, one field, one source.
+  - type: input
+    id: file
+    attributes:
+      label: Which file
+      placeholder: "data/protocols/rttrpm.yaml"
+    validations: { required: true }
+  - type: input
+    id: field
+    attributes:
+      label: Which field
+      placeholder: "default_ports"
+    validations: { required: true }
+  - type: textarea
+    id: source
+    attributes:
+      label: Source that establishes the value
+      description: If you do not have one yet, say so. Finding the source IS the contribution.

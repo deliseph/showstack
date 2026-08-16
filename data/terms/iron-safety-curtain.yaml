@@ -1,0 +1,59 @@
+id: iron-safety-curtain
+en: Iron / safety curtain
+zh_hant: 防火幕（臺灣）／防火閘（香港）
+zh_hans: 防火幕
+domain: safety
+definition_en: >-
+  A fire-rated barrier that drops in the proscenium opening to separate the
+  stage from the auditorium. It is a statutory life safety device, its
+  operation normally has to be demonstrated to the fire authority, and its
+  travel path has to be kept clear at all times, including during a get-out.
+definition_zh_hant: >-
+  裝在台口、放下來就把舞台和觀眾席隔開的防火屏障。它是法定的救生設備，動作通常要向消防單位示範，行程範圍任何時候都不能有東西擋住，拆台時也一樣。
+regional_variants:
+  - region: UK
+    term: The iron
+    note: Not slang. In UK houses this is the licensed fire barrier.
+  - region: HK
+    term: 防火閘
+    note: 康文署技術資料寫「消防處視舞台的防火閘為安全屏障」。
+  - region: TW
+    term: 防火幕
+  - region: US
+    term: Fire curtain
+false_friends:
+  - 「防火幕」和「防火閘」是同一件設備的兩地寫法。臺灣的 rider 問防火幕，就是香港場地的防火閘。
+  - >-
+    Flame-retardant drapes are not a safety curtain. Treating a treated cloth
+    as fire separation is a licensing failure, not a shortcut.
+  - >-
+    "Bring in the iron" is an instruction to drop a heavy fire barrier through
+    the proscenium line. Anything stored on that line will be destroyed or will
+    stop the curtain from sealing.
+see_also:
+  - house
+  - wings
+  - front-of-house
+safety_critical: true
+confidence: reported
+tags:
+  - safety
+  - fire
+  - venue
+sources:
+  - title: 香港大會堂劇院詳細技術設施資料（中文）
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/b5/hkch-th-lfc.pdf
+    publisher: 康樂及文化事務署
+    accessed: 2026-08-16
+    primary: true
+  - title: Hong Kong City Hall Theatre — technical specification
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/en/hkch-th-lfe.pdf
+    publisher: Leisure and Cultural Services Department
+    accessed: 2026-08-16
+    primary: true
+  - title: Safety curtain
+    url: https://en.wikipedia.org/wiki/Safety_curtain
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

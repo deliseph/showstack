@@ -1,0 +1,86 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: companion
+name: Bitfocus Companion
+aka:
+  - Companion
+vendor: Bitfocus AS
+category: show-control
+summary: >-
+  Turns a Stream Deck or similar button surface into a control panel for
+  switchers, playback software and broadcast gear, using community-written
+  modules. It is the standard way to give an operator physical buttons.
+
+license: MIT
+price_model: open-source
+platforms:
+  - windows
+  - macos
+  - linux
+
+speaks:
+  - protocol: osc
+    direction: bidirectional
+    note: Companion can be controlled over OSC on a configurable listen port, and modules send OSC out.
+    confidence: verified
+  - protocol: art-net
+    direction: in
+    note: Companion can be controlled over Art-Net by setting a universe and start channel in settings.
+    confidence: verified
+
+homepage:
+  url: https://bitfocus.io/companion
+  label: bitfocus.io/companion
+repo:
+  url: https://github.com/bitfocus/companion
+  label: bitfocus/companion
+docs:
+  url: https://companion.free/user-guide/v4.1/config/settings/
+  label: Companion user guide — settings
+
+status: current
+typical_use:
+  - Button surface for a video switcher or playback machine at front of house
+  - Bridging one control protocol to another without writing code
+  - Remote surfaces over a network using Companion Satellite
+
+gotchas:
+  - >-
+    Modules are community maintained and versioned separately from Companion
+    itself. A module that worked on the last tour can lag behind a major Companion
+    release, so freeze versions before a run rather than updating on site.
+  - >-
+    Remote control listeners are all off by default and each has its own listen
+    port set in settings. Nothing accepts TCP, UDP, OSC, RossTalk, Ember+ or
+    Art-Net until you enable it.
+  - >-
+    A surface plugged into the show machine is claimed exclusively. Elgato's own
+    Stream Deck application must not be running at the same time.
+
+confidence: reported
+tags:
+  - show-control
+  - stream-deck
+  - open-source
+  - broadcast
+
+sources:
+  - title: bitfocus/companion source repository
+    url: https://github.com/bitfocus/companion
+    publisher: Bitfocus AS
+    accessed: 2026-08-16
+    primary: true
+  - title: Companion licence (MIT)
+    url: https://github.com/bitfocus/companion/blob/main/LICENSE.md
+    publisher: Bitfocus AS
+    accessed: 2026-08-16
+    primary: true
+  - title: Companion user guide — Settings
+    url: https://companion.free/user-guide/v4.1/config/settings/
+    publisher: Bitfocus AS
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

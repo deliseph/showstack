@@ -1,0 +1,46 @@
+id: gel
+en: Gel
+zh_hant: 色紙
+zh_hans: 色纸
+domain: lighting
+definition_en: >-
+  A sheet of coloured polyester or polycarbonate placed in front of a lamp to
+  colour the beam. Modern gel is not gelatine; the name survives from the
+  material used before plastics, and is specified by a manufacturer's number
+  rather than by a colour name.
+definition_zh_hant: >-
+  放在燈前面替光上色的塑膠色片。現在的色紙不是明膠做的，這個英文名字只是從塑膠出現以前的材料留下來的。實務上用廠牌編號指定，不用顏色名稱。
+regional_variants:
+  - region: HK / TW
+    term: 色紙
+    note: 兩地口語一致。
+false_friends:
+  - 「凝膠」是 gel 的字典翻譯，在劇場是錯的。要講色紙。
+  - >-
+    Diffusion and frost come in the same swatch books and the same size sheets
+    but are not colour. Asking for "a gel" when you want frost gets the wrong
+    sheet.
+  - >-
+    Colour correction filters such as CTB and CTO are gels, but they are
+    specified by mired shift, not by how blue or orange they look.
+see_also:
+  - gobo
+  - focus
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - consumables
+  - vocabulary
+sources:
+  - title: Color gel
+    url: https://en.wikipedia.org/wiki/Color_gel
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

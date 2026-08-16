@@ -1,0 +1,105 @@
+id: ddp
+name: DDP
+aka:
+  - Distributed Display Protocol
+category: lighting-control
+summary: >-
+  3waylabs' minimal UDP protocol for pushing pixel data at LED controllers,
+  using a ten byte header with an offset and a length so a display larger than
+  one packet can be written in pieces. It is the usual choice when DMX universe
+  boundaries get in the way of a high pixel count.
+
+transport:
+  - udp
+
+default_ports:
+  - number: 4048
+    transport: udp
+    role: DDP data and control
+    note: >-
+      WLED and other receivers listen here per the protocol's recommendation.
+      The protocol itself is agnostic about UDP versus TCP, but senders in the
+      field use UDP almost exclusively.
+
+multicast:
+  used: false
+  note: >-
+    Normal practice is unicast to a controller's IP. The protocol does not
+    define a multicast group.
+
+universe_model: >-
+  No universes. A display is a flat byte array addressed by an offset and a
+  length in the header, so a strip of any size is written directly without
+  splitting into 512-slot blocks.
+
+openness: open-published
+spec_url:
+  url: http://www.3waylabs.com/ddp/
+  label: DDP Protocol specification (3waylabs)
+steward: 3waylabs
+status: current
+
+typical_use:
+  - Driving WLED and similar addressable LED controllers from a pixel mapper
+  - High pixel-count LED walls and strips where universe boundaries are a nuisance
+  - Software-to-software pixel streaming between mapping and effects tools
+  - Retrofitting a media server output onto cheap LED hardware
+
+gotchas:
+  - >-
+    The offset is a byte offset, not a pixel index. Feed a pixel number straight
+    into it and your data lands a third of the way along the strip in RGB, a
+    quarter of the way in RGBW.
+  - >-
+    A frame usually spans several packets and only the final one carries the
+    push flag. A receiver that renders on every packet tears; a sender that
+    never sets push leaves the display frozen on the last frame it did push.
+  - >-
+    WLED ignores the optional timecode fields in the header, so do not design
+    synchronised multi-controller playback around them. Check per receiver
+    before assuming anyone reads them.
+  - >-
+    It is UDP with no retransmission and no sequence recovery. On a congested or
+    wireless link you get dropped frames that look exactly like a failing power
+    supply or a bad data injector.
+  - >-
+    The protocol permits TCP but effectively every device only listens on UDP
+    4048. If you need a reliable path, prove the receiver actually accepts TCP
+    before designing around it.
+
+implementations:
+  - name: ddp-rs
+    url: https://github.com/coral/ddp-rs
+    language: Rust
+    license: MIT
+    role: sender
+  - name: WLED
+    url: https://github.com/wled/WLED
+    language: C++
+    license: EUPL-1.2
+    role: receiver
+
+confidence: reported
+tags:
+  - lighting
+  - pixel
+  - led
+  - udp
+
+sources:
+  - title: DDP Protocol specification
+    url: http://www.3waylabs.com/ddp/
+    publisher: 3waylabs
+    accessed: 2026-08-16
+    primary: true
+  - title: DDP protocol — WLED documentation (UDP 4048, timecode fields ignored)
+    url: https://kno.wled.ge/interfaces/ddp/
+    publisher: WLED Project
+    accessed: 2026-08-16
+  - title: ddp-rs — Distributed Display Protocol in Rust (10 byte header, port 4048, transport agnostic)
+    url: https://github.com/coral/ddp-rs
+    publisher: Jonas Bengtson
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

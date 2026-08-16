@@ -1,0 +1,94 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: watchout
+name: WATCHOUT
+vendor: Dataton
+category: media-server
+summary: >-
+  Multi-display media server software that composites and plays video across many
+  synchronised outputs from a timeline. Long established in corporate, museum and
+  large-format projection work.
+
+license: proprietary
+platforms:
+  - windows
+
+speaks:
+  - protocol: art-net
+    direction: in
+    note: Documented as ArtNet Input for external control of WATCHOUT.
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: ltc
+    direction: in
+    note: Handled by the LTC Bridge component.
+    confidence: reported
+  - protocol: midi-show-control
+    direction: in
+    confidence: reported
+  - protocol: psn
+    direction: in
+    confidence: reported
+  - protocol: ndi
+    direction: in
+    note: NDI sources can be used as video inputs.
+    confidence: reported
+  - protocol: dante
+    direction: bidirectional
+    confidence: reported
+
+homepage:
+  url: https://www.dataton.com/downloads/watchout7
+  label: Dataton WATCHOUT
+docs:
+  url: https://docs.dataton.com/watchout-7-new/watchout/index.html
+  label: WATCHOUT 7 User Guide
+
+status: current
+typical_use:
+  - Multi-projector blended shows in museums, visitor attractions and corporate events
+  - Timecode-locked video playback across many outputs
+  - Large-format canvases split across a cluster of display computers
+
+gotchas:
+  - >-
+    Windows only. Both the production application and the display servers are
+    Windows software, so a Mac-based crew has no path here.
+  - >-
+    A real system needs a minimum of two licence keys, one for the production
+    computer and one for each display computer. Only a keyless production machine
+    with no outputs attached runs unlicensed.
+  - >-
+    WATCHOUT 7 is a different architecture to WATCHOUT 6 and the user guide carries
+    a separate WATCHOUT 6 protocol section for backwards compatibility. Do not
+    assume a v6 control integration drives a v7 system unchanged.
+
+confidence: reported
+tags:
+  - media-server
+  - projection
+  - multi-display
+  - timecode
+
+sources:
+  - title: Dataton WATCHOUT current version and licensing
+    url: https://www.dataton.com/downloads/watchout7
+    publisher: Dataton
+    accessed: 2026-08-16
+    primary: true
+  - title: WATCHOUT License Keys
+    url: https://www.dataton.com/watchout-license-keys
+    publisher: Dataton
+    accessed: 2026-08-16
+    primary: true
+  - title: WATCHOUT 7 User Guide
+    url: https://docs.dataton.com/watchout-7-new/watchout/index.html
+    publisher: Dataton
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,75 @@
+id: qlab
+name: QLab
+vendor: Figure 53
+category: cue-playback
+summary: >-
+  macOS cue playback for theatre: audio, video, lighting and network cues in a
+  single ordered cue list driven by one GO button. The de facto standard for
+  sound and video playback in English-language theatre.
+
+license: proprietary
+price_model: freemium
+platforms:
+  - macos
+
+speaks:
+  - protocol: osc
+    direction: bidirectional
+    note: QLab exposes a full OSC API for control and feedback, and can send OSC as a cue type.
+    confidence: verified
+  - protocol: midi-show-control
+    direction: bidirectional
+    confidence: reported
+  - protocol: mtc
+    direction: bidirectional
+    note: Can both generate and chase MIDI timecode.
+    confidence: reported
+  - protocol: art-net
+    direction: out
+    note: Lighting cues output over Art-Net; requires a licence tier that includes lighting.
+    requires_licence: true
+    confidence: reported
+  - protocol: sacn
+    direction: out
+    requires_licence: true
+    confidence: reported
+
+homepage:
+  url: https://qlab.app/
+  label: qlab.app
+docs:
+  url: https://qlab.app/docs/
+  label: QLab documentation
+
+status: current
+typical_use:
+  - Sound and video playback for plays and musicals
+  - Triggering lighting and automation from the stage manager's GO
+  - Timecode-locked playback in fixed installations
+
+gotchas:
+  - >-
+    Cue numbers and cue IDs are different things. OSC control by cue number
+    breaks when someone renumbers; control by unique ID does not.
+  - >-
+    macOS only. A show that depends on QLab has a hardware platform decision
+    baked into it, which matters for touring spares.
+
+confidence: reported
+tags:
+  - theatre
+  - playback
+  - macos
+
+sources:
+  - title: QLab documentation
+    url: https://qlab.app/docs/
+    publisher: Figure 53
+    primary: true
+  - title: QLab OSC dictionary
+    url: https://qlab.app/docs/v5/scripting/osc-dictionary-v5/
+    publisher: Figure 53
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

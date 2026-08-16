@@ -1,0 +1,120 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ptp-1588
+name: PTP (IEEE 1588)
+aka:
+  - Precision Time Protocol
+  - IEEE 1588
+  - PTPv2
+  - gPTP
+category: timecode-sync
+summary: >-
+  IEEE 1588 Precision Time Protocol distributes a common clock across an
+  ethernet network to sub-microsecond accuracy by timestamping messages in both
+  directions. It is the timing foundation under AES67, Dante, RAVENNA, ST 2110
+  and AVB, and when it is unhappy all of them fail at once.
+
+transport:
+  - udp
+  - ethernet-l2
+default_ports:
+  - number: 319
+    transport: udp
+    role: PTP event messages (Sync, Delay_Req, Pdelay_Req, Pdelay_Resp)
+    iana_registered: true
+    note: These are the timestamped messages. Anything that delays them asymmetrically becomes a clock offset error.
+  - number: 320
+    transport: udp
+    role: PTP general messages (Announce, Follow_Up, Delay_Resp, management)
+    iana_registered: true
+
+multicast:
+  used: true
+  ranges:
+    - 224.0.1.129 (IPv4 PTP primary address)
+    - 224.0.0.107 (IPv4 peer delay messages, link-local)
+    - FF0X::181 (IPv6)
+  note: >-
+    Some profiles also use 224.0.1.130 through 224.0.1.132; Audinate and ALC
+    NetworX both document the 224.0.1.129-132 block plus 224.0.0.107 as the
+    addresses to allow through a switch. PTP can also run unicast or over
+    Layer 2 (gPTP) depending on profile.
+
+openness: published-paid
+spec_url:
+  url: https://standards.ieee.org/ieee/1588/6825/
+  label: IEEE 1588-2019 (paid, or via the IEEE GET Program)
+steward: IEEE
+first_published: 2002
+status: current
+
+typical_use:
+  - Master clock for AES67, Dante, RAVENNA and ST 2110 audio and video networks
+  - Genlock replacement in IP broadcast plants (SMPTE ST 2059-2 profile)
+  - gPTP (IEEE 802.1AS) timing for AVB and Milan networks
+  - Timestamping and coordinated motion in industrial and machinery control
+
+gotchas:
+  - >-
+    Profiles are the trap. Default profile, the AES67 media profile, SMPTE ST
+    2059-2 and gPTP (802.1AS) are all IEEE 1588. Devices on different profiles,
+    or on the same profile with different domain numbers, will never lock.
+  - >-
+    Dante's default clock is PTP version 1 (IEEE 1588-2002), not PTPv2. A Dante
+    plant and an AES67 or ST 2110 plant need something that deliberately bridges
+    the two clock domains, not just a patch cable.
+  - >-
+    The Best Master Clock Algorithm means the grandmaster can change without
+    anyone touching anything. Plug in a device advertising a better clock class
+    and the whole facility re-locks, usually at the worst moment.
+  - >-
+    Asymmetry is invisible and fatal. Different fibre lengths in each direction,
+    a one-way shaper, or a switch that is transparent-clock aware in one
+    direction only, all produce a constant offset that no log will flag.
+  - >-
+    A switch that is not PTP aware still passes PTP, it just adds variable queue
+    delay. It will look fine on a quiet network at setup and drift when the show
+    traffic arrives.
+  - >-
+    UDP 319 and 320 are frequently blocked by default on firewalls and by
+    multicast filtering. Symptoms are audio that works for a few minutes after
+    boot and then falls apart as the local clock walks away.
+
+implementations:
+  - name: linuxptp (ptp4l, phc2sys)
+    url: https://github.com/richardcochran/linuxptp
+    language: C
+    license: GPL-2.0-or-later
+    role: both
+
+confidence: reported
+tags:
+  - timing
+  - clock
+  - ieee
+  - multicast
+  - ptp
+
+sources:
+  - title: RFC 9760 — Enterprise Profile for the Precision Time Protocol (PTP ports 319/320, address 224.0.1.129)
+    url: https://www.rfc-editor.org/rfc/rfc9760.html
+    publisher: IETF
+    accessed: 2026-08-16
+    primary: true
+  - title: IEEE 1588-2019 — Standard for a Precision Clock Synchronization Protocol
+    url: https://standards.ieee.org/ieee/1588/6825/
+    publisher: IEEE
+    accessed: 2026-08-16
+    primary: true
+  - title: RAVENNA Network Requirements V1.4 (PTP multicast addresses, DSCP, profiles)
+    url: https://www.ravenna-network.com/wp-content/uploads/2023/01/RAVENNA-Network-Requirements-V1.4.pdf
+    publisher: ALC NetworX
+    accessed: 2026-08-16
+  - title: Dante Information for Network Administrators v7.1 (Dante uses PTPv1 by default)
+    url: https://www.getdante.com/wp-content/uploads/2026/07/Information-for-Network-Admins-v7.1.pdf
+    publisher: Audinate
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

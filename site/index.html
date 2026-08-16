@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>showstack — the open index of live entertainment technology</title>
+<meta name="description" content="An open, machine-readable index of the protocols, standards, software and hardware that live shows actually run on. Free API, no key, community maintained.">
+<meta property="og:title" content="showstack">
+<meta property="og:description" content="The open index of live entertainment technology. Protocols, standards, software, hardware, and the bilingual vocabulary crews actually use.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#0d0f12; --panel:#14171c; --panel2:#1a1e25; --line:#252b34;
+    --ink:#e8ecf1; --dim:#9aa4b2; --dimmer:#6b7684;
+    --accent:#7dd3c0; --accent2:#f0b866; --warn:#e8836b; --ok:#8fbf6f;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#fbfbfa; --panel:#fff; --panel2:#f4f5f7; --line:#e2e5ea;
+           --ink:#15181d; --dim:#5a6472; --dimmer:#8b95a3;
+           --accent:#137a68; --accent2:#9a6410; --warn:#b8452a; --ok:#3f7a24; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line);padding:28px 0 22px;position:sticky;top:0;background:var(--bg);z-index:20}
+  .brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .brand h1{font-family:var(--mono);font-size:22px;margin:0;letter-spacing:-.5px}
+  .brand h1 span{color:var(--accent)}
+  .brand p{margin:0;color:var(--dim);font-size:13.5px}
+  .ghlink{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--dim);border:1px solid var(--line);padding:5px 10px;border-radius:6px}
+  .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
+
+  .searchrow{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  #q{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+     font-family:var(--mono);font-size:14px;padding:11px 13px;border-radius:8px;outline:none}
+  #q:focus{border-color:var(--accent)}
+  #q::placeholder{color:var(--dimmer)}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--dim);font-family:var(--mono);
+       font-size:12px;padding:8px 11px;border-radius:8px;cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--panel2);color:var(--ink);border-color:var(--accent)}
+  .tab b{color:var(--dimmer);font-weight:400;margin-left:5px}
+
+  .stats{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dimmer);margin-top:14px}
+  .stats b{color:var(--ink);font-weight:600}
+
+  main{padding:26px 0 90px}
+  .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
+  .grid{display:grid;gap:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card:hover{border-color:var(--dim)}
+  .card h3{margin:0 0 4px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .card h3 .id{font-family:var(--mono);font-size:11.5px;color:var(--dimmer);font-weight:400}
+  .card p{margin:0;color:var(--dim);font-size:13.5px}
+  .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.3px;text-transform:uppercase;
+        border:1px solid var(--line);color:var(--dimmer);padding:2.5px 7px;border-radius:20px;background:var(--panel2)}
+  .pill.verified{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+  .pill.unverified{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+  .pill.port{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,transparent)}
+  .pill.safety{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .zh{font-size:13.5px;color:var(--ink);opacity:.85}
+
+  details.entry summary{cursor:pointer;list-style:none}
+  details.entry summary::-webkit-details-marker{display:none}
+  details.entry[open]{border-color:var(--accent)}
+  .detail{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:13.5px}
+  .detail h4{margin:14px 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.6px;
+             text-transform:uppercase;color:var(--dimmer);font-weight:600}
+  .detail h4:first-child{margin-top:0}
+  .detail ul{margin:0;padding-left:18px;color:var(--dim)}
+  .detail li{margin-bottom:5px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono)}
+  th{text-align:left;color:var(--dimmer);font-weight:500;padding:5px 8px 5px 0;border-bottom:1px solid var(--line)}
+  td{padding:5px 8px 5px 0;border-bottom:1px solid var(--line);color:var(--dim)}
+  td b{color:var(--ink);font-weight:500}
+  .dir{color:var(--accent)}
+  .gapbtn{display:inline-block;font-family:var(--mono);font-size:11.5px;margin-top:12px;
+          border:1px dashed var(--line);color:var(--dim);padding:6px 10px;border-radius:6px}
+  .gapbtn:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+
+  .empty{color:var(--dimmer);font-family:var(--mono);font-size:13px;padding:40px 0;text-align:center}
+  footer{border-top:1px solid var(--line);padding:28px 0 60px;color:var(--dimmer);font-size:12.5px}
+  footer a{color:var(--dim)}
+  .cta{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px}
+  .cta h2{margin:0 0 6px;font-size:15px}
+  .cta p{margin:0;color:var(--dim);font-size:13.5px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <h1>show<span>stack</span></h1>
+      <p>the open index of live entertainment technology</p>
+      <a class="ghlink" id="ghtop" href="https://github.com/OWNER/showstack">GitHub</a>
+    </div>
+    <div class="searchrow">
+      <input id="q" placeholder="search protocols, ports, software, standards, 中文術語…  try: 5568, psn, 吊桿, safety curtain" autocomplete="off" spellcheck="false">
+      <div class="tabs" id="tabs"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="cta">
+      <h2>Every entry cites its source. Every gap is an open issue.</h2>
+      <p>This index is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/OWNER/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
+    </div>
+    <p class="hint" id="hint"></p>
+    <div class="grid" id="results"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Data licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Code licensed MIT.
+       Free JSON API at <code>/api/v1/</code> — no key, no rate limit, no tracking.</p>
+    <p id="foot"></p>
+  </div>
+</footer>
+
+<script>
+const DATA = /*__SHOWSTACK_DATA__*/null;
+const REPO = "https://github.com/OWNER/showstack";
+
+const COLS = [
+  {key:"protocols", label:"protocols"},
+  {key:"software",  label:"software"},
+  {key:"hardware",  label:"hardware"},
+  {key:"standards", label:"standards"},
+  {key:"terms",     label:"glossary"},
+];
+
+let active = "all";
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* Flatten every entry into one searchable list. The haystack deliberately
+   includes ports, aka names and Chinese terms, because those are what people
+   actually type when they are mid-problem. */
+const ITEMS = COLS.flatMap(c => (DATA?.[c.key] ?? []).map(d => {
+  const ports = (d.default_ports ?? []).map(p => p.number + " " + p.transport).join(" ");
+  const hay = [
+    d.id, d.name, d.en, d.designation, d.title, d.zh_hant, d.zh_hans, d.vendor, d.body,
+    d.summary, d.definition_en, d.definition_zh_hant, d.scope, d.category, d.domain,
+    (d.aka ?? []).join(" "), (d.tags ?? []).join(" "),
+    (d.regional_variants ?? []).map(r => r.term + " " + r.region).join(" "),
+    ports
+  ].filter(Boolean).join(" ").toLowerCase();
+  return {col: c.key, d, hay};
+}));
+
+function pills(col, d){
+  const out = [];
+  if (d.category) out.push(`<span class="pill">${esc(d.category)}</span>`);
+  if (d.domain) out.push(`<span class="pill">${esc(d.domain)}</span>`);
+  if (d.body) out.push(`<span class="pill">${esc(d.body)}</span>`);
+  if (d.vendor) out.push(`<span class="pill">${esc(d.vendor)}</span>`);
+  for (const p of d.default_ports ?? []) out.push(`<span class="pill port">${p.transport}/${p.number}</span>`);
+  if (d.openness) out.push(`<span class="pill">${esc(d.openness)}</span>`);
+  if (d.license) out.push(`<span class="pill">${esc(d.license)}</span>`);
+  if (d.free_to_read === true) out.push(`<span class="pill verified">free to read</span>`);
+  if (d.safety_critical) out.push(`<span class="pill safety">safety critical</span>`);
+  if (d.confidence) out.push(`<span class="pill ${d.confidence}">${esc(d.confidence)}</span>`);
+  if (d.status && d.status !== "current") out.push(`<span class="pill">${esc(d.status)}</span>`);
+  return out.join("");
+}
+
+function detail(col, d){
+  let h = "";
+  if (col === "terms"){
+    if (d.definition_zh_hant) h += `<h4>中文</h4><p class="zh">${esc(d.definition_zh_hant)}</p>`;
+    if (d.regional_variants?.length) h += `<h4>Regional</h4><ul>` + d.regional_variants.map(r => `<li><b>${esc(r.region)}</b>: ${esc(r.term)}${r.note ? " — " + esc(r.note) : ""}</li>`).join("") + `</ul>`;
+    if (d.false_friends?.length) h += `<h4>False friends</h4><ul>` + d.false_friends.map(f => `<li>${esc(f)}</li>`).join("") + `</ul>`;
+  }
+  if (d.universe_model) h += `<h4>Addressing</h4><p>${esc(d.universe_model)}</p>`;
+  if (d.multicast?.used) h += `<h4>Multicast</h4><ul>` + (d.multicast.ranges ?? []).map(r => `<li>${esc(r)}</li>`).join("") + (d.multicast.note ? `<li>${esc(d.multicast.note)}</li>` : "") + `</ul>`;
+  if (d.scope) h += `<h4>Scope</h4><p>${esc(d.scope)}</p>`;
+  if (d.gotchas?.length) h += `<h4>Gotchas</h4><ul>` + d.gotchas.map(g => `<li>${esc(g)}</li>`).join("") + `</ul>`;
+
+  if (d.spoken_by?.length){
+    h += `<h4>Spoken by (${d.spoken_by.length})</h4><table><tr><th>Product</th><th>Kind</th><th>Direction</th><th>Note</th></tr>` +
+      d.spoken_by.map(s => `<tr><td><b>${esc(s.name)}</b></td><td>${esc(s.kind)}</td><td class="dir">${esc(s.direction)}${s.requires_licence ? " (licensed)" : ""}</td><td>${esc(s.note ?? "")}</td></tr>`).join("") + `</table>`;
+  }
+  if (d.speaks?.length){
+    h += `<h4>Speaks</h4><table><tr><th>Protocol</th><th>Direction</th><th>Note</th></tr>` +
+      d.speaks.map(s => `<tr><td><b>${esc(s.protocol)}</b></td><td class="dir">${esc(s.direction)}${s.requires_licence ? " (licensed)" : ""}</td><td>${esc(s.note ?? "")}</td></tr>`).join("") + `</table>`;
+  }
+  if (d.implementations?.length){
+    h += `<h4>Open source implementations</h4><ul>` + d.implementations.map(i => `<li><a href="${esc(i.url)}" rel="noopener">${esc(i.name)}</a> — ${esc(i.language ?? "")} ${esc(i.license ?? "")}</li>`).join("") + `</ul>`;
+  }
+  if (d.sources?.length){
+    h += `<h4>Sources</h4><ul>` + d.sources.map(s => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.title)}</a>${s.primary ? " <span class='pill verified'>primary</span>" : ""}</li>`).join("") + `</ul>`;
+  }
+  if (d.contributed_by?.length){
+    h += `<h4>Contributed by</h4><p>` + d.contributed_by.map(c => `<a href="https://github.com/${esc(c)}">@${esc(c)}</a>`).join(", ") + `</p>`;
+  }
+  const gap = (DATA?.gaps ?? []).find(g => g.collection === col && g.id === d.id);
+  if (gap){
+    const title = encodeURIComponent(`[${col}] ${d.id}: add ${gap.missing.join(", ")}`);
+    h += `<a class="gapbtn" href="${REPO}/issues/new?title=${title}&labels=good+first+issue" rel="noopener">Missing: ${esc(gap.missing.join(", "))} — claim this →</a>`;
+  }
+  h += ` <a class="gapbtn" href="${REPO}/edit/main/data/${col}/${esc(d.id)}.yaml" rel="noopener">Edit this entry →</a>`;
+  return h;
+}
+
+function render(){
+  const term = $("#q").value.trim().toLowerCase();
+  const terms = term.split(/\s+/).filter(Boolean);
+  const list = ITEMS.filter(i =>
+    (active === "all" || i.col === active) &&
+    terms.every(t => i.hay.includes(t))
+  ).slice(0, 300);
+
+  $("#hint").textContent = term || active !== "all"
+    ? `${list.length} match${list.length === 1 ? "" : "es"}`
+    : `${ITEMS.length} entries. Search a port number, a product, a protocol, or a Chinese term.`;
+
+  $("#results").innerHTML = list.length ? list.map(({col, d}) => {
+    const title = esc(d.name ?? d.en ?? d.designation ?? d.id);
+    const zh = d.zh_hant ? ` <span class="zh">${esc(d.zh_hant)}</span>` : "";
+    const sub = esc(d.summary ?? d.definition_en ?? d.title ?? "");
+    return `<details class="card entry"><summary>
+        <h3>${title}${zh}<span class="id">${col}/${esc(d.id)}</span></h3>
+        <p>${sub}</p>
+        <div class="meta">${pills(col, d)}</div>
+      </summary><div class="detail">${detail(col, d)}</div></details>`;
+  }).join("") : `<div class="empty">Nothing matches. That is probably a gap worth filling —<br>
+      <a href="${REPO}/issues/new?title=${encodeURIComponent("[new entry] " + term)}">open an issue for "${esc(term)}" →</a></div>`;
+}
+
+function boot(){
+  if (!DATA){ $("#results").innerHTML = `<div class="empty">Run <code>npm run build</code> to generate the index.</div>`; return; }
+  document.querySelectorAll("#ghtop,#ctalink").forEach(a => a.href = a.href.replace("https://github.com/OWNER/showstack", REPO));
+  $("#tabs").innerHTML = [{key:"all",label:"all"}, ...COLS].map(c =>
+    `<button class="tab" role="tab" data-k="${c.key}" aria-selected="${c.key === active}">${c.label}<b>${c.key === "all" ? ITEMS.length : (DATA[c.key] ?? []).length}</b></button>`).join("");
+  $("#tabs").addEventListener("click", e => {
+    const b = e.target.closest(".tab"); if (!b) return;
+    active = b.dataset.k;
+    document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === active));
+    render();
+  });
+  $("#stats").innerHTML = `<span><b>${DATA.total}</b> entries</span>
+    <span><b>${Math.round((DATA.verified_share ?? 0) * 100)}%</b> verified against a primary source</span>
+    <span><b>${DATA.open_gaps}</b> open gaps</span>
+    <span><b>${DATA.contributors}</b> contributors</span>
+    <span>built ${DATA.generated}</span>`;
+  $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
+  $("#q").addEventListener("input", render);
+  window.addEventListener("keydown", e => { if (e.key === "/" && document.activeElement !== $("#q")){ e.preventDefault(); $("#q").focus() } });
+  render();
+}
+boot();
+</script>
+</body>
+</html>

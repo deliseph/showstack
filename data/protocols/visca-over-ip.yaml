@@ -1,0 +1,98 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: visca-over-ip
+name: VISCA over IP
+aka:
+  - VISCA/IP
+  - Sony VISCA over IP
+  - VISCA
+category: video-control
+summary: >-
+  Sony's VISCA camera control commands wrapped in an eight byte header and sent
+  over UDP. It is the usual way to drive PTZ cameras (pan, tilt, zoom, focus,
+  iris, presets) from a controller, a switcher or a show control system.
+
+transport:
+  - udp
+  - tcp
+default_ports:
+  - number: 52381
+    transport: udp
+    role: Sony VISCA over IP commands, inquiries and replies
+    note: >-
+      This is Sony's documented port. Many third party cameras instead expose
+      raw serial VISCA on a TCP socket at a vendor-chosen port with no header at
+      all, which is a different protocol wearing the same name.
+  - number: 52380
+    transport: udp
+    role: Network setup commands (IP configuration and discovery)
+    note: Documented on Sony's ILME-FR7. Not present on every camera that speaks VISCA over IP.
+
+openness: proprietary-documented
+spec_url:
+  url: https://pro.sony/s3/cms-static-content/uploadfile/59/1237493025759.pdf
+  label: Sony HD Color Video Camera Command List (BRC-H900), VISCA over IP section
+steward: Sony
+status: current
+
+typical_use:
+  - PTZ camera control from a hardware joystick controller over the house network
+  - Preset recall driven from cues in a show control or streaming system
+  - Multi-camera control from a single operator position
+  - Camera control travelling on the same network as the video feed
+
+gotchas:
+  - >-
+    The header carries a sequence number that the camera echoes back. Restart
+    the controller or power-cycle the camera and the two disagree, so you get
+    error replies until a reset control command re-syncs the counter.
+  - >-
+    Sony state plainly that UDP delivery is not guaranteed and that
+    retransmission is the application's job. A dropped preset recall does not
+    error, it simply does not happen.
+  - >-
+    Two controllers on one camera fight over the sequence number stream. Give
+    each camera one owner, or put a proxy in front of it, before you add a
+    second control surface.
+  - >-
+    "VISCA over IP" on a non-Sony camera often means raw VISCA bytes on a TCP
+    socket with no eight byte header and no sequence number. Find out which one
+    the camera wants before blaming the network.
+  - >-
+    Payload type distinguishes command (0x0100) from inquiry (0x0110). Sending an
+    inquiry with a command payload type gets you a silent no-op on some cameras
+    and an error on others.
+
+implementations:
+  - name: libvisca-ip
+    url: https://github.com/norihiro/libvisca-ip
+    language: C
+    license: LGPL-2.1-or-later
+    role: sender
+
+confidence: verified
+tags:
+  - camera
+  - ptz
+  - control
+  - sony
+
+sources:
+  - title: Sony HD Color Video Camera Command List Version 2.20 (BRC-H900) — VISCA over IP, port 52381
+    url: https://pro.sony/s3/cms-static-content/uploadfile/59/1237493025759.pdf
+    publisher: Sony Corporation
+    accessed: 2026-08-16
+    primary: true
+  - title: Sony Interchangeable Lens Digital Camera VISCA Command List v2.00 (ILME-FR7, ports 52381 and 52380)
+    url: https://pro.sony/s3/2022/09/14131603/VISCA-Command-List-Version-2.00.pdf
+    publisher: Sony Corporation
+    accessed: 2026-08-16
+    primary: true
+  - title: libvisca-ip — libvisca with TCP and UDP connection
+    url: https://github.com/norihiro/libvisca-ip
+    publisher: Norihiro Kamae
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,44 @@
+id: green-room
+en: Green room
+zh_hant: 演員休息室
+zh_hans: 演员休息室
+domain: general
+definition_en: >-
+  The shared room near the stage where performers and crew wait between calls.
+  It is a working space carrying the show relay and the tannoy, which is why
+  calls given there are expected to be heard and acted on.
+definition_zh_hant: >-
+  靠近舞台、演員和工作人員在等場時待著的公共空間。裡面接著演出實況轉播和廣播系統，所以在那裡叫的 call 是要聽到並且照做的。
+regional_variants:
+  - region: HK / TW
+    term: 演員休息室
+    note: 有些場地也叫「後台休息室」。
+false_friends:
+  - 直譯成「綠色房間」沒有意義，房間本身通常也不是綠色的。
+  - >-
+    A green room is shared. A dressing room is assigned and private. Riders
+    that use the two interchangeably cause arguments on arrival.
+  - >-
+    In broadcast the green room is where guests wait before going on air, with
+    different access, security and hospitality expectations attached.
+see_also:
+  - front-of-house
+  - house
+safety_critical: false
+confidence: reported
+tags:
+  - backstage
+  - venue
+  - vocabulary
+sources:
+  - title: Green room
+    url: https://en.wikipedia.org/wiki/Green_room
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Parts of a theatre
+    url: https://en.wikipedia.org/wiki/Parts_of_a_theatre
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

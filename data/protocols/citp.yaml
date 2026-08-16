@@ -1,0 +1,109 @@
+id: citp
+name: CITP
+aka:
+  - Controller Interface Transport Protocol
+  - MSEX
+  - Media Server Extensions
+category: media-control
+summary: >-
+  An open protocol for the traffic between consoles, visualisers and media
+  servers that is not the show itself: peer discovery, DMX, fixture data, and
+  through MSEX, media libraries, thumbnails and live preview streams. It is what
+  puts clip thumbnails on a lighting console's encoder wheel.
+
+transport:
+  - udp
+  - tcp
+
+default_ports:
+  - number: 4809
+    transport: udp
+    role: PINF peer discovery and location messages (multicast)
+    note: >-
+      Peers advertise their own TCP listening port inside the PLoc message, so
+      there is no fixed TCP port to open.
+
+multicast:
+  used: true
+  ranges:
+    - 224.0.0.180
+  note: >-
+    Peer location is multicast to 224.0.0.180 on UDP 4809. Everything heavier,
+    including MSEX thumbnails and streaming frames, runs over the TCP connection
+    a peer advertises in its PLoc message.
+
+openness: open-published
+spec_url:
+  url: https://bitbucket.org/lars_wernlund/citp
+  label: CITP protocol specification repository
+steward: Lars Wernlund; distributed via Capture Visualisation AB
+status: current
+
+typical_use:
+  - Media server clip libraries and thumbnails appearing on a lighting console
+  - Live preview streams from a media server to a console or visualiser
+  - Console to visualiser DMX feed without needing Art-Net or sACN
+  - Fixture focus and position feedback from a visualiser back to the console
+
+gotchas:
+  - >-
+    The old citp-protocol.org domain now redirects somewhere unrelated. The
+    specification lives in a public Bitbucket repository linked from Capture's
+    developer page; bookmark that, not the historic domain.
+  - >-
+    Discovery multicasts to 224.0.0.180, which sits in the link-local
+    224.0.0.0/24 block that routers do not forward. Put the console and the
+    media server on different subnets and they will never see each other.
+  - >-
+    MSEX versions are not interchangeable. MADRIX, for example, implements MSEX
+    1.0 and 1.1 only, so a console asking for later features gets nothing back
+    and shows an empty library.
+  - >-
+    MSEX 1.0 and 1.1 cap you at 255 storages and 255 storage places. A media
+    server with a bigger library simply presents a truncated view, and the
+    missing clips look like a failed transfer.
+  - >-
+    Thumbnail and stream traffic is bulk TCP on the same network as your
+    lighting data. Give it somewhere it cannot starve sACN, or switch streaming
+    preview off before doors.
+  - >-
+    CITP is meant for pre-production and non-show-critical information. Do not
+    build a cue path or a live effects trigger on top of it.
+
+implementations:
+  - name: citp (Rust)
+    url: https://github.com/nannou-org/citp
+    language: Rust
+    role: both
+  - name: citp-lib
+    url: https://github.com/jwarwick/citp-lib
+    role: both
+
+confidence: reported
+tags:
+  - media-server
+  - visualiser
+  - thumbnails
+  - multicast
+
+sources:
+  - title: Capture Developers — CITP is open and free, specification location, supported uses
+    url: https://www.capture.se/Support/Developers
+    publisher: Capture Visualisation AB
+    accessed: 2026-08-16
+    primary: true
+  - title: CITPDefines.h — CITP_PINF_MULTICAST_IP 224.0.0.180, CITP_PINF_MULTICAST_PORT 4809, per-peer ListeningTCPPort
+    url: https://raw.githubusercontent.com/jwarwick/citp-lib/master/Library/CITPDefines.h
+    publisher: jwarwick / citp-lib
+    accessed: 2026-08-16
+  - title: MADRIX 5 CITP documentation (MSEX 1.0 and 1.1 only, 255 storage limit)
+    url: https://help.madrix.com/m5/html/madrix/hidd_citp.html
+    publisher: inoage / MADRIX
+    accessed: 2026-08-16
+  - title: citp — CITP implementation in Rust (protocol layers PINF, SDMX, FPTC, FSEL, FINF, MSEX, CAEX)
+    url: https://github.com/nannou-org/citp
+    publisher: nannou
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,49 @@
+id: cue
+en: Cue
+zh_hant: Cue／提示
+zh_hans: Cue／提示
+domain: stage-management
+definition_en: >-
+  The signal to execute something in a show. A cue is both the trigger, which
+  may be a line, a move or a sound, and the action it fires. The person calling
+  the show gives a standby first and a go second. Nothing moves on the standby.
+definition_zh_hant: >-
+  演出中執行動作的指令。Cue 同時指觸發點（台詞、動作、音效）和被觸發的動作。舞台監督先報 standby，再報
+  go；聽到 standby 只是準備，不能動。
+regional_variants:
+  - region: HK
+    term: 落 cue／畀 cue
+    note: 香港製作習慣直接講英文 cue，中文書面資料寫「提示」。
+  - region: TW
+    term: 下 cue／走 cue
+    note: 臺灣同樣直接講 cue，很少譯成中文。
+false_friends:
+  - 中文口語「被 cue 到」是被點名、被突然叫到的意思，跟劇場的 cue 沒有關係。
+  - >-
+    A cue number is announced on the standby. The action happens on "go".
+    Treating the standby as the instruction is how people get hit.
+  - >-
+    In a script, a cue can also mean the last words of the previous speech that
+    tell an actor to come in. That is a different object from a technical cue.
+see_also:
+  - call
+  - deputy-stage-manager
+  - plot
+  - blackout
+safety_critical: false
+confidence: reported
+tags:
+  - cue
+  - vocabulary
+sources:
+  - title: Cue (theatrical)
+    url: https://en.wikipedia.org/wiki/Cue_(theatrical)
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,94 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: luminex-gigacore-16xt
+name: Luminex GigaCore 16Xt
+aka:
+  - GigaCore 16XT
+vendor: Luminex Network Intelligence
+category: network-switch
+summary: >-
+  1U managed gigabit switch built for show networks, with twelve etherCON ports,
+  four SFP cages and an optional 160 W PoE budget. Configured with named Groups
+  rather than raw VLAN numbers.
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Transported, not originated. The switch is protocol-aware for QoS and multicast handling.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Transported, not originated. IGMP snooping is the reason to use a managed switch here.
+    confidence: reported
+  - protocol: dante
+    direction: bidirectional
+    note: Transported. The manual claims low-jitter handling for Dante traffic.
+    confidence: reported
+  - protocol: avb-milan
+    direction: bidirectional
+    note: The manual states full AVB and AVB Milan support.
+    confidence: reported
+  - protocol: aes67
+    direction: bidirectional
+    note: Transported, listed alongside RAVENNA.
+    confidence: reported
+  - protocol: ravenna
+    direction: bidirectional
+    note: Transported, listed alongside AES67.
+    confidence: reported
+
+physical_ports:
+  - 10x etherCON 10/100/1000 (front)
+  - 2x etherCON 10/100/1000 (rear)
+  - 4x SFP cages for mini-GBIC transceivers (rear)
+
+form_factor: 19-inch rack mount, 482 x 204.3 x 44 mm
+rack_units: 1
+status: current
+
+homepage:
+  url: https://www.luminex.be/products/gigacore/gigacore-16xt-2/
+  label: GigaCore 16Xt
+docs:
+  url: https://www.luminex.be/wp-content/uploads/doccenter/GigaCore_16XT_User_Manual-rev-2.8.5.pdf
+  label: GigaCore 16Xt user manual
+
+gotchas:
+  - >-
+    PoE is optional and budgeted. The PoE model shares 160 W across the ten front
+    etherCON ports at a maximum of 30 W per port, so a rack of PoE++ devices will
+    exceed it.
+  - >-
+    Groups are Luminex's VLAN abstraction. Group 0 is reserved for inter-switch
+    links and Group 1 for management, leaving 19 generic groups, and a port left in
+    the wrong group looks exactly like a bad cable.
+  - >-
+    Link aggregation via MultiLinkX only applies to inter-switch link ports. You
+    cannot bond arbitrary edge ports to a device.
+  - >-
+    Ten stored profiles per switch and export/import between switches. Save and
+    export the profile before the truck leaves, because a swapped spare comes out
+    of the box in the default configuration.
+
+confidence: reported
+tags:
+  - networking
+  - switch
+  - poe
+  - avb
+
+sources:
+  - title: GigaCore 16Xt user manual
+    url: https://www.luminex.be/wp-content/uploads/doccenter/GigaCore_16XT_User_Manual-rev-2.8.5.pdf
+    publisher: Luminex Network Intelligence
+    accessed: 2026-08-16
+    primary: true
+  - title: GigaCore 16Xt quick start guide
+    url: https://www.luminex.be/wp-content/uploads/doccenter/lu_01_00048_qsg_rev5.pdf
+    publisher: Luminex Network Intelligence
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

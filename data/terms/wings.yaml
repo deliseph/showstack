@@ -1,0 +1,51 @@
+id: wings
+en: Wings
+zh_hant: 側台（空間）／邊幕（布幕）
+zh_hans: 侧台／边幕
+domain: general
+definition_en: >-
+  The offstage space to either side of the acting area, where crew, cast and
+  scenery wait out of the audience's sight. The masking cloths that create that
+  sightline are a separate item, although English uses the same word loosely
+  for both.
+definition_zh_hant: >-
+  表演區兩側、觀眾看不到的後台空間，工作人員、演員和佈景在那裡待命。做出那條視線的遮擋布幕是另一件東西，但英文常常兩個都叫 wings。
+regional_variants:
+  - region: HK
+    term: 側舞台
+    note: 康文署官方中文技術資料寫「側舞台」，英文版寫 side stage。
+  - region: TW
+    term: 側台
+false_friends:
+  - 中文分得比英文清楚：「側台」是空間，「邊幕」是布。英文 wings 兩個都指，翻譯搞混會把人派到錯的位置。
+  - >-
+    "In the wings" means standing by offstage. It does not mean hidden behind a
+    specific leg.
+  - >-
+    Legs, tabs and borders are all masking, but only the legs form the wing
+    entrances. A venue quoting five legs is not quoting five usable entrances.
+see_also:
+  - house
+  - rake
+safety_critical: false
+confidence: reported
+tags:
+  - venue
+  - masking
+  - vocabulary
+sources:
+  - title: Parts of a theatre
+    url: https://en.wikipedia.org/wiki/Parts_of_a_theatre
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 香港大會堂劇院詳細技術設施資料（中文）
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/b5/hkch-th-lfc.pdf
+    publisher: 康樂及文化事務署
+    accessed: 2026-08-16
+  - title: Hong Kong City Hall Theatre — technical specification
+    url: https://www.lcsd.gov.hk/en/tech/common/pdf/en/hkch-th-lfe.pdf
+    publisher: Leisure and Cultural Services Department
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

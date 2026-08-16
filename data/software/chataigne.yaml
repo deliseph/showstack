@@ -1,0 +1,92 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: chataigne
+name: Chataigne
+vendor: Ben Kuper
+category: show-control
+summary: >-
+  Modular hub that connects protocols, software and sensors and maps any of them
+  to any other with state machines and sequences. It is the free tool people
+  reach for when two systems have no common language.
+
+license: GPL-3.0-only
+price_model: open-source
+platforms:
+  - windows
+  - macos
+  - linux
+
+speaks:
+  - protocol: osc
+    direction: bidirectional
+    note: Also supports OSCQuery for discovery.
+    confidence: verified
+  - protocol: art-net
+    direction: bidirectional
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    confidence: reported
+  - protocol: dmx512
+    direction: bidirectional
+    confidence: reported
+  - protocol: psn
+    direction: in
+    confidence: reported
+  - protocol: ableton-link
+    direction: bidirectional
+    note: Listed among the built-in protocol modules.
+    confidence: reported
+
+homepage:
+  url: https://benjamin.kuperberg.fr/chataigne/en
+  label: Chataigne home
+repo:
+  url: https://github.com/benkuper/Chataigne
+  label: benkuper/Chataigne
+docs:
+  url: https://benjamin.kuperberg.fr/chataigne/docs
+  label: Chataigne documentation
+
+status: current
+typical_use:
+  - Translating between OSC, MIDI, DMX and serial for an installation
+  - Sensor input driving lighting, video or audio playback
+  - Prototyping interaction before it is committed to a show controller
+  - Bridging a piece of software that has no direct integration with another
+
+gotchas:
+  - >-
+    Modules for third-party software are community maintained. A module built
+    against an older version of the target application can break on the first
+    update and there is no vendor to call.
+  - >-
+    Chataigne is an interaction engine, not a redundant show controller. For a
+    twenty-year installation that has to boot unattended, treat it as one piece of
+    the plan rather than the whole of it.
+  - >-
+    Builds exist for Raspberry Pi as well as desktop, but they are separate
+    downloads. Verify the show file on the exact target before install day.
+
+confidence: reported
+tags:
+  - show-control
+  - interaction
+  - open-source
+  - protocol-bridge
+
+sources:
+  - title: Chataigne — official site
+    url: https://benjamin.kuperberg.fr/chataigne/en
+    publisher: Ben Kuper
+    accessed: 2026-08-16
+    primary: true
+  - title: benkuper/Chataigne source repository
+    url: https://github.com/benkuper/Chataigne
+    publisher: Ben Kuper
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

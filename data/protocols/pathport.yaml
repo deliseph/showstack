@@ -1,0 +1,108 @@
+id: pathport
+name: Pathport
+aka:
+  - Pathport Protocol
+  - Pathway Pathport
+category: lighting-control
+summary: >-
+  Pathway Connectivity's own DMX-over-ethernet protocol, used by Pathport
+  gateways for data and for the discovery and configuration that Pathscape
+  depends on. Most modern jobs run sACN or Art-Net through the same boxes and
+  only meet Pathport when setting them up.
+
+transport:
+  - udp
+
+default_ports:
+  - number: 3792
+    transport: udp
+    role: Pathport data, ARP-style node discovery, and configuration
+    note: >-
+      0x0ED0. Taken from the Open Lighting Architecture implementation; Pathway
+      does not publish the protocol.
+
+multicast:
+  used: true
+  ranges:
+    - 239.255.237.1 (data)
+    - 239.255.237.2 (configuration)
+    - 239.255.237.255 (status)
+  note: >-
+    Group addresses as implemented by the Open Lighting Architecture Pathport
+    plugin. Nodes are also addressed individually by a 32-bit Pathport device
+    ID, with 0xFFFFFFFF used as a broadcast ID.
+
+universe_model: >-
+  A flat xDMX channel space rather than numbered universes: channels 0-511 are
+  the first universe, 512-1023 the second. OLA notes the spec says 64 universes
+  while devices appear to support up to 128.
+
+openness: proprietary-closed
+steward: Pathway Connectivity (Acuity Brands)
+status: current
+
+typical_use:
+  - Pathport gateway data and configuration on Pathway networks
+  - Pathscape discovery and setup of DMX/RDM gateways
+  - Legacy installs that predate widespread sACN deployment
+  - Mixed networks where Pathway boxes sit alongside ETCNet and ShowNet sources
+
+gotchas:
+  - >-
+    Pathway does not publish the protocol. The only public description is the
+    Open Lighting Architecture plugin source, so treat any third-party
+    implementation as best effort and test it against the actual firmware.
+  - >-
+    Addressing is a flat xDMX channel space, not universes. Console universe 2
+    is xDMX channels 512-1023, so a one-universe offset here shifts an entire
+    rig by 512 slots rather than by one fixture.
+  - >-
+    Node discovery uses a Pathport ARP request and reply, not IP ARP. A gateway
+    that does not answer is not necessarily offline; it may be on a different
+    multicast group or filtered out by IGMP snooping.
+  - >-
+    If Pathscape cannot see a gateway that is visibly passing data, look at
+    multicast and IGMP snooping on the switch before assuming a device fault.
+    Data and configuration ride different groups.
+  - >-
+    Pathport gateways also accept sACN, Art-Net, ETCNet2, ETCNet3 and Strand
+    ShowNet, and will take several at once. It is easy to create an accidental
+    merge that only shows up when the second console is patched.
+
+implementations:
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: both
+
+confidence: reported
+tags:
+  - lighting
+  - dmx-over-ip
+  - pathway
+  - proprietary
+  - multicast
+
+sources:
+  - title: OLA Pathport plugin — PathportNode.h (PATHPORT_PORT 0xed0, data/config/status multicast groups, broadcast ID)
+    url: https://raw.githubusercontent.com/OpenLightingProject/ola/master/plugins/pathport/PathportNode.h
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+  - title: OLA Pathport plugin README (xDMX flat channel space, universe mapping)
+    url: https://raw.githubusercontent.com/OpenLightingProject/ola/master/plugins/pathport/README.md
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+  - title: Pathport DMX Management System Specification, C Series Nodes (protocol list including Pathport Protocol)
+    url: https://www.fullcompass.com/common/files/27565-PathwayConnectivityPathportCSeriesSpecifications.pdf
+    publisher: Pathway Connectivity
+    accessed: 2026-08-16
+    primary: true
+  - title: Pathport DMX Ethernet Gateways product family (Pathscape configuration)
+    url: https://pathway.acuitybrands.com/products/family/pathport-dmx-ethernet-gateways
+    publisher: Pathway Connectivity / Acuity Brands
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,105 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: disguise-gx-3
+name: disguise gx 3
+aka:
+  - GX 3
+vendor: disguise
+category: media-server
+summary: >-
+  4U media server from disguise built for real-time generative and notch-heavy
+  content, with 96 GB of RAM, VFC-based 4K outputs and 100 Gb networking. Runs
+  disguise Designer on Windows 11 Enterprise.
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Via Designer's DMX device drivers.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Via Designer's DMX device drivers.
+    confidence: reported
+  - protocol: ltc
+    direction: in
+    note: Via Designer's timecode sources.
+    confidence: reported
+  - protocol: mtc
+    direction: in
+    confidence: reported
+  - protocol: midi-show-control
+    direction: bidirectional
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: psn
+    direction: in
+    confidence: reported
+  - protocol: rttrpm
+    direction: in
+    note: BlackTrax position data.
+    confidence: reported
+
+physical_ports:
+  - 3x 4K video out via VFC cards
+  - 1x DisplayPort 1.4
+  - 3x 12G HD-BNC video in, or 12x 3G HD-BNC
+  - 1x 1Gb Ethernet
+  - 2x 10Gb Ethernet
+  - 2x 100Gb QSFP28
+  - 1x management Ethernet
+  - 1x BNC genlock
+
+form_factor: 19-inch rack mount server
+rack_units: 4
+status: current
+
+runs_software:
+  - disguise-designer
+
+homepage:
+  url: https://www.disguise.one/en/products/gx-3
+  label: disguise GX 3
+docs:
+  url: https://help.disguise.one/hardware/gx-range/gx3/gx3-specs
+  label: GX 3 specification
+
+gotchas:
+  - >-
+    Video output count depends on which VFC cards are fitted. The chassis
+    specification alone does not tell you how many outputs a specific unit has, so
+    confirm the fitted cards before you commit a screen layout.
+  - >-
+    Running a show on disguise server hardware needs a Pro licence on the server or
+    on an editing machine in the session. A free Starter instance cannot join.
+  - >-
+    4U and mains-hungry. Budget rack space, cooling and power for it as a
+    workstation, not as a playback appliance.
+
+confidence: reported
+tags:
+  - media-server
+  - disguise
+  - xr
+  - generative
+
+sources:
+  - title: GX 3 Specification
+    url: https://help.disguise.one/hardware/gx-range/gx3/gx3-specs
+    publisher: disguise
+    accessed: 2026-08-16
+    primary: true
+  - title: GX 3 product page
+    url: https://www.disguise.one/en/products/gx-3
+    publisher: disguise
+    accessed: 2026-08-16
+    primary: true
+  - title: Designer Licensing FAQs
+    url: https://www.disguise.one/en/designer-licensing-faqs
+    publisher: disguise
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,45 @@
+id: bump
+en: Bump
+zh_hant: 零秒變化（bump）
+zh_hans: 零秒变化
+domain: lighting
+definition_en: >-
+  A cue that changes state instantly with no fade time. Used for snaps to
+  black, hard hits on a musical accent, and stutter effects. Crews in Hong Kong
+  and Taiwan generally say the English word rather than translate it.
+definition_zh_hant: >-
+  沒有漸變時間、瞬間切換的 cue，用在瞬間切黑、跟著音樂重拍的硬切、閃動效果。香港和臺灣的工作人員多半直接講英文 bump，不翻譯。
+regional_variants:
+  - region: HK / TW
+    term: Bump
+    note: 口語直接用英文，中文書面可寫「零秒」或「即時變化」。
+false_friends:
+  - >-
+    In Australia and New Zealand bump-in and bump-out mean load-in and
+    load-out. Nothing to do with a zero-count cue.
+  - >-
+    In audio a bump is usually a small level or EQ nudge, not an instant change
+    of state.
+  - 「零秒」只是描述漸變時間，不是 cue 的名稱。寫在 cue 表上要寫時間值，不要只寫這兩個字。
+see_also:
+  - cue
+  - blackout
+  - load-in
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - cue
+  - vocabulary
+sources:
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,55 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Validate every entry
+        id: validate
+        run: |
+          set -o pipefail
+          node scripts/validate.mjs 2>&1 | tee validate.log
+      - name: Build
+        run: node scripts/build.mjs
+      - name: Explain the failure to a first-time contributor
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            let log = ''
+            try { log = fs.readFileSync('validate.log', 'utf8') } catch {}
+            if (!context.payload.pull_request) return
+            const body = [
+              "The validator found something. This is normal and nothing is broken on your side.",
+              "",
+              "```",
+              log.slice(0, 5000) || "See the job log above.",
+              "```",
+              "",
+              "Fix the lines above and push again to the same branch. The check re-runs automatically.",
+              "",
+              "If a message is unclear, say so here. That is a bug in our validator and we would rather fix the tool than have you struggle with it."
+            ].join("\n")
+            await github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            })

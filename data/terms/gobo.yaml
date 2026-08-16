@@ -1,0 +1,46 @@
+id: gobo
+en: Gobo
+zh_hant: 圖案片（gobo）
+zh_hans: 图案片
+domain: lighting
+definition_en: >-
+  A cut metal or etched glass template placed at the gate of a profile fixture
+  so the beam projects a pattern: leaves, window bars, texture, a logo. Sizes
+  follow fixture-specific gate dimensions, so a gobo is bought against a
+  fixture, not against a universal standard.
+definition_zh_hant: >-
+  放在聚光燈成像位置的金屬或玻璃片，讓光投射出圖案：樹葉、窗格、質感、標誌。尺寸依燈具的片框規格而定，所以買 gobo
+  要對著燈具型號買，沒有通用尺寸。
+regional_variants:
+  - region: HK / TW
+    term: Gobo
+    note: 口語直接用英文，書面寫「圖案片」。
+false_friends:
+  - >-
+    In audio a gobo is a movable acoustic screen used to isolate a source. Same
+    word, different department, completely different object.
+  - 對燈光組講「圖案片」沒問題，對影視或音響組講可能被理解成別的東西，講 gobo 最不會出錯。
+  - >-
+    Glass and metal gobos are not interchangeable in every fixture. Holder
+    depth and heat handling differ, and a glass gobo in the wrong gate cracks.
+see_also:
+  - gel
+  - focus
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - consumables
+  - vocabulary
+sources:
+  - title: Gobo (lighting)
+    url: https://en.wikipedia.org/wiki/Gobo_(lighting)
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

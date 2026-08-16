@@ -1,0 +1,95 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: ola
+name: OLA (Open Lighting Architecture)
+aka:
+  - Open Lighting Architecture
+  - olad
+vendor: Open Lighting Project
+category: networking-utility
+summary: >-
+  A daemon and library that translates between lighting transports, so an
+  application can output DMX without knowing whether it lands on Art-Net, sACN or
+  a USB widget. The usual glue layer on Linux and macOS.
+
+license: LGPL-2.1-or-later
+price_model: open-source
+platforms:
+  - linux
+  - macos
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Art-Net 1, 2 and 3 are listed in the plugin documentation.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Documented as the Streaming ACN (E1.31) plugin.
+    confidence: reported
+  - protocol: dmx512
+    direction: bidirectional
+    note: Through more than twenty supported USB DMX widgets.
+    confidence: reported
+  - protocol: pathport
+    direction: bidirectional
+    note: Listed as the Pathway Pathport plugin.
+    confidence: reported
+  - protocol: kinet
+    direction: out
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: rdm
+    direction: bidirectional
+    note: OLA carries a full RDM responder and controller stack.
+    confidence: reported
+
+repo:
+  url: https://github.com/OpenLightingProject/ola
+  label: OpenLightingProject/ola
+docs:
+  url: https://docs.openlighting.org/ola/doc/latest/index.html
+  label: OLA developer documentation
+
+status: current
+typical_use:
+  - Protocol bridge between a USB DMX widget and an Art-Net or sACN network
+  - Scripted and automated fixture control from Python or C++
+  - RDM discovery and troubleshooting from a laptop
+  - Test rigs and CI for lighting software
+
+gotchas:
+  - >-
+    Windows support is partial. The documentation targets Linux, macOS and FreeBSD,
+    so a Windows-only crew should plan on different tooling rather than a port.
+  - >-
+    A plugin has to be enabled and its universes patched in olad before anything
+    moves. Installing the package is only the first half of the job.
+  - >-
+    Licensing is mixed across the tree, with the library under LGPL and other
+    components under GPL. Check the specific file before you embed it in a product.
+
+confidence: reported
+tags:
+  - lighting
+  - open-source
+  - dmx
+  - bridge
+
+sources:
+  - title: OLA developer documentation
+    url: https://docs.openlighting.org/ola/doc/latest/index.html
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+    primary: true
+  - title: OpenLightingProject/ola source repository
+    url: https://github.com/OpenLightingProject/ola
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

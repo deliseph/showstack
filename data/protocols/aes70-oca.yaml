@@ -1,0 +1,97 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: aes70-oca
+name: AES70 (Open Control Architecture)
+aka:
+  - OCA
+  - Open Control Architecture
+  - AES70
+category: audio-control
+summary: >-
+  Open Control Architecture, standardised by the AES as AES70, is an
+  object-oriented model for controlling and monitoring media network devices.
+  It carries gain, mute, routing, presets, sensors and status over TCP, and
+  carries no audio of its own.
+
+transport:
+  - tcp
+
+openness: published-paid
+spec_url:
+  url: https://aes2.org/publications/standards-store/
+  label: AES Standards Store (free to AES members, otherwise paid)
+steward: Audio Engineering Society (AES), developed by the OCA Alliance
+first_published: 2016
+status: current
+
+typical_use:
+  - Amplifier and DSP control from a third party controller or show control system
+  - Monitoring device health, temperature and fault sensors during a run
+  - Recalling presets and scenes across mixed-vendor loudspeaker systems
+  - Vendor control apps that need one model across a whole product range
+
+gotchas:
+  - >-
+    There is no universal port. OCP.1 runs over TCP but the port is chosen by
+    the device: the d&b DS100, for example, listens on 50014. Read the specific
+    product manual before writing a firewall rule.
+  - >-
+    AES70 is control only. It does not move audio, so it always sits alongside
+    AES67, Dante or ST 2110, and a device can be reachable for control while its
+    audio path is dead.
+  - >-
+    "AES70 compatible" says nothing about which objects a device exposes. Two
+    compliant products can share almost no controllable parameters, so check the
+    device's actual class tree, not the badge on the box.
+  - >-
+    The standard is split into parts (framework, class structure, protocols).
+    Buying one part does not give you a working picture, and the parts are
+    priced separately for non-members of the AES.
+
+implementations:
+  - name: AES70.js
+    url: https://github.com/DeutscheSoft/AES70.js
+    language: JavaScript
+    license: GPL-2.0-only
+    role: both
+  - name: NanoOcp
+    url: https://github.com/ChristianAhrens/NanoOcp
+    language: C++
+    license: GPL-3.0-or-later
+    role: sender
+
+confidence: reported
+tags:
+  - audio
+  - device-control
+  - aes
+  - oca
+
+sources:
+  - title: AES70 standards category (latest published edition)
+    url: https://aes2.org/standards-category/aes70/
+    publisher: Audio Engineering Society
+    accessed: 2026-08-16
+    primary: true
+  - title: AES70 Standards and Specifications
+    url: https://ocaalliance.com/resources/standards-specifications/
+    publisher: OCA Alliance
+    accessed: 2026-08-16
+    primary: true
+  - title: AES Standards Store (AES70 pricing and access)
+    url: https://aes2.org/publications/standards-store/
+    publisher: Audio Engineering Society
+    accessed: 2026-08-16
+    primary: true
+  - title: Open Control Architecture (history and publication date)
+    url: https://en.wikipedia.org/wiki/Open_Control_Architecture
+    publisher: Wikipedia
+    accessed: 2026-08-16
+  - title: NanoOcp — OCP.1 over TCP, DS100 default port 50014
+    url: https://github.com/ChristianAhrens/NanoOcp
+    publisher: Christian Ahrens
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

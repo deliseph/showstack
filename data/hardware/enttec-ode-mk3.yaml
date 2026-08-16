@@ -1,0 +1,89 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: enttec-ode-mk3
+name: ENTTEC ODE Mk3
+aka:
+  - Open DMX Ethernet Mk3
+  - ODE MK3
+  - "70407"
+vendor: ENTTEC
+category: dmx-node
+summary: >-
+  Two-universe DMX and RDM gateway powered over Ethernet and configured from a
+  web browser. The small cheap node people hang above a truss position and forget
+  about.
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Includes Art-RDM.
+    confidence: verified
+  - protocol: sacn
+    direction: bidirectional
+    confidence: verified
+  - protocol: dmx512
+    direction: bidirectional
+    note: USITT DMX512-A on two 5-pin XLR ports, each settable as input or output.
+    confidence: verified
+  - protocol: rdm
+    direction: bidirectional
+    note: ANSI E1.20 RDM.
+    confidence: verified
+
+physical_ports:
+  - 2x XLR5F bidirectional DMX512-A / RDM
+  - 1x RJ45 Ethernet 10/100 with PoE (IEEE 802.3af)
+  - 1x DC 12-24 V input
+
+form_factor: Compact ABS-bodied node, 129 x 58 x 40 mm, 0.10 kg, IP20
+status: current
+
+homepage:
+  url: https://www.enttec.com/product/dmx-ethernet/ode-mk3-dmx-ethernet-converter/
+  label: ODE MK3
+docs:
+  url: https://cdn.enttec.com/pdf/assets/70407/70407_ODE_MK3_USER_MANUAL.pdf
+  label: ODE MK3 user manual
+
+gotchas:
+  - >-
+    IP20. This is an indoor, dry-location device. Outdoor and wet-location
+    positions need it in an enclosure.
+  - >-
+    Both XLR ports are female and each can be configured as an input or an output
+    in the web interface. A port set the wrong way looks physically correct and
+    passes nothing.
+  - >-
+    Powered either by 802.3af PoE or by a 12-24 V DC supply. A non-PoE switch means
+    a local power supply and another thing to lose in the pack.
+  - >-
+    Configuration lives on the device and is reached over the network. Note the IP
+    addressing scheme before it goes up in the air.
+
+confidence: reported
+tags:
+  - dmx
+  - node
+  - gateway
+  - poe
+
+sources:
+  - title: ODE MK3 (70407) datasheet
+    url: https://cdn.enttec.com/pdf/assets/70407/70407_ODE_MK3_DATASHEET.pdf
+    publisher: ENTTEC
+    accessed: 2026-08-16
+    primary: true
+  - title: ODE MK3 product page
+    url: https://www.enttec.com/product/dmx-ethernet/ode-mk3-dmx-ethernet-converter/
+    publisher: ENTTEC
+    accessed: 2026-08-16
+    primary: true
+  - title: ODE MK3 user manual
+    url: https://cdn.enttec.com/pdf/assets/70407/70407_ODE_MK3_USER_MANUAL.pdf
+    publisher: ENTTEC
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

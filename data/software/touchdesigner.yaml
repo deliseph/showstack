@@ -1,0 +1,86 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: touchdesigner
+name: TouchDesigner
+aka:
+  - TD
+vendor: Derivative
+category: content-creation
+summary: >-
+  Node-based visual development environment for real-time generative content,
+  interactive installations and custom control surfaces. Frequently deployed as
+  the content engine behind a show rather than as a cue playback tool.
+
+license: proprietary
+price_model: freemium
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    confidence: reported
+  - protocol: dmx512
+    direction: bidirectional
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    confidence: reported
+
+homepage:
+  url: https://derivative.ca/
+  label: derivative.ca
+docs:
+  url: https://docs.derivative.ca/
+  label: TouchDesigner documentation
+
+status: current
+typical_use:
+  - Generative and reactive content driven by live data or sensors
+  - Custom operator interfaces and bespoke control glue
+  - Projection content and LED processing pipelines
+  - Prototyping interactive installations
+
+gotchas:
+  - >-
+    The free Non-Commercial licence caps image resolution at 1280x1280 and locks
+    out Shared Memory, C++ and SDI operators. A project prototyped on it will not
+    scale to a real output without paying.
+  - >-
+    Projection calibration, optical tracking, motion capture input and
+    multi-process sync are Pro-tier only, so a Commercial licence is not enough for
+    a mapped or tracked show.
+  - >-
+    Non-Commercial keys are tied to the machine and cannot be moved. Only
+    Commercial and higher licences transfer between computers, which matters when
+    a show laptop dies.
+
+confidence: reported
+tags:
+  - generative
+  - realtime
+  - visuals
+  - interactive
+
+sources:
+  - title: TouchDesigner Products — licence tiers and limits
+    url: https://derivative.ca/UserGuide/TouchDesigner_Products
+    publisher: Derivative
+    accessed: 2026-08-16
+    primary: true
+  - title: Derivative — TouchDesigner
+    url: https://derivative.ca/
+    publisher: Derivative
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

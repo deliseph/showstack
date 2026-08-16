@@ -1,0 +1,54 @@
+id: load-in
+en: Load-in
+zh_hant: 裝台
+zh_hans: 装台
+domain: production-management
+definition_en: >-
+  The period when the production arrives at the venue and goes up: trucks
+  unloaded, rig hung, set built, systems powered and tested. The load-in
+  schedule is the document every department negotiates over, because there is
+  only one stage and everyone needs it first.
+definition_zh_hant: >-
+  製作進場、把演出裝起來的時段：卸貨、掛燈、搭景、開電測試。裝台進度表是各部門最常爭的文件，因為舞台只有一個，每個部門都想先用。
+regional_variants:
+  - region: US
+    term: Load-in
+  - region: UK
+    term: Get-in
+  - region: HK
+    term: 入台
+    note: 香港的入台進度表對應英文的 move-in schedule。
+  - region: TW
+    term: 裝台
+  - region: AU / NZ
+    term: Bump-in
+false_friends:
+  - >-
+    Australian and New Zealand crews say bump-in. It sounds like the lighting
+    term bump and has nothing to do with it.
+  - 香港的「入台」涵蓋整段進場期間，臺灣的「裝台」比較偏實際搭建的動作，兩者不完全等同。
+  - >-
+    Load-in is not fit-up. Fit-up is assembling the set once it is in the room;
+    the load-in is the whole arrival including dock time and unloading.
+see_also:
+  - get-in
+  - load-out
+  - bump
+safety_critical: false
+confidence: reported
+tags:
+  - scheduling
+  - production
+  - vocabulary
+sources:
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+    primary: true
+  - title: 臺中國家歌劇院 技術資料
+    url: https://www.npac-ntt.org/venuehire/technical
+    publisher: 臺中國家歌劇院
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

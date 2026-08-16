@@ -1,0 +1,43 @@
+id: ansi-e1-43
+designation: ANSI E1.43-2025
+title: Entertainment Technology - Performer Flying Systems
+body: ESTA
+domain: machinery
+year: 2025
+scope: >-
+  Minimum performance parameters for the design, manufacture, use, and
+  maintenance of performer flying systems in entertainment production. The 2016
+  edition covered mechanical systems supporting airborne performers or ride-on
+  props and excluded flying members of the public, fall protection systems, and
+  aerial acts that depend on the performer's own strength.
+status: current
+access_url:
+  url: https://webstore.ansi.org/standards/esta/ansie1432025
+  label: ANSI catalogue listing for the 2025 edition
+jurisdiction:
+  - US
+notes: >-
+  The 2025 edition is a substantial revision of the 2016 text. ESTA hosts the
+  2016 edition as a free PDF at
+  https://tsp.esta.org/tsp/documents/docs/ANSI_E1-43--2016_PerformerFlyingSystems.pdf,
+  but free availability of the 2025 edition was not confirmed, so free_to_read
+  is deliberately omitted here rather than guessed. Powered hoists that are not
+  lifting performers fall under ANSI E1.6-1 instead.
+confidence: verified
+tags:
+  - esta
+  - rigging
+  - performer-flying
+  - safety
+sources:
+  - title: ANSI E1.43-2025 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie1432025
+    publisher: ANSI
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.43-2016 Entertainment Technology — Performer Flying Systems (full text)
+    url: https://tsp.esta.org/tsp/documents/docs/ANSI_E1-43--2016_PerformerFlyingSystems.pdf
+    publisher: ESTA
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

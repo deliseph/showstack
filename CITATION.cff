@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "showstack: the open index of live entertainment technology"
+message: "If you use this dataset, please cite it."
+type: dataset
+authors:
+  - name: "showstack contributors"
+license: CC-BY-4.0
+repository-code: "https://github.com/OWNER/showstack"
+abstract: >-
+  An open, machine-readable index of the protocols, standards, software,
+  hardware and bilingual vocabulary used in live entertainment production,
+  with a source citation on every factual field.
+keywords:
+  - entertainment technology
+  - show control
+  - DMX512
+  - live events
+  - theatre

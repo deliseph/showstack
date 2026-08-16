@@ -1,0 +1,44 @@
+id: ansi-e1-21
+designation: ANSI E1.21-2024
+title: >-
+  Entertainment Technology - Temporary Structures Used for Technical Production
+  of Outdoor Entertainment Events
+body: ESTA
+domain: rigging-structural
+year: 2024
+scope: >-
+  Minimum design and performance requirements for temporary ground-supported
+  structures used in the technical production of outdoor entertainment events,
+  including stage roofs, towers, and support structures, with the aim of
+  keeping those structures reliable under the loads and weather they will
+  actually meet.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+notes: >-
+  The 2024 edition is referenced by the 2024 International Fire Code and by the
+  2024 International Building Code provisions for temporary structures, so in
+  many US jurisdictions this stops being advisory and becomes the thing the
+  inspector is holding.
+confidence: verified
+tags:
+  - esta
+  - outdoor
+  - temporary-structures
+  - safety
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.21-2024 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie1212024
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

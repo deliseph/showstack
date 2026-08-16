@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/software.schema.json",
+  "title": "Software",
+  "description": "A software tool used to design, control, play back, or monitor a live entertainment system.",
+  "type": "object",
+  "required": ["id", "name", "category", "summary", "license", "status", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.defs.json#/definitions/slug" },
+    "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "aka": { "type": "array", "items": { "type": "string", "maxLength": 100 }, "uniqueItems": true },
+    "vendor": { "type": "string", "maxLength": 120 },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lighting-control",
+        "media-server",
+        "video-playback",
+        "audio-playback",
+        "audio-mixing",
+        "show-control",
+        "cue-playback",
+        "previsualisation",
+        "cad-drafting",
+        "tracking",
+        "networking-utility",
+        "monitoring-diagnostics",
+        "content-creation",
+        "production-management"
+      ]
+    },
+    "summary": { "type": "string", "minLength": 30, "maxLength": 400 },
+    "license": { "$ref": "common.defs.json#/definitions/spdxOrProprietary" },
+    "price_model": {
+      "type": "string",
+      "enum": ["free", "open-source", "freemium", "one-off-purchase", "subscription", "dongle-locked", "quote-only"]
+    },
+    "platforms": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["windows", "macos", "linux", "ios", "android", "web", "embedded"] },
+      "uniqueItems": true
+    },
+    "speaks": {
+      "type": "array",
+      "description": "The interop matrix. Which protocols this software can send or receive. This is the single most useful field in the whole index.",
+      "items": {
+        "type": "object",
+        "required": ["protocol", "direction"],
+        "additionalProperties": false,
+        "properties": {
+          "protocol": { "$ref": "common.defs.json#/definitions/slug" },
+          "direction": { "type": "string", "enum": ["in", "out", "bidirectional"] },
+          "since_version": { "type": "string", "maxLength": 40 },
+          "requires_licence": { "type": "boolean", "description": "True if this capability is behind a paid tier or add-on." },
+          "note": { "type": "string", "maxLength": 300 },
+          "confidence": { "$ref": "common.defs.json#/definitions/confidence" }
+        }
+      }
+    },
+    "homepage": { "$ref": "common.defs.json#/definitions/link" },
+    "repo": { "$ref": "common.defs.json#/definitions/link" },
+    "docs": { "$ref": "common.defs.json#/definitions/link" },
+    "status": { "$ref": "common.defs.json#/definitions/status" },
+    "superseded_by": { "$ref": "common.defs.json#/definitions/slug" },
+    "typical_use": { "type": "array", "items": { "type": "string", "maxLength": 160 }, "maxItems": 8 },
+    "gotchas": { "type": "array", "items": { "type": "string", "maxLength": 300 }, "maxItems": 8 },
+    "confidence": { "$ref": "common.defs.json#/definitions/confidence" },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "uniqueItems": true },
+    "sources": { "$ref": "common.defs.json#/definitions/sources" },
+    "contributed_by": { "$ref": "common.defs.json#/definitions/contributors" },
+    "updated": { "type": "string", "format": "date" }
+  }
+}

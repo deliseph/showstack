@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.vercel
+__pycache__/
+*.egg-info/
+build/
+packages/showstack-js/showstack.json
+packages/showstack-py/showstack/showstack.json

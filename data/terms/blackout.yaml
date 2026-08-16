@@ -1,0 +1,52 @@
+id: blackout
+en: Blackout
+zh_hant: 暗場（BO）
+zh_hans: 暗场
+domain: lighting
+definition_en: >-
+  A lighting state in which all stage light goes out, usually as punctuation at
+  the end of a scene. A dead blackout means no light at all, including work
+  light and equipment glow, which is a different and much harder request than
+  an ordinary blackout.
+definition_zh_hant: >-
+  舞台燈全部熄掉的燈光狀態，通常用來結束一場戲。Dead blackout
+  是連工作燈和設備亮光都不能有，這是完全不同、也難得多的要求。
+regional_variants:
+  - region: HK / TW
+    term: 暗場
+    note: Cue 表上常縮寫成 BO。
+false_friends:
+  - 中文口語的 blackout 通常指停電。劇場的暗場是刻意做出來的燈光狀態，不是斷電。
+  - >-
+    "Dark" describes a building with no performance booked. A blackout is a
+    state inside a running show. See the entry for dark.
+  - >-
+    Blackout cloth is a fabric that stops light passing through it. It has
+    nothing to do with the cue.
+  - >-
+    Exit signs and aisle lighting stay on during a blackout in nearly every
+    jurisdiction. Promising a true dead blackout may be promising something
+    illegal.
+see_also:
+  - dark
+  - cue
+  - bump
+  - house
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - cue
+  - vocabulary
+sources:
+  - title: Stage lighting
+    url: https://en.wikipedia.org/wiki/Stage_lighting
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

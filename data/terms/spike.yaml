@@ -1,0 +1,47 @@
+id: spike
+en: Spike
+zh_hant: 定位記號（貼 mark）
+zh_hans: 定位记号
+domain: stage-management
+definition_en: >-
+  A tape mark on the deck showing exactly where a piece of scenery, a furniture
+  leg or a performer belongs. Spikes are what make a scene change repeatable in
+  the dark, so stage management lays them and everyone else is expected to work
+  around them.
+definition_zh_hant: >-
+  貼在台面上的記號，標出佈景、家具腳或演員的準確位置。有了 mark，暗場中的換景才做得出一樣的結果，所以由舞監組負責貼，其他人繞開它工作。
+regional_variants:
+  - region: TW
+    term: 馬一下
+    note: 從 mark 來的現場俚語，「幫我馬一下」就是用膠帶貼記號。
+  - region: HK
+    term: 貼 mark／打 mark
+false_friends:
+  - >-
+    In audio and electrics a spike is a transient overshoot in a signal or a
+    supply. Same word, opposite meaning, and it turns up in the same building.
+  - >-
+    Spike tape is thin low-tack tape made for marks. Gaffer tape is not spike
+    tape, and pulling the floor finish up with it will be your problem.
+  - 「定位」單獨用也可以指吊桿的高度定位。講地面記號時說「貼 mark」比較不會被誤會。
+see_also:
+  - dead
+  - strike
+safety_critical: false
+confidence: reported
+tags:
+  - stage-management
+  - scene-change
+  - vocabulary
+sources:
+  - title: Spike (stagecraft)
+    url: https://en.wikipedia.org/wiki/Spike_(stagecraft)
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 請走、拉fly、下舞台？劇場黑話大破解
+    url: https://www.thenewslens.com/article/67015
+    publisher: The News Lens 關鍵評論網
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

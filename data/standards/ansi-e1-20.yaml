@@ -1,0 +1,43 @@
+id: ansi-e1-20
+designation: ANSI E1.20-2025
+title: Entertainment Technology - Remote Device Management over DMX512 Networks (RDM)
+body: ESTA
+domain: control-data
+year: 2025
+scope: >-
+  Adds bidirectional communication to a DMX512 line so a controller can
+  discover devices, read and set DMX start addresses, query sensors, and
+  collect status messages, using an alternate start code so that it shares the
+  cable with ordinary DMX512 traffic.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+  - US
+  - International
+related_protocols:
+  - dmx512
+notes: >-
+  ESTA distributes the download as an archive containing ANSI E1.20 together
+  with ANSI E1.37-1 and ANSI E1.37-2, which define additional parameter
+  messages. Any RDM work needs the E1.37 parts as well as this one.
+confidence: verified
+tags:
+  - esta
+  - lighting
+  - dmx
+  - rdm
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.20-2025 catalogue listing
+    url: https://webstore.ansi.org/standards/esta/ansie1202025
+    publisher: ANSI
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

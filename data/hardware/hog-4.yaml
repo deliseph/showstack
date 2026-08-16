@@ -1,0 +1,105 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: hog-4
+name: Hog 4
+aka:
+  - Hog 4-18
+  - Hog4
+vendor: High End Systems
+category: lighting-console
+summary: >-
+  Flagship Hog console with ten motorised master playbacks, dual 18.5-inch
+  touchscreens and eight DMX outputs on the back. Long-standing choice for
+  concert touring and festival lighting.
+
+speaks:
+  - protocol: dmx512
+    direction: out
+    note: Eight Neutrik XLR-5 outputs, 8,192 output channels onboard.
+    confidence: verified
+  - protocol: art-net
+    direction: out
+    note: Over the dedicated gigabit Ethernet port. Universe count expands with networked DP8000 processors.
+    confidence: verified
+  - protocol: sacn
+    direction: out
+    note: Over the dedicated gigabit Ethernet port. Universe count expands with networked DP8000 processors.
+    confidence: verified
+  - protocol: midi-show-control
+    direction: bidirectional
+    confidence: reported
+  - protocol: mtc
+    direction: in
+    confidence: reported
+  - protocol: ltc
+    direction: in
+    note: Linear timecode input on 3-pin XLR.
+    confidence: verified
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+
+physical_ports:
+  - 8x XLR5 DMX out (Neutrik)
+  - 2x etherCON for HogNet and FixtureNet
+  - 1x Gigabit Ethernet for Art-Net and sACN
+  - MIDI In, Out and Thru
+  - 1x XLR3 LTC/SMPTE in
+  - 3x DisplayPort for external monitors
+
+form_factor: Console with dual 18.5-inch tilt-adjustable touchscreens
+status: current
+
+homepage:
+  url: https://www.etcconnect.com/Products/High-End-Systems/Hog-4-Consoles/Hog-4-18/Features.aspx
+  label: Hog 4-18 features
+docs:
+  url: https://www.etcconnect.com/webdocs/Controls/HOG/HTML/en/index.htm
+  label: Hog 4 Lighting Control System manual
+
+gotchas:
+  - >-
+    Onboard processing stops at 8,192 channels and eight physical outputs. Past
+    that you are buying DP8000 processors, which means rack space, power and
+    network at the other end of the run.
+  - >-
+    HogNet and FixtureNet are separate networks on separate etherCON ports, and
+    Art-Net or sACN leaves on a third port. Patching all three into one flat switch
+    is a good way to lose a show.
+  - >-
+    The product is now sold and supported under ETC after High End Systems was
+    acquired. Documentation and downloads live on etcconnect.com, not on the old
+    highend.com paths.
+
+confidence: reported
+tags:
+  - lighting
+  - console
+  - hog
+  - touring
+
+sources:
+  - title: Hog 4-18 Features
+    url: https://www.etcconnect.com/Products/High-End-Systems/Hog-4-Consoles/Hog-4-18/Features.aspx
+    publisher: ETC / High End Systems
+    accessed: 2026-08-16
+    primary: true
+  - title: Hog 4 Lighting Control System manual
+    url: https://www.etcconnect.com/webdocs/Controls/HOG/HTML/en/index.htm
+    publisher: ETC / High End Systems
+    accessed: 2026-08-16
+    primary: true
+  - title: Hog 4 manual — MIDI Show Control
+    url: https://www.etcconnect.com/webdocs/Controls/HOG/HTML/en/sect-midi_show_control.htm
+    publisher: ETC / High End Systems
+    accessed: 2026-08-16
+    primary: true
+  - title: Hog 4 manual — MIDI Timecode
+    url: https://www.etcconnect.com/webdocs/Controls/HOG/HTML/en/sect-midi_timecode.htm
+    publisher: ETC / High End Systems
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

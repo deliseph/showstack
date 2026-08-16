@@ -1,0 +1,32 @@
+name: Something is wrong
+description: A field in the index is incorrect
+title: "[correction] "
+labels: ["correction", "data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Corrections are the most valuable contributions here. Nobody will be defensive about it.
+  - type: input
+    id: file
+    attributes:
+      label: Which file and field
+      placeholder: "data/software/watchout.yaml -> speaks[2]"
+    validations: { required: true }
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What it says now, and what it should say
+    validations: { required: true }
+  - type: textarea
+    id: source
+    attributes:
+      label: What establishes the correct value
+      description: A document, a manual page, or "I tested this on the hardware, here is what happened". Both are acceptable; they get different confidence levels.
+    validations: { required: true }
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: This error could lead someone to an unsafe decision (rigging, electrical, machinery, laser, pyro). We will prioritise it.

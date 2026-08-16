@@ -1,0 +1,38 @@
+id: dark
+en: Dark
+zh_hant: 封箱 / 暗場
+zh_hans: 封箱 / 暗场
+domain: general
+definition_en: >-
+  A day or period when a venue has no performance. Also used for a stage that is
+  unlit. Which one is meant depends entirely on context, and getting it wrong
+  costs a day of crew.
+definition_zh_hant: >-
+  劇場沒有演出的日子，或指舞台無燈的狀態。兩種意思差很多，要看上下文判斷。
+regional_variants:
+  - region: US
+    term: Dark day
+    note: A scheduled non-performance day in a running production.
+  - region: UK
+    term: Dark
+    note: Also used of a theatre with no production booked at all, sometimes for months.
+false_friends:
+  - >-
+    "Going dark" in a broadcast or corporate AV context means losing signal or
+    going off air, not taking a day off.
+  - >-
+    "Blackout" is a lighting state inside a show. "Dark" is a state of the
+    building. Calling a blackout "dark" on headset will get you a confused LX op.
+see_also: []
+safety_critical: false
+confidence: verified
+tags:
+  - scheduling
+  - vocabulary
+sources:
+  - title: Glossary of technical theatre terms
+    url: https://www.theatrecrafts.com/pages/home/theatre-glossary/
+    publisher: Theatrecrafts
+    primary: true
+contributed_by: []
+updated: 2026-08-16

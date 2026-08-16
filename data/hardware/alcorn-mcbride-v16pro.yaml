@@ -1,0 +1,87 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: alcorn-mcbride-v16pro
+name: Alcorn McBride V16Pro
+aka:
+  - V16Pro-S
+  - V16 Pro
+vendor: Alcorn McBride
+category: show-controller
+summary: >-
+  Solid-state show controller for attractions, with sixteen serial ports, sixteen
+  opto inputs, sixteen relay outputs and SMPTE timecode read and generate.
+  Programmed in WinScript Live and superseded by the V16X.
+
+speaks:
+  - protocol: ltc
+    direction: bidirectional
+    note: SMPTE LTC in and out on XLR, 600 ohm balanced, 1-4 V peak to peak. The V16Pro reads and generates; the V4Pro does not.
+    confidence: verified
+
+physical_ports:
+  - 16x DB-9M serial, individually configurable RS-232C or RS-422
+  - 2x RJ-45 10/100 Base-T Ethernet
+  - 1x MIDI in (5-pin DIN female) and MIDI out
+  - SMPTE LTC in and out on XLR
+  - 16x opto-isolated inputs
+  - 16x relay outputs
+  - 1x RS-232C programmer port and USB programmer connection
+
+form_factor: 19-inch rack mount, 19 x 3.5 x 10.25 in, 9.5 lbs
+rack_units: 2
+status: superseded
+
+homepage:
+  url: https://alcorn.com/products/v16pro-s/
+  label: V16Pro-S
+docs:
+  url: https://alcorn.com/library/manuals/man_v16pro.pdf
+  label: V Series Network Controllers user's guide
+
+gotchas:
+  - >-
+    Discontinued. Alcorn McBride lists the V16Pro-S as legacy and points new work
+    at the V16X, so treat this as a maintenance and spares entry rather than a
+    specification for a new install.
+  - >-
+    The V4Pro shares the platform but drops to four serial ports and has no SMPTE
+    generation. Do not substitute one for the other on a timecode-driven show.
+  - >-
+    Sixteen serial ports means sixteen device-specific cables and pinouts. Confirm
+    RS-232 versus RS-422 per port before the loom is made, because each port is
+    configured individually.
+  - >-
+    Relay outputs are dry contacts, not powered. Anything being switched needs its
+    own supply and, where the load is inductive, its own protection.
+
+confidence: reported
+tags:
+  - show-control
+  - attractions
+  - timecode
+  - legacy
+
+sources:
+  - title: V16Pro-S product page
+    url: https://alcorn.com/products/v16pro-s/
+    publisher: Alcorn McBride
+    accessed: 2026-08-16
+    primary: true
+  - title: V16Pro-S specification cutsheet
+    url: https://alcorn.com/library/cutsheets/lit_v16pros.pdf
+    publisher: Alcorn McBride
+    accessed: 2026-08-16
+    primary: true
+  - title: V Series Network Controllers user's guide
+    url: https://alcorn.com/library/manuals/man_v16pro.pdf
+    publisher: Alcorn McBride
+    accessed: 2026-08-16
+    primary: true
+  - title: Alcorn McBride products index
+    url: https://alcorn.com/products/
+    publisher: Alcorn McBride
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

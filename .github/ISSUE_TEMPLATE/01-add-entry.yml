@@ -1,0 +1,41 @@
+name: Add an entry
+description: Something is missing from the index
+title: "[new entry] "
+labels: ["good first issue", "data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks. Adding an entry is one YAML file and needs no local setup.
+        If you would rather just write it, skip this form and open the pull request directly.
+  - type: dropdown
+    id: collection
+    attributes:
+      label: Which collection
+      options: [protocols, software, hardware, standards, terms]
+    validations: { required: true }
+  - type: input
+    id: name
+    attributes:
+      label: What is it called
+      placeholder: "PosiStageNet"
+    validations: { required: true }
+  - type: textarea
+    id: sources
+    attributes:
+      label: Source
+      description: A link to the standard, the vendor's documentation, or the project's repo. This is the one field we cannot proceed without.
+      placeholder: "https://…"
+    validations: { required: true }
+  - type: textarea
+    id: knowledge
+    attributes:
+      label: What do you know about it
+      description: Ports, addressing, what speaks it, what goes wrong with it. Rough notes are fine, we will help shape them.
+  - type: checkboxes
+    id: claim
+    attributes:
+      label: Do you want to write it
+      options:
+        - label: I would like to open the pull request myself
+        - label: I am happy for someone else to write it from my notes

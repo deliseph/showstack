@@ -1,0 +1,101 @@
+id: kinet
+name: KiNET
+aka:
+  - Color Kinetics Ethernet Protocol
+  - Philips KiNET
+category: lighting-control
+summary: >-
+  Color Kinetics' lightweight UDP protocol for sending light data to their
+  power/data supplies and luminaires over ethernet. If a job has Color Kinetics
+  fixtures on PDS supplies, this is usually what is actually on the wire between
+  the controller and the rig.
+
+transport:
+  - udp
+
+default_ports:
+  - number: 6038
+    transport: udp
+    role: Light data (DMXOUT v1 and PORTOUT v2 packets)
+    note: >-
+      Color Kinetics also document 6039, 6041 and 6045 for non-light-data
+      traffic such as keypad triggering.
+
+multicast:
+  used: false
+  note: >-
+    Light data is sent to the unicast address of a specific power/data supply.
+    The vendor whitepaper describes DMXOUT as sending one universe to one
+    destination IP.
+
+universe_model: >-
+  512 slots per packet. v1 DMXOUT sends one universe to a supply, which splits
+  it across ports by stored node counts. v2 PORTOUT adds a port field so each
+  output port gets its own universe.
+
+openness: proprietary-documented
+spec_url:
+  url: https://colorkinetics.helpdocs.io/article/umxjxmoc7a-ki-net-ethernet-protocol-whitepaper
+  label: KiNET Ethernet Protocol Whitepaper
+steward: Signify (Philips Color Kinetics)
+status: current
+
+typical_use:
+  - Console or media server driving Color Kinetics power/data supplies
+  - Architectural pixel installations built on Color Kinetics hardware
+  - Converters bridging an sACN or Art-Net show network to a PDS
+  - Keypad and station control alongside light data on the same supply
+
+gotchas:
+  - >-
+    v1 DMXOUT relies on node counts stored inside the power/data supply to
+    decide where one universe splits across its ports. Change the fixture count
+    and the split is wrong until the supply is reconfigured, not the console.
+  - >-
+    v2 PORTOUT addresses each output port directly. A controller sending v1 to a
+    supply set up for v2, or the reverse, gives you either nothing or the right
+    data on the wrong ports.
+  - >-
+    Light data is unicast to a specific supply IP and there is no discovery a
+    third-party controller can lean on. Every supply address has to be recorded,
+    labelled and kept with the show file.
+  - >-
+    Port 6038 carries light data only. Keypads and other station traffic use
+    6039, 6041 and 6045, so a firewall rule that opens 6038 alone passes pixels
+    and breaks wall panels.
+  - >-
+    This is a vendor protocol on a vendor ecosystem. Third-party support is an
+    add-on written against a whitepaper, so verify against the actual supply
+    firmware on site rather than trusting a feature list.
+
+implementations:
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: sender
+
+confidence: reported
+tags:
+  - lighting
+  - pixel
+  - color-kinetics
+  - proprietary
+
+sources:
+  - title: KiNET Ethernet Protocol Whitepaper (port 6038, DMXOUT v1 and PORTOUT v2)
+    url: https://colorkinetics.helpdocs.io/article/umxjxmoc7a-ki-net-ethernet-protocol-whitepaper
+    publisher: Color Kinetics (Signify)
+    accessed: 2026-08-16
+    primary: true
+  - title: KiNET — Open Lighting Project wiki (packet header, UDP 6038)
+    url: https://wiki.openlighting.org/index.php/KiNET
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+  - title: OLA KiNET plugin source (SendDMX and SendPortOut, 16-port PORTOUT limit)
+    url: https://raw.githubusercontent.com/OpenLightingProject/ola/master/plugins/kinet/KiNetNode.h
+    publisher: Open Lighting Project
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

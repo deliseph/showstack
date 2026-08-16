@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/term.schema.json",
+  "title": "Term",
+  "description": "A piece of live entertainment vocabulary, with the translations crews actually use rather than the dictionary ones.",
+  "type": "object",
+  "required": ["id", "en", "domain", "definition_en", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.defs.json#/definitions/slug" },
+    "en": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "zh_hant": { "type": "string", "maxLength": 120, "description": "Traditional Chinese as used in HK / TW crews." },
+    "zh_hans": { "type": "string", "maxLength": 120 },
+    "ja": { "type": "string", "maxLength": 120 },
+    "ko": { "type": "string", "maxLength": 120 },
+    "de": { "type": "string", "maxLength": 120 },
+    "fr": { "type": "string", "maxLength": 120 },
+    "es": { "type": "string", "maxLength": 120 },
+    "regional_variants": {
+      "type": "array",
+      "description": "Same job, different word depending on where you are standing.",
+      "items": {
+        "type": "object",
+        "required": ["region", "term"],
+        "additionalProperties": false,
+        "properties": {
+          "region": { "type": "string", "maxLength": 60 },
+          "term": { "type": "string", "maxLength": 120 },
+          "note": { "type": "string", "maxLength": 200 }
+        }
+      }
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["lighting", "audio", "video", "rigging", "stage-management", "automation", "scenic", "wardrobe", "production-management", "networking", "safety", "general"]
+    },
+    "definition_en": { "type": "string", "minLength": 20, "maxLength": 600 },
+    "definition_zh_hant": { "type": "string", "maxLength": 600 },
+    "false_friends": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 200 },
+      "description": "Terms that look like they mean the same thing and do not. The reason this file exists."
+    },
+    "see_also": { "type": "array", "items": { "$ref": "common.defs.json#/definitions/slug" }, "uniqueItems": true },
+    "related_protocols": { "type": "array", "items": { "$ref": "common.defs.json#/definitions/slug" }, "uniqueItems": true },
+    "safety_critical": {
+      "type": "boolean",
+      "description": "True if getting this word wrong on headset can hurt someone. Rendered with a warning on the site."
+    },
+    "confidence": { "$ref": "common.defs.json#/definitions/confidence" },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "uniqueItems": true },
+    "sources": { "$ref": "common.defs.json#/definitions/sources" },
+    "contributed_by": { "$ref": "common.defs.json#/definitions/contributors" },
+    "updated": { "type": "string", "format": "date" }
+  }
+}

@@ -1,0 +1,47 @@
+id: rake
+en: Rake
+zh_hant: 斜台
+zh_hans: 斜台
+domain: scenic
+definition_en: >-
+  A stage floor built on a slope, higher upstage than downstage. It changes
+  sightlines, and it also changes how anything on wheels or with a high centre
+  of gravity behaves, so trucks, rostra and furniture destined for a rake have
+  to be built and braked for it.
+definition_zh_hant: >-
+  上舞台高、下舞台低的斜面舞台。除了改變視線，也改變所有有輪子、重心高的東西的行為，所以要放上斜台的推車、平台和家具，都必須為斜度另外設計並加上煞車。
+regional_variants:
+  - region: UK
+    term: Rake
+    note: Usually quoted as a ratio such as one in twenty-four.
+  - region: HK / TW
+    term: 斜台
+false_friends:
+  - 「斜度」也用來講觀眾席的坡度。觀眾席斜度和舞台斜度是兩件事，一個場地可以只有其中一個。
+  - >-
+    A raked seating figure in a venue spec is not a stage rake figure. Reading
+    one as the other has put scenery on the wrong geometry more than once.
+  - >-
+    Castors that are safe on a flat deck can run away on a rake. A rake changes
+    the risk assessment for every wheeled item, not just the sightlines.
+see_also:
+  - house
+  - wings
+safety_critical: false
+confidence: reported
+tags:
+  - scenic
+  - venue
+  - vocabulary
+sources:
+  - title: Parts of a theatre
+    url: https://en.wikipedia.org/wiki/Parts_of_a_theatre
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Stage (theatre)
+    url: https://en.wikipedia.org/wiki/Stage_(theatre)
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

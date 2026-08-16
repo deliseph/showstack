@@ -1,0 +1,36 @@
+id: ansi-e1-31
+designation: ANSI E1.31-2018
+title: Lightweight streaming protocol for transport of DMX512 using ACN
+body: ESTA
+domain: control-data
+year: 2018
+scope: >-
+  Defines how DMX512 data is packaged into the ACN root layer and streamed over
+  IPv4 and IPv6 networks, including universe-to-multicast-address mapping,
+  source priority, synchronisation packets, and universe discovery.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download after registration)
+jurisdiction:
+  - US
+  - International
+related_protocols:
+  - sacn
+notes: >-
+  ESTA makes its ANSI entertainment technology standards available at no cost,
+  which is unusual among standards bodies and worth knowing when you are
+  specifying a system on someone else's budget.
+confidence: verified
+tags:
+  - esta
+  - lighting
+  - networking
+sources:
+  - title: ESTA Technical Standards Program — published documents
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA
+    primary: true
+contributed_by: []
+updated: 2026-08-16

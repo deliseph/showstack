@@ -1,0 +1,105 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: disguise-designer
+name: disguise Designer
+aka:
+  - d3
+  - Designer
+vendor: disguise
+category: media-server
+summary: >-
+  The software that drives disguise media servers, combining a 3D stage model,
+  timeline and mapped video output in one project. The same application is used
+  for previs, programming and running the show.
+
+license: proprietary
+price_model: freemium
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    confidence: reported
+  - protocol: midi-show-control
+    direction: bidirectional
+    confidence: reported
+  - protocol: ltc
+    direction: in
+    note: One of the documented timecode sources alongside MTC, MIDI beat clock and system time.
+    confidence: reported
+  - protocol: mtc
+    direction: in
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: psn
+    direction: in
+    note: Listed among Designer's position drivers.
+    confidence: reported
+  - protocol: rttrpm
+    direction: in
+    note: Used for BlackTrax tracking data.
+    confidence: reported
+  - protocol: kinet
+    direction: out
+    note: KiNET v1 and v2 are listed as DMX device drivers.
+    confidence: reported
+
+homepage:
+  url: https://www.disguise.one/en/products/designer
+  label: disguise Designer
+docs:
+  url: https://help.disguise.one/designer/getting-started/designer
+  label: disguise Designer user guide
+
+status: current
+typical_use:
+  - Programming and playing back mapped video on LED and projection
+  - Previsualisation of a stage design before load-in
+  - Driving disguise hardware in a multi-server session with understudy backup
+  - Extended reality and virtual production stages
+
+gotchas:
+  - >-
+    Projects saved in the free Starter tier are permanently locked to Starter.
+    Pro can open anything except a Starter project, so evaluating on Starter and
+    then upgrading means rebuilding the file.
+  - >-
+    Starter cannot join a session with disguise servers or Pro instances, and its
+    output carries an intermittent blue flash. It is a learning tier, not a
+    small-show tier.
+  - >-
+    Licensing is either a cloud licence tied to a disguise Cloud account or a
+    CodeMeter USB dongle. Only dongles with serial numbers starting "3-" are
+    supported, and cloud licences need internet to activate and check in or out.
+
+confidence: reported
+tags:
+  - media-server
+  - projection-mapping
+  - previs
+  - xr
+
+sources:
+  - title: Designer Starter vs Pro
+    url: https://www.disguise.one/en/products/designer-starter-vs-pro
+    publisher: disguise
+    accessed: 2026-08-16
+    primary: true
+  - title: Designer Licensing FAQs
+    url: https://www.disguise.one/en/designer-licensing-faqs
+    publisher: disguise
+    accessed: 2026-08-16
+    primary: true
+  - title: disguise User Guide — Devices Index
+    url: https://help.disguise.one/designer/devices/devices-index
+    publisher: disguise
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

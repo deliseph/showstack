@@ -1,0 +1,77 @@
+id: mtc
+name: MIDI Timecode
+aka:
+  - MTC
+  - MIDI Time Code
+category: timecode-sync
+summary: >-
+  Carries SMPTE-style hours, minutes, seconds and frames over a MIDI connection,
+  as quarter-frame messages while running and a full-frame sysex when locating.
+  It is how a DAW, playback machine or console chases a master clock without
+  giving up an audio channel.
+
+transport:
+  - midi-din
+  - usb
+
+multicast:
+  used: false
+
+openness: open-published
+spec_url:
+  url: https://midi.org/midi-time-code
+  label: RP-004/RP-008 MIDI Time Code specification v4.2.1
+steward: The MIDI Association (MIDI Manufacturers Association)
+status: current
+
+typical_use:
+  - Locking a DAW or playback rig to a lighting or video master clock
+  - Chasing QLab and a lighting console to one timeline
+  - Distributing position to devices that have MIDI but no audio input
+  - Driving a timecode-triggered cue stack from a backing track machine
+
+gotchas:
+  - >-
+    Quarter-frame messages carry one nibble at a time, four per frame, so a
+    complete timecode value takes two frames to arrive. Every MTC reader is
+    inherently one to two frames behind. Compensate in the receiver, do not
+    nudge the master.
+  - >-
+    The frame rate lives in bits 5-6 of the hours byte and encodes only 24, 25,
+    30 drop-frame and 30. There is no 23.976, 48, 50 or 60 value, so a 23.98
+    project has to travel as 24 and be reconciled at the far end.
+  - >-
+    The full-frame sysex F0 7F cc 01 01 hr mn sc fr F7 only locates the
+    receiver. Nothing actually runs until quarter-frames start arriving, which
+    is why a device can display the correct time and still not be chasing.
+  - >-
+    A receiver that ignores the frame-rate bits will run 25 fps code as 30 and
+    drift by a fifth. The numbers look sane the whole time, which is what makes
+    it expensive to spot.
+  - >-
+    Quarter-frames are continuous traffic on a 31.25 kbit/s DIN line. Share that
+    cable with MSC and your cue messages queue behind the clock.
+  - >-
+    Only the low nibble of each user-bit data byte is used in the user-bits
+    sysex. Converters that repack user bits between LTC and MTC routinely lose
+    or reorder them.
+
+confidence: reported
+tags:
+  - timecode
+  - midi
+  - sync
+
+sources:
+  - title: MIDI Time Code — RP-004-008 v4.2.1 specification
+    url: https://midi.org/midi-time-code
+    publisher: The MIDI Association
+    accessed: 2026-08-16
+    primary: true
+  - title: MIDI Time Code (quarter-frame nibble order, full message, frame-rate bits, user bits)
+    url: https://electronics.koncon.nl/wp-content/uploads/2022/04/MIDI-Time-Code.pdf
+    publisher: Koninklijk Conservatorium Den Haag (course copy)
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

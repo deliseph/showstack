@@ -1,0 +1,83 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: madmapper
+name: MadMapper
+vendor: garageCube
+category: media-server
+summary: >-
+  Projection mapping and LED pixel mapping application that treats surfaces and
+  fixtures as one output canvas. Common on installations and mid-size shows where
+  a full media server is overkill.
+
+license: proprietary
+price_model: one-off-purchase
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Documented as Art-Net 4 compliant, up to 4096 DMX universes.
+    confidence: verified
+  - protocol: sacn
+    direction: bidirectional
+    confidence: reported
+  - protocol: dmx512
+    direction: bidirectional
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    note: Includes OSC Query support.
+    confidence: verified
+  - protocol: ndi
+    direction: bidirectional
+    confidence: verified
+
+homepage:
+  url: https://madmapper.com/
+  label: madmapper.com
+docs:
+  url: https://docs.madmapper.com/
+  label: MadMapper documentation
+
+status: current
+typical_use:
+  - Mapping video onto scenic objects and irregular surfaces
+  - Pixel mapping LED strips, battens and custom fixtures from video content
+  - Permanent installations driven by the MiniMad hardware player
+  - Laser content when paired with MadLaser
+
+gotchas:
+  - >-
+    Perpetual licences are sold with a two-seat minimum. A single machine can only
+    be licensed on the rental plan, which matters when budgeting one show laptop.
+  - >-
+    The free demo watermarks input, output and preview and disables saving and
+    loading projects, so it cannot be used to build a show in advance.
+  - >-
+    Laser output is MadLaser, a separate product, not a MadMapper feature. Do not
+    quote laser control on the strength of a MadMapper licence.
+
+confidence: reported
+tags:
+  - projection-mapping
+  - pixel-mapping
+  - video
+  - installation
+
+sources:
+  - title: MadMapper Features
+    url: https://madmapper.com/madmapper/features
+    publisher: garageCube
+    accessed: 2026-08-16
+    primary: true
+  - title: MadMapper FAQ — licensing and system requirements
+    url: https://madmapper.com/madmapper/faq
+    publisher: garageCube
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

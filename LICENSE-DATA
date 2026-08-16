@@ -1,0 +1,17 @@
+The contents of data/ and the generated JSON in dist/api/ are licensed under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+You are free to share and adapt the material for any purpose, including
+commercially, provided you give appropriate credit to "showstack contributors"
+and indicate if changes were made.
+
+Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Why this split: the code is MIT so anyone can vendor the tooling without
+thinking about it, and the data is CC BY so the index stays attributable as it
+spreads into products, spreadsheets and technical riders.
+
+IMPORTANT: showstack indexes and describes standards and products. It does not
+reproduce the text of any standard. Standards published by ESTA, SMPTE, AES,
+IEC and others remain the copyright of those bodies. Entries link to the
+authoritative document; they never substitute for reading it.

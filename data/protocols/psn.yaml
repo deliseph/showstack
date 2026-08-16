@@ -1,0 +1,110 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: psn
+name: PosiStageNet
+aka:
+  - PSN
+  - PosiStage
+  - PosiStageNet
+category: tracking-position
+summary: >-
+  An open multicast UDP protocol for streaming live 3D position, orientation,
+  speed and acceleration of tracked objects on stage. It is how a tracking
+  system tells lighting consoles, media servers and audio renderers where a
+  performer or a piece of scenery actually is, right now.
+
+transport:
+  - udp
+default_ports:
+  - number: 56565
+    transport: udp
+    role: PSN_INFO and PSN_DATA packets
+    note: Default in the specification. Both address and port are configurable at the tracking server.
+
+multicast:
+  used: true
+  ranges:
+    - 236.10.10.10 (IPv4 default group)
+  note: >-
+    The default group sits in globally scoped multicast space rather than the
+    administratively scoped 239.0.0.0/8 block, so networks with strict multicast
+    policy may drop it. One stream feeds every consumer at once, which is the
+    whole point of using multicast here.
+
+openness: open-published
+spec_url:
+  url: https://raw.githubusercontent.com/vyv/psn-cpp/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf
+  label: PosiStageNet protocol description v2.03 (PDF)
+steward: VYV Corporation, developed with MA Lighting Technology GmbH
+first_published: 2013
+status: current
+
+typical_use:
+  - Automated followspot systems driven from performer tracking
+  - Projection mapping onto moving scenery and performers
+  - Feeding object-based audio renderers with source positions
+  - Sending automation and scenery positions to consoles and media servers
+  - Broadcasting one tracker stream to several consumers at once
+
+gotchas:
+  - >-
+    There are two packet types. PSN_INFO carries system and tracker names at a
+    slow rate, PSN_DATA carries the positions. A parser that only reads DATA
+    gets numbers with no idea which tracker they belong to.
+  - >-
+    Default rate is 60 Hz and it can be pushed to 250 Hz. Every increase
+    multiplies packet load on a network that is often shared with lighting
+    multicast, so raise it deliberately, not by default.
+  - >-
+    Positions are metres in the tracking system's own coordinate frame. PSN
+    carries no origin, axis convention or handedness, so the venue origin and
+    which way is up have to be agreed and written down before anyone patches.
+  - >-
+    The protocol is public domain and royalty-free, but the name is not. You can
+    implement it freely; you cannot ship something called PosiStageNet without
+    talking to VYV.
+  - >-
+    Trackers can drop out and reappear. Consumers that hold the last known
+    position will happily keep pointing a light at a spot the performer left
+    thirty seconds ago, so check what your receiver does on timeout.
+
+implementations:
+  - name: psn-cpp
+    url: https://github.com/vyv/psn-cpp
+    language: C++
+    license: MIT
+    role: both
+
+confidence: verified
+tags:
+  - tracking
+  - position
+  - multicast
+  - followspot
+  - vyv
+
+sources:
+  - title: PosiStageNet protocol description v2.02
+    url: https://posistage.net/wp-content/uploads/2019/01/PosiStageNetprotocol_v2.02_2016_09_15.pdf
+    publisher: VYV Corporation and MA Lighting Technology GmbH
+    accessed: 2026-08-16
+    primary: true
+  - title: PosiStageNet protocol description v2.03 (PDF in the reference implementation)
+    url: https://raw.githubusercontent.com/vyv/psn-cpp/master/doc/PosiStageNetprotocol_v2.03_2019_09_09.pdf
+    publisher: VYV Corporation
+    accessed: 2026-08-16
+    primary: true
+  - title: PosiStageNet — An Open Protocol for On-Stage, Live 3D Position Data
+    url: https://posistage.net/
+    publisher: VYV Corporation
+    accessed: 2026-08-16
+    primary: true
+  - title: PosiStageNet protocol description v1.7 (earliest dated release, September 2013)
+    url: https://posistage.net/wp-content/uploads/2018/07/PosiStageNetprotocolv1.7.pdf
+    publisher: VYV Corporation
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

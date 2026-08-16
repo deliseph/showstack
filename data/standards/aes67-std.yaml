@@ -1,0 +1,46 @@
+id: aes67-std
+designation: AES67-2023
+title: >-
+  AES standard for audio applications of networks - High-performance streaming
+  audio-over-IP interoperability
+body: AES
+domain: audio
+year: 2023
+scope: >-
+  Specifies an interoperability profile for high-performance streaming audio
+  over IP networks, covering synchronisation, media clock identification,
+  transport, encoding, session description, and connection management, so that
+  equipment built on different manufacturers' audio networking systems can
+  exchange streams.
+status: current
+free_to_read: false
+access_url:
+  url: https://aes2.org/publications/standards-store/
+  label: AES Standards Store
+jurisdiction:
+  - International
+notes: >-
+  Free to AES members, USD 100 otherwise. AES67 is a profile rather than a
+  product: a device claiming AES67 support is claiming it can exchange streams
+  with another AES67 device, not that it does everything Dante or Ravenna does
+  natively.
+confidence: verified
+tags:
+  - aes
+  - audio-over-ip
+  - networking
+sources:
+  - title: >-
+      AES67-2023, "AES standard for audio applications of networks -
+      High-performance streaming audio-over-IP interoperability" has been
+      published
+    url: https://www.aes.org/standards/blog/2024/2/aes67-2023-aes-standard-for-audio
+    publisher: Audio Engineering Society
+    accessed: 2026-08-16
+    primary: true
+  - title: AES Standards Store
+    url: https://aes2.org/publications/standards-store/
+    publisher: Audio Engineering Society
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

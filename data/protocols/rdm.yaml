@@ -1,0 +1,111 @@
+id: rdm
+name: RDM
+aka:
+  - Remote Device Management
+  - E1.20
+  - RDM over DMX
+category: device-management
+summary: >-
+  Bidirectional device management that shares the same pair as DMX512, using
+  alternate start code 0xCC so level data and management traffic interleave on
+  one line. It is how you read and change a fixture's address, personality and
+  sensors without going up in the truss.
+
+transport:
+  - rs485
+
+multicast:
+  used: false
+
+universe_model: >-
+  Shares the DMX512 slot space. Devices are addressed by a UID built from a
+  16-bit ESTA manufacturer ID plus a device-specific part, not by DMX address.
+
+openness: open-published
+spec_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (ANSI E1.20, free download)
+steward: ESTA (Entertainment Services and Technology Association)
+first_published: 2006
+status: current
+
+typical_use:
+  - Reading and setting DMX addresses and personalities from front of house
+  - Pulling lamp hours, temperature and error sensors during a preshow check
+  - Identifying which physical fixture sits on which address
+  - Configuring gateways, splitters and dimmer racks on a DMX line
+
+gotchas:
+  - >-
+    Every splitter, buffer and opto in the path has to be RDM aware. A one-way
+    splitter passes DMX perfectly and silently swallows every response, so
+    discovery finds nothing and the rig looks dead to the controller.
+  - >-
+    Fixtures that do not check start codes will act on 0xCC packets as if they
+    were levels. Enabling RDM on a line with old kit on it can produce flicker
+    or jumps that look like a data fault.
+  - >-
+    RDM traffic occupies slots that would otherwise carry DMX. Heavy discovery
+    or continuous sensor polling measurably drops the refresh rate, so turn the
+    polling down before doors.
+  - >-
+    Discovery is a binary search over the UID space with collision retries. On a
+    large or marginal line a full discovery takes minutes and can still miss
+    devices; run it twice before believing the count.
+  - >-
+    The controller owns the line. Two RDM controllers on the same universe talk
+    over each other and responses get attributed to the wrong device, which
+    produces genuinely confusing patch data.
+  - >-
+    Manufacturer IDs 8000h to FFFFh are reserved for the dynamic UIDs used by
+    E1.33 RDMnet. A device showing one of those is not identifiable by
+    manufacturer from the UID alone.
+  - >-
+    Response timing is tight and specified. A long line, a bad terminator or a
+    cheap USB dongle that turns the driver around too slowly will produce
+    intermittent discovery with clean-looking DMX.
+
+implementations:
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: both
+  - name: ETCLabs RDM
+    url: https://github.com/ETCLabs/RDM
+    language: C
+    license: Apache-2.0
+    role: both
+
+confidence: verified
+tags:
+  - lighting
+  - rdm
+  - device-management
+  - esta
+  - rs485
+
+sources:
+  - title: ANSI E1.20 — Remote Device Management over DMX512 Networks (current edition, free download)
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.20-2010 preview — scope, half-duplex operation, DISC_UNIQUE_BRANCH discovery
+    url: https://webstore.ansi.org/preview-pages/esta/preview_ansi_e1-20_2010.pdf
+    publisher: ESTA / ANSI webstore
+    accessed: 2026-08-16
+    primary: true
+  - title: DMX512 Alternate START Codes registry (0xCC = E1.20 RDM)
+    url: https://tsp.esta.org/tsp/working_groups/CP/DMXAlternateCodes.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-08-16
+    primary: true
+  - title: ESTA Manufacturer IDs (16-bit ID, 8000h-FFFFh reserved for E1.33 dynamic UIDs)
+    url: https://tsp.esta.org/tsp/working_groups/CP/mfctrIDs.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

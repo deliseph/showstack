@@ -1,0 +1,43 @@
+id: smpte-st-12-1
+designation: SMPTE ST 12-1:2014
+title: Time and Control Code
+body: SMPTE
+domain: control-data
+year: 2014
+scope: >-
+  Defines the time and control code used by television and audio systems at 60,
+  59.94, 50, 48, 47.95, 30, 29.97, 25, 24, and 23.98 frames per second. It
+  specifies the structure of the time address, binary groups, and flag bits,
+  and two carriers: linear time code (LTC) for recording on linear media or a
+  serial interface, and vertical interval time code (VITC).
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/pub/st12-1/st0012-1-2014.pdf
+  label: SMPTE Standards Library — full text PDF
+jurisdiction:
+  - US
+  - International
+notes: >-
+  This is the document that defines what crews call LTC or SMPTE timecode. On
+  17 June 2026 SMPTE opened its whole standards catalogue at no cost, so the
+  full text can now be read without membership or purchase. Approved 20
+  February 2014.
+confidence: verified
+tags:
+  - smpte
+  - timecode
+  - ltc
+  - synchronisation
+sources:
+  - title: SMPTE ST 12-1:2014 Time and Control Code (full text)
+    url: https://pub.smpte.org/pub/st12-1/st0012-1-2014.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE Makes Its Standards Freely Accessible
+    url: https://www.smpte.org/blog/smpte-makes-its-standards-freely-accessible-openingstandards-library-to-the-global-media-technology-community
+    publisher: SMPTE
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

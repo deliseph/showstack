@@ -1,0 +1,115 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: dante
+name: Dante
+aka:
+  - Dante Audio Networking
+  - Audinate Dante
+category: audio-transport
+summary: >-
+  Audinate's proprietary audio-over-IP system carrying uncompressed multichannel
+  audio, clocking and device control over ordinary gigabit ethernet. It is the
+  default audio network on most touring and install jobs, and usually what a
+  desk, a stagebox and an amp rack are talking to each other with.
+
+transport:
+  - udp
+  - tcp
+default_ports:
+  - number: 4321
+    transport: udp
+    role: Dante multicast audio (ATP)
+    note: Audinate lists this against the 239.255.0.0/16 multicast range.
+  - number: 4440
+    transport: udp
+    role: Dante audio control
+  - number: 4444
+    transport: udp
+    role: Dante audio control
+  - number: 4455
+    transport: udp
+    role: Dante audio control
+  - number: 8700
+    transport: udp
+    role: Multicast control and monitoring
+    note: >-
+      Audinate documents the whole block 8700-8708 on 224.0.0.230-233 for
+      control and monitoring, plus unicast equivalents at 28700-28708 (Via) and
+      38700-38708 (Dante Virtual Soundcard).
+
+multicast:
+  used: true
+  ranges:
+    - 239.255.0.0/16 (Dante audio and video flows)
+    - 239.69.0.0/16 (AES67 flows from Dante devices)
+    - 224.0.0.230-233 (control and monitoring)
+  note: >-
+    Dante will run entirely unicast for small channel counts and only moves to
+    multicast when a transmitter feeds several receivers. Audinate says IGMP
+    snooping is required on mixed audio/video networks but is not a requirement
+    for audio-only networks with few multicast flows.
+
+openness: proprietary-closed
+steward: Audinate Pty Ltd
+status: current
+
+typical_use:
+  - Console to stagebox, amp rack and processing in touring and install audio
+  - Distributing programme and comms audio around a building on one cable plant
+  - Computer playback and recording via Dante Virtual Soundcard or Dante Via
+  - Feeding AES67 or ST 2110-30 systems from a Dante plant
+
+gotchas:
+  - >-
+    Dante's own clock is PTP version 1 (IEEE 1588-2002). AES67 and ST 2110 use
+    PTPv2. Putting a Dante device into AES67 mode moves it to a different clock
+    domain, and the two do not share a grandmaster without a bridging device.
+  - >-
+    Energy Efficient Ethernet (IEEE 802.3az, sold as "green ethernet") must be
+    disabled on every port carrying Dante. Audinate names it as a cause of clock
+    instability and occasional dropouts, and it is on by default on cheap switches.
+  - >-
+    QoS has to be strict priority queueing, not weighted. Audinate's scheme is
+    DSCP CS7 for PTP event messages, EF for audio and PTPv2, CS1 for reserved.
+    A switch doing weighted fair queueing will still drop audio under load.
+  - >-
+    Discovery is mDNS on 224.0.0.251, which is link-local and does not cross a
+    router. Devices on a different subnet will not appear in Dante Controller
+    unless you are running Dante Domain Manager.
+  - >-
+    Multicast flows need one IGMP querier elected per VLAN. Two queriers, or
+    none, and the flows either flood every port or vanish after the group
+    membership times out.
+  - >-
+    There is no published wire specification. Anything that speaks Dante does so
+    with a licensed Audinate module, chip or software stack, so "we will just
+    write a driver" is not an option on this one.
+
+confidence: verified
+tags:
+  - audio
+  - audio-over-ip
+  - audinate
+  - proprietary
+  - ptp
+
+sources:
+  - title: Which network ports does Dante use?
+    url: https://support.getdante.com/hc/en-gb/articles/5508285534239-Which-network-ports-does-Dante-use
+    publisher: Audinate
+    accessed: 2026-08-16
+    primary: true
+  - title: Dante Information for Network Administrators v7.1
+    url: https://www.getdante.com/wp-content/uploads/2026/07/Information-for-Network-Admins-v7.1.pdf
+    publisher: Audinate
+    accessed: 2026-08-16
+    primary: true
+  - title: Dante product and platform overview
+    url: https://www.getdante.com/
+    publisher: Audinate
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

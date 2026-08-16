@@ -1,0 +1,37 @@
+name: welcome
+
+# A first pull request from a stranger is the moment this project either gains
+# a contributor or loses one. Answer it within seconds, every time.
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >
+            Thanks for opening this. If you are able to point at a source, that
+            unblocks it immediately. If you know it from the floor but cannot
+            cite it, say so and we will work out together where it belongs,
+            because that knowledge is exactly what this index is short of.
+          pr-message: >
+            Thank you, and welcome. CI will check the entry in about a minute.
+            If it fails, the message will tell you which line and what to change,
+            and if that message is unclear, say so here and we will fix the
+            validator rather than leave you guessing.
+
+
+            One thing worth doing before this merges: add your GitHub handle to
+            `contributed_by` on the entry you touched. Credit in this project
+            lives in the data, not just the commit log.

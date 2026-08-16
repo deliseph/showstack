@@ -1,0 +1,80 @@
+id: dmx512
+name: DMX512
+aka:
+  - DMX
+  - DMX512-A
+  - USITT DMX512
+category: lighting-control
+summary: >-
+  The unidirectional serial protocol that has controlled stage lighting since
+  1986. 512 slots of 8-bit data per universe, sent continuously over a
+  differential pair, with no error checking and no acknowledgement.
+
+transport:
+  - rs485
+default_ports: []
+multicast:
+  used: false
+
+universe_model: >-
+  One universe = 1 start code plus up to 512 slots of 8-bit data, refreshed up
+  to about 44 times per second.
+
+openness: open-published
+spec_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents
+standards:
+  - ansi-e1-11
+steward: ESTA (Entertainment Services and Technology Association)
+first_published: 1986
+status: current
+
+typical_use:
+  - Console to dimmer, moving light, LED fixture, hazer, or scenic effect
+  - Last-metre delivery from an ethernet gateway to fixtures on a bar
+  - Triggering non-lighting devices that accept a DMX channel as a go signal
+
+gotchas:
+  - >-
+    DMX is RS-485 and wants 120 ohm impedance cable with a terminator at the far
+    end. Microphone cable works until the run is long or the rig is noisy, and
+    then it fails in a way that looks like a fixture fault.
+  - >-
+    There is no error detection. A corrupted slot is simply acted on. Flicker
+    that follows no logic is usually a data integrity problem, not a fixture.
+  - >-
+    Star topology is not part of the standard. Daisy chain, or use a real
+    opto-splitter. Passive Y-splits are the source of an enormous amount of
+    unexplained behaviour.
+  - >-
+    Start code 0x00 is dimmer data. Other start codes exist (0xCC is RDM), and
+    a device that ignores start codes will act on RDM traffic as if it were
+    levels.
+
+implementations:
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: both
+  - name: DMXSerial (Arduino)
+    url: https://github.com/mathertel/DMXSerial
+    language: C++
+    license: BSD-3-Clause
+    role: both
+
+confidence: verified
+tags:
+  - lighting
+  - rs485
+  - foundational
+
+sources:
+  - title: ANSI E1.11 — USITT DMX512-A, Asynchronous Serial Digital Data Transmission Standard for Controlling Lighting Equipment and Accessories
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

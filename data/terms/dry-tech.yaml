@@ -1,0 +1,42 @@
+id: dry-tech
+en: Dry tech
+zh_hant: 無演員技術排練
+zh_hans: 无演员技术排练
+domain: stage-management
+definition_en: >-
+  A technical rehearsal run without performers, so departments can work through
+  scene changes, cue sequences and automation moves at their own pace before
+  anyone is put into them. It is usually the cheapest place in the schedule to
+  find the problems.
+definition_zh_hant: >-
+  不帶演員的技術排練，讓各部門先按自己的節奏走一次換景、cue
+  的順序和機械動作，再讓演員進來。整個進度表裡，這是找出問題成本最低的時段。
+regional_variants:
+  - region: HK / TW
+    term: Dry tech
+    note: 中文沒有固定譯法，口語多半直接講英文，或說「不帶演員的技排」。
+false_friends:
+  - 把 dry tech 譯成「乾排」會被理解成不帶技術的走位排練，意思剛好相反。
+  - >-
+    A dry tech is not a paper tech. A paper tech is a table meeting about where
+    cues sit, with nothing switched on and nobody on stage.
+  - >-
+    Scheduling a dry tech does not release the cast. Check the call sheet
+    before anyone assumes a day off.
+see_also:
+  - tech-rehearsal
+  - cue
+safety_critical: false
+confidence: reported
+tags:
+  - rehearsal
+  - stage-management
+  - vocabulary
+sources:
+  - title: Technical rehearsal
+    url: https://en.wikipedia.org/wiki/Technical_rehearsal
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+contributed_by: []
+updated: 2026-08-16

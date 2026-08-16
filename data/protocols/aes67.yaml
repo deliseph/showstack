@@ -1,0 +1,119 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: aes67
+name: AES67
+aka:
+  - AES67 audio-over-IP
+  - AES-67
+category: audio-transport
+summary: >-
+  An AES interoperability standard for streaming uncompressed audio over IP
+  using RTP and IEEE 1588 PTP. It is the common ground that lets Dante, RAVENNA,
+  Q-LAN, Livewire and Ravenna-derived broadcast gear exchange streams without a
+  hardware bridge.
+
+transport:
+  - udp
+default_ports:
+  - number: 5004
+    transport: udp
+    role: RTP media stream (RTP/AVP default port)
+    note: >-
+      Audinate documents 5004 for AES67 multicast audio from Dante devices. The
+      actual port for any given stream comes from the SDP, so treat 5004 as the
+      common default rather than a fixed rule.
+  - number: 9875
+    transport: udp
+    role: SAP session announcements used for AES67 stream discovery
+    note: SAP is one of several discovery mechanisms in use. AES67 does not mandate any of them.
+
+multicast:
+  used: true
+  note: >-
+    AES67 streams are usually multicast but the standard does not reserve an
+    address range, so the plant owner assigns it. Audinate's Dante devices emit
+    AES67 flows in 239.69.0.0/16. SAP announcements go to 239.255.255.255:9875.
+    AES67 specifies IGMP for managing multicast traffic.
+
+openness: published-paid
+spec_url:
+  url: https://aes2.org/publications/standards-store/
+  label: AES Standards Store (AES67 is free to AES members, otherwise paid)
+steward: Audio Engineering Society (AES)
+first_published: 2013
+status: current
+
+typical_use:
+  - Getting audio between two vendors' networks that do not share a native protocol
+  - Broadcast contribution and distribution between studios and OB trucks
+  - Feeding ST 2110-30 audio receivers from a pro audio network
+  - Interop mode on Dante, RAVENNA, Q-LAN and Livewire devices
+
+gotchas:
+  - >-
+    AES67 mandates no discovery method at all. SAP, Bonjour/mDNS and NMOS IS-04
+    are all in the field. Two fully compliant devices can sit on the same switch
+    and never see each other, and you patch by hand from the SDP.
+  - >-
+    It standardises the stream and the clock, not the ecosystem. There is no
+    AES67 device control, no level control, no naming, no subscription model, so
+    day to day patching still happens in each vendor's own tool.
+  - >-
+    AES67 is built on PTPv2 (IEEE 1588-2008). Dante's native clock is PTPv1, so
+    a Dante device switched into AES67 mode changes clock domain and stops
+    clocking with its non-AES67 neighbours.
+  - >-
+    A 1 ms packet time is the only one every AES67 device must support. 125 us,
+    250 us, 333.33 us and 4 ms are optional, and broadcast gear often defaults to
+    a short one for latency. A receiver that only does 1 ms just refuses the stream.
+  - >-
+    An AES67 flow carries no channel names. Channel order in the stream is the
+    only thing that identifies what is where, so document the map or you will be
+    counting pairs at soundcheck.
+
+implementations:
+  - name: aes67-linux-daemon
+    url: https://github.com/bondagit/aes67-linux-daemon
+    language: C++
+    license: GPL-3.0-or-later
+    role: both
+  - name: ALSA RAVENNA/AES67 driver
+    url: https://github.com/bondagit/ravenna-alsa-lkm
+    language: C
+    role: both
+
+confidence: reported
+tags:
+  - audio
+  - audio-over-ip
+  - interoperability
+  - aes
+  - ptp
+
+sources:
+  - title: AES Standards Store (AES67-2023 listing and pricing)
+    url: https://aes2.org/publications/standards-store/
+    publisher: Audio Engineering Society
+    accessed: 2026-08-16
+    primary: true
+  - title: AES67-2013, Networks, audio-over-IP interoperability (publication announcement)
+    url: https://www.aes.org/standards/blog/2013/9/aes67-2013-audio-over-ip-130911
+    publisher: AES Standards Committee
+    accessed: 2026-08-16
+    primary: true
+  - title: AES67 FAQ
+    url: https://aimsalliance.org/aes67-faq/
+    publisher: AIMS Alliance
+    accessed: 2026-08-16
+  - title: RAVENNA and AES67 white paper (mandatory 1 ms packet time, optional packet times, L16/L24)
+    url: https://ravenna-network.com/wp-content/uploads/2020/02/RAVENNA___AES67_V1.0.pdf
+    publisher: ALC NetworX
+    accessed: 2026-08-16
+  - title: Which network ports does Dante use? (AES67 RTP and SAP ports)
+    url: https://support.getdante.com/hc/en-gb/articles/5508285534239-Which-network-ports-does-Dante-use
+    publisher: Audinate
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

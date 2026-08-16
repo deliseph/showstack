@@ -1,0 +1,120 @@
+id: rdmnet
+name: RDMnet
+aka:
+  - E1.33
+  - RDM over IP
+category: device-management
+summary: >-
+  Carries RDM messages over IP, with brokers routing between controllers and
+  devices instead of every controller polling every wire. It also defines LLRP,
+  a multicast side channel for finding and fixing devices whose IP settings are
+  wrong.
+
+transport:
+  - tcp
+  - udp
+
+default_ports:
+  - number: 5569
+    transport: udp
+    role: LLRP discovery and configuration (multicast)
+    iana_registered: true
+    note: >-
+      IANA registers 5569/udp as rdmnet-device and 5569/tcp as rdmnet-ctrl to
+      PLASA for E1.33. Broker connections do not use a fixed port; brokers
+      advertise their listening port over DNS-SD.
+
+multicast:
+  used: true
+  ranges:
+    - 239.255.250.133 (LLRP request, IPv4)
+    - 239.255.250.134 (LLRP response, IPv4)
+    - ff18::85:0:0:85 (LLRP request, IPv6)
+    - ff18::85:0:0:86 (LLRP response, IPv6)
+  note: >-
+    Multicast is used only by LLRP. Normal RPT traffic between controllers,
+    brokers and devices is unicast TCP through a broker. Addresses as defined in
+    the ETC reference implementation of E1.33.
+
+openness: open-published
+spec_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (ANSI E1.33-2019, free download)
+steward: ESTA (Entertainment Services and Technology Association)
+first_published: 2019
+status: current
+
+typical_use:
+  - Configuring RDM devices across a whole building from one controller
+  - Recovering nodes that have the wrong IP address, via LLRP
+  - Gateways exposing their downstream DMX/RDM responders to the network
+  - Multi-controller environments where a single DMX line would be a bottleneck
+
+gotchas:
+  - >-
+    Nothing works without a broker. With no broker running in the scope,
+    controllers and devices sit there discovered and unable to exchange a single
+    message. Some products embed a broker, most do not.
+  - >-
+    Discovery is DNS-SD, normally over mDNS, which does not cross a subnet
+    boundary without a reflector or a unicast DNS-SD server. That is the usual
+    reason a device on another VLAN never appears in the list.
+  - >-
+    Scope is a text string and it defaults to "default". A device left on the
+    wrong scope is invisible to the controller even though it is on the right
+    network and answers a ping.
+  - >-
+    LLRP is the recovery path, not the working path. It is multicast and
+    deliberately limited in what it can do, so never design a routine control
+    workflow around it.
+  - >-
+    Dynamic UIDs are allocated by the broker in the 8000h-FFFFh manufacturer ID
+    range and are not stable across sessions. Never key a patch, a preset or a
+    show file off one.
+  - >-
+    A gateway presents its downstream DMX responders as endpoints, but the wire
+    behind it is still RS-485 RDM. A slow or marginal DMX leg gates the whole
+    conversation regardless of how fast the network is.
+  - >-
+    TCP connections to the broker are health-checked with heartbeats. A network
+    that drops idle flows, or a firewall with a short state timeout, will make
+    devices appear and disappear on a cycle.
+
+implementations:
+  - name: ETCLabs RDMnet
+    url: https://github.com/ETCLabs/RDMnet
+    language: C
+    license: Apache-2.0
+    role: both
+
+confidence: reported
+tags:
+  - lighting
+  - rdm
+  - device-management
+  - esta
+  - dns-sd
+
+sources:
+  - title: ANSI E1.33-2019 (RDMnet), approved 27 August 2019 — free download
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.33-2019 preview — scope, Broker/Controller/Device roles, DNS-SD, LLRP
+    url: https://webstore.ansi.org/preview-pages/ESTA/preview_ANSI+E1.33-2019.pdf
+    publisher: ESTA / ANSI webstore
+    accessed: 2026-08-16
+    primary: true
+  - title: ETCLabs RDMnet — include/rdmnet/defs.h (LLRP addresses, LLRP_PORT, default scope, DNS-SD service type)
+    url: https://raw.githubusercontent.com/ETCLabs/RDMnet/main/include/rdmnet/defs.h
+    publisher: Electronic Theatre Controls
+    accessed: 2026-08-16
+  - title: IANA Service Name and Transport Protocol Port Number Registry (5569 rdmnet-ctrl / rdmnet-device, PLASA E1.33)
+    url: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
+    publisher: IANA
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

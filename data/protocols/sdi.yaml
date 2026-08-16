@@ -1,0 +1,95 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: sdi
+name: SDI (Serial Digital Interface)
+aka:
+  - SDI
+  - HD-SDI
+  - 3G-SDI
+  - 6G-SDI
+  - 12G-SDI
+  - SMPTE 259M
+  - SMPTE 292
+category: video-transport
+summary: >-
+  SMPTE's uncompressed baseband digital video interface, carried on 75 ohm coax
+  and BNC from 270 Mb/s standard definition up to 11.88 Gb/s 12G. It is still
+  the backbone of most live video: point to point, no negotiation, no network,
+  and it either locks or it does not.
+
+transport:
+  - other
+  - fibre
+
+openness: open-published
+spec_url:
+  url: https://pub.smpte.org/pub/st292-1/st292-1-2018.pdf
+  label: SMPTE ST 292-1:2018 — 1.5 Gb/s Signal/Data Serial Interface (free PDF)
+steward: SMPTE (Society of Motion Picture and Television Engineers)
+status: current
+
+typical_use:
+  - Camera to switcher and switcher to projector or LED processor
+  - Distribution amplifiers and routers in a control room or OB truck
+  - Feeding media servers, recorders and multiviewers
+  - Long runs on fibre via SDI to fibre converters (SMPTE ST 297)
+
+gotchas:
+  - >-
+    The bit rate is fixed by the standard, not by the picture. ST 259 is
+    143/270/360 Mb/s, ST 292-1 is 1.485 Gb/s (or 1.485/1.001), ST 2082-1 is
+    11.88 Gb/s. A "12G" run is really an 11.88 Gb/s run.
+  - >-
+    The connector is 75 ohm BNC per IEC 61169-8. 50 ohm BNCs are mechanically
+    identical, will fit, will pass SD happily, and will then fail at 3G and 12G
+    in a way that looks like a bad cable everywhere else in the chain.
+  - >-
+    Cable loss is specified at half the clock frequency, around 20 dB for
+    ST 292-1. The same drum of cable that carries HD across a stadium will not
+    carry 12G, so re-derate every existing run when you upgrade rate.
+  - >-
+    There is no negotiation, no handshake and no error correction. A marginal
+    link produces sparkles or black frames, and the receiver reports lock rather
+    than quality, so "it says it is locked" proves very little.
+  - >-
+    Audio, timecode and captions ride as ancillary data in the blanking
+    intervals. Some converters, re-clockers and scalers pass video cleanly and
+    drop ANC, so timecode and captions vanish with no error anywhere.
+  - >-
+    Return loss is specified at 15 dB and rise time at 270 ps for HD, 45 ps for
+    12G. Cheap patch panels and barrel connectors are the usual reason a 12G
+    path that works on the bench fails in the rack.
+
+confidence: verified
+tags:
+  - video
+  - baseband
+  - coax
+  - smpte
+  - bnc
+
+sources:
+  - title: SMPTE ST 292-1:2018 — 1.5 Gb/s Signal/Data Serial Interface
+    url: https://pub.smpte.org/pub/st292-1/st292-1-2018.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE ST 259:2008 — SDTV Digital Signal/Data, Serial Digital Interface
+    url: https://pub.smpte.org/pub/st259/st0259-2008.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE ST 2082-1:2023 — 12 Gb/s Signal/Data Serial Interface
+    url: https://pub.smpte.org/doc/st2082-1/20231115-pub/st2082-1-2023.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+  - title: SMPTE EG 2111-1:2021 — SD-SDI and HD-SDI Standards Roadmap
+    url: https://pub.smpte.org/latest/eg2111-1/eg2111-1-2021.pdf
+    publisher: SMPTE
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

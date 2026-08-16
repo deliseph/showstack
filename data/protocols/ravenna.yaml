@@ -1,0 +1,115 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ravenna
+name: RAVENNA
+aka:
+  - RAVENNA/AES67
+category: audio-transport
+summary: >-
+  ALC NetworX's audio-over-IP technology built on RTP media streams, PTPv2
+  clocking, DNS-SD discovery and RTSP connection management. It is common in
+  broadcast infrastructure and Merging Technologies recording systems, and it
+  carries AES67 as a subset.
+
+transport:
+  - udp
+  - tcp
+default_ports:
+  - number: 8080
+    transport: tcp
+    role: HTTP configuration interface
+    note: >-
+      Assignable, with 8080 as the documented default. RTP, RTCP and RTSP ports
+      are all assignable too; RTCP is always the RTP port plus one.
+
+multicast:
+  used: true
+  note: >-
+    RTP streams can be unicast or multicast and the addresses are assigned by
+    the implementation, not reserved by the specification. PTP uses the
+    well-known 224.0.1.129 to 224.0.1.132 and 224.0.0.107 groups.
+
+openness: proprietary-documented
+spec_url:
+  url: https://ravenna-network.com/wp-content/uploads/2020/02/RAVENNA_Operating_Principles_-_Draft_1.0_final.pdf
+  label: RAVENNA Operating Principles (Draft 1.0)
+steward: ALC NetworX GmbH, merged into Lawo in January 2024
+first_published: 2010
+status: current
+
+typical_use:
+  - Broadcast studio and OB truck audio infrastructure
+  - Merging Technologies Pyramix and Horus/Hapi recording systems
+  - High channel count and high sample rate studio links
+  - Feeding and receiving AES67 streams from other vendors' networks
+
+gotchas:
+  - >-
+    RAVENNA is a superset of AES67. Two RAVENNA devices can agree on sample
+    rates above 48 kHz or packet times other than 1 ms that an AES67-only
+    receiver cannot accept, so interop needs the stream forced into the subset.
+  - >-
+    Discovery is DNS-SD, with mDNS only as the fallback where there is no DNS
+    server. A plant running unicast DNS-SD and a device expecting mDNS will not
+    see each other even though both are working correctly.
+  - >-
+    Connection management is RTSP plus SDP, not SAP. Many AES67 devices only
+    listen for SAP announcements on 9875, which is why converter tools exist to
+    translate between the two.
+  - >-
+    PTP is IEEE 1588-2008 and RAVENNA supports Default, AES67 and SMPTE ST
+    2059-2 profiles. Domain number and profile must match across the whole
+    plant, and mismatches present as slow drift rather than as a clean fault.
+  - >-
+    ALC NetworX recommend static IP addressing and explicitly warn off DHCP.
+    A DHCP lease change mid-show pulls the stream addresses out from under
+    receivers that were told about them in an SDP.
+  - >-
+    Recommended DSCP is CS6 for PTP event messages and EF or AF41 for RTP,
+    and RAVENNA traffic normally has to outrank VoIP on shared corporate
+    infrastructure. On a default switch config it will not.
+
+implementations:
+  - name: ALSA RAVENNA/AES67 driver
+    url: https://github.com/bondagit/ravenna-alsa-lkm
+    language: C
+    role: both
+  - name: aes67-linux-daemon
+    url: https://github.com/bondagit/aes67-linux-daemon
+    language: C++
+    license: GPL-3.0-or-later
+    role: both
+
+confidence: reported
+tags:
+  - audio
+  - audio-over-ip
+  - broadcast
+  - aes67
+  - ptp
+
+sources:
+  - title: RAVENNA Operating Principles — Draft 1.0
+    url: https://ravenna-network.com/wp-content/uploads/2020/02/RAVENNA_Operating_Principles_-_Draft_1.0_final.pdf
+    publisher: ALC NetworX
+    accessed: 2026-08-16
+    primary: true
+  - title: RAVENNA Network Requirements V1.4
+    url: https://www.ravenna-network.com/wp-content/uploads/2023/01/RAVENNA-Network-Requirements-V1.4.pdf
+    publisher: ALC NetworX
+    accessed: 2026-08-16
+    primary: true
+  - title: ALC NetworX (introduced at IBC 2010, merged with Lawo January 2024)
+    url: https://www.ravenna-network.com/partners/alc-networx/
+    publisher: RAVENNA Network
+    accessed: 2026-08-16
+    primary: true
+  - title: RAVENNA and AES67 white paper
+    url: https://ravenna-network.com/wp-content/uploads/2020/02/RAVENNA___AES67_V1.0.pdf
+    publisher: ALC NetworX
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,51 @@
+id: load-out
+en: Load-out
+zh_hant: 拆台
+zh_hans: 拆台
+domain: production-management
+definition_en: >-
+  Taking the production out of the venue: strike the set, de-rig, pack, load
+  the trucks. It usually happens at night, at speed, against a curfew, with
+  people who have already worked a show, which is why it takes a large share of
+  the industry's injuries.
+definition_zh_hant: >-
+  把演出撤出場地：拆景、落燈、打包、上車。通常在深夜趕時間進行，而且大家已經做完一場演出，所以工傷比例特別高。
+regional_variants:
+  - region: US
+    term: Load-out
+  - region: UK
+    term: Get-out
+  - region: HK / TW
+    term: 拆台
+  - region: AU / NZ
+    term: Bump-out
+false_friends:
+  - 「拆台」在日常華語裡是當眾拆別人的台、扯後腿的意思。在通告表上它就是撤場。
+  - >-
+    Load-out is not strike. Strike is dismantling the physical production;
+    load-out is the whole departure, including packing, dock and trucks.
+  - >-
+    A venue's stated load-out finish time is usually a licence condition, not a
+    target. Overrunning it is a legal problem, not a scheduling one.
+see_also:
+  - strike
+  - load-in
+  - get-in
+safety_critical: false
+confidence: reported
+tags:
+  - scheduling
+  - production
+  - vocabulary
+sources:
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 臺中國家歌劇院 技術資料
+    url: https://www.npac-ntt.org/venuehire/technical
+    publisher: 臺中國家歌劇院
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,47 @@
+id: tech-rehearsal
+en: Tech rehearsal
+zh_hant: 技術排練（技排）
+zh_hans: 技术排练
+domain: stage-management
+definition_en: >-
+  The rehearsal where technical elements are added to the staging and worked
+  through cue by cue. It runs slowly and stops often. It belongs to the
+  technical departments rather than to the director's rehearsal process, which
+  is the part most often misunderstood when the schedule is written.
+definition_zh_hant: >-
+  把技術元素加進走位、一個 cue 一個 cue 走的排練。速度慢、停得多。主導權在技術部門手上，不是導演排戲的時段，排進度表時最常搞錯這一點。
+regional_variants:
+  - region: HK
+    term: 技術綵排
+    note: 香港寫「綵排」，最後一次完整跑是「總綵排」。
+  - region: TW
+    term: 技排
+    note: 臺灣寫「彩排」，技術排練簡稱技排。
+false_friends:
+  - 香港寫「綵排」，臺灣和大陸寫「彩排」。合約和通告表上不要混用。
+  - 「彩排」單獨出現時通常指帶妝帶服的排練，不是技排。
+  - >-
+    A tech is not a run. Scheduling a three-hour tech for a two-hour show is the
+    most reliable way to overrun.
+see_also:
+  - dry-tech
+  - cue
+  - plot
+safety_critical: false
+confidence: reported
+tags:
+  - rehearsal
+  - stage-management
+  - vocabulary
+sources:
+  - title: Technical rehearsal
+    url: https://en.wikipedia.org/wiki/Technical_rehearsal
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

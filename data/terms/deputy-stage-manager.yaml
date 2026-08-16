@@ -1,0 +1,50 @@
+id: deputy-stage-manager
+en: Deputy stage manager (DSM)
+zh_hant: 執行舞台監督／副舞台監督
+zh_hans: 执行舞台监督
+domain: stage-management
+definition_en: >-
+  In the British system the DSM sits at the prompt corner, holds the book and
+  calls the show. The stage manager runs the backstage floor and the department
+  and does not usually call. In the American system the production stage
+  manager calls the show and there is no DSM at all.
+definition_zh_hant: >-
+  英式體系裡，執行舞台監督坐在提示角、拿著 prompt book、負責報
+  cue。舞台監督管後台現場和整個部門，通常不報 cue。美式體系由 stage manager 自己報 cue，根本沒有 DSM
+  這個職位。
+regional_variants:
+  - region: UK
+    term: DSM
+    note: Calls the show from the prompt corner.
+  - region: HK / TW
+    term: 舞台監督
+    note: 港臺的舞台監督通常自己報 cue，職務範圍比較接近美式 SM。
+false_friends:
+  - >-
+    "Stage manager" does not tell you who calls the show. In the UK it is the
+    DSM, in the US the SM. Get it wrong in a contract and nobody is on the book.
+  - 中文「舞台監督」對應 SM 還是 DSM，要看製作採哪一套體系，不能直接對譯。
+  - >-
+    ASM is assistant stage manager, a floor role. Deputy and assistant are not
+    interchangeable ranks in the British structure.
+see_also:
+  - call
+  - cue
+safety_critical: false
+confidence: reported
+tags:
+  - stage-management
+  - roles
+  - vocabulary
+sources:
+  - title: Prompt corner
+    url: https://en.wikipedia.org/wiki/Prompt_corner
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

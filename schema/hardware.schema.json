@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/hardware.schema.json",
+  "title": "Hardware",
+  "description": "A physical device in the control, distribution, or playback path of a live entertainment system.",
+  "type": "object",
+  "required": ["id", "name", "vendor", "category", "summary", "status", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.defs.json#/definitions/slug" },
+    "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "aka": { "type": "array", "items": { "type": "string", "maxLength": 100 }, "uniqueItems": true },
+    "vendor": { "type": "string", "maxLength": 120 },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lighting-console",
+        "media-server",
+        "audio-console",
+        "video-processor",
+        "dmx-node",
+        "network-switch",
+        "dimmer-distro",
+        "power-distro",
+        "tracking-system",
+        "motion-control",
+        "show-controller",
+        "timecode-generator",
+        "io-interface",
+        "wireless-dmx"
+      ]
+    },
+    "summary": { "type": "string", "minLength": 30, "maxLength": 400 },
+    "speaks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["protocol", "direction"],
+        "additionalProperties": false,
+        "properties": {
+          "protocol": { "$ref": "common.defs.json#/definitions/slug" },
+          "direction": { "type": "string", "enum": ["in", "out", "bidirectional"] },
+          "since_version": { "type": "string", "maxLength": 40 },
+          "requires_licence": { "type": "boolean" },
+          "note": { "type": "string", "maxLength": 300 },
+          "confidence": { "$ref": "common.defs.json#/definitions/confidence" }
+        }
+      }
+    },
+    "physical_ports": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 120 },
+      "description": "Connectors on the back. e.g. '2x XLR5F DMX out', '2x etherCON Gigabit', '1x BNC wordclock in'."
+    },
+    "form_factor": { "type": "string", "maxLength": 120 },
+    "rack_units": { "type": "number", "minimum": 0, "maximum": 60 },
+    "released": { "type": "integer", "minimum": 1960, "maximum": 2100 },
+    "status": { "$ref": "common.defs.json#/definitions/status" },
+    "superseded_by": { "$ref": "common.defs.json#/definitions/slug" },
+    "runs_software": {
+      "type": "array",
+      "items": { "$ref": "common.defs.json#/definitions/slug" },
+      "uniqueItems": true,
+      "description": "IDs of entries in data/software/ that this device runs natively."
+    },
+    "homepage": { "$ref": "common.defs.json#/definitions/link" },
+    "docs": { "$ref": "common.defs.json#/definitions/link" },
+    "gotchas": { "type": "array", "items": { "type": "string", "maxLength": 300 }, "maxItems": 8 },
+    "confidence": { "$ref": "common.defs.json#/definitions/confidence" },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "uniqueItems": true },
+    "sources": { "$ref": "common.defs.json#/definitions/sources" },
+    "contributed_by": { "$ref": "common.defs.json#/definitions/contributors" },
+    "updated": { "type": "string", "format": "date" }
+  }
+}

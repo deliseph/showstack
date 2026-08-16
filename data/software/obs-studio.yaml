@@ -1,0 +1,73 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: obs-studio
+name: OBS Studio
+aka:
+  - OBS
+  - Open Broadcaster Software
+vendor: OBS Project
+category: video-playback
+summary: >-
+  Free video capture, compositing, recording and streaming application built
+  around scenes and sources. It has become the default streaming encoder in
+  venues that added a webcast to an existing show.
+
+license: GPL-2.0-or-later
+price_model: open-source
+platforms:
+  - windows
+  - macos
+  - linux
+
+homepage:
+  url: https://obsproject.com/
+  label: obsproject.com
+repo:
+  url: https://github.com/obsproject/obs-studio
+  label: obsproject/obs-studio
+docs:
+  url: https://obsproject.com/kb
+  label: OBS Knowledge Base
+
+status: current
+typical_use:
+  - Streaming a live event to RTMP, SRT or a platform endpoint
+  - Multi-camera switching and recording as an ISO backup
+  - Screen and presentation capture into a programme feed
+  - Remote-controlled scene changes driven from a show control layer
+
+gotchas:
+  - >-
+    OBS speaks no entertainment control protocol on its own. Everything external
+    talks to it through obs-websocket, which is bundled from OBS Studio 28.0.0
+    onward and listens on port 4455 by default.
+  - >-
+    Encoding is the load, not the compositing. A machine that previews fine will
+    drop frames the moment you add a second high-bitrate output, so test with the
+    real encoder settings.
+  - >-
+    Plugins are compiled against a specific OBS version. A major OBS upgrade the
+    week of a show will silently disable the plugin the show depends on.
+
+confidence: reported
+tags:
+  - video
+  - streaming
+  - open-source
+  - capture
+
+sources:
+  - title: obsproject/obs-studio source repository
+    url: https://github.com/obsproject/obs-studio
+    publisher: OBS Project
+    accessed: 2026-08-16
+    primary: true
+  - title: obs-websocket — bundled with OBS Studio 28.0.0 and above
+    url: https://github.com/obsproject/obs-websocket
+    publisher: OBS Project
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

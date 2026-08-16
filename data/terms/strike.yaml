@@ -1,0 +1,47 @@
+id: strike
+en: Strike
+zh_hant: 拆（拆景、收道具）
+zh_hans: 拆（拆景、收道具）
+domain: production-management
+definition_en: >-
+  To remove something. The word scales from one prop taken off during a scene
+  change to the entire production coming down after the last performance. A
+  strike call is physical work under time pressure, frequently overhead, and
+  frequently at the end of an already long day.
+definition_zh_hant: >-
+  把東西撤掉。範圍可以小到換景時拿走一件道具，大到最後一場之後整個製作拆掉。Strike
+  是有時間壓力的體力工作，常常在頭上作業，也常常排在一天的最後。
+regional_variants:
+  - region: HK / TW
+    term: 拆／收
+    note: 整個製作拆掉講「拆台」，單件東西撤掉講「收走」。
+false_friends:
+  - 把 strike 直譯成「罷工」意思完全相反。在劇場它是拆除。
+  - >-
+    "Strike it" during a show means take that one item off now. "Strike" on the
+    schedule means the whole get-out. Confirm the scope before removing things.
+  - >-
+    Strike is not load-out. Strike is dismantling; load-out is the whole
+    departure including packing and trucks.
+see_also:
+  - load-out
+  - get-in
+  - spike
+safety_critical: true
+confidence: reported
+tags:
+  - production
+  - get-out
+  - vocabulary
+sources:
+  - title: Glossary of theater terms
+    url: https://en.wikipedia.org/wiki/Glossary_of_theater_terms
+    publisher: Wikipedia
+    accessed: 2026-08-16
+    primary: true
+  - title: Theatrical technician
+    url: https://en.wikipedia.org/wiki/Theatrical_technician
+    publisher: Wikipedia
+    accessed: 2026-08-16
+contributed_by: []
+updated: 2026-08-16

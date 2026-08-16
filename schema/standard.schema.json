@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/standard.schema.json",
+  "title": "Standard",
+  "description": "A published technical or safety standard that governs how live entertainment systems are built and operated.",
+  "type": "object",
+  "required": ["id", "designation", "title", "body", "domain", "status", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.defs.json#/definitions/slug" },
+    "designation": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "The formal number as printed on the document. e.g. 'ANSI E1.31-2018'."
+    },
+    "title": { "type": "string", "minLength": 5, "maxLength": 300 },
+    "body": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Publishing body. ESTA, ANSI, AES, SMPTE, IEC, ISO, IEEE, IATSE, BSI, CSA, DIN, ..."
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["control-data", "audio", "video", "networking", "rigging-structural", "electrical", "machinery", "pyro-flame", "laser", "safety-management", "accessibility", "sustainability"]
+    },
+    "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+    "scope": { "type": "string", "maxLength": 600, "description": "What the document actually covers, in plain language." },
+    "status": { "$ref": "common.defs.json#/definitions/status" },
+    "supersedes": { "type": "array", "items": { "$ref": "common.defs.json#/definitions/slug" }, "uniqueItems": true },
+    "superseded_by": { "$ref": "common.defs.json#/definitions/slug" },
+    "free_to_read": {
+      "type": "boolean",
+      "description": "True if the full text can be downloaded at no cost. ESTA publishes many of its ANSI standards free; most other bodies do not."
+    },
+    "access_url": { "$ref": "common.defs.json#/definitions/link" },
+    "jurisdiction": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 60 },
+      "description": "Where it is commonly referenced or legally adopted. Use ISO country codes or region names."
+    },
+    "related_protocols": { "type": "array", "items": { "$ref": "common.defs.json#/definitions/slug" }, "uniqueItems": true },
+    "notes": { "type": "string", "maxLength": 800 },
+    "confidence": { "$ref": "common.defs.json#/definitions/confidence" },
+    "tags": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "uniqueItems": true },
+    "sources": { "$ref": "common.defs.json#/definitions/sources" },
+    "contributed_by": { "$ref": "common.defs.json#/definitions/contributors" },
+    "updated": { "type": "string", "format": "date" }
+  }
+}

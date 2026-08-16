@@ -1,0 +1,95 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: qlc-plus
+name: QLC+
+aka:
+  - Q Light Controller Plus
+  - QLCplus
+vendor: QLC+ project
+category: lighting-control
+summary: >-
+  Open-source lighting control software with a fixture library, cue engine and a
+  drag-built virtual console. Runs on desktop and on a Raspberry Pi, which makes
+  it the usual answer for a small rig with no budget for a console.
+
+license: Apache-2.0
+price_model: open-source
+platforms:
+  - windows
+  - macos
+  - linux
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: Art-Net plugin, listed in the project's plugin set.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Shipped as the E1.31 plugin.
+    confidence: reported
+  - protocol: dmx512
+    direction: bidirectional
+    note: Via the DMX USB plugin and supported USB widgets.
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+
+homepage:
+  url: https://www.qlcplus.org/
+  label: qlcplus.org
+repo:
+  url: https://github.com/mcallegari/qlcplus
+  label: mcallegari/qlcplus
+docs:
+  url: https://docs.qlcplus.org/
+  label: QLC+ documentation
+
+status: current
+typical_use:
+  - Club and small venue lighting where a console is not justified
+  - Fixed installs running headless on a Raspberry Pi with the web interface
+  - Teaching DMX patching and cue building
+  - Bench testing fixtures and checking channel layouts
+
+gotchas:
+  - >-
+    A protocol plugin being installed is not the same as it being patched. Nothing
+    leaves the machine until you map each universe to an output in the
+    Input/Output panel.
+  - >-
+    Fixtures use QLC+'s own definition format. Anything not already in the library
+    has to be built in the Fixture Definition Editor before you can patch it, which
+    is a job to do before the truck arrives, not on site.
+  - >-
+    The Raspberry Pi build is packaged separately from the desktop builds. Do not
+    assume a project tested on a laptop behaves identically on the Pi.
+
+confidence: reported
+tags:
+  - lighting
+  - open-source
+  - dmx
+  - raspberry-pi
+
+sources:
+  - title: QLC+ — home
+    url: https://www.qlcplus.org/
+    publisher: QLC+ project
+    accessed: 2026-08-16
+    primary: true
+  - title: mcallegari/qlcplus source repository
+    url: https://github.com/mcallegari/qlcplus
+    publisher: QLC+ project
+    accessed: 2026-08-16
+    primary: true
+  - title: QLC+ documentation
+    url: https://docs.qlcplus.org/
+    publisher: QLC+ project
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

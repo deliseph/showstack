@@ -1,0 +1,104 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: grandma3-full-size
+name: grandMA3 full-size
+aka:
+  - MA3 full-size
+vendor: MA Lighting
+category: lighting-console
+summary: >-
+  The largest grandMA3 control surface, rated at 20,480 parameters with six DMX
+  outputs and three network ports on the back. The desk most large touring and
+  arena rigs are built around.
+
+speaks:
+  - protocol: dmx512
+    direction: out
+    note: Six DMX512-A outputs on 5-pin XLR female.
+    confidence: verified
+  - protocol: dmx512
+    direction: in
+    note: One DMX512-A input on 5-pin XLR male.
+    confidence: verified
+  - protocol: sacn
+    direction: bidirectional
+    note: One of the two Ethernet DMX protocols grandMA3 supports for sending and receiving.
+    confidence: verified
+  - protocol: art-net
+    direction: bidirectional
+    note: Art-Net revision 1.4db. Sent as unicast until more than five receivers subscribe to a universe.
+    confidence: verified
+  - protocol: osc
+    direction: bidirectional
+    confidence: reported
+  - protocol: psn
+    direction: in
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    confidence: reported
+
+physical_ports:
+  - 6x XLR5F DMX512-A out
+  - 1x XLR5M DMX512-A in
+  - 3x etherCON/RJ45 Ethernet
+  - 2x DisplayPort 1.2 for external displays
+
+form_factor: Console with integrated displays and built-in UPS
+status: current
+
+homepage:
+  url: https://www.malighting.com/product/grandma3-full-size-4010500/
+  label: grandMA3 full-size
+docs:
+  url: https://help.malighting.com/grandMA3/
+  label: grandMA3 online manuals
+
+gotchas:
+  - >-
+    44 kg and 1256 mm wide before you add monitors. Check the FOH riser and the
+    door it has to go through, not just the truck pack.
+  - >-
+    Only sACN and Art-Net are available for network DMX. A venue standardised on
+    Pathport or ShowNet needs a gateway in the path.
+  - >-
+    Art-Net is unicast by default until more than five receivers want the same
+    universe. A node that appears late in the patch can silently change the traffic
+    pattern on the network.
+  - >-
+    Six physical DMX outputs is nowhere near 20,480 parameters. Anything past a
+    handful of universes leaves the desk over the network, so the switch is part of
+    the control system.
+
+confidence: reported
+tags:
+  - lighting
+  - console
+  - grandma3
+  - touring
+
+sources:
+  - title: grandMA3 User Manual — Technical Data (consoles)
+    url: https://help.malighting.com/grandMA3/2.3/HTML/key_consoles_technical_data.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 full-size product page
+    url: https://www.malighting.com/product/grandma3-full-size-4010500/
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 User Manual — Ethernet DMX
+    url: https://help.malighting.com/grandMA3/2.0/HTML/dmx_ethernet.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+  - title: grandMA3 User Manual — Protocol Details
+    url: https://help.malighting.com/grandMA3/2.2/HTML/network_design_protocols.html
+    publisher: MA Lighting
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

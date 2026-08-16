@@ -1,0 +1,68 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: blacktrax-system
+name: BlackTrax
+aka:
+  - BlackTrax tracking system
+vendor: CAST Group
+category: tracking-system
+summary: >-
+  Infrared beacon tracking system of BTSensor cameras and a server that outputs
+  live position data to lighting, audio and media systems. Used to make followspots,
+  spatial audio and mapped video chase a performer automatically.
+
+speaks:
+  - protocol: rttrpm
+    direction: out
+    note: RTTrP is CAST's open real-time tracking protocol, with RTTrPM and RTTrPL variants for third-party systems.
+    confidence: reported
+
+physical_ports:
+  - Ethernet between BTSensors and the BlackTrax server
+
+form_factor: System of IP66-rated BTSensor cameras, IR beacons and a rack-mounted server
+status: current
+
+homepage:
+  url: https://cast-soft.com/blacktrax/
+  label: BlackTrax
+docs:
+  url: https://rttrp.github.io/RTTrP-Wiki/BlackTrax.html
+  label: Real-Time Tracking Protocol wiki
+
+gotchas:
+  - >-
+    Server tier sets the hard ceilings. BT-1 covers 900 m2 with 8 sensors and 20
+    unique IDs, BT-3 covers 1200 m2 with 12 sensors and 40 IDs, and BT-U goes to
+    54,000 m2 with 50+ sensors and 255 IDs. Adding beacons to an undersized server
+    is not an option on the day.
+  - >-
+    Every tracked object needs a beacon with a battery and a line of sight to
+    enough sensors. Costume, scenery and crowd positions all block IR, so the
+    sensor plot is a design job, not a rigging afterthought.
+  - >-
+    The system delivers position data, nothing more. Every consumer of that data
+    needs its own configuration to turn coordinates into a fixture position, a
+    sound object or a mapped surface.
+
+confidence: reported
+tags:
+  - tracking
+  - followspot
+  - rttrp
+  - spatial-audio
+
+sources:
+  - title: BlackTrax — CAST Software
+    url: https://cast-soft.com/blacktrax/
+    publisher: CAST Group
+    accessed: 2026-08-16
+    primary: true
+  - title: Real-Time Tracking Protocol wiki — BlackTrax
+    url: https://rttrp.github.io/RTTrP-Wiki/BlackTrax.html
+    publisher: RTTrP project
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

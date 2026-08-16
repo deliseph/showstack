@@ -1,0 +1,97 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: eos-apex-5
+name: Eos Apex 5
+aka:
+  - Apex 5
+vendor: ETC
+category: lighting-console
+summary: >-
+  The smallest console in ETC's Eos Apex range, with 24,576 outputs, five
+  motorised faders and a single 23.8-inch 4K touchscreen. All output leaves over
+  the network because the desk carries no DMX ports.
+
+speaks:
+  - protocol: sacn
+    direction: bidirectional
+    note: The primary output protocol for Eos, and also usable as a show control input.
+    confidence: verified
+  - protocol: art-net
+    direction: bidirectional
+    note: Carries DMX and RDM data and coexists with sACN on the same network.
+    confidence: verified
+  - protocol: rdm
+    direction: bidirectional
+    note: RDM data is carried over Art-Net and over ETC Net3.
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    note: Over UDP or TCP. Needs no gateway.
+    confidence: verified
+  - protocol: midi-show-control
+    direction: bidirectional
+    note: Available on the console's own MIDI ports or through a Gateway.
+    confidence: verified
+  - protocol: mtc
+    direction: in
+    note: Receive only, from local MIDI or a Gateway.
+    confidence: verified
+  - protocol: ltc
+    direction: in
+    note: SMPTE timecode is receive only and needs a Response show control gateway.
+    confidence: verified
+
+physical_ports:
+  - 4x etherCON Gigabit Ethernet, individually configurable, PoE++ (802.3bt)
+  - 2x 10-Gigabit SFP+, individually configurable
+  - MIDI In and Out
+  - 8x USB-A, 6x USB-C, plus 2x 5V 2A charging ports
+
+form_factor: Console with one articulating 23.8-inch 4K touchscreen
+status: current
+
+homepage:
+  url: https://www.etcconnect.com/Apex/
+  label: Eos Apex
+gotchas:
+  - >-
+    There are no DMX ports on the console. Local DMX needs an I/O Garage with
+    Gadget II modules, so a job that expects five-pin out of the desk needs extra
+    kit ordered.
+  - >-
+    SMPTE and analogue inputs are receive-only and generally need a Response
+    gateway. Only MIDI and OSC are available directly from the console.
+  - >-
+    Eos software v3.2.0 and later dropped ETCNet2. An older Net2 node in a house
+    rig will not be picked up by a current Apex.
+  - >-
+    Apex 5, 10 and 20 differ in fader count and screens, not in output capacity.
+    Specify by playback layout, not by channel count.
+
+confidence: reported
+tags:
+  - lighting
+  - console
+  - eos
+  - theatre
+
+sources:
+  - title: Eos Apex Tech Specs
+    url: https://www.etcconnect.com/Products/Consoles/Eos-Consoles/Apex/Tech-Specs.aspx
+    publisher: ETC
+    accessed: 2026-08-16
+    primary: true
+  - title: Eos Family online help — Control Protocols
+    url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/03_Eos_System_Requirements_and_Setup/Eos_Networking_Overview/Network_Protocols/Control_Protocols.htm
+    publisher: ETC
+    accessed: 2026-08-16
+    primary: true
+  - title: Eos Family online help — About Eos Family Show Control
+    url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/23_Show_Control/About_Eos_Show_Control.htm
+    publisher: ETC
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

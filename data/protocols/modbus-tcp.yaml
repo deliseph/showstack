@@ -1,0 +1,102 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: modbus-tcp
+name: Modbus TCP
+aka:
+  - Modbus TCP/IP
+  - MODBUS/TCP
+  - Modbus over Ethernet
+category: machinery-motion
+summary: >-
+  The Modbus application protocol wrapped in a seven byte MBAP header and sent
+  over TCP port 502, a plain register read and write protocol with no session
+  and no security. In entertainment it is how show control talks to stage
+  machinery PLCs, hoists, HVAC, house lights and building systems.
+
+transport:
+  - tcp
+default_ports:
+  - number: 502
+    transport: tcp
+    role: MODBUS/TCP application data units
+    iana_registered: true
+    note: The implementation guide states that all MODBUS/TCP ADUs are sent to registered port 502.
+
+multicast:
+  used: false
+  note: Modbus TCP is a unicast client/server protocol. There is no discovery, no announcement and no multicast.
+
+openness: open-published
+spec_url:
+  url: https://www.modbus.org/file/secure/messagingimplementationguide.pdf
+  label: MODBUS Messaging on TCP/IP Implementation Guide V1.0b
+steward: Modbus Organization
+status: current
+
+typical_use:
+  - Show control to stage machinery and winch control PLCs
+  - Reading limit switches, e-stop state and drive faults into a show system
+  - Building integration for HVAC, house lights, motorised drapes and doors
+  - Power and energy monitoring gear in racks and distros
+
+gotchas:
+  - >-
+    Register numbering is the classic error. Vendor documentation usually uses
+    1-based reference numbers like 40001, while the wire protocol uses 0-based
+    addresses, so 40001 on paper is address 0 in the packet.
+  - >-
+    There is no authentication and no encryption on port 502. Anything that can
+    reach it can command the machine. A TLS variant exists (Modbus/TCP Security,
+    registered on TCP 802) but field devices rarely implement it, so the answer
+    is still a dedicated VLAN with no route off it.
+  - >-
+    The standard only defines 16-bit registers. Word order for 32-bit floats and
+    integers is entirely up to the vendor, so the same value can appear as
+    nonsense until you swap the two registers.
+  - >-
+    The unit identifier is typically 0xFF for a native TCP/IP device but is
+    significant when you are talking through a serial gateway. Send 0xFF into a
+    gateway and you are addressing nothing.
+  - >-
+    Many devices accept only a small number of simultaneous TCP connections.
+    A second polling client, or a reconnect before the old socket has timed out,
+    can lock the first one out with no error message anywhere.
+  - >-
+    Modbus has no concept of "the machine is moving". It is a poll and answer
+    protocol, so safety interlocks must live in the PLC, never in the show
+    control cue that reads the registers.
+
+implementations:
+  - name: libmodbus
+    url: https://github.com/stephane/libmodbus
+    language: C
+    license: LGPL-2.1-or-later
+    role: both
+  - name: pymodbus
+    url: https://github.com/pymodbus-dev/pymodbus
+    language: Python
+    license: BSD-3-Clause
+    role: both
+
+confidence: reported
+tags:
+  - machinery
+  - plc
+  - industrial
+  - building-integration
+
+sources:
+  - title: MODBUS Messaging on TCP/IP Implementation Guide V1.0b
+    url: https://www.modbus.org/file/secure/messagingimplementationguide.pdf
+    publisher: Modbus Organization
+    accessed: 2026-08-16
+    primary: true
+  - title: MODBUS/TCP Security Protocol Specification (TLS on registered port 802)
+    url: https://www.modbus.org/file/secure/modbussecurityprotocol.pdf
+    publisher: Modbus Organization
+    accessed: 2026-08-16
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

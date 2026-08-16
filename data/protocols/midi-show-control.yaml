@@ -1,0 +1,91 @@
+id: midi-show-control
+name: MIDI Show Control
+aka:
+  - MSC
+  - MIDI Show Control 1.1
+category: show-control
+summary: >-
+  A universal real-time MIDI system exclusive message set that carries GO, STOP
+  and RESUME together with a cue number, cue list and cue path. It is the oldest
+  reliable way to make one GO button fire lighting, sound and machinery at the
+  same instant.
+
+transport:
+  - midi-din
+  - usb
+
+multicast:
+  used: false
+
+openness: open-published
+spec_url:
+  url: https://midi.org/midi-show-control
+  label: RP-002/RP-014 MIDI Show Control 1.1.1 specification
+steward: The MIDI Association (MIDI Manufacturers Association)
+first_published: 1991
+status: current
+
+typical_use:
+  - One GO button on a stage manager's desk firing several departments at once
+  - Lighting console triggering sound and video playback, or being triggered
+  - Theme park and attraction show controllers sequencing effects
+  - Linking a show controller to a console that has no OSC or network control
+
+gotchas:
+  - >-
+    The message is F0 7F <device_id> 02 <command_format> <command> <data> F7.
+    Device ID 127 (0x7F) is all-call, so a receiver left at 127 acts on every
+    message on the line including ones meant for another department.
+  - >-
+    Command format is a category, not an address. 01 is Lighting (General), 02
+    Moving Lights, and a receiver only acts on the formats it is set to accept.
+    A format mismatch is the most common cause of "MSC is doing nothing".
+  - >-
+    Cue data is ASCII digits with 0x00 delimiters between cue number, cue list
+    and cue path. Cue 5 and cue 5.0 are different byte strings, so cues can fire
+    on some numbers and be silently ignored on others.
+  - >-
+    Nothing acknowledges an MSC message. If the receiver was powered down, on a
+    different device ID or on the wrong command format, the sender reports a
+    perfectly successful GO.
+  - >-
+    A DIN MIDI line runs at 31.25 kbit/s and everything shares it. A continuous
+    MTC quarter-frame stream on the same cable will delay cue messages by a
+    measurable and variable amount.
+  - >-
+    MSC is one-directional and has no state. A receiver that missed the GO will
+    not catch up, so a device that came back from a reboot mid-act stays where
+    it was until you send it somewhere.
+
+confidence: reported
+tags:
+  - show-control
+  - midi
+  - sysex
+  - cue-triggering
+
+sources:
+  - title: MIDI Show Control — RP-002-014 v1.1.1 specification
+    url: https://midi.org/midi-show-control
+    publisher: The MIDI Association
+    accessed: 2026-08-16
+    primary: true
+  - title: MIDI Show Control — WATCHOUT 7 User's Guide (device IDs, all-call, sysex layout)
+    url: https://docs.dataton.com/watchout-7-new/watchout/external-control/midi-show-control.html
+    publisher: Dataton
+    accessed: 2026-08-16
+  - title: MIDI Show Control and MIDI note (command formats, commands, cue encoding)
+    url: https://blog.etcconnect.com/2017/03/midi-show-control-midi-note
+    publisher: Electronic Theatre Controls
+    accessed: 2026-08-16
+  - title: Cognito Console — MIDI Show Control
+    url: https://www.citytheatrical.com/docs/default-source/pathway/pwcog-cognito-console-midi-show-control.pdf
+    publisher: Pathway Connectivity / City Theatrical
+    accessed: 2026-08-16
+  - title: MIDI Show Control — ratification dates
+    url: https://en.wikipedia.org/wiki/MIDI_Show_Control
+    publisher: Wikipedia
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16

@@ -1,0 +1,103 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+# Every factual field below should be traceable to something in `sources`.
+
+id: sacn
+name: sACN
+aka:
+  - Streaming ACN
+  - E1.31
+  - Streaming ACN (E1.31)
+category: lighting-control
+summary: >-
+  Carries DMX512 data over standard IP networks as multicast UDP, one multicast
+  group per universe. It is the vendor-neutral way to get lighting data around a
+  building without running a copper DMX line to every position.
+
+transport:
+  - udp
+default_ports:
+  - number: 5568
+    transport: udp
+    role: sACN data and synchronisation packets
+    iana_registered: true
+    note: Registered with IANA as "sdt" (Session Data Transport), the ACN transport E1.31 sits on.
+
+multicast:
+  used: true
+  ranges:
+    - 239.255.0.0/16 (IPv4, universe in low two octets)
+    - FF18::83:00:00:00/104 (IPv6)
+  note: >-
+    IPv4 group for universe N is 239.255.<high byte of N>.<low byte of N>, so
+    universe 1 is 239.255.0.1. Unicast is also permitted by the standard and is
+    increasingly the safer choice on shared networks.
+
+universe_model: 512 slots per universe; universes 1-63999, plus 64214 for E1.31 discovery.
+
+openness: open-published
+spec_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA Technical Standards Program — published documents
+standards:
+  - ansi-e1-31
+  - ansi-e1-17
+steward: ESTA (Entertainment Services and Technology Association)
+first_published: 2009
+status: current
+
+typical_use:
+  - Console to lighting network backbone in theatres, arenas and studios
+  - Feeding DMX gateways that break out to local XLR5 lines
+  - Driving pixel controllers and LED processors directly over ethernet
+  - Previsualisation and offline programming links
+
+gotchas:
+  - >-
+    Multicast without IGMP snooping configured on the switch turns into a
+    broadcast storm. This is the single most common cause of "the network died
+    when we patched the second console".
+  - >-
+    Priority is per-universe (0-200, default 100) and sources with equal
+    priority get merged by the receiver, not by the sender. Two consoles at
+    default priority will fight.
+  - >-
+    Universe numbering is 1-based here but many products expose a 0-based index
+    internally. Always confirm against the receiving device, not the console.
+
+implementations:
+  - name: sACN (Python)
+    url: https://github.com/Hundemeier/sacn
+    language: Python
+    license: MIT
+    role: both
+  - name: OLA (Open Lighting Architecture)
+    url: https://github.com/OpenLightingProject/ola
+    language: C++
+    license: LGPL-2.1-or-later
+    role: both
+  - name: sacn (Rust)
+    url: https://github.com/lucasmerlin/sacn
+    language: Rust
+    license: Apache-2.0
+    role: both
+
+confidence: verified
+tags:
+  - lighting
+  - dmx-over-ip
+  - multicast
+  - esta
+
+sources:
+  - title: ANSI E1.31 — Lightweight streaming protocol for transport of DMX512 using ACN
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    primary: true
+  - title: Service Name and Transport Protocol Port Number Registry (port 5568, sdt)
+    url: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
+    publisher: IANA
+    primary: true
+
+contributed_by: []
+updated: 2026-08-16

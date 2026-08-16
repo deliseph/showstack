@@ -1,0 +1,101 @@
+id: acn
+name: ACN
+aka:
+  - Architecture for Control Networks
+  - E1.17
+  - Full ACN
+category: network-transport
+summary: >-
+  ESTA's full control network architecture: SDT for reliable sessions over UDP,
+  DMP for device properties, and DDL device descriptions in XML so a controller
+  can drive a device it has never met. sACN borrows only the root layer of this;
+  ACN is the rest of it.
+
+transport:
+  - udp
+  - tcp
+
+default_ports:
+  - number: 5568
+    transport: udp
+    role: SDT (Session Data Transport)
+    iana_registered: true
+    note: >-
+      Registered with IANA in 2006 as "sdt", Session Data Transport Multicast.
+      E1.31 sACN shares this port because it sits on the same ACN root layer.
+
+multicast:
+  used: true
+  note: >-
+    SDT is a reliable multicast transport and ACN's EPI documents cover
+    multicast address allocation. The specific group ranges are defined per EPI
+    rather than by one fixed block, so confirm against the relevant EPI before
+    configuring a switch.
+
+openness: open-published
+spec_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (ANSI E1.17, free download)
+steward: ESTA (Entertainment Services and Technology Association)
+first_published: 2006
+status: current
+
+typical_use:
+  - ETC Net3 device configuration and control
+  - The root layer that E1.31 sACN packets are built on
+  - Self-describing device control where a DDL file replaces a hand-written driver
+  - Shure wireless microphone system control
+
+gotchas:
+  - >-
+    When someone on headset says "ACN" they almost always mean sACN (E1.31).
+    They share a port and a root layer but not a purpose, and a device that
+    speaks one does not necessarily speak the other at all.
+  - >-
+    ACN is a suite of documents plus EPIs that pin down discovery, addressing,
+    port assignment and timeouts. Implementing SDT and DMP from the core
+    documents alone will not give you anything interoperable.
+  - >-
+    DDL is the whole point and also the hard part. A device is only as
+    self-describing as the DDL file the vendor shipped, and incomplete or stale
+    descriptions are common.
+  - >-
+    SDT is session-based with membership and sequencing, so it carries state.
+    Dropping and rejoining a session is not the free operation that restarting
+    an sACN packet stream is.
+  - >-
+    Real-world deployment is narrow. ETC's Net3 and some Shure wireless gear use
+    full ACN; most of the industry only ever met it through the sACN root layer,
+    so third-party tooling is thin.
+
+confidence: reported
+tags:
+  - lighting
+  - network
+  - esta
+  - sdt
+  - ddl
+
+sources:
+  - title: ANSI E1.17-2015 (R2025) — Architecture for Control Networks, free download
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-08-16
+    primary: true
+  - title: ANSI E1.17-2010 — Architecture for Control Networks (title, scope, revision history)
+    url: https://webstore.ansi.org/standards/esta/ansie1172010
+    publisher: ESTA / ANSI webstore
+    accessed: 2026-08-16
+    primary: true
+  - title: IANA Service Name and Transport Protocol Port Number Registry (5568, sdt — Session Data Transport Multicast)
+    url: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
+    publisher: IANA
+    accessed: 2026-08-16
+    primary: true
+  - title: Architecture for Control Networks (SDT, DMP, DDL, EPIs, relationship to E1.31, adoption)
+    url: https://en.wikipedia.org/wiki/Architecture_for_Control_Networks
+    publisher: Wikipedia
+    accessed: 2026-08-16
+
+contributed_by: []
+updated: 2026-08-16
