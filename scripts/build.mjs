@@ -11,6 +11,7 @@
 import { mkdirSync, writeFileSync, readFileSync, cpSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { COLLECTIONS, loadCollection, ROOT } from './lib/load.mjs'
+import { buildPages } from './pages.mjs'
 
 const DIST = join(ROOT, 'dist')
 const API = join(DIST, 'api', 'v1')
@@ -106,6 +107,12 @@ const template = readFileSync(join(ROOT, 'site', 'index.html'), 'utf8')
 writeFileSync(join(DIST, 'index.html'), template.replace('/*__SHOWSTACK_DATA__*/null', JSON.stringify(bundle)))
 if (existsSync(join(ROOT, 'site', 'assets'))) cpSync(join(ROOT, 'site', 'assets'), join(DIST, 'assets'), { recursive: true })
 
+// Static pages. The search app at / serves people who already know we exist;
+// these serve the person typing "what port does sACN use" into a search engine,
+// which is where nearly all first contact will come from.
+const pageStats = buildPages(bundle, DIST)
+
 console.log(`Built ${stats.total} entries -> dist/`)
 console.log(`  ${Object.entries(stats.counts).map(([k, v]) => `${v} ${k}`).join(', ')}`)
 console.log(`  ${stats.open_gaps} open field gaps, ${contributors.length} contributors credited`)
+console.log(`  ${pageStats.pages} static pages incl. ${pageStats.ports} port pages, sitemap.xml, robots.txt, llms.txt`)
