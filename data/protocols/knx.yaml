@@ -1,0 +1,37 @@
+id: knx
+name: KNX
+category: device-management
+summary: An international standard (ISO/IEC 14543-3) for building automation covering lighting, HVAC,
+  blinds, and access control, which show-control integrators encounter when a venue's architectural/house
+  lighting or building systems must interface with production control.
+transport:
+- udp
+- other
+default_ports:
+- number: 3671
+  transport: udp
+  note: KNXnet/IP tunnelling and routing
+multicast:
+  used: true
+  ranges:
+  - 224.0.23.12 (default KNXnet/IP routing multicast)
+openness: published-paid
+spec_url:
+  url: https://www.knx.org
+steward: KNX Association
+status: current
+gotchas:
+- Classic KNX twisted-pair (TP1) runs at only 9600 bit/s - fine for architectural lighting/HVAC but far
+  too slow for anything resembling real-time show cueing.
+- KNXnet/IP (UDP 3671, multicast 224.0.23.12 by default) bridges KNX onto IP networks, but that multicast
+  traffic should be kept isolated from busy production show networks.
+confidence: verified
+sources:
+- title: KNX Association - official site
+  url: https://www.knx.org
+  primary: true
+- title: KNX - Wikipedia
+  url: https://en.wikipedia.org/wiki/KNX
+- title: A guide to using KNX over IP - Ivory Egg
+  url: https://ivoryegg.co.uk/essential_guides/a-guide-to-using-knx-over-ip
+updated: '2026-08-17'

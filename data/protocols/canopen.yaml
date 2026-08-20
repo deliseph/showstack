@@ -1,0 +1,89 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: canopen
+name: CANopen
+aka:
+  - CANopen CC
+  - CiA 301
+
+category: machinery-motion
+summary: >-
+  CiA's standardized application layer and communication profile riding on a
+  CAN bus, giving devices a shared object dictionary and PDO/SDO messaging so
+  drives, sensors and I/O from different vendors share one bus. It
+  increasingly turns up in stage automation and rigging motion control, where
+  the CiA 402 drive profile standardizes controller-to-servo-drive messaging.
+
+transport:
+  - other
+
+openness: open-free-registration
+spec_url:
+  url: https://www.can-cia.org/cia-groups/technical-documents
+  label: CiA technical documents — CANopen specifications (free download after registration/login)
+steward: CAN in Automation (CiA)
+first_published: 1994
+status: current
+
+typical_use:
+  - Servo drive, VFD and motor-controller networking within winches, hoists and automated scenery machines (CiA 402 profile)
+  - Sensor and I/O integration on machine-control buses inside automation racks and control cabinets
+  - General industrial embedded device networking wherever many low-cost nodes need to share one bus
+
+gotchas:
+  - >-
+    CANopen CC bit rate is fixed network-wide and trades off against cable
+    length; CiA specifies 10 kbit/s to 1000 kbit/s. Reusing a bit rate chosen
+    for a short rack-to-rack link on a long touring cable run is a classic
+    cause of bus errors that only appear once the cable is stretched out on site.
+  - >-
+    The 11-bit CAN identifier splits into a 4-bit function code and 7-bit node
+    ID, capping a single CANopen network at 127 nodes (0 reserved for
+    broadcast); large automation systems need multiple buses/gateways well
+    before that limit in practice.
+  - >-
+    CiA itself warns that "some vendors implement only a subset of the
+    mandatory functions and parameters, but still claim CiA 402 conformity,"
+    so two devices that both claim CiA 402 support are not guaranteed to
+    interoperate on motion commands without testing.
+  - >-
+    The full CiA 301/402 specification text requires a free CiA account and
+    login to download (status "Public Available Specification"); it is not a
+    plain public URL, which trips up integrators expecting a direct PDF link.
+
+confidence: verified
+tags:
+  - can-bus
+  - motion-control
+  - cia
+  - industrial
+
+sources:
+  - title: CANopen history (first published November 1994 as CiA 301)
+    url: https://www.can-cia.org/can-knowledge/canopen-history
+    publisher: CAN in Automation (CiA)
+    accessed: 2026-08-17
+    primary: true
+  - title: CANopen (bit rates 10 kbit/s-1000 kbit/s, application layer over ISO 11898)
+    url: https://www.can-cia.org/can-knowledge/canopen
+    publisher: CAN in Automation (CiA)
+    accessed: 2026-08-17
+    primary: true
+  - title: 'CiA 402: CANopen device profile for drives and motion control (conformance caveat quote)'
+    url: https://www.can-cia.org/can-knowledge/cia-402-series-canopen-device-profile-for-drives-and-motion-control
+    publisher: CAN in Automation (CiA)
+    accessed: 2026-08-17
+    primary: true
+  - title: Technical documents (PAS/Technical Report documents free after registration or CiA membership login)
+    url: https://www.can-cia.org/cia-groups/technical-documents
+    publisher: CAN in Automation (CiA)
+    accessed: 2026-08-17
+    primary: true
+  - title: CANopen (127-node limit from the 7-bit node ID field)
+    url: https://en.wikipedia.org/wiki/CANopen
+    publisher: Wikipedia
+    accessed: 2026-08-17
+
+contributed_by: []
+updated: 2026-08-17

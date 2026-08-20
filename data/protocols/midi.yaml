@@ -1,0 +1,34 @@
+id: midi
+name: MIDI 1.0
+aka:
+- Musical Instrument Digital Interface
+category: audio-control
+summary: The original 1983 serial protocol for exchanging musical performance data (notes, control/program
+  changes, sysex) between instruments, controllers, consoles, and show-control gear; the base layer that
+  MIDI Show Control and MIDI Time Code both ride on top of.
+transport:
+- midi-din
+openness: open-free-registration
+spec_url:
+  url: https://www.midi.org/specifications/midi1-specifications/m1-v4-2-1-midi-1-0-detailed-specification-96-1-4
+steward: MIDI Association (MMA/AMEI)
+status: current
+gotchas:
+- Classic 5-pin DIN MIDI runs at 31,250 baud (8-N-1 async serial) and is one-way per cable; most modern
+  rigs tunnel MIDI over USB or Bluetooth LE instead of DIN.
+- MIDI Show Control and MIDI Time Code are message subprofiles of MIDI 1.0, not separate wire protocols,
+  which confuses people troubleshooting compatibility.
+- Only 16 channels per port/cable, which limits large-scale device addressing without merge/split boxes
+  or additional interfaces.
+implementations:
+- name: RtMidi
+  url: https://github.com/thestk/rtmidi
+  language: C++
+confidence: verified
+sources:
+- title: MIDI 1.0 Detailed Specification - MIDI Association
+  url: https://www.midi.org/specifications/midi1-specifications/m1-v4-2-1-midi-1-0-detailed-specification-96-1-4
+  primary: true
+- title: MIDI - Wikipedia
+  url: https://en.wikipedia.org/wiki/MIDI
+updated: '2026-08-17'

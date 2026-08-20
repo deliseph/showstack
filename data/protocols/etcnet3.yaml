@@ -1,0 +1,109 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: etcnet3
+name: ETC Net3
+aka:
+  - Net3
+  - ETC Net 3
+
+category: lighting-control
+summary: >-
+  ETC's branded network suite for Ion/Eos-era consoles and DMX/RDM gateways:
+  it uses sACN (E1.31) for live DMX levels and full ACN (E1.17)/RDM (E1.20)
+  for device discovery and configuration, plus ETC's own proprietary
+  extensions on top. It is what a Net3 One/Two/Four-Port Gateway, or an
+  Ion/Eos-family rig from that era, is actually running to move DMX and RDM
+  around a building.
+
+transport:
+  - udp
+  - tcp
+
+default_ports:
+  - number: 5568
+    transport: udp
+    role: sACN live DMX data, shared with the ACN SDT root layer Net3 is built on
+    iana_registered: true
+    note: Inherited from the open ANSI E1.31/E1.17 layers Net3 sits on, not a Net3-specific assignment.
+
+multicast:
+  used: true
+  ranges:
+    - 239.255.0.0/16 (sACN universe multicast)
+  note: >-
+    Live levels ride standard sACN multicast. The parts that are specifically
+    "Net3" are the device discovery/configuration layer (full ACN/DMP) and
+    proprietary extensions, which are not documented as a fixed address block.
+
+openness: proprietary-documented
+spec_url:
+  url: https://www.etcconnect.com/Products/Legacy/Networking/Gateways/DMX-RDM-Gateways/Features.aspx
+  label: ETC Net3 DMX/RDM Gateways — product and protocol overview
+steward: Electronic Theatre Controls (ETC)
+status: current
+
+typical_use:
+  - DMX/RDM distribution from Ion/Eos-family consoles through Net3 One/Two/Four-Port Gateways
+  - Legacy Unison architectural dimming/control installs predating native sACN-only deployments
+  - Device configuration and management via full ACN (E1.17)/DMP where system components support it
+  - Gateways that also accept sACN, Art-Net, ETCNet2 and Strand ShowNet on the same hardware
+
+gotchas:
+  - >-
+    ETC staff confirm on ETC's own community forum that sACN per-address
+    priority is "an ETC extension to the sACN standard" using a start code
+    outside ANSI E1.31 itself, so non-ETC sACN receivers may simply ignore
+    per-address-priority packets rather than honouring them.
+  - >-
+    ETC's own Net3 gateway spec sheet describes Net3 as "a superset of the
+    standard ACN Protocol Suite including additional proprietary communication
+    protocols" — there is no single published "Net3 protocol" document, only
+    the open ACN/sACN/RDM standards underneath plus scattered gateway manuals.
+  - >-
+    ETC's own website files the Net3 DMX/RDM Gateway product line under a
+    /Products/Legacy/ URL even though the current Eos Family online help says
+    Net3 "remains the current standard" and is not deprecated — a "legacy"
+    URL does not mean the protocol is dead on a live show.
+  - >-
+    ETCNet2 (introduced 1997 in the Obsession II) and Net3 are different
+    generations; Eos software v3.2.0 and later dropped ETCNet2 support
+    entirely, so an older ETCNet2-only node will not talk to a modern
+    Net3-only rig without a bridge/gateway in between.
+
+confidence: reported
+tags:
+  - lighting
+  - dmx-over-ip
+  - etc
+  - acn
+  - sacn
+
+sources:
+  - title: Net3 Four-Port Gateway spec sheet ("superset of the standard ACN Protocol Suite... additional proprietary communication protocols")
+    url: https://www.fullcompass.com/common/files/17041-Net34PortGatewaySpecSheet.pdf
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+  - title: Eos Family Online Help — Control Protocols (Net3 developed to replace Net2, uses sACN for live control data)
+    url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/03_Eos_System_Requirements_and_Setup/Eos_Networking_Overview/Network_Protocols/Control_Protocols.htm
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+  - title: ETCNet2 Products (ETCNet2 introduced 1997 in Obsession II; new development work only on Net3)
+    url: https://support.etcconnect.com/ETC/Networking/Net_2_Nodes/ETCNet2_Products
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+  - title: Net3 protocol specification? (ETC staff confirming per-address priority is an ETC extension to sACN)
+    url: https://community.etcconnect.com/networking/f/networking-discussions/34176/net3-protocol-specification
+    publisher: Electronic Theatre Controls (ETC) community forum
+    accessed: 2026-08-17
+  - title: DMX/RDM Gateways (Net3) product page, filed under /Products/Legacy/
+    url: https://www.etcconnect.com/Products/Legacy/Networking/Gateways/DMX-RDM-Gateways/Features.aspx
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+
+contributed_by: []
+updated: 2026-08-17

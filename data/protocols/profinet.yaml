@@ -1,0 +1,104 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: profinet
+name: PROFINET
+aka:
+  - PROFINET IO
+  - PROFINET CBA
+
+category: machinery-motion
+summary: >-
+  PI's real-time industrial Ethernet standard for connecting PLCs, drives and
+  I/O, spanning acyclic RPC parameter access over UDP/TCP up to sub-millisecond
+  isochronous real-time (IRT) cyclic I/O carried as raw Ethernet frames. In
+  entertainment it shows up where show control hands off to venue or
+  stage-machinery automation, such as fixed-theatre stage-technology installs.
+
+transport:
+  - ethernet-l2
+  - udp
+  - tcp
+
+default_ports:
+  - number: 34962
+    transport: udp
+    role: PROFINET RT unicast (registered alternative to raw-Ethernet RT; rarely used in practice)
+    iana_registered: true
+  - number: 34963
+    transport: udp
+    role: PROFINET RT multicast (registered, rarely used in practice)
+    iana_registered: true
+  - number: 34964
+    transport: udp
+    role: RPC Context Manager — acyclic connection setup, parameter/record read-write, diagnostics
+    iana_registered: true
+    note: Connection setup on this port must complete before cyclic I/O starts on Ethertype 0x8892.
+
+openness: published-paid
+spec_url:
+  url: https://www.profibus.com/download/profinet-specification
+  label: PROFINET Specification downloads (PI membership login required)
+steward: PI (PROFIBUS & PROFINET International)
+first_published: 2003
+status: current
+
+typical_use:
+  - Machinery-level integration between venue/stage-automation PLCs and drives
+  - Theme-park and large fixed-venue control architectures run alongside EtherNet/IP on redundant switch infrastructure
+  - General industrial machine and drive networking behind scenic automation, rigging and building-adjacent equipment
+
+gotchas:
+  - >-
+    Cyclic real-time I/O (Ethertype 0x8892) runs on raw Ethernet frames with
+    no IP address and does not route, while the RPC Context Manager handshake
+    on UDP 34964 is ordinary routable traffic; a capture from a router or a
+    different VLAN shows the setup but never the actual cyclic data.
+  - >-
+    IRT (isochronous real-time, sub-1ms cycles used for drive/motion
+    applications) requires PROFINET-aware switches with synchronized
+    scheduling; dropping a standard unmanaged switch into an IRT segment
+    breaks the timing guarantee even though the link still passes traffic.
+  - >-
+    The full specification set sits behind a paid PI membership (PI North
+    America lists annual dues from roughly $800 for integrators up to $8,000
+    for larger device manufacturers) or individual purchase of the equivalent
+    IEC 61158/61784 documents from the IEC Webstore — there is no free public PDF.
+
+confidence: reported
+tags:
+  - industrial-ethernet
+  - machinery
+  - pi
+  - fieldbus
+
+sources:
+  - title: Which TCP/UDP ports are used by PROFINET? (34962 RT unicast, 34963 RT multicast, 34964 RPC Context Manager)
+    url: https://support.hms-networks.com/hc/en-us/articles/6794937733394-Which-TCP-UDP-ports-are-used-by-PROFINET
+    publisher: HMS Networks
+    accessed: 2026-08-17
+  - title: PROFINET Port Numbers Explained (Ethertype 0x8892 cyclic data vs UDP 34964 acyclic RPC handshake)
+    url: https://scadaprotocols.com/profinet-port-numbers-explained
+    publisher: SCADA Protocols
+    accessed: 2026-08-17
+  - title: PROFINET Specification — Official Downloads (PI member login required)
+    url: https://www.profibus.com/download/profinet-specification
+    publisher: PI (PROFIBUS & PROFINET International)
+    accessed: 2026-08-17
+    primary: true
+  - title: Become a Member — PI North America (membership fees by category)
+    url: https://us.profinet.com/membership/become-a-member/
+    publisher: PI North America
+    accessed: 2026-08-17
+    primary: true
+  - title: Profinet (history and first release circa 2003, real-time classes and cycle times)
+    url: https://en.wikipedia.org/wiki/Profinet
+    publisher: Wikipedia
+    accessed: 2026-08-17
+  - title: Advanced Control System Architecture for Theme Parks (PROFINET named alongside EtherNet/IP on redundant switches)
+    url: https://pacificblueengineering.com/advanced-control-system-architecture/
+    publisher: Pacific Blue Engineering
+    accessed: 2026-08-17
+
+contributed_by: []
+updated: 2026-08-17

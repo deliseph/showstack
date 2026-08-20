@@ -1,0 +1,30 @@
+id: dali
+name: DALI
+aka:
+- Digital Addressable Lighting Interface
+category: lighting-control
+summary: An IEC-standardized two-wire digital protocol for addressing and dimming individual architectural/house
+  lighting ballasts and LED drivers, relevant wherever building/house lighting (rather than stage rigs)
+  needs to integrate with a show's control system.
+transport:
+- other
+openness: published-paid
+spec_url:
+  url: https://www.dali-alliance.org/standards/IEC62386.html
+steward: DALI Alliance (DiiA)
+status: current
+gotchas:
+- Only 64 addressable control-gear devices per DALI line, far smaller than DMX512's 512 addresses, so
+  large venues need many lines/gateways.
+- Slow control-data rate (1200 bit/s, Manchester-encoded) makes DALI unsuitable for fast theatrical chases
+  - it's built for static/architectural dimming, not show cueing.
+- DALI-2 certification (introduced 2017) is needed for reliable multi-vendor interoperability; pre-DALI-2
+  gear can behave unpredictably when mixed across brands.
+confidence: verified
+sources:
+- title: The international IEC 62386 standard - DALI Alliance
+  url: https://www.dali-alliance.org/standards/IEC62386.html
+  primary: true
+- title: Digital Addressable Lighting Interface - Wikipedia
+  url: https://en.wikipedia.org/wiki/Digital_Addressable_Lighting_Interface
+updated: '2026-08-17'

@@ -1,0 +1,38 @@
+id: bacnet
+name: BACnet
+category: device-management
+summary: An ASHRAE/ISO standard protocol for building automation (HVAC, lighting, access control, life-safety)
+  that show-control and integration designers encounter whenever a venue's house systems need to be tied
+  into a production's control network.
+transport:
+- udp
+- rs485
+default_ports:
+- number: 47808
+  transport: udp
+  note: BACnet/IP (Annex J), 0xBAC0
+openness: published-paid
+spec_url:
+  url: https://www.ashrae.org/technical-resources/standards-and-guidelines/standards-addenda/standard-135-2016-bacnet-a-data-communication-protocol-for-building-automation-and-control-networks
+steward: ASHRAE / BACnet International
+status: current
+gotchas:
+- BACnet is a family of transports, not just IP - MS/TP variants run over RS-485 serial, so 'BACnet' on
+  a venue drawing may mean a very different physical layer than BACnet/IP.
+- Default BACnet/IP port 47808 (0xBAC0/UDP) typically relies on broadcast for device discovery (Who-Is/I-Am),
+  which can be noisy or blocked on segmented production networks.
+implementations:
+- name: bacnet-stack
+  url: https://github.com/bacnet-stack/bacnet-stack
+  language: C
+confidence: verified
+sources:
+- title: 'ANSI/ASHRAE Standard 135-2016: BACnet, A Data Communication Protocol for Building Automation
+    and Control Networks'
+  url: https://www.ashrae.org/technical-resources/standards-and-guidelines/standards-addenda/standard-135-2016-bacnet-a-data-communication-protocol-for-building-automation-and-control-networks
+  primary: true
+- title: BACnet - Wireshark Wiki
+  url: https://wiki.wireshark.org/Protocols/bacnet
+- title: BACnet - Wikipedia
+  url: https://en.wikipedia.org/wiki/BACnet
+updated: '2026-08-17'

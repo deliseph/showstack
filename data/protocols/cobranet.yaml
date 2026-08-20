@@ -1,0 +1,28 @@
+id: cobranet
+name: CobraNet
+category: audio-transport
+summary: An early (1996) Ethernet-based digital audio distribution protocol from Peak Audio, now owned
+  by Cirrus Logic, that predates Dante and AVB and is still found in legacy installed sound systems, amplifiers,
+  and DSP hardware in venues and theme parks.
+transport:
+- ethernet-l2
+openness: proprietary-documented
+spec_url:
+  url: https://www.cirrus.com/products/cobranet/faqs
+steward: Cirrus Logic (formerly Peak Audio)
+status: historical
+gotchas:
+- Operates at Ethernet layer 2 using registered EtherType 0x8819 - it is not IP-routable and needs a dedicated
+  or carefully VLAN-isolated switched network.
+- Requires a switched 100Mbit/s+ Ethernet network with one of three fixed latency settings (5.33, 2.67,
+  or 1.33ms) configured correctly, or audio glitches result.
+- Largely superseded by Dante and AVB/Milan in new installs, so CobraNet is now mostly encountered in
+  older fixed installations.
+confidence: verified
+sources:
+- title: CobraNet FAQs - Cirrus Logic
+  url: https://www.cirrus.com/products/cobranet/faqs
+  primary: true
+- title: CobraNet - Wikipedia
+  url: https://en.wikipedia.org/wiki/CobraNet
+updated: '2026-08-17'

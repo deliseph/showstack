@@ -1,0 +1,103 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ma-net
+name: MA-Net
+aka:
+  - MA-Net2
+  - MA-Net3
+  - grandMA network protocol
+
+category: lighting-control
+summary: >-
+  MA Lighting's proprietary session and device-networking protocol linking
+  grandMA2/grandMA3 consoles, onPC stations, NPUs and MA nodes over UDP
+  multicast (plus TCP for large transfers). It is what actually carries
+  console session data, backup/redundancy state and DMX output between
+  everything on the MA network switch, not a separately branded product.
+
+transport:
+  - udp
+  - tcp
+
+default_ports:
+  - number: 30020
+    transport: udp
+    role: MA-Net3 general session communication (session 1)
+    note: Documented by MA Lighting for MA-Net3 (grandMA3) only. MA Lighting does not similarly publish MA-Net2 (grandMA2-era) port numbers.
+  - number: 30021
+    transport: udp
+    role: MA-Net3 extended session communication (session 1)
+  - number: 30022
+    transport: tcp
+    role: MA-Net3 station-to-station high-volume/unicast data transfer
+    note: Additional sessions use higher port numbers by a fixed offset per session.
+
+multicast:
+  used: true
+  ranges:
+    - 236.4.1.0-236.4.1.3 (MA-Net3 session 1 groups)
+    - 239.4.1.x (alternate base if 236.4.1.x conflicts)
+  note: >-
+    From MA Lighting's own grandMA3 online manual, for MA-Net3 specifically.
+    Up to 32 sessions are supported by shifting the base address per session.
+    No equivalent public documentation of MA-Net2 multicast ranges was found.
+
+openness: proprietary-documented
+spec_url:
+  url: https://help.malighting.com/grandMA3/2.2/HTML/network_design_protocols.html
+  label: grandMA3 online manual — Network Design, Protocol Details
+steward: MA Lighting International GmbH
+status: current
+
+typical_use:
+  - Linking grandMA2/grandMA3 consoles, onPC sessions and NPUs into one rig-wide session
+  - Session backup and redundancy between primary and backup consoles/processing units
+  - DMX output distribution to MA 2Port/4Port Nodes
+  - Third-party media servers and pixel-mapping tools joining a console's session for show sync
+
+gotchas:
+  - >-
+    MA Lighting publishes network/port configuration for MA-Net3 in the
+    grandMA3 online manual, but not a message-format or packet-structure
+    specification, so there is enough to wire a network but not enough to
+    write an independent interoperable client from official docs alone.
+  - >-
+    MA-Net2 (grandMA2) and MA-Net3 (grandMA3) are different, non-interoperable
+    protocol generations; a grandMA2-era NPU or node does not simply join a
+    grandMA3 MA-Net3 session.
+  - >-
+    No open-source MA-Net client is known to exist. Open Lighting
+    Architecture, which reverse-engineers many proprietary lighting protocols
+    (Pathport, KiNET), lists no MA-Net support, so third parties depend on
+    official MA Lighting licensing (ArKaos, MADRIX) rather than reverse
+    engineering.
+
+confidence: reported
+tags:
+  - lighting
+  - ma-lighting
+  - proprietary
+  - console-networking
+
+sources:
+  - title: grandMA3 online manual — Network Design, Protocol Details (MA-Net3 ports and multicast ranges)
+    url: https://help.malighting.com/grandMA3/2.2/HTML/network_design_protocols.html
+    publisher: MA Lighting International GmbH
+    accessed: 2026-08-17
+    primary: true
+  - title: Input, Interoperability, And Remote Control — MA Lighting MA-Net (described as "a proprietary Ethernet network protocol")
+    url: https://help.madrix.com/m5/html/madrix/hidd_ma_net.html
+    publisher: inoage GmbH (MADRIX)
+    accessed: 2026-08-17
+  - title: MediaMaster 3.1, GrandMA2 and Ma-Net2 (third-party MA-Net2 integration for show sync)
+    url: https://pro.arkaos.com/blog/2012/11/engineering/mediamaster-31-grandma2-and-ma-net2
+    publisher: ArKaos
+    accessed: 2026-08-17
+  - title: Open Lighting Architecture — supported protocols (no MA-Net entry)
+    url: https://wiki.openlighting.org/index.php/Open_Lighting_Architecture
+    publisher: Open Lighting Project
+    accessed: 2026-08-17
+
+contributed_by: []
+updated: 2026-08-17

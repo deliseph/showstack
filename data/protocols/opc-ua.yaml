@@ -1,0 +1,101 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: opc-ua
+name: OPC UA
+aka:
+  - OPC Unified Architecture
+  - IEC 62541
+
+category: device-management
+summary: >-
+  The OPC Foundation's platform-independent, service-oriented standard for
+  structured, secured data exchange between industrial and building systems,
+  from simple tag reads to full information models over TCP, UDP, WebSockets
+  or MQTT/AMQP. In venues it is the practical bridge where show control needs
+  to read or write into building management, HVAC or facility-automation systems.
+
+transport:
+  - tcp
+  - udp
+  - websocket
+  - other
+
+default_ports:
+  - number: 4840
+    transport: tcp
+    role: OPC UA TCP binary protocol (opc.tcp://) default endpoint/discovery port
+    iana_registered: true
+
+openness: open-published
+spec_url:
+  url: https://reference.opcfoundation.org/
+  label: OPC UA Online Reference (full specification text, free, no login required)
+steward: OPC Foundation
+first_published: 2006
+status: current
+
+typical_use:
+  - Bridging show control or venue automation into building management systems (BMS/HVAC) via a shared OPC UA server
+  - Exposing PLC and industrial-machinery data models to higher-level monitoring/dashboarding software
+  - Vendor-neutral integration layer between different automation vendors' equipment in fixed installations
+
+gotchas:
+  - >-
+    The specification text is free to read at reference.opcfoundation.org, but
+    the identically-numbered IEC 62541 standard document must be purchased
+    from the IEC Webstore if a compliance paper trail specifically needs the
+    ISO/IEC-badged version.
+  - >-
+    OPC UA supports both classic client/server (request-response over TCP
+    binary) and newer pub/sub patterns over very different transports (UDP,
+    MQTT, AMQP); two devices that both claim "OPC UA support" are not
+    guaranteed to share a transport/pattern without checking which profile
+    each one implements.
+  - >-
+    Security is optional per-endpoint (None/Sign/SignAndEncrypt policies can
+    all be offered by the same server), so a server discovered and connected
+    without checking its security policy list may be handing data over
+    completely unencrypted even though the standard itself supports strong security.
+
+implementations:
+  - name: open62541
+    url: https://github.com/open62541/open62541
+    language: C
+    license: MPL-2.0
+    role: both
+  - name: asyncua (formerly python-opcua / FreeOpcUa)
+    url: https://github.com/FreeOpcUa/opcua-asyncio
+    language: Python
+    license: LGPL-3.0-or-later
+    role: both
+
+confidence: verified
+tags:
+  - industrial
+  - building-systems
+  - opc-foundation
+  - iec-62541
+
+sources:
+  - title: 'OPC UA TCP well-known address, port 4840 (opc.tcp://localhost:4840/UADiscovery)'
+    url: https://reference.opcfoundation.org/Core/Part6/v104/docs/7.6
+    publisher: OPC Foundation
+    accessed: 2026-08-17
+    primary: true
+  - title: Update for IEC 62541 (OPC UA) Published
+    url: https://opcfoundation.org/news/opc-foundation-news/update-iec-62541-opc-ua-published/
+    publisher: OPC Foundation
+    accessed: 2026-08-17
+    primary: true
+  - title: OPC Unified Architecture (first released 2006, IEC 62541, free specification download, transports)
+    url: https://en.wikipedia.org/wiki/OPC_Unified_Architecture
+    publisher: Wikipedia
+    accessed: 2026-08-17
+  - title: open62541 — open source implementation of OPC UA (IEC 62541), Mozilla Public License v2.0
+    url: https://github.com/open62541/open62541
+    publisher: open62541 project
+    accessed: 2026-08-17
+
+contributed_by: []
+updated: 2026-08-17

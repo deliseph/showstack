@@ -1,0 +1,32 @@
+id: 0-10v
+name: 0-10V Analog Dimming Control
+aka:
+- 0-10V
+- 1-10V
+category: lighting-control
+summary: A simple two-wire analog DC control voltage (0-10V, or 1-10V for fluorescent ballasts) used to
+  dim architectural/LED lighting fixtures and drivers, standardized for entertainment use in ANSI/ESTA
+  E1.3 and predating DMX512 in theatrical dimming.
+transport:
+- other
+openness: published-paid
+spec_url:
+  url: https://webstore.ansi.org/standards/esta/ansie12001r2011
+steward: ESTA/PLASA (Entertainment Services and Technology Association), via ANSI
+status: current
+gotchas:
+- No addressing or digital data - every fixture on a 0-10V control line dims together, so per-fixture
+  control needs separate runs or a downstream decoder.
+- Sourcing vs. sinking wiring schemes are not interchangeable, and mixing them on the same control line
+  is a common installation error.
+- Largely superseded in theatrical dimming by DMX512, but remains common today in architectural LED drivers
+  and flat-panel fixtures.
+confidence: verified
+sources:
+- title: ANSI E1.3-2001 (R2011) - Entertainment Technology - Lighting Control Systems - 0 to 10V Analog
+    Control Specification
+  url: https://webstore.ansi.org/standards/esta/ansie12001r2011
+  primary: true
+- title: 0-10 V lighting control - Wikipedia
+  url: https://en.wikipedia.org/wiki/0-10_V_lighting_control
+updated: '2026-08-17'

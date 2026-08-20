@@ -1,0 +1,89 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: bluetooth-midi
+name: Bluetooth Low Energy MIDI (BLE-MIDI)
+aka:
+  - BLE-MIDI
+  - MIDI over Bluetooth Low Energy
+  - RP-052
+
+category: audio-control
+summary: >-
+  A GATT-based transport that packs standard MIDI 1.0 messages, with
+  millisecond timestamps for jitter correction, into Bluetooth Low Energy
+  characteristic writes so a keyboard, pedal or controller can talk MIDI
+  wirelessly to a phone, tablet or computer. It sits behind most modern
+  wireless MIDI foot controllers, keyboards and BLE MIDI interface dongles
+  used in live performance rigs.
+
+transport:
+  - wireless-rf
+
+openness: published-paid
+spec_url:
+  url: https://midi.org/midi-over-bluetooth-low-energy-ble-midi
+  label: MIDI Association — MIDI over Bluetooth Low Energy (BLE-MIDI)
+steward: MIDI Association (MMA/AMEI)
+first_published: 2015
+status: current
+
+typical_use:
+  - Wireless MIDI controllers, foot pedals and keyboards connecting to tablets, phones or computers in performance rigs
+  - iOS/macOS Core MIDI Bluetooth peripheral pairing for stage-side control surfaces
+  - Point-to-point wireless MIDI links replacing a DIN cable run where routing 5-pin MIDI is impractical
+
+gotchas:
+  - >-
+    BLE packets are capped at the negotiated MTU minus 3 bytes (typically only
+    20 bytes by default), so dense note bursts, chords or sysex fragment
+    across multiple BLE writes; both sides need to negotiate a larger MTU to
+    avoid this becoming audible as timing jitter.
+  - >-
+    The spec's own millisecond timestamp header only claims jitter "comparable
+    to the USB Class Specification" and explicitly warns that wireless
+    delivery delays can occur unexpectedly at any time, so BLE-MIDI is not a
+    guaranteed low-latency transport the way a DIN cable or wired USB is.
+  - >-
+    As of 2026 the official BLE-MIDI 1.0 spec PDF is gated behind a paid MIDI
+    Association SysEx ID ($240 one-time) or Corporate membership rather than a
+    free download on midi.org, even though implementing the protocol itself is
+    royalty-free.
+
+implementations:
+  - name: Arduino-BLE-MIDI
+    url: https://github.com/lathoub/Arduino-BLE-MIDI
+    language: C++
+    license: MIT
+    role: both
+
+confidence: reported
+tags:
+  - midi
+  - bluetooth
+  - wireless
+  - midi-association
+
+sources:
+  - title: MIDI over Bluetooth Low Energy (BLE-MIDI) — spec listing, gated behind SysEx ID/Corporate membership
+    url: https://midi.org/midi-over-bluetooth-low-energy-ble-midi
+    publisher: MIDI Association
+    accessed: 2026-08-17
+    primary: true
+  - title: Specification for MIDI over Bluetooth Low Energy (BLE-MIDI) Version 1.0, November 1 2015 (MMA/AMEI RP-052; service/characteristic UUIDs, timestamp encoding, MTU limits)
+    url: https://www.hangar42.nl/wp-content/uploads/2017/10/BLE-MIDI-spec.pdf
+    publisher: MIDI Manufacturers Association / AMEI
+    accessed: 2026-08-17
+    primary: true
+  - title: MIDI Bluetooth — Core MIDI documentation
+    url: https://developer.apple.com/documentation/coremidi/midi-bluetooth
+    publisher: Apple Inc.
+    accessed: 2026-08-17
+  - title: Membership tiers and pricing (Individual free / SysEx ID $240 / Corporate from $600, spec access levels)
+    url: https://midi.org/membership
+    publisher: MIDI Association
+    accessed: 2026-08-17
+    primary: true
+
+contributed_by: []
+updated: 2026-08-17

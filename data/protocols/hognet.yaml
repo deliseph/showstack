@@ -1,0 +1,98 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: hognet
+name: HogNet
+aka:
+  - Hog Net
+  - HES Net
+
+category: lighting-control
+summary: >-
+  High End Systems' proprietary Ethernet network for linking Hog consoles, DPs
+  and nodes, on a dedicated NIC/connector separate from the FixtureNet
+  connection Hog consoles use for outbound Art-Net/sACN to fixtures and
+  gateways. High End Systems (now part of ETC) has confirmed on the record
+  that HogNet is undocumented outside their own equipment.
+
+transport:
+  - udp
+
+default_ports:
+  - number: 6600
+    transport: udp
+    role: Default show/session identification port; additional shows increment from 6600 (6601, 6602, ...)
+    iana_registered: false
+    note: >-
+      ETC's own Hog console documentation states the port number for show
+      separation but does not state whether it is UDP or TCP; UDP is inferred
+      here because the same documentation says HogNet "depends on multi-cast
+      network traffic," and multicast requires UDP.
+
+multicast:
+  used: true
+  note: >-
+    ETC's Hog console documentation states that "Hog 4 OS depends on
+    multi-cast network traffic for communication to other system devices," but
+    does not publish the specific multicast group addresses used.
+
+openness: proprietary-closed
+steward: High End Systems (part of Electronic Theatre Controls)
+status: current
+
+typical_use:
+  - Networking Hog consoles, DPs (Data Processors) and nodes within a single show
+  - Separating multiple independent shows on one physical network via incrementing port numbers from a 6600 base
+  - Kept on a separate NIC/connector from FixtureNet, which carries outbound Art-Net/sACN to fixtures
+
+gotchas:
+  - >-
+    Asked directly on ETC's own community forum whether HogNet uses a
+    documented UDP/IP port, ETC staff (Chris Davis) replied only that "HogNet
+    is a combination of more than one transport protocol... a proprietary
+    mechanism only understood by HES equipment," declining to confirm
+    packet-level details.
+  - >-
+    No open-source HogNet client or listener is known to exist; the Open
+    Lighting Architecture project, which reverse-engineers many proprietary
+    lighting protocols, has no HogNet plugin.
+  - >-
+    HogNet (console/node networking) and FixtureNet (fixture-facing
+    Art-Net/sACN output) are two separate physical connections on Hog
+    consoles; cross-wiring the fixture network into the HogNet port, or vice
+    versa, is a common on-site mistake.
+
+confidence: reported
+tags:
+  - lighting
+  - high-end-systems
+  - hog
+  - proprietary
+
+sources:
+  - title: 'Details on HogNet? — ETC staff confirming HogNet is a proprietary mechanism only understood by HES equipment'
+    url: https://community.etcconnect.com/control_consoles/hog-lighting-controls/f/hog-networking-help/45616/details-on-hognet
+    publisher: Electronic Theatre Controls (ETC) community forum
+    accessed: 2026-08-17
+    primary: true
+  - title: '3.3 HogNet Network / Setting Up the Console — Hog 4 OS documentation (port 6600 default, multicast dependency)'
+    url: https://www.etcconnect.com/webdocs/Controls/HOG/HTML/en/sect-setting_up_the_network.htm
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+  - title: ETC acquires High End Systems
+    url: https://www.etcconnect.com/About/News/ETC-acquires-High-End-Systems.aspx
+    publisher: Electronic Theatre Controls (ETC)
+    accessed: 2026-08-17
+    primary: true
+  - title: Lighting Control Protocols and Standards (HogNet described as a proprietary Ethernet suite, separate FixtureNet connection)
+    url: https://jeff.glass/post/lighting-control-protocols-and-standards/
+    publisher: Jeff Glass
+    accessed: 2026-08-17
+  - title: Open Lighting Architecture — supported protocols (no HogNet entry)
+    url: https://wiki.openlighting.org/index.php/Open_Lighting_Architecture
+    publisher: Open Lighting Project
+    accessed: 2026-08-17
+
+contributed_by: []
+updated: 2026-08-17

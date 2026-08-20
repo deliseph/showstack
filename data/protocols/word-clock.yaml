@@ -1,0 +1,29 @@
+id: word-clock
+name: Word Clock / AES11
+aka:
+- Digital Audio Reference Signal
+- DARS
+category: timecode-sync
+summary: A dedicated square-wave timing signal (or the AES11-standardized Digital Audio Reference Signal
+  carried over AES3) distributed by coax/BNC to keep multiple digital audio devices sample-locked, still
+  essential wherever non-networked digital audio gear must share a clock.
+transport:
+- other
+openness: open-free-registration
+spec_url:
+  url: https://www.aes.org/publications/standards/search.cfm?docID=18
+steward: Audio Engineering Society (AES)
+status: current
+gotchas:
+- Word clock cabling needs correct 75-ohm termination and respects cable length limits - mis-terminated
+  runs are a common cause of clicks/dropouts in digital audio systems.
+- Networked audio protocols (Dante, AES67, AVB) generally replace word clock with PTP-based sync, but
+  word clock remains common for interfacing older digital audio hardware.
+confidence: verified
+sources:
+- title: 'AES11-2020: Synchronization of digital audio equipment - AES Standards'
+  url: https://www.aes.org/publications/standards/search.cfm?docID=18
+  primary: true
+- title: AES11 - Wikipedia
+  url: https://en.wikipedia.org/wiki/AES11
+updated: '2026-08-17'

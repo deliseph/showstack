@@ -1,0 +1,31 @@
+id: aes50
+name: AES50
+aka:
+- SuperMAC
+- HRMAI
+category: audio-transport
+summary: An AES open standard for bidirectional, low-latency multichannel digital audio over Cat5 cable,
+  built into the Behringer/Midas/Klark Teknik console ecosystem (X32, WING, M32, DL/XL series) to link
+  stageboxes, consoles, and processing without an analog snake.
+transport:
+- ethernet-l2
+openness: open-free-registration
+spec_url:
+  url: https://www.aes.org/standards/blog/2011/9/new-revision-of-aes50-2011
+steward: Audio Engineering Society (AES)
+status: current
+gotchas:
+- Runs over Cat5/Cat5e cable and RJ45s but is not standard routable Ethernet - AES50 ports cannot simply
+  be plugged into a network switch.
+- Point-to-point by design; star/hub topologies require dedicated AES50 routers rather than off-the-shelf
+  Ethernet switches.
+- 'Channel count trades off against sample rate: up to 48 channels at 48kHz drops to 24 channels at 96kHz
+  per link.'
+confidence: verified
+sources:
+- title: New revision of AES50, High-resolution multi-channel audio interconnection (HRMAI) - AES Standards
+  url: https://www.aes.org/standards/blog/2011/9/new-revision-of-aes50-2011
+  primary: true
+- title: AES50 - Wikipedia
+  url: https://en.wikipedia.org/wiki/AES50
+updated: '2026-08-17'

@@ -1,0 +1,30 @@
+id: madi
+name: MADI (AES10)
+aka:
+- Multichannel Audio Digital Interface
+- AES10
+category: audio-transport
+summary: A long-established AES standard for point-to-point transport of up to 64 channels of digital
+  audio over a single coax (BNC) or fiber link, still widely used for touring FOH/monitor console splits,
+  digital snakes, and broadcast/live-sound interconnects.
+transport:
+- other
+- fibre
+openness: open-free-registration
+steward: Audio Engineering Society (AES)
+status: current
+gotchas:
+- Original AES10-1991 caps out at 56 channels at 48kHz; 64-channel and higher-sample-rate operation needs
+  the AES10-2003/2008 revisions and matching gear.
+- Point-to-point only, with no built-in routing/addressing - multi-device MADI systems need external routers
+  or matrix switchers.
+- Coax (75-ohm BNC) and optical (SC) variants are not interchangeable without a converter, and each has
+  different maximum cable runs.
+confidence: verified
+sources:
+- title: AES10-2008, Serial Multichannel Audio Digital Interface (MADI) has been published - AES Standards
+  url: https://www.aes.org/standards/blog/2009/2/aes10-2008-serial-multichannel-audio
+  primary: true
+- title: MADI - Wikipedia
+  url: https://en.wikipedia.org/wiki/MADI
+updated: '2026-08-17'

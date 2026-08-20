@@ -1,0 +1,29 @@
+id: genlock
+name: Genlock / Black Burst
+aka:
+- Black Burst
+- BB
+- House Sync
+- Bi-level Sync
+category: timecode-sync
+summary: An analog composite video reference signal (a 'black' picture with color burst) distributed over
+  coax to lock cameras, switchers, and video servers to a common timing reference; the SD-era precursor
+  to tri-level sync for HD video systems.
+transport:
+- other
+openness: published-paid
+status: historical
+gotchas:
+- Black burst is an SD-format reference; HD/UHD systems generally use tri-level sync instead, which has
+  different pulse levels and isn't interchangeable on the same distribution amp.
+- Purely a timing reference with no metadata - it must be paired with LTC/VITC timecode if frame-accurate
+  identity information is also needed.
+confidence: reported
+sources:
+- title: Black and burst - Wikipedia
+  url: https://en.wikipedia.org/wiki/Black_and_burst
+- title: Tri-level sync - Wikipedia
+  url: https://en.wikipedia.org/wiki/Tri-level_sync
+- title: SMPTE ST 274M - Television Timing Reference Sequences - GlobalSpec
+  url: https://standards.globalspec.com/std/1095006/smpte-st-274m
+updated: '2026-08-17'

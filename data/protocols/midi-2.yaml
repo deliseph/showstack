@@ -1,0 +1,31 @@
+id: midi-2
+name: MIDI 2.0 / Universal MIDI Packet (UMP)
+aka:
+- MIDI 2.0
+- UMP
+- MIDI-CI
+category: audio-control
+summary: A 2020 extension to MIDI adding bidirectional device negotiation (MIDI-CI), higher-resolution
+  controllers, and a new Universal MIDI Packet container that carries both MIDI 1.0 and MIDI 2.0 messages
+  over USB, network, and other digital transports.
+transport:
+- usb
+- other
+openness: open-free-registration
+spec_url:
+  url: https://midi.org/universal-midi-packet-ump-and-midi-2-0-protocol-specification
+steward: MIDI Association (MMA/AMEI)
+status: draft
+gotchas:
+- Not wire-compatible with classic 5-pin DIN MIDI 1.0 - UMP is delivered over USB, network, or other digital
+  transports rather than the original DIN connector.
+- Adoption in touring/theatre gear is still limited; most show-control rigs remain on plain MIDI 1.0 messages
+  even on devices that technically support MIDI 2.0.
+confidence: verified
+sources:
+- title: Universal MIDI Packet (UMP) and MIDI 2.0 Protocol Specification - MIDI.org
+  url: https://midi.org/universal-midi-packet-ump-and-midi-2-0-protocol-specification
+  primary: true
+- title: MIDI 2.0 - Wikipedia
+  url: https://en.wikipedia.org/wiki/MIDI_2.0
+updated: '2026-08-17'

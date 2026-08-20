@@ -1,0 +1,34 @@
+id: ethercat
+name: EtherCAT
+aka:
+- Ethernet for Control Automation Technology
+category: machinery-motion
+summary: A real-time industrial Ethernet fieldbus (IEC 61158) offering sub-millisecond, tightly synchronized
+  cyclic control, increasingly used behind the scenes in automated rigging, winch, and scenic-motion systems
+  that need many coordinated servo/VFD axes.
+transport:
+- ethernet-l2
+openness: proprietary-documented
+spec_url:
+  url: https://www.ethercat.org/en/technology.html
+steward: EtherCAT Technology Group (ETG); originated by Beckhoff Automation
+status: current
+gotchas:
+- Uses standard Ethernet frames (Ethertype 0x88A4) processed 'on the fly' by each slave, so ordinary network
+  switches generally cannot sit inline on a segment without breaking real-time behavior.
+- Requires a master device driving the cycle timing (a PLC or PC-based controller); it is not a peer-to-peer
+  protocol like DMX or OSC.
+implementations:
+- name: SOEM (Simple Open EtherCAT Master)
+  url: https://github.com/OpenEtherCATsociety/SOEM
+  language: C
+confidence: verified
+sources:
+- title: EtherCAT Technology - EtherCAT Technology Group
+  url: https://www.ethercat.org/en/technology.html
+  primary: true
+- title: EtherCAT - Wikipedia
+  url: https://en.wikipedia.org/wiki/EtherCAT
+- title: Precision Stage Automation System - 26-Axis EtherCAT-Controlled Rigging Solution - Segev Tech
+  url: https://www.segevtech.com/post/precision-stage-automation-system-26-axis-ethercat-controlled-rigging-solution
+updated: '2026-08-17'

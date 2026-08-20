@@ -1,0 +1,37 @@
+id: osc-query
+name: OSCQuery
+aka:
+- OSC Query Protocol
+- OSCQueryProposal
+category: device-management
+summary: A community specification letting OSC-controlled software advertise itself via mDNS/Zeroconf
+  and publish a browsable JSON description of its OSC address space over HTTP/WebSocket, so control surfaces
+  like TouchOSC or media servers can auto-discover parameters.
+transport:
+- http
+- websocket
+openness: open-published
+spec_url:
+  url: https://github.com/Vidvox/OSCQueryProposal
+steward: Vidvox (community proposal, multiple implementers)
+status: current
+gotchas:
+- Not a formally ratified standard from an SDO - it's a GitHub-hosted proposal, so implementations (VDMX,
+  TouchDesigner, ossia, VRChat) may support only part of it.
+- Relies on Bonjour/Zeroconf (_oscjson._tcp) for discovery, which can be blocked or unreliable on locked-down
+  venue networks and VLANs.
+implementations:
+- name: libossia
+  url: https://github.com/ossia/libossia
+  language: C++
+- name: VVOSCQueryProtocol
+  url: https://github.com/Vidvox/VVOSCQueryProtocol
+  language: Objective-C
+confidence: verified
+sources:
+- title: Vidvox/OSCQueryProposal - OSCQuery Protocol specification
+  url: https://github.com/Vidvox/OSCQueryProposal
+  primary: true
+- title: Introducing OSCQuery Protocol - VDMX
+  url: https://vdmx.vidvox.net/blog/oscquery
+updated: '2026-08-17'
