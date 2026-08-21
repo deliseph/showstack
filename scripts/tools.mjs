@@ -19,6 +19,7 @@ import {
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
+  powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -26,6 +27,7 @@ const MATH_SRC = [
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
+  powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -112,8 +114,53 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
   <p class="note">Drop-frame skips frame labels 00 and 01 at the start of every minute except each tenth minute — labels, not time. Entering a label that does not exist (say 00:01:00;00 in DF) is reported as such rather than silently rounded. See <a href="/protocols/ltc/">LTC</a> and <a href="/protocols/mtc/">MTC</a>.</p>
 </div>
 
+<div class="tool" id="power">
+  <h3>Power load</h3>
+  <div class="row">
+    <div class="field"><label for="pw-w">Total watts</label><input id="pw-w" type="number" min="0" value="10000" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="pw-v">Volts</label><select id="pw-v">
+      <option value="120">120</option><option value="208" selected>208</option><option value="230">230</option><option value="240">240</option><option value="400">400</option>
+    </select></div>
+    <div class="field"><label for="pw-ph">Phase</label><select id="pw-ph"><option value="1">single</option><option value="3" selected>three</option></select></div>
+    <div class="field"><label for="pw-pf">Power factor</label><input id="pw-pf" type="number" min="0.1" max="1" step="0.05" value="1" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="pw-out" role="status" aria-live="polite"></div>
+  <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
+</div>
+
+<div class="tool" id="beam">
+  <h3>Beam &amp; throw</h3>
+  <div class="row">
+    <div class="field"><label for="bm-t">Throw m</label><input id="bm-t" type="number" min="0" step="0.1" value="10" inputmode="decimal"></div>
+    <div class="field"><label for="bm-a">Beam angle °</label><input id="bm-a" type="number" min="1" max="179" step="0.5" value="26" inputmode="decimal"></div>
+    <div class="field"><label for="bm-cd">Candela (optional)</label><input id="bm-cd" type="number" min="0" value="" inputmode="numeric" style="width:130px"></div>
+  </div>
+  <div class="out" id="bm-out" role="status" aria-live="polite"></div>
+  <p class="note">Beam diameter = 2 × throw × tan(angle ÷ 2). Illuminance by the inverse square law: lux = candela ÷ throw². Enter the field angle instead to size the visible pool edge — fixture datasheets quote both.</p>
+</div>
+
+<div class="tool" id="led">
+  <h3>LED wall</h3>
+  <div class="row">
+    <div class="field"><label for="lw-w">Width m</label><input id="lw-w" type="number" min="0.1" step="0.1" value="5" inputmode="decimal"></div>
+    <div class="field"><label for="lw-h">Height m</label><input id="lw-h" type="number" min="0.1" step="0.1" value="3" inputmode="decimal"></div>
+    <div class="field"><label for="lw-p">Pixel pitch mm</label><input id="lw-p" type="number" min="0.4" step="0.1" value="3.9" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="lw-out" role="status" aria-live="polite"></div>
+  <p class="note">Resolution = size ÷ pitch. The minimum comfortable viewing distance shown is the common rule of thumb (1 m per 1 mm of pitch), not a spec — content, brightness and camera use all move it.</p>
+</div>
+
+<div class="tool" id="rf">
+  <h3>RF wavelength</h3>
+  <div class="row">
+    <div class="field"><label for="rf-f">Frequency MHz</label><input id="rf-f" type="number" min="1" step="0.025" value="600" inputmode="decimal" style="width:130px"></div>
+  </div>
+  <div class="out" id="rf-out" role="status" aria-live="polite"></div>
+  <p class="note">λ = c ÷ f. Antenna lengths include the standard ~5% end-effect shortening (the 468/f rule). Handy for wireless mic and IEM antenna placement: keep transmit and receive antennas at least a wavelength apart where you can.</p>
+</div>
+
 <div class="cta"><strong>A calculation your crew does daily that is missing here?</strong>
-<p><a href="${GH}/issues/new?labels=tooling&amp;title=tools%3A+">Name it</a> — if the arithmetic can be written down and tested, it belongs on this page.</p></div>
+<p><a href="${GH}/issues/new?labels=tooling&amp;title=tools%3A+">Name it</a> — if the arithmetic can be written down and tested, it belongs on this page. Rigging load maths is deliberately absent: point loads and bridle forces belong with a qualified rigger and the <a href="/standards/">governing standards</a>, not a web form.</p></div>
 `
 
   const script = `
@@ -215,15 +262,60 @@ for (const id of ["tc-h", "tc-m", "tc-s", "tc-f"]) $("#" + id).addEventListener(
 $("#tc-rate").addEventListener("input", tcRenderFromFields);
 $("#tc-frames").addEventListener("input", tcRenderFromFrames);
 
+// ---- Power load ----
+function powerRender() {
+  const r = powerLoad($("#pw-w").value, $("#pw-v").value, Number($("#pw-ph").value), $("#pw-pf").value);
+  if (!r) { $("#pw-out").innerHTML = '<span class="err">Watts, volts and power factor must be sensible numbers.</span>'; return; }
+  $("#pw-out").innerHTML = '<b>' + r.amps + ' A</b> at ' + $("#pw-v").value + ' V ' +
+    ($("#pw-ph").value === "3" ? 'three-phase (per line)' : 'single phase');
+}
+for (const id of ["pw-w", "pw-v", "pw-ph", "pw-pf"]) $("#" + id).addEventListener("input", powerRender);
+
+// ---- Beam & throw ----
+function beamRender() {
+  const b = beamDiameter($("#bm-t").value, $("#bm-a").value);
+  if (!b) { $("#bm-out").innerHTML = '<span class="err">Throw must be 0 or more, angle between 1 and 179.</span>'; return; }
+  let html = 'Beam diameter <b>' + b.diameter + ' m</b> at ' + $("#bm-t").value + ' m';
+  const cd = $("#bm-cd").value;
+  if (cd !== "") {
+    const e = illuminance(cd, $("#bm-t").value);
+    if (e) html += ' · <b>' + e.lux + ' lx</b> (' + e.footcandles + ' fc) centre beam';
+  }
+  $("#bm-out").innerHTML = html;
+}
+for (const id of ["bm-t", "bm-a", "bm-cd"]) $("#" + id).addEventListener("input", beamRender);
+
+// ---- LED wall ----
+function ledRender() {
+  const r = ledWall($("#lw-w").value, $("#lw-h").value, $("#lw-p").value);
+  if (!r) { $("#lw-out").innerHTML = '<span class="err">Width, height and pitch must be positive.</span>'; return; }
+  $("#lw-out").innerHTML = '<b>' + r.pxW + ' × ' + r.pxH + ' px</b> · ' +
+    (r.totalPx / 1000000).toFixed(2) + ' Mpx · comfortable from ≈<b>' + r.minViewMeters + ' m</b>';
+}
+for (const id of ["lw-w", "lw-h", "lw-p"]) $("#" + id).addEventListener("input", ledRender);
+
+// ---- RF wavelength ----
+function rfRender() {
+  const r = rfWavelength($("#rf-f").value);
+  if (!r) { $("#rf-out").innerHTML = '<span class="err">Frequency must be a positive number of MHz.</span>'; return; }
+  $("#rf-out").innerHTML = 'λ <b>' + r.wavelength + ' m</b> · half-wave <b>' + r.halfWave +
+    ' m</b> · quarter-wave <b>' + r.quarterWave + ' m</b> (' + r.quarterWaveInches + ' in)';
+}
+$("#rf-f").addEventListener("input", rfRender);
+
 dmxRender(false);
 dipRenderFromAddress();
 delayRender();
 tcRenderFromFields();
+powerRender();
+beamRender();
+ledRender();
+rfRender();
 `
 
   return shell({
-    title: 'Field tools — DMX, DIP switch, delay and timecode calculators | showstack',
-    description: 'The calculators technicians use daily: DMX address and sACN multicast, DIP switch positions, speaker delay with temperature, and drop-frame timecode. Free, offline-capable, tested arithmetic.',
+    title: 'Field tools — DMX, delay, timecode, power, beam and LED wall calculators | showstack',
+    description: 'The calculators technicians use daily: DMX address and sACN multicast, DIP switches, speaker delay, drop-frame timecode, power load, beam and photometrics, LED wall resolution, RF wavelength. Free, offline-capable, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
       '@context': 'https://schema.org',
@@ -235,7 +327,7 @@ tcRenderFromFields();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter',
+      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, beam angle and photometrics calculator, LED wall resolution calculator, RF wavelength calculator',
     },
     body,
     extraStyle: style,

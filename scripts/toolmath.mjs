@@ -131,6 +131,71 @@ export function tcToFrames(h, m, s, f, rate) {
   return ((H * 60 + M) * 60 + S) * nominal + F
 }
 
+/**
+ * Electrical load: total fixture watts -> amps on the feed.
+ * Single phase: A = W / (V x PF). Three phase: A = W / (sqrt(3) x V_LL x PF),
+ * V_LL being line-to-line (208 in North America, 400 in Europe).
+ * PF defaults to 1.0; moving lights and LED fixtures with poor power factor
+ * draw more current than the wattage suggests, which is why the field exists.
+ */
+export function powerLoad(watts, volts, phase = 1, pf = 1) {
+  const w = Number(watts), v = Number(volts), p = Number(phase), f = Number(pf)
+  if (!Number.isFinite(w) || w < 0 || !Number.isFinite(v) || v <= 0) return null
+  if (!(p === 1 || p === 3) || !Number.isFinite(f) || f <= 0 || f > 1) return null
+  const amps = p === 3 ? w / (Math.sqrt(3) * v * f) : w / (v * f)
+  return { amps: Math.round(amps * 100) / 100 }
+}
+
+/**
+ * Photometrics: beam angle and throw -> beam diameter (d = 2 t tan(theta/2)),
+ * and candela at throw -> illuminance by the inverse square law (E = I / d^2).
+ * Works for the field angle too; the caller picks which angle they enter.
+ */
+export function beamDiameter(throwMeters, angleDeg) {
+  const t = Number(throwMeters), a = Number(angleDeg)
+  if (!Number.isFinite(t) || t < 0 || !Number.isFinite(a) || a <= 0 || a >= 180) return null
+  const d = 2 * t * Math.tan((a * Math.PI / 180) / 2)
+  return { diameter: Math.round(d * 100) / 100 }
+}
+
+export function illuminance(candela, throwMeters) {
+  const i = Number(candela), t = Number(throwMeters)
+  if (!Number.isFinite(i) || i < 0 || !Number.isFinite(t) || t <= 0) return null
+  const lux = i / (t * t)
+  return { lux: Math.round(lux * 10) / 10, footcandles: Math.round(lux * 0.09290304 * 10) / 10 }
+}
+
+/**
+ * LED wall: physical size and pixel pitch -> resolution.
+ * minViewMeters is the common rule of thumb (1 m of distance per 1 mm of
+ * pitch) and is labelled as a rule of thumb, not a spec.
+ */
+export function ledWall(widthMeters, heightMeters, pitchMm) {
+  const w = Number(widthMeters), h = Number(heightMeters), p = Number(pitchMm)
+  if (!Number.isFinite(w) || w <= 0 || !Number.isFinite(h) || h <= 0 || !Number.isFinite(p) || p <= 0) return null
+  const pxW = Math.round((w * 1000) / p)
+  const pxH = Math.round((h * 1000) / p)
+  return { pxW, pxH, totalPx: pxW * pxH, minViewMeters: Math.round(p * 10) / 10 }
+}
+
+/**
+ * RF: frequency -> free-space wavelength, plus practical half- and
+ * quarter-wave antenna lengths with the standard ~5% end-effect shortening
+ * (the 468/f_MHz feet rule for a half-wave element).
+ */
+export function rfWavelength(mhz) {
+  const f = Number(mhz)
+  if (!Number.isFinite(f) || f <= 0) return null
+  const lambda = 299.792458 / f
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  return {
+    wavelength: r3(lambda),
+    halfWave: r3(lambda / 2 * 0.95),
+    quarterWave: r3(lambda / 4 * 0.95),
+    quarterWaveInches: Math.round(lambda / 4 * 0.95 * 39.3701 * 10) / 10,
+  }
+}
+
 export function framesToTc(frames, rate) {
   let n = Number(frames)
   if (!Number.isInteger(n) || n < 0) return null
