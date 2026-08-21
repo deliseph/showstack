@@ -1,0 +1,115 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: ableton-live
+name: Ableton Live
+aka:
+- Live
+- Live 12
+vendor: Ableton AG
+category: audio-playback
+summary: Clip and timeline based playback software, widely used to run backing tracks, click and guide
+  vocals on tour. Strong on network tempo sync through Ableton Link and extensible via Max for Live,
+  but it neither chases nor generates SMPTE timecode natively.
+license: proprietary
+price_model: one-off-purchase
+platforms:
+- windows
+- macos
+speaks:
+- protocol: ableton-link
+  direction: bidirectional
+  since_version: '9.6'
+  note: 'Peer-to-peer tempo, beat and phase sync over the local network. There is no master: any peer
+    can change the session tempo. Tempo Follower and External Sync are mutually exclusive.'
+  confidence: verified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI in and out for control surfaces and instruments. MIDI Clock can be sent to an external
+    sequencer or received to slave Live, set per port with the Sync switch in Link/Tempo/MIDI preferences.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: Live slaves to MTC and reads it as an Arrangement position, with MIDI Timecode Frame Rate
+    and Offset settings. Ableton state Live can only act as a MIDI sync device, not a host; MTC carries
+    no tempo and tempo changes cannot be tracked.
+  confidence: verified
+- protocol: osc
+  direction: bidirectional
+  requires_licence: true
+  note: No native OSC. Reached through Max for Live, included in Suite and sold as an add-on for Standard;
+    Ableton cite OSC as a Max for Live use case.
+  confidence: reported
+homepage:
+  url: https://www.ableton.com/en/live/
+  label: ableton.com
+docs:
+  url: https://www.ableton.com/en/live-manual/12/
+  label: Live 12 Reference Manual
+status: current
+typical_use:
+- Backing tracks, click and guide/cue feeds for touring musicians
+- Keeping several laptops, tablets and instruments on one tempo with Link
+- Triggering lighting and video by printing an LTC audio file onto a track
+- Max for Live devices bridging Live to OSC-controlled show systems
+- Session view playback where set order and tempo change nightly
+gotchas:
+- Ableton state plainly that Live does not sync to incoming SMPTE timecode, and does not generate
+  SMPTE natively. A rig that must live on house LTC needs a workaround, not a preference change.
+- 'The standard workaround is an LTC audio file printed onto a track with Warp off and routed to a
+  spare output. Solid, but frozen: change the arrangement, tempo or start time and the timecode file
+  has to be regenerated.'
+- Live chases MTC but cannot host it, and MTC carries no tempo information, so tempo must be set by
+  hand and tempo changes are not tracked. Slaving Live to MTC does not make its grid follow the master.
+- Ableton's recommended timecode-generating Max for Live device requires Suite or the Max for Live
+  add-on, and Ableton list that workaround as macOS only. A Windows playback rig cannot take that
+  route.
+- Max for Live is not in Intro or Standard by default, so any show-control patch you build assumes
+  a Suite or add-on machine. Check what the depping player actually has installed before handing over
+  a set.
+- Link is tempo, beat and phase only, with no master and no absolute position. It will keep a band
+  together and will not lock them to a video server timeline.
+confidence: verified
+tags:
+- backing-tracks
+- touring
+- playback
+- tempo-sync
+- timecode
+sources:
+- title: Live 12 Reference Manual - Synchronizing with Link, Tempo Follower and MIDI
+  url: https://www.ableton.com/en/live-manual/12/synchronizing-with-link-tempo-follower-and-midi/
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: SMPTE Timecode FAQ - Live does not sync to incoming SMPTE timecode
+  url: https://help.ableton.com/hc/en-us/articles/360010120320-SMPTE-Timecode-FAQ
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: 'Ableton Link: now available in Live 9 - Link shipped in Live 9.6'
+  url: https://www.ableton.com/en/blog/link-now-available-in-live/
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: Live Minimum System Requirements - supported Windows and macOS versions
+  url: https://help.ableton.com/hc/en-us/articles/115001663530-Live-Minimum-System-Requirements
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: Ableton shop - Live editions and licence structure
+  url: https://www.ableton.com/en/shop/live/
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: Max for Live - controlling external things including OSC
+  url: https://www.ableton.com/en/live/max-for-live/
+  publisher: Ableton AG
+  accessed: '2026-08-17'
+  primary: true
+- title: ClipSMPTE introduction - Max for Live device that outputs an LTC audio signal
+  url: https://support.showsync.com/sync-tools/clipsmpte/introduction
+  publisher: Showsync
+  accessed: '2026-08-17'
+contributed_by: []
+updated: '2026-08-17'

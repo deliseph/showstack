@@ -1,0 +1,47 @@
+id: sacnview
+name: sACNView
+category: monitoring-diagnostics
+summary: Cross-platform open-source application for monitoring, viewing, and transmitting Streaming ACN
+  (sACN/E1.31) DMX-over-Ethernet data, widely used to inspect universes, sources, and priorities.
+license: Apache-2.0
+price_model: open-source
+platforms:
+- windows
+- macos
+- linux
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  confidence: verified
+  note: Core purpose is monitoring and sending ANSI/ESTA E1.31 (Streaming ACN).
+homepage:
+  url: https://sacnview.org/
+repo:
+  url: https://github.com/docsteer/sacnview
+status: current
+typical_use:
+- View live per-channel DMX levels for any sACN universe on the network
+- Detect duplicate or conflicting sACN sources on the same universe and compare their priorities
+- Send test sACN data to verify a fixture, node, or console's reception
+- Oscilloscope-style view of channel level changes over time for chase/timing diagnosis
+gotchas:
+- '''sACNView mark 2'' is a ground-up Qt6/C++ rewrite; it is not config- or plugin-compatible with the
+  older Delphi-based original sACNView.'
+- A separate legacy build is maintained for Windows XP since the current releases require newer OS versions.
+confidence: verified
+tags:
+- sacn
+- e1.31
+- dmx-over-ip
+sources:
+- title: sACNView official site
+  url: https://sacnview.org/
+  accessed: '2026-08-17'
+  primary: true
+- title: docsteer/sacnview GitHub repository
+  url: https://github.com/docsteer/sacnview
+  accessed: '2026-08-17'
+- title: 'Open Lighting wiki: SACNView'
+  url: https://wiki.openlighting.org/index.php/SACNView
+  accessed: '2026-08-17'
+updated: '2026-08-17'

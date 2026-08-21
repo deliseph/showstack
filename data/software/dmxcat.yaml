@@ -1,0 +1,57 @@
+id: dmxcat
+name: DMXcat
+vendor: City Theatrical, Inc.
+category: monitoring-diagnostics
+summary: Bluetooth LE hardware dongle plus a suite of free iOS/Android apps (DMX Controller, RDM Controller,
+  DMX Tester, Fixture Controller) for controlling, analyzing, and testing DMX512 and RDM fixtures in the
+  field.
+license: proprietary
+price_model: dongle-locked
+platforms:
+- ios
+- android
+speaks:
+- protocol: dmx512
+  direction: bidirectional
+  confidence: verified
+  note: Measures break time, mark-after-break, inter-slot timing, refresh rate, and real-time channel
+    levels.
+- protocol: rdm
+  direction: bidirectional
+  confidence: verified
+  note: RDM Controller app performs RDM discovery, listing devices/addresses/attributes, via the DMXcat
+    hardware.
+homepage:
+  url: https://www.citytheatrical.com/products/electronics/other-electronic/dmxcat-multi-function-test-tool
+status: current
+typical_use:
+- Walk a DMX/RDM line to physically locate a bad connector, cable, or termination via the 'Flicker-Finder'
+  feature
+- Run RDM discovery in the field to confirm addressing and identify unresponsive fixtures
+- Manually drive individual DMX channels from a phone to bench-test a fixture without a full console
+gotchas:
+- All app functionality requires the separate DMXcat Bluetooth LE hardware dongle (sold separately); the
+  free apps alone cannot monitor or control anything.
+- Some analyzer features (e.g. RF Spectrum Analyzer, Light Meter) are Android-only and unavailable on
+  iOS.
+confidence: verified
+tags:
+- dmx
+- rdm
+- hardware
+- field-tool
+- ios
+- android
+sources:
+- title: DMXcat Multi Function Test Tool - City Theatrical
+  url: https://www.citytheatrical.com/products/electronics/other-electronic/dmxcat-multi-function-test-tool
+  accessed: '2026-08-17'
+  primary: true
+- title: DMXcat on the Apple App Store
+  url: https://apps.apple.com/us/app/dmxcat/id1163856486
+  accessed: '2026-08-17'
+  primary: true
+- title: DMXcat product brochure (PDF)
+  url: https://media.musson.com/mti/docs/d/m/dmxcat_brochure.pdf
+  accessed: '2026-08-17'
+updated: '2026-08-17'

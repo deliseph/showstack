@@ -1,0 +1,46 @@
+id: artnet-monitor-pixilab
+name: ArtNet Monitor (PixiLab)
+vendor: PixiLab
+category: monitoring-diagnostics
+summary: Small open-source Java application that displays live Art-Net DMX-512 channel values in a single
+  window, for single-universe or 'omni' (all-universe) monitoring on Mac, Linux, or Windows.
+license: GPL-3.0
+price_model: open-source
+platforms:
+- windows
+- macos
+- linux
+speaks:
+- protocol: art-net
+  direction: in
+  confidence: verified
+  note: Simple Art-Net DMX-512 monitor with single-universe or omni (multi-universe) modes.
+- protocol: dmx512
+  direction: in
+  confidence: reported
+  note: Displays per-channel DMX values received via Art-Net.
+homepage:
+  url: https://github.com/pixilab/artnet-monitor
+repo:
+  url: https://github.com/pixilab/artnet-monitor
+status: historical
+typical_use:
+- Quick, no-install visual check of DMX values arriving over Art-Net on a workstation
+- Cross-platform sanity check when Windows-only monitors aren't an option
+gotchas:
+- Binds to the machine's default network interface only; on multi-NIC systems you may need to adjust routing/interface
+  priority to receive the intended Art-Net traffic.
+- Distributed as a runnable JAR requiring a Java 8+ runtime; small commit history (~10 commits) suggests
+  it's a minimal, infrequently updated utility.
+confidence: verified
+tags:
+- art-net
+- dmx
+- java
+- open-source
+sources:
+- title: pixilab/artnet-monitor GitHub repository
+  url: https://github.com/pixilab/artnet-monitor
+  accessed: '2026-08-17'
+  primary: true
+updated: '2026-08-17'

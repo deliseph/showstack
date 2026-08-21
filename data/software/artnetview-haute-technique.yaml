@@ -1,0 +1,45 @@
+id: artnetview-haute-technique
+name: ArtNetView
+vendor: Haute Technique
+category: monitoring-diagnostics
+summary: Free standalone macOS/Windows app to view and monitor Art-Net traffic on a network, showing active
+  universes, source IPs, per-channel history graphs, and hex-formatted DMX values.
+license: proprietary
+price_model: free
+platforms:
+- macos
+- windows
+speaks:
+- protocol: art-net
+  direction: in
+  confidence: verified
+  note: Standalone Art-Net monitor showing universes, source IPs, and per-channel value history.
+- protocol: dmx512
+  direction: in
+  confidence: reported
+  note: Displays DMX universe values (including in hex) as carried inside Art-Net.
+homepage:
+  url: https://artnetview.com/
+status: current
+typical_use:
+- Confirm a lighting console (e.g. grandMA) is actually outputting Art-Net onto the network
+- Graph a channel's value history over time to catch intermittent/flickering levels
+gotchas:
+- Shares its exact name with an unrelated, older Art-Net diagnostic utility historically bundled by Artistic
+  Licence/Singularity alongside DMX-Workshop — check the publisher before downloading.
+confidence: verified
+tags:
+- art-net
+- dmx
+- macos
+- windows
+sources:
+- title: ArtNetView - official product page
+  url: https://artnetview.com/
+  accessed: '2026-08-17'
+  primary: true
+- title: ArtNetView on the Mac App Store
+  url: https://apps.apple.com/us/app/artnetview/id1439166791?mt=12
+  accessed: '2026-08-17'
+  primary: true
+updated: '2026-08-17'

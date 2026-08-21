@@ -1,0 +1,59 @@
+id: dmx-workshop
+name: DMX-Workshop
+vendor: Singularity (UK) Ltd
+category: monitoring-diagnostics
+summary: Free Windows software suite for lighting network management, analysis, configuration and diagnostics,
+  supporting Art-Net 4, DMX512, RDM over Art-Net, sACN, and KiNet — a long-standing reference tool for
+  Art-Net devices.
+license: proprietary
+price_model: free
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  confidence: verified
+  note: Described as the reference standard tool for Art-Net implementations; sends and receives.
+- protocol: dmx512
+  direction: bidirectional
+  confidence: verified
+- protocol: rdm
+  direction: bidirectional
+  confidence: verified
+  note: RDM over Art-Net discovery/control.
+- protocol: sacn
+  direction: bidirectional
+  confidence: verified
+- protocol: kinet
+  direction: bidirectional
+  confidence: verified
+homepage:
+  url: https://singularity-uk.com/product/dmx-workshop/
+status: current
+typical_use:
+- Discover and diagnose Art-Net nodes and their configuration on a network
+- Send test DMX/RDM/sACN data to isolate whether a fault is upstream or downstream of a device
+- Analyze network bandwidth/traffic patterns via the bundled Bandwidth-Tester and Multicaster tools
+gotchas:
+- Windows only; requires completing a registration form before the download link is provided.
+- New users frequently get tripped up by Windows NIC (network adapter) configuration before Art-Net traffic
+  appears — the vendor publishes a dedicated setup tutorial for this exact step.
+confidence: verified
+tags:
+- art-net
+- sacn
+- rdm
+- kinet
+- windows
+sources:
+- title: DMX-Workshop - Singularity (UK) product page
+  url: https://singularity-uk.com/product/dmx-workshop/
+  accessed: '2026-08-17'
+  primary: true
+- title: 'Open Lighting wiki: DMX Workshop'
+  url: https://wiki.openlighting.org/index.php/DMX_Workshop
+  accessed: '2026-08-17'
+- title: 'ACT Lighting: Test Art-Net Signal Using DMX Workshop'
+  url: https://support.actlighting.com/knowledgeBase/4366047
+  accessed: '2026-08-17'
+updated: '2026-08-17'

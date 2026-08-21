@@ -1,0 +1,131 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: avolites-titan
+name: Avolites Titan
+aka:
+- Titan
+- Titan Mobile
+- Titan Go
+- Titan Simulator
+- Titan PC Suite
+vendor: Avolites
+category: lighting-control
+summary: 'Avolites'' lighting control software: the operating software on Sapphire, Diamond, Tiger
+  Touch and Arena consoles, and the same code on Windows as Titan Mobile, Titan Go and Titan Simulator.
+  Standard kit for rock and roll touring and festivals.'
+license: proprietary
+price_model: dongle-locked
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: out
+  note: One of the two network DMX protocols Titan uses to reach nodes and dimmers.
+  confidence: verified
+- protocol: sacn
+  direction: bidirectional
+  note: sACN out to nodes, and Streaming ACN In is also available as an external trigger source on
+    supported consoles.
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  note: Physical DMX512 on console XLR outputs; on a PC, via a T1/T2/T3 interface. DMX In is a separate
+    trigger source on supported consoles.
+  confidence: verified
+- protocol: citp
+  direction: bidirectional
+  note: Patch syncs both ways with stand-alone Capture (fixture, position, orientation, legend, user
+    number) and fixture selection follows across. Levels still need Art-Net or sACN enabled on those
+    universes.
+  confidence: verified
+- protocol: rdm
+  direction: bidirectional
+  note: Patching by RDM requires an RDM-enabled Art-Net node. The console's own XLR connectors do
+    not support RDM.
+  confidence: verified
+- protocol: ltc
+  direction: in
+  note: SMPTE/LTC listed on T2, T3, D3, D3 Core, D7, D9, Arena, Tiger Touch 2 and Sapphire. A T2 plugged
+    into another console adds an audio/LTC input.
+  confidence: verified
+- protocol: midi
+  direction: in
+  note: MIDI is one of the external trigger types and is not available on every console; USB MIDI
+    devices are supported for triggering and control.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: A cue list can read timecode from the system clock, an internal timecode source, MIDI, SMPTE
+    or the Winamp player. Up to 4 separate timecode sources per console.
+  confidence: reported
+homepage:
+  url: https://www.avolites.com/
+  label: Avolites
+docs:
+  url: https://manual.avolites.com/
+  label: Avolites Titan manual (v19.0)
+status: current
+typical_use:
+- Busking and timecoded playback for touring bands and festivals
+- Pre-programming a show on a laptop with Titan Simulator or Titan Mobile
+- Small rigs run from Titan Go on a T1/T2 interface
+- Previsualisation against the integrated Capture visualiser
+gotchas:
+- Everything is keyed to an AvoKey. Titan Mobile only runs while its panel is connected, Titan Go
+  licenses the AvoKey built into a T1/T2/T3, and Titan Simulator needs an Editor AvoKey.
+- Titan Simulator does output full Art-Net/sACN on all universes, but deliberately inserts periodic
+  random DMX values as a spoiler. It is not a show controller.
+- 64 lines/universes is the system ceiling. Line numbers can be anything from 1 to 9999 but there
+  cannot be more than 64 of them. T3 needs an optional licence pack to reach 64, and its onboard processing
+  stays at 16 lines.
+- RDM discovery only works through an RDM-enabled Art-Net node. The console XLRs will not do it, and
+  a non-RDM buffer or splitter anywhere in the chain blocks the reply.
+- Windows only. Windows 11 is supported from v16.0 onwards, and Avolites explicitly does not support
+  Bootcamp, VMware or Parallels.
+- Titan Mobile and Titan Go will not launch at all without their hardware connected, so a dead panel
+  also means no offline editing on that machine.
+confidence: verified
+tags:
+- lighting
+- titan
+- touring
+- avolites
+sources:
+- title: DMX Settings (DMX output mapping) - Avolites Titan manual
+  url: https://manual.avolites.com/docs/system-settings/dmx-output-mapping/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: Titan Simulator - Avolites Titan manual
+  url: https://manual.avolites.com/docs/titan-basics/titan-simulator/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: External triggering - Avolites Titan manual
+  url: https://manual.avolites.com/docs/running-the-show/midi-dmx-or-audio-triggering/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: Cue List Timing - Avolites Titan manual
+  url: https://manual.avolites.com/docs/cue-lists/cue-list-timing/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: Patching New Fixtures or Dimmers (Patching by RDM) - Avolites Titan manual
+  url: https://manual.avolites.com/docs/patching/patching-new-fixtures-or-dimmers/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: Linking the Console to Stand-Alone Capture - Avolites Titan manual
+  url: https://manual.avolites.com/docs/capture-visualiser/linking-the-console-to-stand-alone-capture/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+- title: 'Titan PC Suite: System Requirements & Installation Notes'
+  url: https://www.avolites.com/support/titan-pc-system-requirements/
+  publisher: Avolites
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

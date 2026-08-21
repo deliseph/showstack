@@ -1,0 +1,46 @@
+id: etcdmxtool
+name: ETCDmxTool
+vendor: ETC Labs
+category: monitoring-diagnostics
+summary: Free open-source Windows/Linux DMX/RDM controller and sniffer for ETC's Gadget-family USB hardware,
+  able to capture DMX/RDM data, control DMX levels, and act as an RDM controller.
+license: Apache-2.0
+price_model: open-source
+platforms:
+- windows
+- linux
+speaks:
+- protocol: dmx512
+  direction: bidirectional
+  confidence: verified
+  note: Captures DMX data and can output/control DMX levels via ETC Whip/Gadget hardware.
+- protocol: rdm
+  direction: bidirectional
+  confidence: verified
+  note: Acts as an RDM controller and can capture RDM traffic; full feature set requires ETC Gadget II
+    hardware.
+homepage:
+  url: https://github.com/ETCLabs/ETCDmxTool
+repo:
+  url: https://github.com/ETCLabs/ETCDmxTool
+status: current
+typical_use:
+- Sniff raw DMX/RDM traffic on a line using an ETC USB Whip or Gadget interface
+- Run RDM discovery and send GET/SET commands to responders for fixture diagnostics
+- Bench-test a fixture's DMX response by manually setting channel levels
+gotchas:
+- Explicitly labeled 'UNOFFICIAL' in the repo — a community project, not an ETC-supported product.
+- Requires specific ETC USB hardware (USB Whip, Gadget I, or Gadget II); feature availability (e.g. RDM
+  controller mode) varies by which device and firmware version you have.
+confidence: verified
+tags:
+- dmx
+- rdm
+- sniffer
+- open-source
+sources:
+- title: ETCLabs/ETCDmxTool GitHub repository
+  url: https://github.com/ETCLabs/ETCDmxTool
+  accessed: '2026-08-17'
+  primary: true
+updated: '2026-08-17'

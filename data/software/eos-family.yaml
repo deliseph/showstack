@@ -1,0 +1,142 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: eos-family
+name: Eos
+aka:
+- Eos family
+- ETCnomad
+- Nomad
+- Eos Apex
+- Ion Xe
+- Gio
+- Element
+vendor: Electronic Theatre Controls (ETC)
+category: lighting-control
+summary: 'ETC''s lighting control software for the Eos family: the same code runs on Apex, Gio, Ion
+  Xe and Element consoles and on a Windows or Mac laptop as ETCnomad. The dominant console platform
+  in English-language theatre.'
+license: proprietary
+price_model: dongle-locked
+platforms:
+- windows
+- macos
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: Enabled by default in Patch, universes 1-63,999. Incoming sACN levels can also be used as
+    a show control trigger.
+  confidence: verified
+- protocol: art-net
+  direction: out
+  note: Disabled by default in Patch. Art-Net universes 0-255.
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  note: Local DMX ports on consoles, or an ETC Gadget/Gadget II USB to DMX-RDM converter on a PC or
+    Mac. Up to four Gadgets per computer.
+  confidence: verified
+- protocol: rdm
+  direction: bidirectional
+  note: Device discovery from the Patch display. Network RDM requires an ETC Net3 or Response Mk2
+    gateway with RDM enabled on the DMX ports, running gateway software 5.1 or newer.
+  confidence: verified
+- protocol: osc
+  direction: bidirectional
+  since_version: '2.3'
+  note: ETC states all Eos family devices can send and receive OSC when running software v2.3 or higher.
+  confidence: verified
+- protocol: midi-show-control
+  direction: bidirectional
+  note: Local MIDI connections on Eos Ti and Gio; Gio @5 and Ion Xe use USB; other consoles need a
+    Net3 Show Control Gateway.
+  confidence: verified
+- protocol: midi
+  direction: bidirectional
+  note: Raw MIDI can be sent and received. MIDI notes are output only, and cannot be received by a
+    Net3 Show Control Gateway.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: MIDI timecode is receive only, locally or via a Show Control Gateway.
+  confidence: verified
+- protocol: ltc
+  direction: in
+  note: SMPTE/LTC timecode is receive only and arrives via a Net3 Show Control Gateway.
+  confidence: verified
+- protocol: 0-10v
+  direction: in
+  note: 0-10 VDC analogue inputs and contact closures. Four local closures on Ti/Gio/Ion, more via
+    a Net3 I/O Gateway.
+  confidence: verified
+homepage:
+  url: https://www.etcconnect.com/ETCnomad/
+  label: ETCnomad - Eos software for PC and Mac
+docs:
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family
+  label: ETC Eos Family support hub
+status: current
+typical_use:
+- Main lighting control for plays, musicals and opera
+- Offline programming and paperwork on a laptop before the fit-up
+- Backup, mirror or remote programming station inside an Eos network
+- Small rigs run from Nomad plus a Gadget II or a Net3 gateway
+gotchas:
+- The free Eos download outputs nothing. Without an ETCnomad USB key it runs only as an offline editor
+  or in mirror mode.
+- ETC counts outputs (addresses), not universes. A base ETCnomad key is 1,024 outputs, which is two
+  universes of 512; the unlocked key is 6,144.
+- From v2.6.0/v8.0.0 a dongle has only two possible counts, base and unlocked. The old ladder of 256/512/1536/2560
+  and so on is gone.
+- Eos v3.2.0 and later, Apex consoles, Windows 10 consoles and all ETCnomad devices dropped Net2 (EDMX)
+  and AVAB UDP output. A house with legacy ETCNet2 nodes has to move to sACN or Art-Net.
+- Element's output count is fixed at 1,024 and cannot be upgraded. Element 2 goes from 1,024 base
+  to 6,144 unlocked.
+- RDM Device Discovery is disabled by default, and switches itself off again as soon as you leave
+  the Patch display.
+- Art-Net is disabled by default in Patch, so a visualiser or node expecting Art-Net sees nothing
+  until the protocol is enabled.
+confidence: verified
+tags:
+- lighting
+- theatre
+- eos
+- offline-programming
+sources:
+- title: ETCnomad - Eos Family Online Help
+  url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/02_Eos_Family_Product_Overview_and_Setup/Other_Eos_Family_Products/ETCnomad.htm
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: ETCnomad Dongle Counts
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/Software_and_Programming/ETCnomad_Dongle_Counts
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: Eos Family Console Output Counts
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/Eos_Family_General_Topics/Eos_Family_Console_Output_Counts
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: Eos Family Show Control Capabilities
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/Software_and_Programming/Eos_Family_Show_Control_Capabilities
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: Patch > Protocols - Eos Family Online Help
+  url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/06_Patch/Patch_Protocols.htm
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: RDM Device List - Eos Family Online Help
+  url: https://www.etcconnect.com/WebDocs/Controls/EosFamilyOnlineHelp/en/Content/06_Patch/05_Patch_Device_List/RDM_Device_List.htm
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+- title: ETCnomad does not output AVAB UDP or ETCNet2 EDMX Protocols
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/ETCnomad_and_ETCnomad_Puck/ETCnomad_does_not_output_AVAB_UDP_or_ETCNet2_EDMX_Protocols
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

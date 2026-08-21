@@ -1,0 +1,90 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: dot2-onpc
+name: dot2 onPC
+aka:
+- dot2 on PC
+- dot2 PC
+vendor: MA Lighting
+category: lighting-control
+summary: The free Windows version of MA Lighting's dot2 console software, widely used for teaching
+  and small rigs. One universe of Art-Net or sACN output is free; more universes require a dot2 Node4.
+license: proprietary
+price_model: free
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: out
+  note: Output broadcast, Art-Net 1, universes 0:0 to 0:7. On onPC the first universe is free (introduced
+    in software v1.2.2.8); beyond that a dot2 Node4 is required.
+  confidence: verified
+- protocol: sacn
+  direction: out
+  note: Output multicast, universes 1 to 8, sACN priority fixed at 100. On onPC the first universe
+    is free; beyond that a dot2 Node4 is required.
+  confidence: verified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI note remote input, and MIDI note output from cues or the command line. On onPC you must
+    choose the MIDI in and out devices yourself in Tools > MIDI Configuration.
+  confidence: verified
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC input to control executors, and MSC output to control other devices.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: MIDI timecode can run cues automatically. Receiving timecode does not require a network session.
+  confidence: verified
+homepage:
+  url: https://www.malighting.com/product-archive/product/dot2-onpc-dot2_onPC/
+  label: dot2 onPC (MA Lighting product archive)
+status: deprecated
+typical_use:
+- Teaching moving-light programming in schools and colleges
+- One-universe control of a small rig from a laptop with no hardware at all
+- Offline programming for a dot2 console show file
+- Small installs driving up to 8 universes through a dot2 Node4
+gotchas:
+- Art-Net and sACN only work inside a session. You have to start a session, even standalone, or nothing
+  leaves the machine.
+- Only the first Art-Net/sACN universe is free on onPC. Universes 2-8 need a dot2 Node4 (1K), which
+  itself tops out at 1,024 channels spread across the 8 universes.
+- Art-Net output is broadcast Art-Net 1 on universes 0:0-0:7 and sACN is multicast on 1-8, and the
+  same address must not be assigned to two universes.
+- MA has discontinued dot2 and moved it to the product archive. It still runs, but there are no new
+  features, and there was never a macOS build.
+- On onPC the MIDI in and out devices are not selected for you. Nothing MIDI or MSC works until you
+  set them in Tools > MIDI Configuration.
+confidence: verified
+tags:
+- lighting
+- dot2
+- ma-lighting
+- education
+- free
+sources:
+- title: Network Protocols Configuration - dot2 User Manual
+  url: https://help2.malighting.com/dot2/en/help/key_window_networkprotocols.html
+  publisher: MA Lighting
+  accessed: '2026-08-17'
+  primary: true
+- title: dot2 onPC - product archive
+  url: https://www.malighting.com/product-archive/product/dot2-onpc-dot2_onPC/
+  publisher: MA Lighting
+  accessed: '2026-08-17'
+  primary: true
+- title: Use MIDI and MIDI Show Control (MSC) - dot2 User Manual
+  url: https://help.malighting.com/dot2/en/help/key_ht_usemidiandmsc.html
+  publisher: MA Lighting
+  accessed: '2026-08-17'
+  primary: true
+- title: Timecode Configuration Window - dot2 User Manual
+  url: https://help2.malighting.com/Page/MA_dot2/window_timecode/en/1.9
+  publisher: MA Lighting
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

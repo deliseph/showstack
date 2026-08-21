@@ -1,0 +1,43 @@
+id: timecodedisplay
+name: TimecodeDisplay
+vendor: Figure53
+category: monitoring-diagnostics
+summary: Small open-source macOS app from the makers of QLab that listens for incoming MIDI Time Code
+  and displays it in large, easily readable digits for backstage cueing and MTC troubleshooting.
+license: MIT
+price_model: open-source
+platforms:
+- macos
+speaks:
+- protocol: mtc
+  direction: in
+  confidence: verified
+  note: Listens to and displays incoming MIDI Time Code.
+homepage:
+  url: https://github.com/Figure53/TimecodeDisplay
+repo:
+  url: https://github.com/Figure53/TimecodeDisplay
+status: historical
+typical_use:
+- Confirm MTC is actually being received and is running/counting correctly before a show
+- Give a stage manager or crew member a large, unambiguous timecode readout separate from the show computer's
+  main screen
+gotchas:
+- macOS only, no Windows build.
+- Repository shows no formal tagged releases, so most users build it from source rather than downloading
+  a signed binary.
+confidence: verified
+tags:
+- mtc
+- midi
+- macos
+- qlab
+sources:
+- title: Figure53/TimecodeDisplay GitHub repository
+  url: https://github.com/Figure53/TimecodeDisplay
+  accessed: '2026-08-17'
+  primary: true
+- title: 'ControlBooth forum: View MIDI Time Code (TimecodeDisplay recommendation)'
+  url: https://www.controlbooth.com/threads/view-midi-time-code.24707/
+  accessed: '2026-08-17'
+updated: '2026-08-17'

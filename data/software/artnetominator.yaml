@@ -1,0 +1,39 @@
+id: artnetominator
+name: The ArtNetominator
+vendor: Lightjams Inc.
+category: monitoring-diagnostics
+summary: Free Windows utility that gives a real-time view of Art-Net network activity, showing nets, subnets,
+  universes, nodes, and live DMX channel values for troubleshooting Art-Net rigs.
+license: proprietary
+price_model: free
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: in
+  confidence: verified
+  note: 'Primary function: real-time monitor of Art-Net nets/subnets/universes/nodes.'
+- protocol: dmx512
+  direction: in
+  confidence: reported
+  note: Displays current DMX channel values and channel history as carried inside Art-Net packets.
+homepage:
+  url: https://www.lightjams.com/artnetominator/
+status: current
+typical_use:
+- Spot-check which Art-Net nodes and universes are actually broadcasting on a network
+- Watch live DMX channel values coming from a specific universe during rig troubleshooting
+gotchas:
+- Windows only (Vista through 11); no macOS or Linux build.
+- Does not monitor sACN/E1.31 — the same developer's separate 'sACNominator' tool is needed for that protocol.
+confidence: verified
+tags:
+- art-net
+- dmx
+- windows-utility
+sources:
+- title: The ArtNetominator - official product page
+  url: https://www.lightjams.com/artnetominator/
+  accessed: '2026-08-17'
+  primary: true
+updated: '2026-08-17'

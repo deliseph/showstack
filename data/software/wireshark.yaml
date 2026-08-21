@@ -1,0 +1,93 @@
+id: wireshark
+name: Wireshark
+aka:
+- Ethereal
+vendor: Wireshark Foundation
+category: monitoring-diagnostics
+summary: General-purpose packet analyzer with built-in dissectors for Art-Net, ACN/sACN (E1.31), RDM,
+  RDMnet, and OSC, making it a de facto low-level protocol sniffer for lighting/AV networks.
+license: GPL-2.0
+price_model: free
+platforms:
+- windows
+- macos
+- linux
+speaks:
+- protocol: art-net
+  direction: in
+  confidence: verified
+  note: Native artnet dissector present since very early Wireshark releases (display filter fields documented
+    back to version 1.0.0).
+- protocol: sacn
+  direction: in
+  confidence: verified
+  note: Dissected via the ACN dissector's 'Streaming DMX' (E1.31) option, which must be enabled in Preferences
+    > Protocols > ACN.
+- protocol: acn
+  direction: in
+  confidence: verified
+  note: Dissects the underlying ACN/E1.17 root layer (Root Layer, SDT, wrappers) that sACN rides on.
+- protocol: rdm
+  direction: in
+  confidence: verified
+  note: E1.20 RDM dissector; base fields since Wireshark 1.8.0, extended fields since 3.4.0.
+- protocol: rdmnet
+  direction: in
+  confidence: verified
+  note: RDMnet dissector added in Wireshark 3.4.0 (commit 'Added RDMnet protocol', March 2020).
+- protocol: osc
+  direction: in
+  confidence: verified
+  note: Open Sound Control dissector, documented display filter fields since Wireshark 1.12.0.
+homepage:
+  url: https://www.wireshark.org/
+repo:
+  url: https://github.com/wireshark/wireshark
+docs:
+  url: https://www.wireshark.org/docs/dfref/a/artnet.html
+status: current
+typical_use:
+- Confirm whether sACN/Art-Net packets are actually reaching a node's NIC
+- Diagnose sACN priority conflicts by inspecting per-address priority (start code 0xDD) vs level (0x00)
+  packets
+- Verify RDM/RDMnet discovery and GET/SET transactions between controller and responder
+- Capture and archive a show's network traffic for post-mortem analysis after a failure
+gotchas:
+- sACN ('Streaming DMX') dissection is off by default; enable it in Edit > Preferences > Protocols > ACN
+  or universes show up undissected.
+- Wireshark only shows what's on the wire, it does not judge whether DMX/sACN data is 'correct' — you
+  must manually expand fields to tell level packets (start code 0x00) from per-address priority packets
+  (0xDD).
+- 'The Art-Net dissector is missing most Art-Net 4 fields introduced from protocol document revision 1.4DA
+  onward (open bug, GitLab issue #18293).'
+- 'The ACN/sACN dissector does not fully dissect Universe Discovery or Universe Sync packets in some releases
+  (GitLab issues #18755, #18767).'
+confidence: verified
+tags:
+- packet-capture
+- protocol-analyzer
+- network-troubleshooting
+sources:
+- title: 'Wireshark Display Filter Reference: Art-Net'
+  url: https://www.wireshark.org/docs/dfref/a/artnet.html
+  accessed: '2026-08-17'
+- title: 'Wireshark Wiki: ACN protocol dissector'
+  url: https://wiki.wireshark.org/ACN
+  accessed: '2026-08-17'
+- title: 'Wireshark Display Filter Reference: RDMnet'
+  url: https://www.wireshark.org/docs/dfref/r/rdmnet.html
+  accessed: '2026-08-17'
+- title: 'Wireshark Display Filter Reference: RDM'
+  url: https://www.wireshark.org/docs/dfref/r/rdm.html
+  accessed: '2026-08-17'
+- title: 'Wireshark Display Filter Reference: Open Sound Control'
+  url: https://www.wireshark.org/docs/dfref/o/osc.html
+  accessed: '2026-08-17'
+- title: 'ETC Support: Troubleshooting sACN priority using Wireshark'
+  url: https://support.etcconnect.com/ETC/Networking/General/Troubleshooting_sACN_priority_using_Wireshark
+  accessed: '2026-08-17'
+  primary: true
+- title: 'Wireshark GitLab issue #18293: Art-Net dissector missing Art-Net 4 features'
+  url: https://gitlab.com/wireshark/wireshark/-/issues/18293
+  accessed: '2026-08-17'
+updated: '2026-08-17'

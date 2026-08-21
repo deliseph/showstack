@@ -1,0 +1,137 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: chamsys-magicq
+name: ChamSys MagicQ
+aka:
+- MagicQ
+- MagicQ PC
+- MQ
+vendor: ChamSys
+category: lighting-control
+summary: 'ChamSys''s lighting control software: free to download for Windows, macOS and Linux, and
+  the operating software on MagicQ consoles. Demo mode outputs 64 universes of Art-Net/sACN with no
+  dongle at all, which makes it the default free real-world lighting controller.'
+license: proprietary
+price_model: freemium
+platforms:
+- windows
+- macos
+- linux
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net 1, 2, 3 and 4 in broadcast or unicast mode for output; Art-Net is also received for
+    capture into the console or for merging. 64 universes of output are enabled in the free demo mode.
+  confidence: verified
+- protocol: sacn
+  direction: bidirectional
+  note: sACN out in multicast or unicast, and received for capture or merging.
+  confidence: verified
+- protocol: pathport
+  direction: bidirectional
+  note: Pathport output, and received for capture or merging. Unusual for a non-Pathway console.
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  note: Direct DMX via a MagicDMX interface, a MagicQ wing/interface, or console XLR outputs. MagicDMX
+    is one universe, out or in.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM is listed among the features available in demo mode, so it does not need a wing or dongle.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP with the Capture visualiser carries both lighting control and transfer of the show patch
+    between MagicQ and Capture in either direction.
+  confidence: verified
+- protocol: osc
+  direction: bidirectional
+  requires_licence: true
+  note: OSC requires Unlocked mode, activated by a MagicQ wing, Connect interface or rack-mount dongle.
+    The manual documents both receiving and sending messages.
+  confidence: verified
+- protocol: ltc
+  direction: in
+  requires_licence: true
+  note: Timecode receive (Art-Net, MIDI, LTC) is an Unlocked-mode feature; demo and Core mode will
+    not chase timecode.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  requires_licence: true
+  note: MIDI timecode receive is part of the same Unlocked-mode timecode feature set.
+  confidence: verified
+- protocol: midi
+  direction: in
+  requires_licence: true
+  note: MIDI notes and CC from third-party USB or virtual interfaces require Unlocked mode.
+  confidence: verified
+- protocol: midi-show-control
+  direction: in
+  requires_licence: true
+  note: Listed as Show control alongside MIDI notes and CC in the Unlocked-mode feature list.
+  confidence: reported
+homepage:
+  url: https://chamsyslighting.com/
+  label: ChamSys
+docs:
+  url: https://docs.chamsys.co.uk/magicq/manual/
+  label: MagicQ manual
+status: current
+typical_use:
+- Free full-function lighting control for schools, churches and small venues
+- Touring and festival control on MagicQ consoles
+- Offline programming and previs against Capture over CITP
+- Merging or capturing incoming Art-Net/sACN/Pathport from another desk
+gotchas:
+- MagicDMX Basic and Full do not unlock anything. With only a MagicDMX attached the software stays
+  in demo mode, and MagicDMX Basic is additionally limited to 5-hour sessions.
+- Timecode, MIDI and OSC are all Unlocked-mode features. Free MagicQ will run 64 universes of Art-Net
+  all day but will not chase LTC.
+- 'There are three tiers, not two: Demo, Core and Unlocked. Core (GeNetix GN2, SnakeSys, audio interface)
+  buys scheduled events, the remote app and the web server, but not timecode or OSC.'
+- The tier follows the connected device, so losing the wing or dongle mid-run silently drops the rig
+  to demo-mode features.
+- Linux builds are limited to current Ubuntu LTS releases on 64-bit x86. There is no ARM build.
+- The tier structure was reworked from v1.9.5.0 onwards, so older forum advice about what a given
+  dongle unlocks may no longer match.
+confidence: verified
+tags:
+- lighting
+- magicq
+- chamsys
+- free-tier
+sources:
+- title: MagicQ Software Licensing
+  url: https://chamsyslighting.com/software/magicq-software-licensing/
+  publisher: ChamSys
+  accessed: '2026-08-17'
+  primary: true
+- title: Installing MagicQ Software & Drivers
+  url: https://docs.chamsys.co.uk/magicq/installing-software/installing_drivers.html
+  publisher: ChamSys
+  accessed: '2026-08-17'
+  primary: true
+- title: Networking - ChamSys
+  url: https://uk.chamsyslighting.com/software/networking/
+  publisher: ChamSys
+  accessed: '2026-08-17'
+  primary: true
+- title: MagicDMX Basic
+  url: https://chamsyslighting.com/product/magicdmx-basic/
+  publisher: ChamSys
+  accessed: '2026-08-17'
+  primary: true
+- title: MagicQ Manual (complete PDF export)
+  url: https://secure.chamsys.co.uk/docs/magicq/_exports/magicq.pdf
+  publisher: ChamSys
+  accessed: '2026-08-17'
+  primary: true
+- title: Using MagicQ with the Capture visualiser
+  url: https://www.capture.se/Portals/0/DemoPacks/ChamSys_Instructions.pdf
+  publisher: Capture Visualisation
+  accessed: '2026-08-17'
+contributed_by: []
+updated: '2026-08-17'
