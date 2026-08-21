@@ -9,6 +9,7 @@ import {
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
+  powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -168,5 +169,80 @@ describe('timecode', () => {
     // Minutes 0-10 inclusive: the non-tenth minutes are 1 through 9, so nine
     // dropped pairs, not ten. (Minute 0 and minute 10 keep their labels.)
     assert.equal(count, 11 * 1800 - 2 * 9, 'frame count over 11 minutes with 9 dropped pairs')
+  })
+})
+
+describe('power load', () => {
+  test('single phase: 1200 W at 120 V is 10 A', () => {
+    assert.equal(powerLoad(1200, 120).amps, 10)
+  })
+  test('three phase: 10 kW at 208 V line-to-line is 27.76 A per line', () => {
+    // 10000 / (sqrt(3) x 208) = 27.7570...
+    assert.ok(Math.abs(powerLoad(10000, 208, 3).amps - 27.76) < 0.01)
+  })
+  test('power factor raises the current, never the wattage', () => {
+    // Same rig at PF 0.85 draws more amps: 10 / 0.85 = 11.76.
+    assert.ok(Math.abs(powerLoad(1200, 120, 1, 0.85).amps - 11.76) < 0.01)
+  })
+  test('rejects nonsense', () => {
+    assert.equal(powerLoad(-1, 120), null)
+    assert.equal(powerLoad(1200, 0), null)
+    assert.equal(powerLoad(1200, 120, 2), null)
+    assert.equal(powerLoad(1200, 120, 1, 1.2), null)
+  })
+})
+
+describe('beam and photometrics', () => {
+  test('26 degrees at 10 m is a 4.62 m pool', () => {
+    // 2 x 10 x tan(13 deg) = 4.617
+    assert.ok(Math.abs(beamDiameter(10, 26).diameter - 4.62) < 0.01)
+  })
+  test('inverse square: 100000 cd at 10 m is 1000 lx / 92.9 fc', () => {
+    const e = illuminance(100000, 10)
+    assert.equal(e.lux, 1000)
+    assert.ok(Math.abs(e.footcandles - 92.9) < 0.05)
+  })
+  test('doubling the throw quarters the light', () => {
+    assert.ok(Math.abs(illuminance(100000, 20).lux - 250) < 0.1)
+  })
+  test('rejects zero throw for illuminance and silly angles', () => {
+    assert.equal(illuminance(100000, 0), null)
+    assert.equal(beamDiameter(10, 0), null)
+    assert.equal(beamDiameter(10, 180), null)
+  })
+})
+
+describe('LED wall', () => {
+  test('5 m x 3 m at 3.9 mm pitch is 1282 x 769 px', () => {
+    const r = ledWall(5, 3, 3.9)
+    assert.equal(r.pxW, 1282)
+    assert.equal(r.pxH, 769)
+    assert.equal(r.totalPx, 1282 * 769)
+  })
+  test('the viewing-distance rule of thumb tracks the pitch', () => {
+    assert.equal(ledWall(5, 3, 2.6).minViewMeters, 2.6)
+  })
+  test('rejects zero pitch', () => {
+    assert.equal(ledWall(5, 3, 0), null)
+  })
+})
+
+describe('RF wavelength', () => {
+  test('600 MHz is a 0.5 m wave', () => {
+    // c / f = 299.792458 / 600 = 0.49965...
+    const r = rfWavelength(600)
+    assert.ok(Math.abs(r.wavelength - 0.5) < 0.001)
+    // Quarter-wave with 5% end effect: 0.11867 m = ~4.7 in.
+    assert.ok(Math.abs(r.quarterWave - 0.119) < 0.001)
+    assert.ok(Math.abs(r.quarterWaveInches - 4.7) < 0.1)
+  })
+  test('half-wave matches the 468/f_MHz feet rule within a percent', () => {
+    // 468 / 600 = 0.78 ft = 0.2377 m; ours: lambda/2 x 0.95 = 0.2373 m.
+    const metres = rfWavelength(600).halfWave
+    assert.ok(Math.abs(metres - (468 / 600) * 0.3048) < 0.005)
+  })
+  test('rejects non-positive frequency', () => {
+    assert.equal(rfWavelength(0), null)
+    assert.equal(rfWavelength('x'), null)
   })
 })
