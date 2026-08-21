@@ -1,0 +1,110 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: notch
+name: Notch
+aka:
+- Notch Builder
+- Notch Blocks
+vendor: Notch (10bit FX Limited)
+category: content-creation
+summary: Windows GPU-native tool for authoring real-time generative and VFX content in Notch Builder,
+  then exporting a self-contained Notch Block. The unusual part is that the block plays back inside
+  someone else's media server, not inside Notch.
+license: proprietary
+price_model: subscription
+platforms:
+- windows
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Vendor features page states OSC input and output; the node reference lists both an OSC Modifier
+    (receive) and an OSC Output node (send).
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Vendor features page states MIDI input and output.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Vendor features page states Art-Net input and output; the Art-Net docs describe exposing any
+    numerical parameter plus basic transport controls so a lighting desk can drive them.
+  confidence: reported
+- protocol: rttrpm
+  direction: in
+  requires_licence: true
+  note: 'BlackTrax is listed among supported tracking systems, but the docs name the product rather
+    than the RTTrPM protocol version. Tracking support is an RFX-tier feature: Indie and VFX tiers
+    have no tracking systems.'
+  confidence: reported
+homepage:
+  url: https://www.notch.one/
+  label: Notch
+docs:
+  url: https://manual.notch.one/
+  label: Notch Manual
+status: current
+typical_use:
+- Authoring real-time generative looks and IMAG effects for touring concert video
+- Exporting Notch Blocks for playback inside disguise, Hippotizer, Pixera, Ai or Resolume
+- Camera, depth-camera and tracking-driven interactive content for installations
+- VFX Block export into host applications such as After Effects for offline work
+- Standalone executables and network editing of a live show's content from another machine
+gotchas:
+- 'Notch content is authored in Builder but played back inside a host media server: disguise, Hippotizer,
+  Ai, Resolume, Pixera, 7thSense Delta, Smode, LightAct, Ventuz and others. Nobody runs Notch itself
+  on the show machine.'
+- Exporting media-server Notch Blocks needs the top RFX Builder tier, and RFX is USB dongle-based
+  with no software-only option. Indie and VFX tiers cannot export media-server blocks at all.
+- Playback is a second, separate licence from Builder. Playback licences ship on a CodeMeter USB dongle,
+  sold either as short-term leases or as a perpetual one-project, one-location licence for fixed installs.
+- The free watermarked playback licence still requires a CodeMeter dongle. You cannot test a block
+  on a bare machine and accept a watermark instead. No dongle, no playback.
+- Features that lean on third-party SDKs (NVIDIA effects, Kinect, and similar) need the matching third-party
+  DLLs copied into the host media server's install directory. Builder and standalone exports ship
+  them; media servers do not.
+- Every Builder tier is subscription-only, monthly or yearly. There is no perpetual Builder licence,
+  so re-editing an archived project depends on keeping a subscription alive.
+- 'Hosts gate which Notch versions they will load: disguise publishes a per-Designer-version Notch
+  compatibility table. Check the host build''s supported Notch version before you export.'
+- 'The stated GPU floor is high for a content tool: minimum NVIDIA RTX 2080 or AMD Radeon VII, recommended
+  RTX 4080+ or RTX A5000+, with 4 GB VRAM at 4K rising to 12 GB at 8K.'
+confidence: reported
+tags:
+- generative
+- real-time
+- notch-block
+- gpu
+- vfx
+sources:
+- title: Notch - Pricing (Indie / VFX / RFX tiers, dongle requirements)
+  url: https://www.notch.one/pricing
+  publisher: Notch
+  accessed: '2026-08-17'
+  primary: true
+- title: Notch - Playback licensing
+  url: https://www.notch.one/products/notch-playback/
+  publisher: Notch
+  accessed: '2026-08-17'
+  primary: true
+- title: Notch - Features & Specs (protocols, tracking systems, media server list, system requirements)
+  url: https://www.notch.one/features
+  publisher: Notch
+  accessed: '2026-08-17'
+  primary: true
+- title: Notch Manual - Notch Blocks
+  url: https://manual.notch.one/2026.1/en/docs/workflows/working-with-media-servers/blocks/
+  publisher: Notch
+  accessed: '2026-08-17'
+  primary: true
+- title: Notch Manual - SDK Dependencies when using Media Servers
+  url: https://manual.notch.one/0.9.23/en/docs/blocks/dependencies/
+  publisher: Notch
+  accessed: '2026-08-17'
+  primary: true
+- title: Notch v1.0+ Compatibility Table
+  url: https://help.disguise.one/designer/layers/layer-types/generative/notch-1-compatibility-table
+  publisher: disguise
+  accessed: '2026-08-17'
+contributed_by: []
+updated: '2026-08-17'

@@ -1,0 +1,53 @@
+id: protokol
+name: Protokol
+vendor: Hexler
+category: monitoring-diagnostics
+summary: Lightweight, cross-platform console app from the makers of TouchOSC for monitoring and logging
+  MIDI, OSC, Art-Net, and game-controller traffic in real time, used to troubleshoot control-protocol
+  communication.
+license: proprietary
+price_model: free
+platforms:
+- windows
+- macos
+- linux
+- ios
+- android
+speaks:
+- protocol: osc
+  direction: in
+  confidence: verified
+  note: Core supported protocol for monitoring/logging.
+- protocol: art-net
+  direction: in
+  confidence: verified
+  note: Listed alongside MIDI and OSC as a monitored protocol.
+- protocol: midi-show-control
+  direction: in
+  confidence: unverified
+  note: Generic MIDI monitor; would display raw MSC SysEx bytes but is not a dedicated MSC decoder.
+homepage:
+  url: https://hexler.net/protokol
+status: current
+typical_use:
+- Watch live OSC messages between a media server, lighting console, or app during integration testing
+- Confirm Art-Net traffic is reaching a given machine/interface before debugging further upstream
+- Log control-protocol traffic on iOS/Android for field troubleshooting without a laptop
+gotchas:
+- Monitors Art-Net but not sACN (E1.31) or plain DMX512 directly — a dedicated tool like sACNView is needed
+  for sACN.
+confidence: verified
+tags:
+- osc
+- midi
+- art-net
+- cross-platform
+sources:
+- title: Protokol - Hexler official product page
+  url: https://hexler.net/protokol
+  accessed: '2026-08-17'
+  primary: true
+- title: Protokol release notes / changelog
+  url: https://hexler.net/protokol/releases
+  accessed: '2026-08-17'
+updated: '2026-08-17'

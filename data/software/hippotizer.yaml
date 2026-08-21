@@ -1,0 +1,155 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: hippotizer
+name: Hippotizer
+aka:
+- Hippotizer V4
+- Green Hippo Hippotizer
+vendor: Green Hippo (an ACT Entertainment brand)
+category: media-server
+summary: Windows media server software built from swappable components (DMX, Timeline, PixelMapper,
+  Notch, CITP) around Green Hippo's FlexRes playback engine. Standard kit for large-format video,
+  blending and LED pixel-mapping on tours and corporate shows.
+license: proprietary
+price_model: dongle-locked
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: 'In: the DMX component takes Art-Net from a lighting desk to control layers, mixes and viewports,
+    with auto-patch tooling. Out: PixelMapper sends Art-Net to LED fixtures.'
+  confidence: verified
+- protocol: sacn
+  direction: bidirectional
+  note: Accepted by the DMX component for desk control and available as a PixelMapper output protocol.
+  confidence: verified
+- protocol: ma-net
+  direction: in
+  note: The DMX component accepts MA-Net alongside Art-Net and sACN, and there is a dedicated MA-Net3
+    component; 4.9.0 release notes add MA-Net3 networking support.
+  confidence: verified
+- protocol: kinet
+  direction: out
+  note: KiNET is one of the PixelMapper output protocols, alongside Art-Net and sACN.
+  confidence: verified
+- protocol: citp
+  direction: out
+  note: CITP component pushes media thumbnails, media names and low-resolution streaming previews
+    to lighting consoles and visualisers; requires the DMX component to be running. Documented as
+    Hippotizer-to-console only.
+  confidence: verified
+- protocol: psn
+  direction: in
+  note: PosiStageNet controller receives position, velocity and acceleration for multiple tracked
+    objects, with axis interpolation smoothing. Docs say new projects should use the Automation Reader.
+  confidence: verified
+- protocol: rttrpm
+  direction: in
+  note: BlackTrax is listed among MultiController automation readers; the manual names the product
+    rather than the RTTrPM protocol version, so the exact wire format is not confirmed in vendor docs.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI can be received on a layer, and each Mix can send an NDI feed at a configurable resolution
+    and framerate, optionally with alpha. Docs warn NDI sending costs real GPU/CPU load above HD.
+  confidence: verified
+- protocol: midi
+  direction: in
+  note: MultiController maps MIDI controllers (and Stream Deck) to Hippotizer pins. Feedback capability
+    is referenced but not documented in detail, so outbound MIDI is unconfirmed.
+  confidence: verified
+- protocol: osc
+  direction: in
+  note: MultiController maps OSC (and raw TCP) to pins. As with MIDI, outbound OSC feedback is referenced
+    but not documented in detail.
+  confidence: verified
+- protocol: ltc
+  direction: in
+  note: Sync Manager receives LTC from an audio input (left channel), a factory-fitted Alpermann+Velte
+    card, or USB interfaces (Rosendahl Mif4, CB Electronics TC-5, Adrienne Electronics USB-LTC).
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: Sync Manager receives MTC via the Rosendahl Mif4 or CB Electronics TC-5 USB interfaces.
+  confidence: verified
+homepage:
+  url: https://www.green-hippo.com/
+  label: Green Hippo
+docs:
+  url: https://support.green-hippo.com/hc/en-gb
+  label: Green Hippo technical support and Hippotizer manuals
+status: current
+typical_use:
+- Large-format video playback, blending and mapping for touring concerts and corporate shows
+- Media-server layers patched to and cued from a lighting console over Art-Net, sACN or MA-Net
+- Pixel-mapping LED and fixture arrays from video content over Art-Net, sACN or KiNET
+- Playing Notch blocks for real-time generative and IMAG effects
+- Timecode-chased playback distributed across multiple servers via Sync Manager
+gotchas:
+- Media encoded in 4.9 uses FlexRes V2, which the release notes state is not compatible with earlier
+  versions. Encode a show on a 4.9 machine and any server in the rig still on 4.8 cannot read it.
+- CITP is listed in the 4.9.0 known issues as not yet functional, and even when working the manual
+  warns it loads the network enough to hurt playback and recommends it for programming only, not live.
+- Notch playback is licensed separately from Hippotizer. V4+ systems can play the bundled stock Notch
+  effects; any third-party Notch block needs a Notch Playback dongle.
+- 'Licensing splits by tier: V4, compatibility mode and Play are software-licensed, while V4+ and
+  Prep are dongle-licensed. Software licences are non-transferable and drastic hardware changes stop
+  the software running.'
+- 'Hippotizer Play is genuinely free but crippled on purpose: two mixes of 16 layers, one watermarked
+  output, no MPEG encode or playback, and PixelMapper output flashes green periodically. Fine for
+  pre-programming, not for a show.'
+- 'Ownership has changed hands: Green Hippo was acquired by Spitfire Creative Technologies on 1 October
+  2018, and Green Hippo now describes itself as an ACT Entertainment brand.'
+confidence: verified
+tags:
+- media-server
+- pixel-mapping
+- notch-host
+- touring
+- windows
+sources:
+- title: Hippotizer V4 manual 4.9.0 - Components
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.9.0/en/topic/components
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer V4 manual 4.9.0 - Release Notes (FlexRes V2, MA-Net3, CITP known issue)
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.9.0/en/topic/release-notes
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer V4 manual 4.9.0 - Sync Manager (LTC / MTC sources)
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.9.0/en/topic/sync-manager
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer V4 manual 4.8.3 - CITP
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.8.3/en/topic/citp
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer V4 manual 4.8.3 - Notch Licensing
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.8.3/en/topic/notch-licensing
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer V4 manual 4.7.1 - Licensing Tab
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.7.1/en/topic/licensing-tab
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Hippotizer Play Quick Start Guide - Welcome to Play
+  url: https://www.manula.com/manuals/green-hippo/play-quick-start-guide/play/en/topic/welcome-to-play
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+- title: Spitfire Creative Technologies Announces Acquisition of Green Hippo Ltd and Green Hippo Media
+    Technology Inc.
+  url: https://www.green-hippo.com/spitfire-creative-technologies-announces-acquisition/
+  publisher: Green Hippo
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

@@ -1,0 +1,121 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: isadora
+name: Isadora
+aka:
+- Izzy
+- TroikaTronix Isadora
+vendor: TroikaTronix (Mark Coniglio)
+category: media-server
+summary: Node-based real-time media environment where video, audio, sensors and control protocols
+  are patched together as actors inside scenes. Long-standing tool for interactive video in dance
+  and experimental theatre, also used as a straight scene-cued playback system.
+license: proprietary
+price_model: one-off-purchase
+platforms:
+- macos
+- windows
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Specifications page lists input and output of OSC; Isadora 4 adds an OSC Address Listener
+    actor. Commonly used to take cues from lighting consoles and other cue software.
+  confidence: verified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI input and output listed on the specifications page.
+  confidence: verified
+- protocol: midi-show-control
+  direction: in
+  note: MSC listed on the specifications page; the show-control page describes triggering cues from
+    external software or hardware over MSC.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: Specifications page states MIDI Timecode support and the show-control page lists MTC for synchronisation;
+    the docs do not state that Isadora also generates MTC.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  since_version: '4'
+  note: Integrated Art-Net send and receive from Isadora 4. In Isadora 2 and 3 Art-Net was a separately
+    downloaded plugin (32-bit for 2, 64-bit for 3).
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  note: Video can be pixel-mapped to RGB DMX values and sent out via USB-DMX devices. The lighting
+    page says DMX input and output but only output is described in any detail.
+  confidence: verified
+- protocol: ndi
+  direction: bidirectional
+  since_version: '3.2'
+  note: Input via the NDI Watcher actor (integrated from Isadora 4, a downloaded add-on actor before
+    that); output is configured in Stage Setup. Syphon (macOS) and Spout (Windows) cover local texture
+    sharing.
+  confidence: verified
+homepage:
+  url: https://troikatronix.com/
+  label: TroikaTronix
+docs:
+  url: https://support.troikatronix.com/support/solutions
+  label: TroikaTronix support and documentation
+status: current
+typical_use:
+- Interactive video for dance and experimental performance, driven by camera or sensor input
+- Live camera processing and GPU effects chains built as actor patches
+- Scene-based cue playback with crossfades, triggered from a console over OSC or MSC
+- Pixel-mapping video content out to LED via Art-Net or USB-DMX
+- Multi-projector setups with blending and routing, up to 16 stage outputs
+gotchas:
+- A perpetual buy-to-own licence includes two years of updates, not updates forever. After that the
+  installed version keeps running but newer releases need a paid update, which extends the window
+  by another year.
+- Release notes explicitly exclude Surface Pro-class tablets, Linux, and macOS running on non-Apple
+  hardware. A rented Windows laptop that turns out to be a Surface is not a supported playback machine.
+- Art-Net was a downloadable plugin in Isadora 2 (32-bit) and Isadora 3 (64-bit) and only became integrated
+  in Isadora 4, so version-specific plugin builds matter when opening older patches.
+- IzzyCast, the remote video/audio/data streaming feature, is a separate product with its own credit-based
+  charging rather than something the Isadora licence covers.
+- Perpetual licences come in digital and USB-key variants; the USB-key version is the one that needs
+  no internet connection, which matters for air-gapped show machines.
+confidence: verified
+tags:
+- interactive
+- node-based
+- dance
+- theatre
+- projection-mapping
+sources:
+- title: Isadora Specifications
+  url: https://troikatronix.com/isadora-features/specifications
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+- title: Isadora 4 Release Notes
+  url: https://support.troikatronix.com/support/solutions/articles/13000106556-isadora-4-release-notes
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+- title: Isadora 4 License Types Overview
+  url: https://support.troikatronix.com/support/solutions/articles/13000072198-isadora-4-license-types-overview
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+- title: Isadora - Lighting Control
+  url: https://troikatronix.com/isadora-features/lighting-control/
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+- title: Isadora - Cueing (Show Control)
+  url: https://troikatronix.com/isadora/cueing-show-control/
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+- title: Basics of NDI Input and Output
+  url: https://troikatronix.com/add-ons/basics-of-ndi-input-and-output/
+  publisher: TroikaTronix
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

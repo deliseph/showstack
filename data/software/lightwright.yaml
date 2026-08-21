@@ -1,0 +1,89 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: lightwright
+name: Lightwright
+aka:
+- LW
+- Lightwright 6
+vendor: Lightwright LLC (John McKernon Software)
+category: production-management
+summary: 'The lighting paperwork database: channel hookups, instrument schedules, colour and equipment
+  counts, focus charts and work notes. Stays in sync with a Vectorworks plot over an .xml link and
+  talks to Eos over OSC during focus and work calls.'
+license: proprietary
+price_model: subscription
+platforms:
+- windows
+- macos
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Eos Console Link uses OSC over the lighting network, or 127.0.0.1 on a single machine, to
+    trigger cues, turn lights on and off during focus and work calls, and import, label and document
+    cues and groups.
+  confidence: verified
+homepage:
+  url: https://www.lightwright.com/
+  label: Lightwright
+status: current
+typical_use:
+- Building and maintaining the hookup and instrument schedule for a plot
+- Work notes and focus tracking through tech
+- Two-way sync with a Vectorworks Spotlight drawing via the .xml link
+- Channel checks and cue/group labelling straight from Lightwright to an Eos console
+- Colour, gobo and equipment counts for the shop order
+gotchas:
+- The Vectorworks link is an .xml file named after the .vwx and living beside it. Rename or move the
+  .vwx and Lightwright keeps reading the old .xml, so the two files silently drift apart.
+- Vectorworks UIDs are not guaranteed to be unique. A new light whose UID matches an old deleted one
+  makes Lightwright restore the deleted light, which can cause all kinds of chaos.
+- One undefined or corrupted character in a data field can invalidate the whole exchange .xml. When
+  the two files disagree, do a Complete Export on Exit from Vectorworks.
+- Backslashes in folder names, particularly on Mac, stop Vectorworks and Lightwright communicating
+  at all.
+- Eos Console Link needs OSC RX and TX enabled in Eos Setup with TCP mode set to Slip (v1.1), OSC
+  enabled on the active network port, and Lightwright on a complementary IP and subnet.
+- 'Importing into Eos from a file is a different path from the live link: tab-separated .txt with
+  Windows line endings, and only rows whose Device Type is Light will import.'
+- Lightwright moved from a perpetual licence to subscription with the January 2026 platform release.
+  Lightwright 6 keeps working, but legacy bug-fix support was stated to end 1 July 2026.
+- 'The Lightwright 6 student licence was a hard stop: after three years the software will cease to
+  function.'
+confidence: verified
+tags:
+- lighting
+- paperwork
+- theatre
+- hookup
+sources:
+- title: About Lightwright 6
+  url: https://www.mckernon.com/lightwrightmenu/lwabout6.html
+  publisher: John McKernon Software
+  accessed: '2026-08-17'
+  primary: true
+- title: Vectorworks / Lightwright Data Exchange
+  url: https://www.mckernon.com/supportmenu/vwdataexchange.html
+  publisher: John McKernon Software
+  accessed: '2026-08-17'
+  primary: true
+- title: Eos Console Link - Lightwright user guide
+  url: https://www.lightwright.com/docs/user-guide/14-external-integration/02-eos-console-link.html
+  publisher: Lightwright LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Lightwright licence types
+  url: https://www.mckernon.com/lightwrightmenu/lwlicensingmain.html
+  publisher: John McKernon Software
+  accessed: '2026-08-17'
+  primary: true
+- title: 'Lightwright Unveils Historic Platform Overhaul: Introducing Real-Time Collaboration'
+  url: https://www.livedesignonline.com/b2b-experience/lightwright-unveils-historic-platform-overhaul-introducing-real-time-collaboration
+  publisher: Live Design
+  accessed: '2026-08-17'
+- title: Importing Lightwright Data Into Eos Family Consoles
+  url: https://support.etcconnect.com/ETC/Consoles/Eos_Family/Software_and_Programming/Importing_Lightwright_Data_Into_Eos_Family_Consoles
+  publisher: Electronic Theatre Controls
+  accessed: '2026-08-17'
+contributed_by: []
+updated: '2026-08-17'

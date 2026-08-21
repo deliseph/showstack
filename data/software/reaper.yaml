@@ -1,0 +1,113 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: reaper
+name: REAPER
+aka:
+- Cockos REAPER
+vendor: Cockos Incorporated
+category: audio-playback
+summary: 'Cross-platform DAW that theatre and touring departments run as a show playback host: multitrack
+  stems, timecode generate and chase, and OSC-driven control. Unusually cheap to licence and deeply
+  scriptable, with the same project opening on Windows, macOS and Linux.'
+license: proprietary
+price_model: one-off-purchase
+platforms:
+- windows
+- macos
+- linux
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Built-in OSC control surface. Cockos state a device can receive messages from REAPER, send
+    messages to it, or both; message mapping lives in .ReaperOSC pattern config files.
+  confidence: verified
+- protocol: mtc
+  direction: bidirectional
+  note: Chases MTC via the external timecode synchronization settings against an enabled MIDI input;
+    generates MTC from the stock SMPTE LTC/MTC Timecode Generator.
+  confidence: reported
+- protocol: ltc
+  direction: out
+  note: The stock SMPTE LTC/MTC Timecode Generator produces an LTC audio signal at a chosen frame
+    rate and start time. Real-time LTC chase is not part of it.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI in and out for control surfaces and MIDI learn on parameters; MIDI clock is enabled per
+    output device in Preferences > Audio > MIDI Devices.
+  confidence: reported
+homepage:
+  url: https://www.reaper.fm/
+  label: reaper.fm
+docs:
+  url: https://www.reaper.fm/userguide.php
+  label: REAPER User Guide (PDF)
+status: current
+typical_use:
+- Multitrack backing tracks, stems and click for touring bands and musicals
+- Generating house timecode for lighting, video and automation to chase
+- Chasing an external MTC master so playback follows the show clock
+- OSC control and feedback from a tablet, Companion or a show controller
+- ReaScript (Lua, EEL2, Python) automation of routing and cue behaviour
+- Playback on Linux where the rest of the toolchain is macOS or Windows only
+gotchas:
+- 'Licence tiers are self-certified, not feature-gated: the discounted licence covers individuals,
+  small businesses under a stated revenue threshold, and education or non-profit use. The binary is
+  identical either way.'
+- A licence includes free upgrades only up to a stated version ceiling, not forever. Budget a repurchase
+  at the next major cycle instead of assuming perpetual free upgrades.
+- Real-time chase is MTC, not LTC. REAPER 7.75 added an action to detect LTC inside media items and
+  move to the detected position, but that is offline alignment; locking to an LTC master still needs
+  an LTC-to-MTC converter in front of it.
+- Evaluation is fully functional for 60 days with no feature limits, so an unlicensed spare laptop
+  behaves exactly like a licensed one. It works is not evidence the rig is properly licensed.
+- OSC control surface settings and .ReaperOSC pattern files live in the REAPER config on that machine,
+  not in the .RPP project. Copy a show to a spare laptop and the OSC mapping does not travel with
+  it.
+- REAPER ships 32-bit and ARM builds as well as x86-64 on all three platforms. Plugin bitness and
+  architecture must match the REAPER build, which is how a same version spare machine still fails
+  to open the show.
+confidence: reported
+tags:
+- playback
+- timecode
+- osc
+- scripting
+- touring
+sources:
+- title: REAPER purchase page - licence tiers, eligibility, upgrade ceiling and 60-day evaluation
+  url: https://www.reaper.fm/purchase.php
+  publisher: Cockos Incorporated
+  accessed: '2026-08-17'
+  primary: true
+- title: REAPER OSC - control surface support, bidirectional operation and .ReaperOSC pattern configs
+  url: https://www.reaper.fm/sdk/osc/osc.php
+  publisher: Cockos Incorporated
+  accessed: '2026-08-17'
+  primary: true
+- title: REAPER downloads - Windows, macOS and Linux builds and architectures
+  url: https://www.reaper.fm/download.php
+  publisher: Cockos Incorporated
+  accessed: '2026-08-17'
+  primary: true
+- title: REAPER changelog - v7.75 timecode LTC detection action
+  url: https://www.reaper.fm/whatsnew.txt
+  publisher: Cockos Incorporated
+  accessed: '2026-08-17'
+  primary: true
+- title: REAPER User Guide
+  url: https://www.reaper.fm/userguide.php
+  publisher: Cockos Incorporated
+  accessed: '2026-08-17'
+  primary: true
+- title: How to configure Source-Connect 4 and REAPER to send MTC
+  url: https://support.source-elements.com/source-connect-4-hub/how-to-configure-source-connect-4-to-send-rts-via-mtc-and-reaper-to-send-mtc
+  publisher: Source Elements
+  accessed: '2026-08-17'
+- title: Using MIDI Timecode (MTC) with your DAW - REAPER external timecode synchronization settings
+  url: https://faq.ambient.de/hc/en-001/articles/8638072040978-Using-Midi-Timecode-MTC-with-your-DAW
+  publisher: Ambient Recording GmbH
+  accessed: '2026-08-17'
+contributed_by: []
+updated: '2026-08-17'

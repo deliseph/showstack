@@ -1,0 +1,135 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: millumin
+name: Millumin
+aka:
+- Millumin V5
+vendor: Anomes (Philippe Chaurand)
+category: media-server
+summary: 'macOS media server for live video: layers, timeline and column-based cueing with soft-edge
+  blending and projection mapping. Widely used for projection in theatre and dance, where one Mac
+  drives the whole video rig.'
+license: proprietary
+price_model: one-off-purchase
+platforms:
+- macos
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Configurable OSC listeners and senders; an OSC API covers almost every feature. Docs also
+    state Millumin supports OSCQuery, without specifying its server/client role.
+  confidence: verified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI sources and destinations are enabled individually in the Devices tab; inputs can send
+    feedback back to the controller (e.g. motorised faders).
+  confidence: verified
+- protocol: midi-show-control
+  direction: in
+  note: MSC GO with no Q-number advances to the next column or plays the timeline; GO with a Q-number
+    launches the Nth column; GO with Q-number plus Q-list selects the board; STOP stops or pauses.
+  confidence: verified
+- protocol: art-net
+  direction: out
+  note: Art-Net output for Light Plot and LED Mapping; docs cite Artnet V1/V2 with V3/V4 said to be
+    retro-compatible. Art-Net input is not documented.
+  confidence: verified
+- protocol: sacn
+  direction: out
+  note: sACN output alongside Art-Net; the manual warns sACN universe numbering starts at 1 whereas
+    Art-Net starts at 0.
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  note: Direct USB-DMX output; docs list Enttec DMX USB Pro and Pro Mk2, DMXking ultraDMX Micro and
+    ShowJockey interfaces.
+  confidence: verified
+- protocol: ndi
+  direction: bidirectional
+  note: NDI streams can be used as a layer source, and outputs can be sent as NDI with or without
+    alpha, plus audio.
+  confidence: verified
+- protocol: sdi
+  direction: bidirectional
+  note: Via Blackmagic (Intensity, UltraStudio, DeckLink) and AJA cards, used both for capture and
+    as outputs; Epiphan, Magewell, Inogeni and GigE cameras are also listed for capture.
+  confidence: verified
+- protocol: ltc
+  direction: in
+  note: LTC over an audio input; supported framerates are 24, 25, 29.97 DF and 30. Millumin also ships
+    a free TimecodeClock app that generates LTC, MTC or its own network timecode.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  note: MTC over MIDI, same framerate list as LTC.
+  confidence: verified
+homepage:
+  url: https://www.millumin.com/
+  label: Millumin
+docs:
+  url: https://help.millumin.com/docs/
+  label: Millumin Help
+status: current
+typical_use:
+- Video and projection playback for theatre and dance, cued column by column
+- Projection mapping and soft-edge blending across multiple projectors from one Mac
+- Taking GO from a lighting console or QLab over MSC or OSC
+- Driving DMX fixtures from the same show file as the video, via Light Plot
+- Live camera or NDI input processed and re-projected in the same document
+gotchas:
+- Art-Net universes are numbered from 0 but sACN universes from 1 in Millumin's own docs. Repatch
+  the same rig between the two protocols and everything lands one universe out.
+- When the 30-day trial lapses Millumin still opens, saves, plays and exposes every feature. The only
+  change is a watermark on the outputs. Nothing else tells you the licence has run out.
+- Vendor docs quote 60-120 ms latency on Blackmagic capture cards. Live camera composited against
+  audio or a moving performer will need that budgeted for, not discovered in the tech.
+- 'Output count is a chip choice, not a GPU-speed choice: docs note base M1/M2/M3 Macs drive one external
+  display, while M-series Max parts go to five. Buy the machine by display count.'
+- Licences are sold as lifetime (with paid upgrades between major versions) or as 7-day, 30-day and
+  1-year rentals; each licence has a seat count and machines must be deactivated before being moved.
+confidence: verified
+tags:
+- media-server
+- projection-mapping
+- theatre
+- dance
+- macos
+sources:
+- title: Millumin Help - Devices (MIDI, OSC, DMX, Art-Net, sACN, timecode)
+  url: https://help.millumin.com/docs/connect/devices/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - Timecodes
+  url: https://help.millumin.com/docs/connect/timecodes/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - Capture
+  url: https://help.millumin.com/docs/connect/capture/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - Outputs
+  url: https://help.millumin.com/docs/display/outputs/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - License
+  url: https://help.millumin.com/docs/general/license/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - Recommendations (macOS versions, Apple Silicon display limits, codecs)
+  url: https://help.millumin.com/docs/general/recommendations/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+- title: Millumin Help - Light Plot
+  url: https://help.millumin.com/docs/lighting/light-plot/
+  publisher: Anomes
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

@@ -1,0 +1,131 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: qsys-designer
+name: Q-SYS Designer
+aka:
+- Q-SYS Designer Software
+- QDS
+vendor: QSC, LLC
+category: audio-mixing
+summary: 'Windows design and deployment software for the Q-SYS platform: you draw the DSP, control
+  logic and touchscreen UIs as a schematic, then push the whole design to a Core. Widely specified
+  as the audio and control brain of venues, theme parks and installed AV.'
+license: proprietary
+price_model: free
+platforms:
+- windows
+speaks:
+- protocol: aes67
+  direction: bidirectional
+  note: Cores stream AES67 as multicast alongside the native Q-LAN transport. QSC's capacity tables
+    count Q-LAN and AES67 network channels together and list no separate AES67 feature licence.
+  confidence: verified
+- protocol: dante
+  direction: bidirectional
+  requires_licence: true
+  note: Dante on a Core is the Software Dante feature licence, sold in channel-count tiers from 8x8
+    up to 512x512 depending on Core model and QDS version.
+  confidence: verified
+- protocol: ltc
+  direction: bidirectional
+  note: 'Stock schematic components: the SMPTE LTC Reader decodes LTC from an audio input per SMPTE
+    12M and exposes timecode fields as control pins for Lua; the SMPTE LTC Generator is the encoder
+    counterpart.'
+  confidence: verified
+- protocol: ptp-1588
+  direction: bidirectional
+  note: PTPv2 (IEEE 1588-2008) on multicast 224.0.1.129, UDP 319-320. It is the clock for Q-LAN and
+    AES67 and is documented as time-sensitive traffic the network must prioritise.
+  confidence: verified
+homepage:
+  url: https://www.qsys.com/products-solutions/q-sys/software/q-sys-designer-software/
+  label: Q-SYS Designer Software
+docs:
+  url: https://help.qsys.com/
+  label: Q-SYS Help
+status: current
+typical_use:
+- Building the audio DSP, routing, paging and BGM for a venue or attraction
+- Lua, Control Script and Block Controller logic tying AV and building systems together
+- Timecode-triggered show events driven from the SMPTE LTC Reader
+- Custom touchscreen UCIs for operators and front-of-house staff
+- Offline design and emulation before the hardware exists on site
+- Exposing Named Controls so a third-party controller drives the system over QRC or ECP
+gotchas:
+- Third-party control needs Named Controls. A control that has not been selected and named in Designer
+  is simply not visible to QRC (TCP 1710) or ECP (TCP 1702), which is where integrators lose hours
+  to the API cannot see my fader.
+- 'QRC and ECP connections drop if the client goes quiet: QSC require traffic at least every 60 seconds.
+  A keepalive or polling loop is not optional in a long-running integration.'
+- Designs are not backward compatible. Anything using hardware, features or properties introduced
+  in a newer QDS release may not open in an older one, so the Designer version on the commissioning
+  laptop is part of the system documentation.
+- Control licensing moved. Scripting Engine and UCI Deployment were paid feature licences; QSC state
+  licences are no longer required for Q-SYS Control capabilities on v10 and above. Quotes written
+  against older documents will be wrong in both directions.
+- Dante is a licensed, channel-limited software feature on a Core, not a given. Match the tier to
+  the actual channel count and Core model before promising anyone a Dante path.
+- 'The Timeline component that plays audio files against an external LTC input is still marked BETA
+  in v10.4: functional, but not feature complete and subject to change. Do not hang a twenty-year
+  attraction on it without a fallback.'
+- OSC does not appear in QSC's documented network services. Field OSC integrations are third-party
+  plugins or sockets opened from Lua, so treat OSC as something you build rather than something you
+  enable.
+- Designer is Windows only. QSC's requirements list Windows 11 x64 and note testing inside a Windows
+  11 VM under Parallels on Apple silicon, but a Mac-only crew has no native option.
+confidence: verified
+tags:
+- installed-av
+- dsp
+- show-control
+- lua
+- theme-park
+sources:
+- title: Q-SYS Help - Network Interfaces, Services & Protocols
+  url: https://help.qsys.com/content/Networking/Interfaces_Services.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - Licensing (Software Dante channel tiers)
+  url: https://help.qsys.com/Content/Core_Manager/Core_Management/Licensing.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - SMPTE Linear Timecode Decoder
+  url: https://help.qsys.com/Content/Schematic_Library/linear_timecode_decoder.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - Timeline [BETA] component with External LTC Input
+  url: https://help.qsys.com/Content/Schematic_Library/timeline.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - Q-SYS Remote Control Protocol (QRC)
+  url: https://help.qsys.com/Content/External_Control_APIs/QRC/QRC_Overview.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - External Control Protocol (ECP)
+  url: https://help.qsys.com/Content/External_Control_APIs/ECP/ECP_Overview.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Help - Software Requirements
+  url: https://help.qsys.com/Content/Q-SYS_Compatibility/Software_Requirements.htm
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Scaling & Feature Licenses
+  url: https://www.qsys.com/products-solutions/q-sys/scaling-feature-licenses/
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+- title: Q-SYS Designer Software - free download, Lua control of external devices, emulation mode
+  url: https://www.qsys.com/products-solutions/q-sys/software/q-sys-designer-software/
+  publisher: QSC, LLC
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

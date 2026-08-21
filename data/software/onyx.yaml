@@ -1,0 +1,132 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: onyx
+name: ONYX
+aka:
+- Obsidian ONYX
+- Onyx
+vendor: Obsidian Control Systems
+category: lighting-control
+summary: Obsidian Control Systems' Windows lighting control software, running on NX consoles and on
+  any PC, carrying forward the Martin M-Series/M-PC licence lineage. The free tier outputs one universe;
+  everything above that unlocks by plugging in Obsidian hardware.
+license: proprietary
+price_model: freemium
+platforms:
+- windows
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Each Art-Net universe can be set to output, input or both. Detected nodes are unicast their
+    assigned universes, with an optional broadcast mode. Art-Net timecode can also be received.
+  confidence: verified
+- protocol: sacn
+  direction: bidirectional
+  note: Can be set to output, input or both, with a settable sACN priority in the 0-200 range.
+  confidence: verified
+- protocol: dmx512
+  direction: out
+  requires_licence: true
+  note: Direct DMX needs Obsidian USB hardware (NX-DMX, NX-Touch, NX-K, NX-P) or an NX console. Onyx
+    USB output appears from the NOVA tier upwards, not in ONYX FREE.
+  confidence: reported
+- protocol: citp
+  direction: in
+  note: Media server thumbnails are pushed across the network into ONYX's parameter belts, and patch
+    can be imported from compatible visualisers. Servers on the network are auto-detected.
+  confidence: verified
+- protocol: osc
+  direction: in
+  requires_licence: true
+  note: Full control of main playbacks, playback buttons, F-keys and command keys. OSC is locked in
+    FREE and NOVA mode; a free trial can be started from the licensing options.
+  confidence: verified
+- protocol: midi
+  direction: in
+  requires_licence: true
+  note: MIDI notes and commands trigger Go, Pause, Release, Flash and similar. ONYX does not generate
+    MIDI messages, it only passes them along. Fully enabled from the NOVA+ tier.
+  confidence: verified
+- protocol: midi-show-control
+  direction: in
+  requires_licence: true
+  note: MSC format and device ID are set in I/O settings. Gated behind the same tier as MIDI and timecode.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  requires_licence: true
+  note: LTC via the SMPTE IN 3-pin connector on M6+ consoles, or audio LTC via an audio interface.
+    Timecode is only fully enabled from the NOVA+ tier.
+  confidence: verified
+- protocol: mtc
+  direction: in
+  requires_licence: true
+  note: MIDI timecode via MIDI ports or the SMPTE IN connector. Only fully enabled from the NOVA+
+    tier.
+  confidence: verified
+homepage:
+  url: https://obsidiancontrol.com/onyx
+  label: ONYX
+docs:
+  url: https://support.obsidiancontrol.com/
+  label: ONYX manual (v4.32)
+status: current
+typical_use:
+- Club, corporate and touring lighting control on NX consoles
+- Free single-universe PC control for small rigs and learning
+- Pixel mapping and media control with DyLOS
+- Offline programming for an NX console show file
+gotchas:
+- The tier is set by whichever Obsidian device is plugged in, not by a software key file. FREE is
+  universe 1 only; NOVA and NOVA+ give universes 1-4; the 8/16/32/64/128 tiers need the matching ONYX
+  key or NX wing.
+- OSC, MIDI and all timecode protocols are locked in FREE and NOVA mode. NOVA+ (NX-Touch, NX-K, NX-P)
+  is the first tier where they are fully enabled; below that you only get time-limited trials.
+- DyLOS is limited to 2 zones below the Onyx 16 tier, and extra zones render with a watermark.
+- ONYX never sends MIDI out. It does not generate MIDI messages, only passes them along, so anything
+  downstream needing MIDI cues needs another device.
+- Legacy M-Series USB products stopped working under Windows 11 24H2 because of driver security changes,
+  and legacy Martin keys (Maxxyz, M1, Ether2DMX8) are no longer recognised to unlock ONYX.
+- Windows only, Windows 10/11 64-bit. There is no macOS build.
+- 255 universe slots are patchable but DMX processing is capped at up to 128 universes depending on
+  licence, so patching a universe is not the same as outputting it.
+confidence: verified
+tags:
+- lighting
+- onyx
+- obsidian
+- touring
+sources:
+- title: Onyx PC Modes
+  url: https://support.obsidiancontrol.com/Content/License_Information/Onyx_PC_Modes.htm
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+- title: EtherDMX Settings (Art-Net and sACN)
+  url: https://support.obsidiancontrol.com/Content/Onyx_Manual/Networking/EtherDMX_Settings.htm
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+- title: CITP - ONYX manual
+  url: https://support.obsidiancontrol.com/Content/Onyx_Manual/Networking/CITP.htm
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+- title: OSC - ONYX manual
+  url: https://support.obsidiancontrol.com/Content/Onyx_Manual/Networking/OSC.htm
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+- title: Timecode Settings - ONYX manual
+  url: https://support.obsidiancontrol.com/Content/Onyx_Manual/Menus/System_Settings/IO_Settings/Timecode_Settings.htm
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+- title: ONYX supported hardware and license changes
+  url: https://obsidiancontrol.com/blog/post/onyx-supported-hardware-and-license-changes
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-17'
+  primary: true
+contributed_by: []
+updated: '2026-08-17'

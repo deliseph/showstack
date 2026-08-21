@@ -1,0 +1,43 @@
+id: midi-monitor-snoize
+name: MIDI Monitor
+vendor: Snoize
+category: monitoring-diagnostics
+summary: Free open-source macOS app that displays MIDI signals going in and out of the computer in real
+  time, including the ability to spy on MIDI sent to any destination by any other app via a virtual CoreMIDI
+  driver.
+license: BSD-3-Clause
+price_model: open-source
+platforms:
+- macos
+speaks:
+- protocol: mtc
+  direction: in
+  confidence: unverified
+  note: Generic real-time MIDI monitor; captures MIDI Time Code quarter-frame/real-time messages along
+    with all other MIDI data, but has no dedicated MTC decoder view.
+homepage:
+  url: https://www.snoize.com/MIDIMonitor/
+repo:
+  url: https://github.com/krevis/MIDIApps
+status: current
+typical_use:
+- Confirm whether MIDI Show Control or MTC bytes are actually arriving at a Mac's MIDI input
+- Spy on MIDI traffic another application is sending/receiving without needing a hardware MIDI monitor
+- Log MIDI streams to hex for offline inspection of malformed or unexpected messages
+gotchas:
+- macOS only, requires macOS 10.13 (High Sierra) or later, so it can't run on older show-control machines
+  still on legacy OS versions.
+confidence: verified
+tags:
+- midi
+- macos
+- open-source
+sources:
+- title: MIDI Monitor - Snoize official site
+  url: https://www.snoize.com/MIDIMonitor/
+  accessed: '2026-08-17'
+  primary: true
+- title: krevis/MIDIApps GitHub repository (MIDI Monitor + SysEx Librarian source)
+  url: https://github.com/krevis/MIDIApps
+  accessed: '2026-08-17'
+updated: '2026-08-17'
