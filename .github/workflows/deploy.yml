@@ -1,5 +1,10 @@
 name: deploy
 
+# The site's single real deployment is the Vercel project "showstack"
+# (showstack-inky.vercel.app), which builds from this repo on every push.
+# This workflow no longer publishes a second copy: it publishes a redirect,
+# so old deliseph.github.io/showstack links keep resolving to the one app
+# instead of serving a stale duplicate with its own canonicals.
 on:
   push:
     branches: [main]
@@ -15,60 +20,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-deploy:
+  redirect:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-
-      # Runs BEFORE the build on purpose. It reports base_url, the real address
-      # this site is served from, and the build needs that up front: every
-      # canonical tag and sitemap entry is absolute. Building first would bake
-      # in the placeholder domain, and a canonical pointing at a domain that
-      # does not resolve tells a crawler the page it just read is a duplicate
-      # of nothing, which is a fast way to get deindexed.
-      - name: Configure Pages
+      - name: Build the redirect pages
+        run: |
+          mkdir -p dist
+          cat > dist/404.html << 'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>showstack has moved</title>
+          <link rel="canonical" href="https://showstack-inky.vercel.app/">
+          <script>
+            var p = location.pathname.replace(/^\/showstack/, "");
+            location.replace("https://showstack-inky.vercel.app" + p + location.search + location.hash);
+          </script>
+          <p>showstack now lives at <a href="https://showstack-inky.vercel.app/">showstack-inky.vercel.app</a>.</p>
+          HTML
+          cp dist/404.html dist/index.html
+      - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-
-      - run: node scripts/validate.mjs
-
-      - name: Build against the real deployment URL
-        env:
-          SHOWSTACK_SITE: ${{ steps.pages.outputs.base_url }}
-          SHOWSTACK_REPO: ${{ github.repository }}
-        run: node scripts/build.mjs
-
-      # Cheap insurance: if base_url were ever empty the build would silently
-      # fall back to the placeholder and poison every canonical. Fail loudly
-      # here rather than discovering it in Search Console weeks later.
-      - name: Verify canonical URLs point at this deployment
-        env:
-          SHOWSTACK_SITE: ${{ steps.pages.outputs.base_url }}
-        run: |
-          set -euo pipefail
-          if [ -z "${SHOWSTACK_SITE}" ]; then
-            echo "::error::configure-pages reported no base_url; canonicals would be wrong."
-            exit 1
-          fi
-          if ! grep -q "<loc>${SHOWSTACK_SITE}" dist/sitemap.xml; then
-            echo "::error::sitemap.xml does not reference ${SHOWSTACK_SITE}."
-            head -5 dist/sitemap.xml
-            exit 1
-          fi
-          echo "Canonical base URL: ${SHOWSTACK_SITE}"
-
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-      - id: deployment
+      - name: Deploy
+        id: deployment
         uses: actions/deploy-pages@v4
