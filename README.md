@@ -9,6 +9,8 @@ The protocols, standards, software, hardware and vocabulary that live shows actu
 [![code licence: MIT](https://img.shields.io/badge/code-MIT-7dd3c0)](./LICENSE)
 [![good first issues](https://img.shields.io/github/issues/deliseph/showstack/good%20first%20issue?color=f0b866&label=good%20first%20issues)](https://github.com/deliseph/showstack/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 
+**Live at [showstack-inky.vercel.app](https://showstack-inky.vercel.app/)** — one app serving the searchable index, the [field tools](https://showstack-inky.vercel.app/tools/), the [interop checker](https://showstack-inky.vercel.app/interop/), the [comparisons](https://showstack-inky.vercel.app/compare/), the [port index](https://showstack-inky.vercel.app/ports/) and the free JSON API.
+
 ---
 
 ## Why this exists
@@ -38,8 +40,10 @@ The interop matrix ("what can receive PSN?") is **computed**, not stored. You wr
 
 Two things fall out of that matrix for free:
 
-- **[Can these two talk?](https://deliseph.github.io/showstack/interop/)** — pick any two products and get the protocols they share, in which direction, with the confidence and any licence catch. Runs entirely in the browser, so it works backstage with no signal.
-- **[Comparisons](https://deliseph.github.io/showstack/compare/)** — Art-Net vs sACN, Dante vs AES67, PSN vs RTTrPM and the rest, generated from the index rather than written by hand, so correcting one entry fixes every page it appears on.
+- **[Can these two talk?](https://showstack-inky.vercel.app/interop/)** — pick any two products and get the protocols they share, in which direction, with the confidence and any licence catch. Runs entirely in the browser, so it works backstage with no signal.
+- **[Comparisons](https://showstack-inky.vercel.app/compare/)** — Art-Net vs sACN, Dante vs AES67, PSN vs RTTrPM and the rest, generated from the index rather than written by hand, so correcting one entry fixes every page it appears on.
+
+And for load-in itself: **[the field tools](https://showstack-inky.vercel.app/tools/)** — DMX address, DIP switch, speaker delay, timecode, power load, beam, LED wall and RF calculators, all offline-capable, all running the same arithmetic the test suite checks.
 
 ## Use it
 
@@ -143,6 +147,14 @@ npm run types:check  # fail if the checked-in types are stale
 
 Node 20 or newer. **Contributors who only touch data need none of this** — CI
 runs it for you and comments in plain language if something is off.
+
+### Deployment
+
+One app: the Vercel project **showstack** builds this repo on every push to
+main and serves everything (site, tools, interop, compare, ports, API) at
+[showstack-inky.vercel.app](https://showstack-inky.vercel.app/). The old
+GitHub Pages URL now redirects there path-for-path rather than serving a
+second copy.
 
 ### What the tests actually protect
 
