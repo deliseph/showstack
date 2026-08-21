@@ -5,20 +5,53 @@
   "type": "module",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./src/index.js"
+    },
     "./data": "./showstack.json"
   },
-  "bin": { "showstack": "./src/cli.js" },
-  "files": ["src", "showstack.json", "README.md"],
-  "engines": { "node": ">=18" },
-  "keywords": [
-    "dmx", "dmx512", "sacn", "e1.31", "art-net", "osc", "show-control",
-    "lighting", "theatre", "theater", "live-events", "entertainment-technology",
-    "psn", "posistagenet", "timecode", "esta", "rigging", "av"
+  "bin": {
+    "showstack": "./src/cli.js"
+  },
+  "files": [
+    "src",
+    "index.d.ts",
+    "showstack.json",
+    "README.md"
   ],
-  "repository": { "type": "git", "url": "git+https://github.com/deliseph/showstack.git" },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "dmx",
+    "dmx512",
+    "sacn",
+    "e1.31",
+    "art-net",
+    "osc",
+    "show-control",
+    "lighting",
+    "theatre",
+    "theater",
+    "live-events",
+    "entertainment-technology",
+    "psn",
+    "posistagenet",
+    "timecode",
+    "esta",
+    "rigging",
+    "av"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deliseph/showstack.git"
+  },
   "homepage": "https://github.com/deliseph/showstack#readme",
-  "bugs": { "url": "https://github.com/deliseph/showstack/issues" },
+  "bugs": {
+    "url": "https://github.com/deliseph/showstack/issues"
+  },
   "license": "MIT",
-  "sideEffects": false
+  "sideEffects": false,
+  "types": "./index.d.ts"
 }
