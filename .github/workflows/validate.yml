@@ -27,6 +27,16 @@ jobs:
           node scripts/validate.mjs 2>&1 | tee validate.log
       - name: Build
         run: node scripts/build.mjs
+      # Runs after the build because the derivation and page tests read dist/.
+      # These are the rules the schema cannot express: that a source is real,
+      # that "verified" was earned, that a reference resolves, and that
+      # contributed text cannot become markup on the live site.
+      - name: Test
+        run: npm run test:unit
+      # The .d.ts is generated from schema/. This fails if someone changed a
+      # schema without regenerating, which would ship types that lie.
+      - name: Check generated types are current
+        run: npm run types:check
       - name: Explain the failure to a first-time contributor
         if: failure()
         uses: actions/github-script@v7
