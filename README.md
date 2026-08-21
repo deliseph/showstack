@@ -36,6 +36,11 @@ showstack is the attempt to put it in one place, with a source on every claim, u
 
 The interop matrix ("what can receive PSN?") is **computed**, not stored. You write `speaks` once on a product and the reverse index falls out.
 
+Two things fall out of that matrix for free:
+
+- **[Can these two talk?](https://deliseph.github.io/showstack/interop/)** — pick any two products and get the protocols they share, in which direction, with the confidence and any licence catch. Runs entirely in the browser, so it works backstage with no signal.
+- **[Comparisons](https://deliseph.github.io/showstack/compare/)** — Art-Net vs sACN, Dante vs AES67, PSN vs RTTrPM and the rest, generated from the index rather than written by hand, so correcting one entry fixes every page it appears on.
+
 ## Use it
 
 **Free JSON API.** No key, no rate limit, no tracking.
@@ -57,12 +62,24 @@ npm install showstack
 ```
 
 ```js
-import { protocols, whoSpeaks, byPort, search } from 'showstack'
+import { protocols, whoSpeaks, byPort, interop, search } from 'showstack'
 
-byPort(5568)            // -> [{ id: 'sacn', ... }, { id: 'acn', ... }]
-whoSpeaks('psn')        // -> every indexed product that sends or receives PosiStageNet
-search('吊桿')           // -> the glossary entry, with the HK/TW variants
+byPort(5568)                      // -> [{ id: 'sacn', ... }, { id: 'acn', ... }]
+whoSpeaks('psn')                  // -> every product that sends or receives PosiStageNet
+whoSpeaks('psn', 'in')            // -> only the ones that can receive it
+interop('qlab', 'eos-family')     // -> the protocols these two share, and which way
+search('吊桿')                     // -> the glossary entry, with the HK/TW variants
 protocols.find(p => p.id === 'art-net').gotchas
+```
+
+Ships with TypeScript declarations, generated from the JSON Schemas so they
+cannot drift from the data:
+
+```ts
+import type { Protocol, Speaker, Confidence } from 'showstack'
+
+const receivers: Speaker[] = whoSpeaks('art-net', 'in')
+const trust: Confidence = receivers[0].confidence   // 'verified' | 'reported' | 'unverified'
 ```
 
 **Python**
@@ -111,11 +128,44 @@ Every factual field must be traceable to something in `sources`. Prefer the stan
 
 ```bash
 npm install
-npm run validate     # schema, cross-references, duplicate ids, port collisions
-npm run build        # -> dist/ (JSON API + site + package bundles)
+npm test             # validate, build, then the test suite
 ```
 
-Node 20 or newer. There is no build step for contributors who only touch data; CI runs the same two commands.
+Individually:
+
+```bash
+npm run validate     # schema, cross-references, duplicate ids, port collisions
+npm run build        # -> dist/ (JSON API + static site + package bundles)
+npm run test:unit    # the rules a schema cannot express
+npm run types        # regenerate index.d.ts from schema/
+npm run types:check  # fail if the checked-in types are stale
+```
+
+Node 20 or newer. **Contributors who only touch data need none of this** — CI
+runs it for you and comments in plain language if something is off.
+
+### What the tests actually protect
+
+The JSON Schemas say what shape an entry may take. The test suite says what the
+project *means*, which is the part that keeps the index worth trusting:
+
+- an entry cites at least one source, and sources are real absolute URLs
+- `confidence: verified` requires a source marked `primary` — verified is earned, not typed
+- every cross-reference resolves, so no page links to an entry that does not exist
+- the computed interop matrix matches the `speaks` declarations in both directions
+- the gaps list never sends someone to fill a field that is already filled
+- contributed text cannot become markup on the live site
+
+That last one is not hypothetical. This project renders YAML written by
+strangers straight into HTML, so the generator is tested against hostile input
+on every run.
+
+### Adding to the site
+
+`scripts/pages.mjs` generates every static page. `scripts/compare.mjs` holds the
+curated comparison pairs — the *pairs* are chosen by hand because only a person
+knows which comparisons people agonise over, but the *content* is derived from
+the data so it cannot go stale.
 
 ## Licence
 

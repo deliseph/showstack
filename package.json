@@ -4,17 +4,23 @@
   "version": "0.0.0",
   "description": "The open index of live entertainment technology.",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "validate": "node scripts/validate.mjs",
     "build": "node scripts/build.mjs",
     "seed:issues": "node scripts/seed-issues.mjs",
-    "test": "npm run validate && npm run build"
+    "test:unit": "node --test \"test/**/*.test.mjs\"",
+    "test": "npm run validate && npm run build && npm run test:unit",
+    "types": "node scripts/types.mjs",
+    "types:check": "node scripts/types.mjs --check && tsc -p tsconfig.json"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "yaml": "^2.6.1"
+    "yaml": "^2.6.1",
+    "typescript": "^5.7.2"
   },
   "license": "MIT"
 }

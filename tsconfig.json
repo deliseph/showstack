@@ -1,0 +1,13 @@
+{
+  "//": "Type-checks the generated declarations against a realistic consumer. Run with: npm run types:check",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": false,
+    "forceConsistentCasingInFileNames": true
+  },
+  "files": ["test/types.test-d.ts"]
+}
