@@ -8,13 +8,22 @@
  * The interop matrix is computed here rather than stored, so `speaks` only ever
  * has to be written once, on the software or hardware entry.
  */
-import { mkdirSync, writeFileSync, readFileSync, cpSync, existsSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, cpSync, existsSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { COLLECTIONS, loadCollection, ROOT } from './lib/load.mjs'
 import { buildPages } from './pages.mjs'
 
+const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
+
 const DIST = join(ROOT, 'dist')
 const API = join(DIST, 'api', 'v1')
+
+// Wipe dist first. Pages are named after entry ids, so renaming or deleting an
+// entry would otherwise leave the old page sitting in dist forever: still
+// deployed, still indexed, still carrying a canonical, and no longer backed by
+// any file anyone can edit. dist/ is fully generated and gitignored, so there
+// is nothing here worth keeping between builds.
+rmSync(DIST, { recursive: true, force: true })
 mkdirSync(API, { recursive: true })
 
 const db = {}
@@ -96,7 +105,7 @@ writeFileSync(join(API, 'index.json'), JSON.stringify({ ...stats, endpoints: COL
 writeFileSync(join(API, 'contributors.json'), JSON.stringify(contributors, null, 2))
 writeFileSync(join(API, 'gaps.json'), JSON.stringify(gaps, null, 2))
 
-const bundle = { $schema: 'https://showstack.dev/api/v1/index.json', ...stats, ...db, contributors, gaps }
+const bundle = { $schema: `${SITE}/api/v1/index.json`, ...stats, ...db, contributors, gaps }
 writeFileSync(join(DIST, 'showstack.json'), JSON.stringify(bundle))
 writeFileSync(join(ROOT, 'packages', 'showstack-js', 'showstack.json'), JSON.stringify(bundle))
 writeFileSync(join(ROOT, 'packages', 'showstack-py', 'showstack', 'showstack.json'), JSON.stringify(bundle))

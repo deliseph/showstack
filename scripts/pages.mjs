@@ -14,12 +14,34 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
+import { interopPage } from './interop.mjs'
+import { toolsPage } from './tools.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
 const GH = `https://github.com/${REPO}`
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+/**
+ * Serialise JSON for embedding inside a <script> block.
+ *
+ * JSON.stringify does not escape `<`, so a contributed field containing the
+ * literal text `</script>` would close the block early and turn everything
+ * after it into live markup. This project merges YAML written by strangers,
+ * so that is a real path, not a theoretical one.
+ *
+ * < and friends are ordinary JSON string escapes: the parsed value is
+ * byte-identical, and no sequence of characters in the data can terminate the
+ * enclosing tag. This is the standard mitigation and it costs nothing.
+ */
+const jsonForScript = (obj) =>
+  JSON.stringify(obj).replace(/[<>&\u2028\u2029]/g, (c) => ({
+    '<': '\\u003c', '>': '\\u003e', '&': '\\u0026',
+    '\u2028': '\\u2028', '\u2029': '\\u2029',
+  }[c]))
+
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
 const CSS = `
@@ -68,7 +90,7 @@ code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);padding:1
 .crumb{font-size:13px;color:var(--dimmer);margin-bottom:14px}
 `
 
-function shell({ title, description, canonical, jsonld, body, h1extra = '' }) {
+function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -82,16 +104,17 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '' }) {
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
 <meta name="twitter:card" content="summary">
-${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>` : ''}
-<style>${CSS}</style>
+${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
+<style>${CSS}${extraStyle}</style>
 </head>
 <body>
 <header><div class="wrap">
   <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
-  <nav><a href="/">Search</a><a href="/ports/">Ports</a><a href="${GH}">GitHub</a></nav>
+  <nav><a href="/">Search</a><a href="/tools/">Tools</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="${GH}">GitHub</a></nav>
   ${h1extra}
 </div></header>
 <main><div class="wrap">${body}</div></main>
+${extraScript ? `<script>${extraScript}</script>` : ''}
 <footer><div class="wrap">
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
@@ -250,7 +273,17 @@ function termPage(t, gap) {
 
 // ------------------------------------------------- software / hardware / std
 function productPage(kind, e, gap) {
-  const title = `${e.name}${e.vendor ? ` (${e.vendor})` : ''} — protocols and interoperability | showstack`
+  // Vendor is only worth putting in the <title> when it adds information.
+  // "Notch (Notch (10bit FX Limited))" and "Lightwright (Lightwright LLC)"
+  // waste the ~60 characters a search result actually shows, so drop the
+  // vendor when it is just the product name plus a legal suffix. Compare on
+  // the vendor's leading word, before any parenthetical trading name.
+  const vendorHead = (e.vendor ?? '').split('(')[0].trim()
+  const redundant =
+    vendorHead.toLowerCase().startsWith(e.name.toLowerCase()) ||
+    e.name.toLowerCase().startsWith(vendorHead.toLowerCase())
+  const byline = e.vendor && !redundant ? ` (${vendorHead})` : ''
+  const title = `${e.name}${byline} — protocols and interoperability | showstack`
   const spoken = (e.speaks ?? []).map((s) => s.protocol).join(', ')
   const description = trunc(`${e.name}${spoken ? ` speaks ${spoken}. ` : ' '}${e.summary}`)
 
@@ -320,6 +353,39 @@ export function buildPages(db, dist) {
   for (const s of db.standards) { write(`standards/${s.id}`, standardPage(s, gapOf('standards', s.id)));  urls.push(`${SITE}/standards/${s.id}/`) }
   for (const e of db.software)  { write(`software/${e.id}`,  productPage('software', e, gapOf('software', e.id))); urls.push(`${SITE}/software/${e.id}/`) }
   for (const e of db.hardware)  { write(`hardware/${e.id}`,  productPage('hardware', e, gapOf('hardware', e.id))); urls.push(`${SITE}/hardware/${e.id}/`) }
+
+  // Comparison pages. Curated pairs, generated content: "art-net vs sacn" is
+  // searched constantly and every existing answer is a forum thread.
+  const protoById = Object.fromEntries(db.protocols.map((p) => [p.id, p]))
+  const products = [
+    ...db.software.map((e) => ({ ...e, kind: 'software' })),
+    ...db.hardware.map((e) => ({ ...e, kind: 'hardware' })),
+  ]
+  const helpers = { esc, trunc, shell, SITE, GH, products }
+  const livePairs = []
+  for (const [aId, bId, ask] of PAIRS) {
+    const a = protoById[aId]
+    const b = protoById[bId]
+    // Skip silently: the curated list may name protocols not yet written, so
+    // it can be edited ahead of the data without breaking the build.
+    if (!a || !b) continue
+    write(`compare/${a.id}-vs-${b.id}`, comparisonPage(a, b, ask, helpers))
+    urls.push(`${SITE}/compare/${a.id}-vs-${b.id}/`)
+    livePairs.push([a, b, ask])
+  }
+  if (livePairs.length) {
+    write('compare', comparisonIndex(livePairs, helpers))
+    urls.push(`${SITE}/compare/`)
+  }
+
+  // The interop picker. Uses the same products list built above.
+  write('interop', interopPage({ esc, shell, jsonForScript, SITE, GH, products, protocols: db.protocols }))
+  urls.push(`${SITE}/interop/`)
+
+  // The field-tool calculators. Market-validated daily utilities: DMX/DIP
+  // addressing, speaker delay, timecode. Same arithmetic the test suite runs.
+  write('tools', toolsPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/tools/`)
 
   // Port pages, plus an index of every port we know about.
   const byPort = new Map()

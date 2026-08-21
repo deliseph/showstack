@@ -242,6 +242,14 @@ for (const [collection, items] of Object.entries(WISHLIST)) {
 const sh = process.argv.includes('--sh')
 const json = process.argv.includes('--json')
 
+// Single-quote for POSIX shells. This is the only quoting style bash will not
+// reinterpret: no backtick command substitution, no $ expansion, no word
+// splitting. JSON.stringify() produces a *double*-quoted string, which bash
+// still expands `backticks` and $vars inside, so it is not safe here even
+// though it looks quoted. A literal single quote is escaped by closing the
+// quoted string, emitting an escaped quote, and reopening it.
+const shq = (s) => `'${String(s).replace(/'/g, `'\\''`)}'`
+
 if (json) {
   writeFileSync(join(ROOT, 'seed-issues.json'), JSON.stringify(issues, null, 2))
   console.log(`Wrote ${issues.length} issues to seed-issues.json`)
@@ -251,8 +259,8 @@ if (json) {
   console.log(`# gh auth login first. Repo: ${REPO}`)
   console.log('set -euo pipefail\n')
   for (const i of issues) {
-    const labels = i.labels.map((l) => `--label ${JSON.stringify(l)}`).join(' ')
-    console.log(`gh issue create --repo ${REPO} --title ${JSON.stringify(i.title)} ${labels} --body ${JSON.stringify(i.body)}`)
+    const labels = i.labels.map((l) => `--label ${shq(l)}`).join(' ')
+    console.log(`gh issue create --repo ${shq(REPO)} --title ${shq(i.title)} ${labels} --body ${shq(i.body)}`)
     console.log('sleep 2')
   }
 } else {
