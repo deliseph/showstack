@@ -10,6 +10,7 @@ import {
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
+  ohmsLaw, speakerImpedance, processingDelay,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -244,5 +245,73 @@ describe('RF wavelength', () => {
   test('rejects non-positive frequency', () => {
     assert.equal(rfWavelength(0), null)
     assert.equal(rfWavelength('x'), null)
+  })
+})
+
+describe("Ohm's law solver", () => {
+  test('volts and ohms give the rest: 120 V across 12 ohms', () => {
+    assert.deepEqual(ohmsLaw({ v: 120, r: 12 }), { volts: 120, amps: 10, ohms: 12, watts: 1200 })
+  })
+  test('watts and volts: a 1 kW load at 100 V draws 10 A', () => {
+    const r = ohmsLaw({ p: 1000, v: 100 })
+    assert.equal(r.amps, 10)
+    assert.equal(r.ohms, 10)
+  })
+  test('watts and ohms: 200 W into 8 ohms is 40 V, 5 A', () => {
+    const r = ohmsLaw({ r: 8, p: 200 })
+    assert.equal(r.volts, 40)
+    assert.equal(r.amps, 5)
+  })
+  test('needs exactly two knowns', () => {
+    assert.equal(ohmsLaw({ v: 120 }), null)
+    assert.equal(ohmsLaw({ v: 120, i: 1, r: 8 }), null)
+    assert.equal(ohmsLaw({}), null)
+  })
+  test('rejects non-physical values', () => {
+    assert.equal(ohmsLaw({ v: 120, r: 0 }), null)
+    assert.equal(ohmsLaw({ v: -1, r: 8 }), null)
+  })
+})
+
+describe('speaker impedance', () => {
+  test('two 8-ohm boxes in parallel are 4 ohms; four are 2', () => {
+    assert.equal(speakerImpedance([8, 8]).total, 4)
+    assert.equal(speakerImpedance([8, 8, 8, 8]).total, 2)
+  })
+  test('mixed parallel: 8 and 4 in parallel is 2.67', () => {
+    assert.equal(speakerImpedance([8, 4]).total, 2.67)
+  })
+  test('series adds: two 8-ohm drivers in series are 16', () => {
+    assert.equal(speakerImpedance([8, 8], 'series').total, 16)
+  })
+  test('parallel power share: the 4-ohm box takes twice the power of the 8', () => {
+    // Same voltage across both, P = V^2/Z, so shares go as 1/Z.
+    assert.deepEqual(speakerImpedance([8, 4], 'parallel', 300).share, [100, 200])
+  })
+  test('series power share follows impedance instead', () => {
+    // Same current through both, P = I^2 Z.
+    assert.deepEqual(speakerImpedance([8, 4], 'series', 300).share, [200, 100])
+  })
+  test('rejects empty lists, zero ohms and unknown wiring', () => {
+    assert.equal(speakerImpedance([]), null)
+    assert.equal(speakerImpedance([8, 0]), null)
+    assert.equal(speakerImpedance([8], 'star'), null)
+  })
+})
+
+describe('processing delay budget', () => {
+  test('stages sum and convert: 2 + 1.5 + 0.5 ms', () => {
+    const r = processingDelay([2, 1.5, 0.5])
+    assert.equal(r.totalMs, 4)
+    assert.equal(r.samples48k, 192)
+    assert.equal(r.samples96k, 384)
+    assert.ok(Math.abs(r.meters - 1.37) < 0.01)
+  })
+  test('10 ms of DSP is 3.43 m of arrival error at 20 C', () => {
+    assert.ok(Math.abs(processingDelay([10]).meters - 3.43) < 0.01)
+  })
+  test('rejects empty and negative stages', () => {
+    assert.equal(processingDelay([]), null)
+    assert.equal(processingDelay([1, -2]), null)
   })
 })
