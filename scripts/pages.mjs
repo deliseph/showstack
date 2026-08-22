@@ -17,6 +17,7 @@ import { join } from 'node:path'
 import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
 import { interopPage } from './interop.mjs'
 import { toolsPage } from './tools.mjs'
+import { networkPage } from './network.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -104,8 +105,8 @@ code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);padding:1
 function navBar(canonical) {
   const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
   const items = [
-    ['/', 'Search'], ['/tools/', 'Tools'], ['/interop/', 'Interop'],
-    ['/compare/', 'Compare'], ['/ports/', 'Ports'],
+    ['/', 'Search'], ['/tools/', 'Tools'], ['/network/', 'Network'],
+    ['/interop/', 'Interop'], ['/compare/', 'Compare'], ['/ports/', 'Ports'],
   ]
   const links = items.map(([href, label]) => {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
@@ -410,6 +411,10 @@ export function buildPages(db, dist) {
   // addressing, speaker delay, timecode. Same arithmetic the test suite runs.
   write('tools', toolsPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
+
+  // The converged-network planner: QoS queues, DSCP collisions, link fill.
+  write('network', networkPage({ esc, shell, jsonForScript, SITE, GH }))
+  urls.push(`${SITE}/network/`)
 
   // Port pages, plus an index of every port we know about.
   const byPort = new Map()

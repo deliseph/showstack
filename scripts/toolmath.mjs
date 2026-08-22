@@ -294,3 +294,43 @@ export function processingDelay(stagesMs) {
     feet: r2(total / 1000 * 343.4 * 3.28084),
   }
 }
+
+/**
+ * Mixed speaker wiring. Real cabinets are rarely all-parallel or all-series:
+ * the classic four-box rig is two series pairs paralleled. The notation here
+ * is how techs say it out loud: "+" wires boxes in series inside a group,
+ * "," (or "||") puts groups in parallel. So "8+8, 8+8" is two series pairs
+ * in parallel: 8 ohms total.
+ *
+ * Power maths: parallel groups share the amplifier voltage, so a group takes
+ * power in proportion to 1/Z_group; inside a series group one current flows,
+ * so each box takes its share in proportion to its own impedance.
+ */
+export function speakerNetwork(notation, ampWatts = null) {
+  const groups = String(notation ?? '')
+    .split(/,|\|\|/)
+    .map((g) => g.trim())
+    .filter(Boolean)
+    .map((g) => g.split('+').map((z) => Number(z.trim())))
+  if (!groups.length) return null
+  for (const zs of groups) {
+    if (!zs.length || !zs.every((z) => Number.isFinite(z) && z > 0)) return null
+  }
+  const r2 = (x) => Math.round(x * 100) / 100
+  const parsed = groups.map((zs) => ({ zs, z: zs.reduce((a, b) => a + b, 0) }))
+  const total = 1 / parsed.reduce((a, g) => a + 1 / g.z, 0)
+  const out = {
+    total: r2(total),
+    boxes: groups.reduce((n, g) => n + g.length, 0),
+    groups: parsed.map((g) => ({ zs: g.zs, z: r2(g.z) })),
+  }
+  const w = Number(ampWatts)
+  if (Number.isFinite(w) && w > 0) {
+    const sumInv = parsed.reduce((a, g) => a + 1 / g.z, 0)
+    out.groups = parsed.map((g) => {
+      const gw = w * (1 / g.z) / sumInv
+      return { zs: g.zs, z: r2(g.z), watts: r2(gw), perBox: g.zs.map((z) => r2(gw * z / g.z)) }
+    })
+  }
+  return out
+}

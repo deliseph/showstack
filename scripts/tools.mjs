@@ -20,7 +20,7 @@ import {
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
-  ohmsLaw, speakerImpedance, processingDelay,
+  ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -29,7 +29,7 @@ const MATH_SRC = [
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
-  ohmsLaw, speakerImpedance, processingDelay,
+  ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -191,13 +191,12 @@ background-image:radial-gradient(circle,var(--accent) 22%,transparent 26%);max-w
 <div class="tool" id="spkz">
   <h3>Speaker load</h3>
   <div class="row">
-    <div class="field"><label for="sz-list">Impedances Ω</label><input id="sz-list" type="text" value="8, 8" style="width:150px" spellcheck="false"></div>
-    <div class="field"><label for="sz-w">Wiring</label><select id="sz-w"><option value="parallel" selected>parallel</option><option value="series">series</option></select></div>
+    <div class="field"><label for="sz-list">Wiring (+ series, comma parallel)</label><input id="sz-list" type="text" value="8+8, 8+8" style="width:210px" spellcheck="false"></div>
     <div class="field"><label for="sz-amp">Amp watts (opt)</label><input id="sz-amp" type="number" min="1" inputmode="numeric" style="width:120px"></div>
   </div>
   <div class="out" id="sz-out" role="status" aria-live="polite"></div>
   <div class="viz" id="sz-viz" aria-hidden="true"></div>
-  <p class="note">Parallel halves with every matched box (two 8 Ω = 4 Ω, four = 2 Ω) and the lowest-impedance box takes the most power. Check the amplifier's minimum rated load before you land below 4 Ω, and remember 70/100 V line systems play by transformer-tap rules instead.</p>
+  <p class="note">Mixed wiring the way you would say it: <b>8+8, 8+8</b> is two series pairs in parallel (8 Ω total). "+" chains boxes in series, "," or "||" puts groups in parallel. With amp watts set it shows power per group and per box: in parallel the lower-impedance group takes more, inside a series chain the higher-impedance box takes more. Check the amplifier's minimum rated load before you land below 4 Ω; 70/100 V line systems play by transformer-tap rules instead.</p>
 </div>
 
 <div class="tool" id="latency">
@@ -424,47 +423,45 @@ for (const k of ohKeys) {
   });
 }
 
-// ---- Speaker load ----
+// ---- Speaker load (mixed series/parallel) ----
+function spkRender() {
+  const amp = $("#sz-amp").value;
+  const r = speakerNetwork($("#sz-list").value, amp === "" ? null : amp);
+  const el = $("#sz-viz");
+  if (!r) { $("#sz-out").innerHTML = '<span class="err">Write it like: 8+8, 8+8 (series pairs in parallel) or 8, 8, 4</span>'; el.innerHTML = ""; return; }
+  $("#sz-out").innerHTML = 'Total load <b>' + r.total + ' Ω</b> across ' + r.boxes +
+    (r.boxes === 1 ? ' box' : ' boxes') + ' in ' + r.groups.length + (r.groups.length === 1 ? ' group' : ' groups') +
+    (r.groups[0].watts !== undefined ? ' · per group: <b>' + r.groups.map(g => g.watts + ' W').join(" / ") + '</b>' : '') +
+    (r.total < 4 ? ' <span class="err">below 4 Ω — check the amp rating</span>' : '');
+  // Picture: each parallel group is a series chain hanging between the rails.
+  const n = Math.min(r.groups.length, 5), W = 320, maxLen = Math.max.apply(null, r.groups.map(g => g.zs.length));
+  const H = 34 + Math.min(maxLen, 4) * 30 + 14;
+  const colW = (W - 40) / n;
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">' +
+    '<line x1="10" y1="12" x2="' + (W - 10) + '" y2="12" stroke="var(--dim)" stroke-width="1.5"/>' +
+    '<line x1="10" y1="' + (H - 10) + '" x2="' + (W - 10) + '" y2="' + (H - 10) + '" stroke="var(--dim)" stroke-width="1.5"/>';
+  for (let k = 0; k < n; k++) {
+    const cx = 20 + colW * k + colW / 2;
+    const g = r.groups[k];
+    const m = Math.min(g.zs.length, 4);
+    const step = (H - 46) / m;
+    svg += '<line x1="' + cx + '" y1="12" x2="' + cx + '" y2="' + (H - 10) + '" stroke="var(--dim)"/>';
+    for (let j = 0; j < m; j++) {
+      const y = 22 + j * step;
+      const label = g.zs[j] + 'Ω' + (g.perBox && m === g.zs.length ? ' ' + g.perBox[j] + 'W' : '');
+      svg += '<rect x="' + (cx - 27) + '" y="' + y + '" width="54" height="' + Math.min(24, step - 4) + '" rx="4" fill="var(--panel)" stroke="var(--accent)"/>' +
+        '<text x="' + cx + '" y="' + (y + Math.min(24, step - 4) / 2 + 4) + '" text-anchor="middle" fill="var(--ink)" font-size="10" font-family="monospace">' + label + '</text>';
+    }
+    if (g.zs.length > 4) svg += '<text x="' + cx + '" y="' + (H - 14) + '" text-anchor="middle" fill="var(--dimmer)" font-size="9" font-family="monospace">+' + (g.zs.length - 4) + '</text>';
+  }
+  if (r.groups.length > 5) svg += '<text x="' + (W - 12) + '" y="' + (H - 14) + '" text-anchor="end" fill="var(--dimmer)" font-size="10" font-family="monospace">+' + (r.groups.length - 5) + ' groups</text>';
+  el.innerHTML = svg + '</svg>';
+}
+for (const id of ["sz-list", "sz-amp"]) $("#" + id).addEventListener("input", spkRender);
+
 function parseList(s) {
   return String(s).split(/[\s,]+/).filter(Boolean).map(Number);
 }
-function spkRender() {
-  const zs = parseList($("#sz-list").value);
-  const wiring = $("#sz-w").value;
-  const amp = $("#sz-amp").value;
-  const r = speakerImpedance(zs, wiring, amp === "" ? null : amp);
-  const el = $("#sz-viz");
-  if (!r) { $("#sz-out").innerHTML = '<span class="err">List impedances like: 8, 8, 4</span>'; el.innerHTML = ""; return; }
-  $("#sz-out").innerHTML = 'Total load <b>' + r.total + ' Ω</b> across ' + r.count +
-    (r.count === 1 ? ' box' : ' boxes') +
-    (r.share ? ' · power per box: <b>' + r.share.join(" / ") + ' W</b>' : '') +
-    (r.total < 4 ? ' <span class="err">below 4 Ω — check the amp rating</span>' : '');
-  // Wiring picture: parallel drops from two rails, or a series chain.
-  const n = Math.min(zs.length, 6), W = 320, H = 84, bw = 34, gap = (W - 40 - n * bw) / Math.max(1, n - 1 || 1);
-  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">';
-  if (wiring === "parallel") {
-    s += '<line x1="10" y1="14" x2="' + (W - 10) + '" y2="14" stroke="var(--dim)" stroke-width="1.5"/>' +
-         '<line x1="10" y1="' + (H - 14) + '" x2="' + (W - 10) + '" y2="' + (H - 14) + '" stroke="var(--dim)" stroke-width="1.5"/>';
-    for (let k = 0; k < n; k++) {
-      const x = 20 + k * (bw + (n > 1 ? gap : 0));
-      s += '<line x1="' + (x + bw / 2) + '" y1="14" x2="' + (x + bw / 2) + '" y2="30" stroke="var(--dim)"/>' +
-           '<line x1="' + (x + bw / 2) + '" y1="' + (H - 30) + '" x2="' + (x + bw / 2) + '" y2="' + (H - 14) + '" stroke="var(--dim)"/>' +
-           '<rect x="' + x + '" y="30" width="' + bw + '" height="' + (H - 60) + '" rx="4" fill="var(--panel)" stroke="var(--accent)"/>' +
-           '<text x="' + (x + bw / 2) + '" y="' + (H / 2 + 4) + '" text-anchor="middle" fill="var(--ink)" font-size="11" font-family="monospace">' + zs[k] + 'Ω</text>';
-    }
-  } else {
-    const y = H / 2;
-    s += '<line x1="10" y1="' + y + '" x2="' + (W - 10) + '" y2="' + y + '" stroke="var(--dim)" stroke-width="1.5"/>';
-    for (let k = 0; k < n; k++) {
-      const x = 20 + k * (bw + (n > 1 ? gap : 0));
-      s += '<rect x="' + x + '" y="' + (y - 13) + '" width="' + bw + '" height="26" rx="4" fill="var(--panel)" stroke="var(--accent)"/>' +
-           '<text x="' + (x + bw / 2) + '" y="' + (y + 4) + '" text-anchor="middle" fill="var(--ink)" font-size="11" font-family="monospace">' + zs[k] + 'Ω</text>';
-    }
-  }
-  if (zs.length > 6) s += '<text x="' + (W - 12) + '" y="' + (H - 4) + '" text-anchor="end" fill="var(--dimmer)" font-size="10" font-family="monospace">+' + (zs.length - 6) + ' more</text>';
-  el.innerHTML = s + '</svg>';
-}
-for (const id of ["sz-list", "sz-w", "sz-amp"]) $("#" + id).addEventListener("input", spkRender);
 
 // ---- Latency budget ----
 function latRender() {
