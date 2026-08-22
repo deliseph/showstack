@@ -21,7 +21,7 @@ import {
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
-  throwRatio, screenLuminance, relayLogic,
+  throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -31,10 +31,10 @@ const MATH_SRC = [
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
-  throwRatio, screenLuminance, relayLogic,
+  throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
 ].map((f) => f.toString()).join('\n\n')
 
-export function toolsPage({ esc, shell, SITE, GH, graphJSON }) {
+export function toolsPage({ esc, shell, SITE, GH }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -61,9 +61,19 @@ bottom:4px;transition:all .12s}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
 .note a{color:var(--accent)}
 label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(--dim);margin-top:8px}
-.toolgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start}
-.toolgrid .tool{margin-bottom:0}
-.tool.wide{grid-column:1/-1}
+/* True masonry, not a uniform-row grid: CSS grid sizes every row to its
+   tallest card, so a short calculator next to a tall one leaves dead space
+   underneath it. Multi-column flow instead packs each card into whichever
+   column is shortest so far, using the card's own height — no row to be
+   uneven. .tool.wide breaks the columns for the handful of cards (timecode,
+   relay logic, the audio-unit reference) that need the full measure. */
+.toolgroup{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+color:var(--dimmer);margin:0 0 10px;column-span:all}
+.toolgroup:not(:first-child){margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.toolgrid{columns:2;column-gap:18px}
+.toolgrid .tool{break-inside:avoid;margin:0 0 18px}
+.tool.wide{column-span:all}
+@media(max-width:720px){.toolgrid{columns:1}}
 .viz{margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;overflow:hidden}
 .viz svg{display:block;width:100%;height:auto}
 .meter{position:relative;height:34px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;margin-top:10px;overflow:hidden}
@@ -86,6 +96,7 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
 
 <div class="toolgrid">
+<div class="toolgroup">Addressing &amp; show control</div>
 <div class="tool" id="dmx">
   <h3>DMX address</h3>
   <div class="row">
@@ -108,17 +119,6 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
   <p class="note">Most fixtures read the switches as plain binary of the address: switch 1 is value 1, switch 9 is value 256, so address 1 = switch 1 ON. Some older gear encodes address − 1 (address 1 = all OFF) — check the fixture manual before trusting either. Click switches to go the other way.</p>
 </div>
 
-<div class="tool" id="delay">
-  <h3>Speaker delay</h3>
-  <div class="row">
-    <div class="field"><label for="del-d">Distance</label><input id="del-d" type="number" min="0" step="0.1" value="10" inputmode="decimal"></div>
-    <div class="field"><label for="del-unit">Unit</label><select id="del-unit"><option value="m">metres</option><option value="ft">feet</option></select></div>
-    <div class="field"><label for="del-t">Air temp °C</label><input id="del-t" type="number" value="20" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="del-out" role="status" aria-live="polite"></div>
-  <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
-</div>
-
 <div class="tool wide" id="tc">
   <h3>Timecode</h3>
   <div class="row">
@@ -136,21 +136,71 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
   <p class="note">Drop-frame skips frame labels 00 and 01 at the start of every minute except each tenth minute — labels, not time. Entering a label that does not exist (say 00:01:00;00 in DF) is reported as such rather than silently rounded. See <a href="/protocols/ltc/">LTC</a> and <a href="/protocols/mtc/">MTC</a>.</p>
 </div>
 
-<div class="tool" id="power">
-  <h3>Power load</h3>
+<div class="tool wide" id="relay">
+  <h3>Relay logic matrix</h3>
   <div class="row">
-    <div class="field"><label for="pw-w">Total watts</label><input id="pw-w" type="number" min="0" value="10000" inputmode="numeric" style="width:130px"></div>
-    <div class="field"><label for="pw-v">Volts</label><select id="pw-v">
-      <option value="120">120</option><option value="208" selected>208</option><option value="230">230</option><option value="240">240</option><option value="400">400</option>
-    </select></div>
-    <div class="field"><label for="pw-ph">Phase</label><select id="pw-ph"><option value="1">single</option><option value="3" selected>three</option></select></div>
-    <div class="field"><label for="pw-pf">Power factor</label><input id="pw-pf" type="number" min="0.1" max="1" step="0.05" value="1" inputmode="decimal"></div>
+    <div class="field"><label for="rl-rules">Rules (one per line: OUT = expr)</label><textarea id="rl-rules" spellcheck="false">MAIN = GO &amp; !ESTOP
+HORN = GO &amp; (A | B)</textarea></div>
   </div>
-  <div class="out" id="pw-out" role="status" aria-live="polite"></div>
-  <div class="meter" id="pw-meter" aria-hidden="true"></div>
-  <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
+  <div class="out" id="rl-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap" id="rl-table"></div>
+  <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
 </div>
 
+<div class="toolgroup">Audio</div>
+<div class="tool" id="delay">
+  <h3>Speaker delay</h3>
+  <div class="row">
+    <div class="field"><label for="del-d">Distance</label><input id="del-d" type="number" min="0" step="0.1" value="10" inputmode="decimal"></div>
+    <div class="field"><label for="del-unit">Unit</label><select id="del-unit"><option value="m">metres</option><option value="ft">feet</option></select></div>
+    <div class="field"><label for="del-t">Air temp °C</label><input id="del-t" type="number" value="20" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="del-out" role="status" aria-live="polite"></div>
+  <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
+</div>
+
+<div class="tool" id="latency">
+  <h3>Latency budget</h3>
+  <div class="row">
+    <div class="field"><label for="lt-list">Stage delays ms</label><input id="lt-list" type="text" value="0.9, 2.1, 1.5" style="width:200px" spellcheck="false"></div>
+  </div>
+  <div class="out" id="lt-out" role="status" aria-live="polite"></div>
+  <div class="viz" id="lt-viz" aria-hidden="true"></div>
+  <p class="note">List every hop in the chain: console, plugin, system processor, amp DSP. The total is what your time alignment has to absorb, shown as the distance sound covers in that time at 20 °C. Pair it with the speaker delay tool when you align delays to the main PA.</p>
+</div>
+
+<div class="tool" id="spkz">
+  <h3>Speaker load</h3>
+  <div class="row">
+    <div class="field"><label for="sz-list">Wiring (+ series, comma parallel)</label><input id="sz-list" type="text" value="8+8, 8+8" style="width:210px" spellcheck="false"></div>
+    <div class="field"><label for="sz-amp">Amp watts (opt)</label><input id="sz-amp" type="number" min="1" inputmode="numeric" style="width:120px"></div>
+  </div>
+  <div class="out" id="sz-out" role="status" aria-live="polite"></div>
+  <div class="viz" id="sz-viz" aria-hidden="true"></div>
+  <p class="note">Mixed wiring the way you would say it: <b>8+8, 8+8</b> is two series pairs in parallel (8 Ω total). "+" chains boxes in series, "," or "||" puts groups in parallel. With amp watts set it shows power per group and per box: in parallel the lower-impedance group takes more, inside a series chain the higher-impedance box takes more. Check the amplifier's minimum rated load before you land below 4 Ω; 70/100 V line systems play by transformer-tap rules instead.</p>
+</div>
+
+<div class="tool wide" id="audiounits">
+  <h3>Audio levels &amp; impedance</h3>
+  <div class="row">
+    <div class="field"><label for="db-u">dBu</label><input id="db-u" type="number" step="0.1" value="4" inputmode="decimal"></div>
+    <div class="field"><label for="db-v">dBV</label><input id="db-v" type="number" step="0.1" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="db-out" role="status" aria-live="polite"></div>
+  <p class="note">dBu and dBV are both line-level <em>voltage</em> references, fixed 2.21 dB apart at any level — 0 dBu = 0.775 V RMS (the "unloaded" successor to 600 Ω-referenced dBm), 0 dBV = 1 V RMS. Pro gear nominally runs +4 dBu; consumer/semi-pro gear −10 dBV — an 11.8 dB gap, the reason a "line level" cable between the two clips or hisses until you pad or gain-stage it.</p>
+  <table style="margin-top:14px">
+    <tr><th>Unit</th><th>Reference</th><th>Measures</th></tr>
+    <tr><td><b>dB SPL</b></td><td>20 µPa (threshold of hearing)</td><td>Sound pressure in air — what a bare SPL meter reads before any weighting is applied.</td></tr>
+    <tr><td><b>dB(A)</b></td><td>SPL, A-weighted</td><td>Rolls off bass steeply to approximate ear sensitivity at moderate levels. Standard for noise-exposure limits and most SPL-meter defaults — under-represents low end.</td></tr>
+    <tr><td><b>dB(Z)</b></td><td>SPL, unweighted</td><td>Flat 10 Hz–20 kHz ±1.5 dB per IEC 61672-1 ("Z" = zero weighting). The true acoustic level, used where the low end matters: sub alignment, cinema and room calibration.</td></tr>
+    <tr><td><b>dBu</b></td><td>0.775 V RMS</td><td>Line-level signal voltage, independent of load impedance — the professional-gear standard.</td></tr>
+    <tr><td><b>dBV</b></td><td>1 V RMS</td><td>Line-level signal voltage on the simpler round-number reference — consumer and semi-pro gear.</td></tr>
+  </table>
+  <p class="note">SPL and dBu/dBV are not the same kind of measurement and do not convert into each other: one is acoustic pressure in air, the other is electrical voltage in a cable. A mixer's output meter reading "0 dBu" says nothing about how loud the room is.</p>
+  <p class="note">Ohms (Ω) also names two different things on this page. <b>Resistance</b> — the Ohm's law tool below, a lamp or heater element — opposes current the same way at any frequency, all of it dissipated as heat. <b>Impedance</b> — the Speaker load tool above — is resistance's AC generalisation, Z = R + jX: a reactance X from the driver's voice coil and crossover that shifts with frequency. A loudspeaker's "8 Ω" is a nominal average, not a fixed value — the real number can swing from under 5 Ω to well over 40 Ω near cone resonance. That is why the speaker load arithmetic above is exact for a stated nominal figure, while Ohm's law's resistive-only assumption is indicative, not exact, once it is pointed at a driver instead of a lamp.</p>
+</div>
+
+<div class="toolgroup">Lighting &amp; video</div>
 <div class="tool" id="beam">
   <h3>Beam &amp; throw</h3>
   <div class="row">
@@ -173,48 +223,6 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
   <div class="out" id="lw-out" role="status" aria-live="polite"></div>
   <div class="ledprev" id="lw-prev" aria-hidden="true"></div>
   <p class="note">Resolution = size ÷ pitch. The minimum comfortable viewing distance shown is the common rule of thumb (1 m per 1 mm of pitch), not a spec — content, brightness and camera use all move it.</p>
-</div>
-
-<div class="tool" id="rf">
-  <h3>RF wavelength</h3>
-  <div class="row">
-    <div class="field"><label for="rf-f">Frequency MHz</label><input id="rf-f" type="number" min="1" step="0.025" value="600" inputmode="decimal" style="width:130px"></div>
-  </div>
-  <div class="out" id="rf-out" role="status" aria-live="polite"></div>
-  <p class="note">λ = c ÷ f. Antenna lengths include the standard ~5% end-effect shortening (the 468/f rule). Handy for wireless mic and IEM antenna placement: keep transmit and receive antennas at least a wavelength apart where you can.</p>
-</div>
-
-<div class="tool" id="ohm">
-  <h3>Ohm's law</h3>
-  <div class="row">
-    <div class="field"><label for="oh-v">Volts</label><input id="oh-v" type="number" min="0" step="0.1" inputmode="decimal"></div>
-    <div class="field"><label for="oh-i">Amps</label><input id="oh-i" type="number" min="0" step="0.1" inputmode="decimal"></div>
-    <div class="field"><label for="oh-r">Ohms</label><input id="oh-r" type="number" min="0.01" step="0.1" inputmode="decimal"></div>
-    <div class="field"><label for="oh-p">Watts</label><input id="oh-p" type="number" min="0" step="1" inputmode="decimal"></div>
-  </div>
-  <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
-  <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
-</div>
-
-<div class="tool" id="spkz">
-  <h3>Speaker load</h3>
-  <div class="row">
-    <div class="field"><label for="sz-list">Wiring (+ series, comma parallel)</label><input id="sz-list" type="text" value="8+8, 8+8" style="width:210px" spellcheck="false"></div>
-    <div class="field"><label for="sz-amp">Amp watts (opt)</label><input id="sz-amp" type="number" min="1" inputmode="numeric" style="width:120px"></div>
-  </div>
-  <div class="out" id="sz-out" role="status" aria-live="polite"></div>
-  <div class="viz" id="sz-viz" aria-hidden="true"></div>
-  <p class="note">Mixed wiring the way you would say it: <b>8+8, 8+8</b> is two series pairs in parallel (8 Ω total). "+" chains boxes in series, "," or "||" puts groups in parallel. With amp watts set it shows power per group and per box: in parallel the lower-impedance group takes more, inside a series chain the higher-impedance box takes more. Check the amplifier's minimum rated load before you land below 4 Ω; 70/100 V line systems play by transformer-tap rules instead.</p>
-</div>
-
-<div class="tool" id="latency">
-  <h3>Latency budget</h3>
-  <div class="row">
-    <div class="field"><label for="lt-list">Stage delays ms</label><input id="lt-list" type="text" value="0.9, 2.1, 1.5" style="width:200px" spellcheck="false"></div>
-  </div>
-  <div class="out" id="lt-out" role="status" aria-live="polite"></div>
-  <div class="viz" id="lt-viz" aria-hidden="true"></div>
-  <p class="note">List every hop in the chain: console, plugin, system processor, amp DSP. The total is what your time alignment has to absorb, shown as the distance sound covers in that time at 20 °C. Pair it with the speaker delay tool when you align delays to the main PA.</p>
 </div>
 
 <div class="tool" id="throw">
@@ -240,15 +248,42 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
   <p class="note">Incident light is lux = lumens ÷ area. What the audience sees is luminance: fL = lumens × gain ÷ area in ft², and 1 fL = 3.4263 cd/m² (nits). <a href="https://www.dcimovies.com/specification/" rel="noopener nofollow">DCI cinema reference</a> is 48 cd/m² (14 fL) in the dark; ambient light on the screen is the number that actually kills contrast. Gain redirects light toward the axis rather than creating it, so high gain trades viewing angle.</p>
 </div>
 
-<div class="tool wide" id="relay">
-  <h3>Relay logic matrix</h3>
+<div class="toolgroup">Power &amp; electrical</div>
+<div class="tool" id="power">
+  <h3>Power load</h3>
   <div class="row">
-    <div class="field"><label for="rl-rules">Rules (one per line: OUT = expr)</label><textarea id="rl-rules" spellcheck="false">MAIN = GO &amp; !ESTOP
-HORN = GO &amp; (A | B)</textarea></div>
+    <div class="field"><label for="pw-w">Total watts</label><input id="pw-w" type="number" min="0" value="10000" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="pw-v">Volts</label><select id="pw-v">
+      <option value="120">120</option><option value="208" selected>208</option><option value="230">230</option><option value="240">240</option><option value="400">400</option>
+    </select></div>
+    <div class="field"><label for="pw-ph">Phase</label><select id="pw-ph"><option value="1">single</option><option value="3" selected>three</option></select></div>
+    <div class="field"><label for="pw-pf">Power factor</label><input id="pw-pf" type="number" min="0.1" max="1" step="0.05" value="1" inputmode="decimal"></div>
   </div>
-  <div class="out" id="rl-out" role="status" aria-live="polite"></div>
-  <div class="ttwrap" id="rl-table"></div>
-  <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
+  <div class="out" id="pw-out" role="status" aria-live="polite"></div>
+  <div class="meter" id="pw-meter" aria-hidden="true"></div>
+  <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
+</div>
+
+<div class="tool" id="ohm">
+  <h3>Ohm's law</h3>
+  <div class="row">
+    <div class="field"><label for="oh-v">Volts</label><input id="oh-v" type="number" min="0" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-i">Amps</label><input id="oh-i" type="number" min="0" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-r">Ohms</label><input id="oh-r" type="number" min="0.01" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-p">Watts</label><input id="oh-p" type="number" min="0" step="1" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
+  <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
+</div>
+
+<div class="toolgroup">RF</div>
+<div class="tool" id="rf">
+  <h3>RF wavelength</h3>
+  <div class="row">
+    <div class="field"><label for="rf-f">Frequency MHz</label><input id="rf-f" type="number" min="1" step="0.025" value="600" inputmode="decimal" style="width:130px"></div>
+  </div>
+  <div class="out" id="rf-out" role="status" aria-live="polite"></div>
+  <p class="note">λ = c ÷ f. Antenna lengths include the standard ~5% end-effect shortening (the 468/f rule). Handy for wireless mic and IEM antenna placement: keep transmit and receive antennas at least a wavelength apart where you can.</p>
 </div>
 
 </div>
@@ -465,6 +500,21 @@ for (const k of ohKeys) {
   });
 }
 
+// ---- dBu / dBV ----
+function dbuvRender(from) {
+  if (from === "dbv") {
+    const u = dbvToDbu($("#db-v").value);
+    if (u !== null) { $("#db-u").value = u; $("#db-out").innerHTML = '<b>' + u + ' dBu</b> · <b>' + $("#db-v").value + ' dBV</b>'; }
+    else { $("#db-out").innerHTML = '<span class="err">Enter a number.</span>'; }
+  } else {
+    const v = dbuToDbv($("#db-u").value);
+    if (v !== null) { $("#db-v").value = v; $("#db-out").innerHTML = '<b>' + $("#db-u").value + ' dBu</b> · <b>' + v + ' dBV</b>'; }
+    else { $("#db-out").innerHTML = '<span class="err">Enter a number.</span>'; }
+  }
+}
+$("#db-u").addEventListener("input", () => dbuvRender("dbu"));
+$("#db-v").addEventListener("input", () => dbuvRender("dbv"));
+
 // ---- Speaker load (mixed series/parallel) ----
 function spkRender() {
   const amp = $("#sz-amp").value;
@@ -586,6 +636,7 @@ $("#rl-rules").addEventListener("input", relayRender);
 
 dmxRender(false);
 dipRenderFromAddress();
+dbuvRender("dbu");
 delayRender();
 tcRenderFromFields();
 powerRender();
@@ -604,8 +655,8 @@ relayRender();
 `
 
   return shell({
-    title: 'Field tools — DMX, delay, timecode, power, projection and speaker calculators | showstack',
-    description: 'The calculators technicians use daily: DMX address, DIP switches, speaker delay and mixed impedance, timecode, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, relay logic, RF wavelength. Free, offline, tested arithmetic.',
+    title: 'Field tools — DMX, delay, timecode, power, audio levels and speaker calculators | showstack',
+    description: 'The calculators technicians use daily: DMX address, DIP switches, speaker delay and mixed impedance, timecode, relay logic, dBu/dBV and SPL weighting reference, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, RF wavelength. Free, offline, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
       '@context': 'https://schema.org',
@@ -617,11 +668,10 @@ relayRender();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, relay logic truth table, RF wavelength calculator',
+      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, relay logic truth table, dBu/dBV line-level converter, SPL weighting (dBA/dBZ) reference, impedance vs resistance reference, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, RF wavelength calculator',
     },
     body,
     extraStyle: style,
     extraScript: script,
-    heroGraph: graphJSON,
   })
 }

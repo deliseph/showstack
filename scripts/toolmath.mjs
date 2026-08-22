@@ -228,6 +228,25 @@ export function framesToTc(frames, rate) {
 }
 
 /**
+ * dBu <-> dBV: the two voltage-reference scales used for line-level audio.
+ * 0 dBu = 0.775 V RMS (the "unloaded" successor to 600-ohm-referenced dBm —
+ * a voltage ratio only, no load impedance implied). 0 dBV = 1 V RMS, the
+ * simpler round-number reference common on consumer/semi-pro gear. The
+ * offset between them is fixed and independent of level: 20*log10(1/0.775).
+ */
+export function dbuToDbv(dbu) {
+  const n = Number(dbu)
+  if (!Number.isFinite(n)) return null
+  return Math.round((n - 2.21309) * 100) / 100
+}
+
+export function dbvToDbu(dbv) {
+  const n = Number(dbv)
+  if (!Number.isFinite(n)) return null
+  return Math.round((n + 2.21309) * 100) / 100
+}
+
+/**
  * Ohm's law / power solver: give any two of volts, amps, ohms, watts and the
  * other two follow (DC or resistive AC, which is the field-normal use).
  * Returns null unless exactly two values are provided.

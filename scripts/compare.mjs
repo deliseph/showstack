@@ -156,7 +156,7 @@ export function comparisonPage(a, b, ask, { esc, trunc, shell, SITE, GH, product
 }
 
 /** Index page listing every comparison, so they are crawlable from one place. */
-export function comparisonIndex(pairs, { esc, shell, SITE, graphJSON }) {
+export function comparisonIndex(pairs, { esc, shell, SITE }) {
   const rows = pairs.map(([a, b, ask]) =>
     `<tr><td><strong><a href="/compare/${esc(a.id)}-vs-${esc(b.id)}/">${esc(a.name)} vs ${esc(b.name)}</a></strong></td>
      <td>${esc(ask)}</td></tr>`).join('')
@@ -171,6 +171,5 @@ export function comparisonIndex(pairs, { esc, shell, SITE, graphJSON }) {
       <table><tr><th>Comparison</th><th>The question behind it</th></tr>${rows}</table>
       <div class="cta"><strong>A comparison you keep having to explain?</strong>
       <p>Open an issue naming the two, and it becomes a page.</p></div>`,
-    heroGraph: graphJSON,
   })
 }
