@@ -1,0 +1,27 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: front-fill
+en: Front fill
+zh_hant: 前區補聲
+domain: audio
+definition_en: Small loudspeakers along the stage edge covering the first rows,
+  which sit under the main PA's coverage. Time-aligned to the mains so the image
+  stays on stage rather than at the nearest box.
+definition_zh_hant: 舞台邊沿的小喇叭，補主 PA 蓋不到的前幾行觀眾，同主系統做時間對齊，聲像先會留喺台上。
+see_also:
+- delay-tower
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- pa
+- system-design
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

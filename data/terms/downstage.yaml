@@ -1,0 +1,26 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: downstage
+en: Downstage
+zh_hant: 下舞台（舞台前方）
+domain: general
+definition_en: 'The part of the stage nearest the audience: downhill on a historical
+  raked stage. Cross downstage and you get closer to the house.'
+definition_zh_hant: 舞台上最接近觀眾的區域，斜舞台的「下坡」方向。
+see_also:
+- upstage
+- rake
+safety_critical: false
+confidence: reported
+tags:
+- stage-directions
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

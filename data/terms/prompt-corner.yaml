@@ -1,0 +1,33 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: prompt-corner
+en: Prompt corner
+zh_hant: 提場角
+domain: stage-management
+definition_en: 'The stage-management position at the side of the stage from which
+  the show is called: cue lights, comms, the book. Traditionally stage left in the
+  UK (prompt side, PS) with the opposite side called OP (opposite prompt).'
+definition_zh_hant: 舞台側面叫show嘅位置：cue燈、通話、劇本。英制傳統喺演員左側（Prompt Side, PS），對面叫 OP。
+regional_variants:
+- region: UK
+  term: Prompt side / PS and OP
+- region: US
+  term: Calling position (often booth instead)
+see_also:
+- deputy-stage-manager
+- call
+safety_critical: false
+confidence: reported
+tags:
+- stage-management
+- venue
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

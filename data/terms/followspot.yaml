@@ -1,0 +1,35 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: followspot
+en: Followspot
+zh_hant: 追光燈
+domain: lighting
+definition_en: 'A manually operated spotlight that follows a performer, run by an
+  operator on cue: iris, douser, colour boomerang and all. Modern remote-followspot
+  systems move the operator off the truss and onto a camera-based console.'
+definition_zh_hant: 由操作員手動追住表演者嘅聚光燈，聽 cue 做 iris、douser、換色。新式遙控追光將操作員由天橋移到鏡頭操作台。
+regional_variants:
+- region: UK (older)
+  term: Limes
+  note: 歷史上用石灰光，行內口語仍然講。
+see_also:
+- focus
+safety_critical: false
+confidence: reported
+tags:
+- lighting
+- operators
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Followspot operator
+  url: https://en.wikipedia.org/wiki/Followspot_operator
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

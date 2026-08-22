@@ -1,0 +1,29 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: crossover
+en: Crossover
+zh_hant: 後台橫通道
+domain: general
+definition_en: 'The route performers and crew use to get from one side of the stage
+  to the other unseen: behind the cyc, under the stage, or a corridor. Show traffic
+  is planned around it, and blocking it with cases is a classic get-in mistake.'
+definition_zh_hant: 演員同工作人員睇唔到咁由台左去台右嘅路線：天幕後、台底或走廊。用 flight case 塞住佢係裝台常見錯誤。
+false_friends:
+- In audio a crossover is the filter network that splits a signal into frequency
+  bands for different drivers. Same word on the same site every day, disambiguated
+  only by which department is talking.
+safety_critical: false
+confidence: reported
+tags:
+- backstage
+- venue
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,28 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: paper-tech
+en: Paper tech
+zh_hant: 紙上技術會議
+domain: stage-management
+definition_en: 'A meeting before technical rehearsals where stage management and
+  department heads walk the whole cue list on paper: numbers, placement, who takes
+  what on which line, with no stage time burned.'
+definition_zh_hant: 進劇場前把整份 cue 表在紙上走一次的會議：cue 號、位置、邊個部門食邊句對白，唔使用舞台時間。
+see_also:
+- cue-to-cue
+- plot
+safety_critical: false
+confidence: reported
+tags:
+- stage-management
+- rehearsal
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

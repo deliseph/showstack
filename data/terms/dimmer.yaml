@@ -1,0 +1,32 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: dimmer
+en: Dimmer
+zh_hant: 調光器
+domain: lighting
+definition_en: The device that varies power to a lighting load. A generation ago
+  every stage light lived on a dimmer channel; now most fixtures dim themselves
+  and dimmers survive for tungsten, practicals and houselights, with "hot power"
+  (constant circuits) doing the rest.
+definition_zh_hant: 控制燈具電力的設備。以前每盞燈都行 dimmer channel；而家大部分燈自己調光，dimmer 留返俾鎢絲燈、道具燈同觀眾席燈，其餘行常火。
+see_also:
+- patch
+safety_critical: false
+confidence: reported
+tags:
+- lighting
+- power
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Dimmer
+  url: https://en.wikipedia.org/wiki/Dimmer
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

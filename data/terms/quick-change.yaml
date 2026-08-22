@@ -1,0 +1,27 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: quick-change
+en: Quick change
+zh_hant: 快速換裝
+domain: wardrobe
+definition_en: 'A costume change too fast for the dressing room, done in a prepared
+  booth or wing position with a dresser: garments pre-set in order, fastenings converted
+  to magnets or velcro, choreographed to the second.'
+definition_zh_hant: 快到返唔切化妝間嘅換裝，喺側台預設嘅快換區由 dresser 協助完成：衫按次序擺好、鈕扣改磁石或魔術貼，逐秒編排。
+see_also:
+- wings
+safety_critical: false
+confidence: reported
+tags:
+- wardrobe
+- backstage
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

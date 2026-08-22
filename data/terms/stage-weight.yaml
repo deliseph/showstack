@@ -1,0 +1,27 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: stage-weight
+en: Stage weight / brace weight
+zh_hant: 舞台鐵（壓重）
+domain: scenic
+definition_en: The cast-iron slabs that anchor scenery braces, booms and free-standing
+  elements. Counted in the ground plan, moved by hand, and the difference between
+  a braced flat and a falling one.
+definition_zh_hant: 壓住景片斜撐、燈架同企位裝置嘅鑄鐵塊。圖上要數，人手搬，係景片企得穩唔穩嘅分別。
+see_also:
+- counterweight
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- rigging
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

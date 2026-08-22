@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: counterweight
+en: Counterweight
+zh_hant: 配重
+domain: rigging
+definition_en: The steel weights in a fly system arbor that balance what hangs on
+  the bar. Loading them to match the load, in the right order, from the loading
+  gallery, is one of the most safety-critical routines in a theatre.
+definition_zh_hant: 吊桿系統配重架內的鐵，用來平衡桿上掛的東西。上重與落重的次序同崗位是劇場最講安全的例行工作之一。
+safety_critical: true
+confidence: reported
+false_friends:
+- 'An out-of-weight bar is a stored accident: a runaway arbor moves fast enough
+  to kill. If the weight state of a bar is unknown, nobody unclamps anything until
+  it is known.'
+see_also:
+- fly
+- batten
+tags:
+- rigging
+- flying
+- safety
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Fly system
+  url: https://en.wikipedia.org/wiki/Fly_system
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

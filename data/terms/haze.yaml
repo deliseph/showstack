@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: haze
+en: Haze
+zh_hant: 薄霧
+domain: general
+definition_en: A fine, even atmospheric suspension that makes light beams visible
+  without reading as smoke. Distinct from fog (a visible cloud) and low fog (which
+  hugs the floor); the fluid chemistry and exposure rules live in ANSI E1.5 and
+  E1.23.
+definition_zh_hant: 令光束現形而唔似煙嘅均勻懸浮微粒。同 fog（成團嘅煙）同低煙（貼地）唔同。使用同暴露規範見 ANSI E1.5 / E1.23。
+false_friends:
+- 'Haze triggers ionisation smoke detectors: venues isolate specific zones for the
+  effect through a permit process, and un-isolated haze is how a show meets the
+  fire brigade mid-number.'
+see_also:
+- blackout
+safety_critical: false
+confidence: reported
+tags:
+- atmospherics
+- effects
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Theatrical smoke and fog
+  url: https://en.wikipedia.org/wiki/Theatrical_smoke_and_fog
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: monitor-wedge
+en: Monitor wedge
+zh_hant: 地面監聽（wedge）
+domain: audio
+definition_en: The angled floor loudspeaker pointed at a performer so they hear
+  themselves. Each mix a monitor engineer runs is a different answer to "what do
+  YOU need to hear"; wedges trade against in-ear monitors, which take the stage
+  volume war away but isolate the performer.
+definition_zh_hant: 斜放喺台面向表演者嘅監聽喇叭。每個 mix 係一位表演者「想聽到咩」嘅答案；同 IEM 互為取捨。
+regional_variants:
+- region: HK
+  term: monitor / 監聽
+  note: 口語直接叫 wedge。
+see_also:
+- soundcheck
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- monitors
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Stage monitor system
+  url: https://en.wikipedia.org/wiki/Stage_monitor_system
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

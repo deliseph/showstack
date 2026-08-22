@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: cue-to-cue
+en: Cue-to-cue
+zh_hant: 技術排練（跳cue）
+domain: stage-management
+definition_en: A technical rehearsal that jumps from one cue moment to the next,
+  skipping the scenes between, so the technical departments rehearse every transition
+  without playing the whole show.
+definition_zh_hant: 只排技術點的排練：由一個 cue 跳到下一個 cue，中間戲跳過，讓技術部門把所有轉接位走一次。
+regional_variants:
+- region: US
+  term: Q2Q / dry tech (without actors)
+see_also:
+- tech-rehearsal
+- dry-tech
+- cue
+safety_critical: false
+confidence: reported
+tags:
+- stage-management
+- rehearsal
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Technical rehearsal
+  url: https://en.wikipedia.org/wiki/Technical_rehearsal
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: cyclorama
+en: Cyclorama
+zh_hant: 天幕
+domain: scenic
+definition_en: The large plain cloth or wall across the back of the stage, lit to
+  become sky, colour field or projection surface. Usually the last thing upstage,
+  and the reason the upstage lighting bar is called the cyc bar.
+definition_zh_hant: 舞台最後方的大面素色幕或牆，打燈後變成天空、色底或投影面。最上舞台那支燈桿因此叫天幕燈桿。
+regional_variants:
+- region: UK
+  term: Cyc (said "sike")
+- region: HK / TW
+  term: 天幕
+see_also:
+- batten
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- lighting
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Cyclorama (theater)
+  url: https://en.wikipedia.org/wiki/Cyclorama_(theater)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

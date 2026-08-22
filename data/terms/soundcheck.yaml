@@ -1,0 +1,34 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: soundcheck
+en: Soundcheck
+zh_hant: 試音
+domain: audio
+definition_en: 'The session before doors where the PA and monitors are proven with
+  the actual performers: line check first (does every input work), then levels and
+  mixes. In touring, the support act checks after the headliner and gets whatever
+  time is left.'
+definition_zh_hant: 開場前用真樂手證明 PA 同監聽的環節：先 line check 確認每路訊號通，再執 level 同 mix。巡演慣例
+  headliner 先 check，暖場樂隊用剩落嘅時間。
+see_also:
+- line-check
+- monitor-wedge
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- concert
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Soundcheck
+  url: https://en.wikipedia.org/wiki/Soundcheck
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,28 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: practical
+en: Practical
+zh_hant: 實用道具（praccy）
+domain: scenic
+definition_en: 'A prop or scenic element that really works on stage: a lamp that
+  lights, a hob that heats, a tap that runs. Practicals sit at the junction of departments,
+  which is why who owns the table lamp is a production meeting question.'
+definition_zh_hant: 台上真識著、真識用嘅道具或佈景：識著嘅檯燈、出水嘅水龍頭。跨部門邊界物，邊個部門負責係製作會議先傾得掂嘅事。
+see_also:
+- plot
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- props
+- lighting
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

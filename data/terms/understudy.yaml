@@ -1,0 +1,33 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: understudy
+en: Understudy
+zh_hant: 替補演員
+domain: production-management
+definition_en: A performer rehearsed to take over a role at need. Distinct from
+  a swing (who covers multiple ensemble tracks) and an alternate (who is scheduled
+  to play the role at set performances).
+definition_zh_hant: 排定隨時可以頂上某角色嘅演員。同 swing（負責多條 ensemble line）同 alternate（固定場次上）唔同。
+regional_variants:
+- region: Musical theatre
+  term: Swing / alternate / standby
+  note: 各有精確分工，合約用字唔可以混。
+safety_critical: false
+confidence: reported
+tags:
+- company
+- casting
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Understudy
+  url: https://en.wikipedia.org/wiki/Understudy
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

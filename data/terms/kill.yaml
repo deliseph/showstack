@@ -1,0 +1,32 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: kill
+en: Kill
+zh_hant: 關（切斷）
+domain: safety
+definition_en: 'To switch something off, immediately: kill the smoke, kill channel
+  5, kill pyro. In safety contexts it is the ONLY verb - a kill switch or e-stop
+  removes energy and the call is not ambiguous. Never used casually about rigging
+  or automation moves.'
+definition_zh_hant: 即時切斷：kill 煙機、kill pyro。喺安全語境入面係唯一動詞，e-stop 斷能量，呢個字無歧義，所以唔會亂用。
+safety_critical: true
+confidence: reported
+false_friends:
+- '"Lose" (lose the haze) is a soft fade request; "kill" is now. Mixing them up
+  on comms turns a taste note into an emergency stop, or worse, the reverse.'
+see_also:
+- blackout
+- cue
+tags:
+- safety
+- comms
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

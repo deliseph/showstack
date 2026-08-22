@@ -1,0 +1,43 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: batten
+en: Batten / bar / pipe
+zh_hant: 吊桿
+domain: rigging
+definition_en: The horizontal pipe flown over the stage that scenery, lighting or
+  cloths hang from. UK crews say bar, US crews say batten or pipe or electric (when
+  it carries lighting), and the fly system numbers them from the proscenium upstage.
+definition_zh_hant: 舞台上方可升降的橫桿，掛景、掛燈或掛幕。編號由鏡框往上舞台數。掛燈的吊桿在美制叫 electric。
+regional_variants:
+- region: UK
+  term: Bar
+- region: US
+  term: Batten / pipe / electric
+- region: HK / TW
+  term: 吊桿
+false_friends:
+- 'In lighting control, "batten" is also a linear LED fixture type. On headset,
+  bar 3 and batten 3 and LX3 may all be the same object: agree the naming before
+  the first flying cue.'
+see_also:
+- fly
+- cyclorama
+safety_critical: false
+confidence: reported
+tags:
+- rigging
+- flying
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Batten (theater)
+  url: https://en.wikipedia.org/wiki/Batten_(theater)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,39 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: upstage
+en: Upstage
+zh_hant: 上舞台（舞台後方）
+domain: general
+definition_en: The part of the stage furthest from the audience. On a raked stage
+  it is literally higher, which is where the word comes from; moving upstage of
+  another performer forces them to turn away from the house, which is why the word
+  is also a verb.
+definition_zh_hant: 舞台上離觀眾最遠的區域。傳統斜舞台後方較高，所以叫「上」。走位到別人上舞台一側會逼對方背向觀眾，這也是 upstage
+  當動詞用的由來。
+regional_variants:
+- region: HK / TW
+  term: 上舞台
+  note: 方向以演員面向觀眾為準，不是觀眾視角。
+false_friends:
+- Stage directions are from the PERFORMER'S view facing the house, so a director's
+  "your left" needs confirming before anyone moves a boom.
+see_also:
+- downstage
+safety_critical: false
+confidence: reported
+tags:
+- stage-directions
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+- title: Blocking (stage)
+  url: https://en.wikipedia.org/wiki/Blocking_(stage)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

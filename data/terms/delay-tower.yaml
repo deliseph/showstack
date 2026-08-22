@@ -1,0 +1,29 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: delay-tower
+en: Delay tower
+zh_hant: 延時塔
+domain: audio
+definition_en: 'A loudspeaker position deep in a large audience area, fed the same
+  mix delayed to match the arrival of sound from the main PA, so distant listeners
+  get level without echo. The delay time is distance over the speed of sound: the
+  maths in the speaker delay tool.'
+definition_zh_hant: 大型場地觀眾區後方的補聲塔，訊號按與主 PA 的距離加延時，遠處觀眾有音量而無回聲。延時就是距離除以聲速。
+see_also:
+- front-fill
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- pa
+- festival
+- system-design
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

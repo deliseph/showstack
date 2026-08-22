@@ -1,0 +1,28 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: line-check
+en: Line check
+zh_hant: 線路檢查
+domain: audio
+definition_en: 'Verifying every input reaches the console: mic by mic, DI by DI,
+  before anyone plays a note. A soundcheck without a line check is how the first
+  song opens with a dead vocal mic.'
+definition_zh_hant: 逐路輸入證明訊號到台：每支咪、每個 DI，未 check 完無人開歌。
+see_also:
+- soundcheck
+- patch
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- concert
+- vocabulary
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'
