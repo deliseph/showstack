@@ -64,7 +64,8 @@
   .brand h1{font-family:var(--mono);font-size:22px;margin:0;letter-spacing:-.5px}
   .brand h1 span{color:var(--accent)}
   .brand p{margin:0;color:var(--dim);font-size:13.5px}
-  .pagenav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+  .navwrap{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pagenav{display:flex;gap:4px;flex-wrap:wrap}
   .pagenav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:7px 12px;border-radius:18px;
     border:1px solid transparent;display:inline-flex;align-items:center;line-height:1}
   .pagenav a:hover{color:var(--ink);background:var(--panel);border-color:var(--line);text-decoration:none}
@@ -98,12 +99,6 @@
   .stats b{color:var(--ink);font-weight:600}
 
   main{padding:26px 0 90px;background:radial-gradient(640px 240px at 50% -80px,var(--glow),transparent)}
-  .hgraph{position:relative;height:210px;border-bottom:1px solid var(--line);overflow:hidden;
-    background:linear-gradient(180deg,var(--panel2),var(--bg))}
-  .hgraph canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .hgraph::after{content:"";position:absolute;inset:auto 0 0 0;height:80px;
-    background:linear-gradient(180deg,transparent,var(--bg))}
-  @media(max-width:640px){.hgraph{height:140px}}
   .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
   .showall{display:block;width:100%;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--dim);
     background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:10px;cursor:pointer}
@@ -162,9 +157,11 @@
     <div class="brand">
       <h1>show<span>stack</span></h1>
       <p>the open index of live entertainment technology</p>
-      <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a></span></nav>
-      <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
-      <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
+      <div class="navwrap">
+        <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
+        <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
+        <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
+      </div>
     </div>
     <div class="searchrow">
       <input id="q" placeholder="search protocols, ports, software, standards, 中文術語…  try: 5568, psn, 吊桿, safety curtain" autocomplete="off" spellcheck="false">
@@ -173,8 +170,6 @@
     <div class="stats" id="stats"></div>
   </div>
 </header>
-
-<div class="hgraph"><canvas id="hgcanvas" aria-hidden="true"></canvas></div>
 
 <main>
   <div class="wrap">
@@ -386,127 +381,6 @@ function boot(){
   render();
 }
 boot();
-
-/* Homepage's own living-data constellation: the same real speaks-graph idea
-   used on the section-index pages (see scripts/graph.mjs), computed
-   client-side from the DATA already embedded above so the homepage doesn't
-   need a server-built graphJSON of its own. Same physics and same
-   read-colors-from-CSS-at-paint-time approach as NETWORK_JS in
-   scripts/pages.mjs, kept in sync by hand since one runs in Node and the
-   other in the browser. */
-(function(){
-  function buildHomeGraph(maxNodes){
-    maxNodes = maxNodes || 70;
-    if (!DATA) return {nodes: [], edges: []};
-    const protoIds = new Set((DATA.protocols ?? []).map(p => p.id));
-    const nodesById = new Map();
-    const addNode = (id, cat) => { if (!nodesById.has(id)) nodesById.set(id, {id, d: superDomain(cat)}); };
-    for (const p of DATA.protocols ?? []) addNode("p:" + p.id, p.category);
-
-    const edgeSet = [];
-    for (const prod of [...(DATA.software ?? []), ...(DATA.hardware ?? [])]) {
-      const speaks = (prod.speaks ?? []).filter(s => protoIds.has(s.protocol));
-      if (!speaks.length) continue;
-      addNode("x:" + prod.id, prod.category);
-      for (const s of speaks) edgeSet.push(["x:" + prod.id, "p:" + s.protocol]);
-    }
-
-    let nodes = [...nodesById.values()];
-    if (nodes.length > maxNodes) {
-      const protoNodeIds = new Set([...protoIds].map(id => "p:" + id));
-      const protoOnly = nodes.filter(n => protoNodeIds.has(n.id));
-      const productOnly = nodes.filter(n => !protoNodeIds.has(n.id));
-      const degree = new Map();
-      for (const [a, b] of edgeSet) {
-        degree.set(a, (degree.get(a) ?? 0) + 1);
-        degree.set(b, (degree.get(b) ?? 0) + 1);
-      }
-      productOnly.sort((a, b) => (degree.get(b.id) ?? 0) - (degree.get(a.id) ?? 0));
-      const budget = Math.max(0, maxNodes - protoOnly.length);
-      nodes = [...protoOnly, ...productOnly.slice(0, budget)];
-    }
-
-    const keep = new Set(nodes.map(n => n.id));
-    const idx = new Map(nodes.map((n, i) => [n.id, i]));
-    const edges = edgeSet
-      .filter(([a, b]) => keep.has(a) && keep.has(b))
-      .map(([a, b]) => [idx.get(a), idx.get(b)]);
-
-    return {nodes: nodes.map(n => n.d), edges};
-  }
-
-  const el = document.getElementById("hgcanvas");
-  const g = buildHomeGraph();
-  if (!el || !g.nodes.length) return;
-  const ctx = el.getContext("2d");
-  const cs = getComputedStyle(document.documentElement);
-  const DOMCOLOR = {
-    visual: cs.getPropertyValue("--dom-visual").trim(),
-    audio: cs.getPropertyValue("--dom-audio").trim(),
-    network: cs.getPropertyValue("--dom-network").trim(),
-    safety: cs.getPropertyValue("--dom-safety").trim(),
-    control: cs.getPropertyValue("--dom-control").trim(),
-  };
-  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let W = 0, H = 0;
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-  function size(){
-    const r = el.parentElement.getBoundingClientRect();
-    W = r.width; H = r.height;
-    el.width = Math.max(1, W * DPR); el.height = Math.max(1, H * DPR);
-    el.style.width = W + "px"; el.style.height = H + "px";
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  }
-  size();
-  window.addEventListener("resize", size);
-  const n = g.nodes.length;
-  const pos = g.nodes.map(() => ({x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0}));
-  function step(){
-    for (let i = 0; i < n; i++){
-      const p = pos[i];
-      p.vx += (W / 2 - p.x) * 0.0006; p.vy += (H / 2 - p.y) * 0.0006;
-      for (let j = 0; j < n; j++){
-        if (i === j) continue;
-        const q = pos[j], dx = p.x - q.x, dy = p.y - q.y, d2 = dx * dx + dy * dy + 0.01;
-        if (d2 < 6000){ const f = 8 / d2; p.vx += dx * f; p.vy += dy * f; }
-      }
-    }
-    g.edges.forEach(e => {
-      const a = pos[e[0]], b = pos[e[1]];
-      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      const f = (dist - 64) * 0.0012;
-      a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
-    });
-    for (let k = 0; k < n; k++){ const p = pos[k]; p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy; }
-  }
-  for (let s = 0; s < 140; s++) step();
-  function draw(){
-    ctx.clearRect(0, 0, W, H);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "rgba(150,165,190,.14)";
-    ctx.beginPath();
-    g.edges.forEach(e => {
-      const a = pos[e[0]], b = pos[e[1]];
-      ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-    });
-    ctx.stroke();
-    for (let i = 0; i < n; i++){
-      const p = pos[i];
-      ctx.globalAlpha = .6;
-      ctx.fillStyle = DOMCOLOR[g.nodes[i]] || "#8fa3b8";
-      ctx.beginPath(); ctx.arc(p.x, p.y, 2.4, 0, 6.29); ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-  }
-  if (reduce){ draw(); return; }
-  let hidden = false;
-  document.addEventListener("visibilitychange", () => { hidden = document.hidden; });
-  function loop(){
-    if (!hidden){ step(); draw(); }
-    requestAnimationFrame(loop);
-  }
-  loop();
-})();
 
 /* Theme switcher: auto -> light -> dark. Auto follows the OS via the media
    query; an explicit pick pins data-theme and persists, re-applied pre-paint
