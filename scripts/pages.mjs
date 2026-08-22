@@ -18,6 +18,7 @@ import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
 import { interopPage } from './interop.mjs'
 import { toolsPage } from './tools.mjs'
 import { networkPage } from './network.mjs'
+import { rfPage } from './rf.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -105,7 +106,7 @@ code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);padding:1
 function navBar(canonical) {
   const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
   const items = [
-    ['/', 'Search'], ['/tools/', 'Tools'], ['/network/', 'Network'],
+    ['/', 'Search'], ['/tools/', 'Tools'], ['/network/', 'Network'], ['/rf/', 'RF'],
     ['/interop/', 'Interop'], ['/compare/', 'Compare'], ['/ports/', 'Ports'],
   ]
   const links = items.map(([href, label]) => {
@@ -416,6 +417,10 @@ export function buildPages(db, dist) {
   write('network', networkPage({ esc, shell, jsonForScript, SITE, GH }))
   urls.push(`${SITE}/network/`)
 
+  // The per-country wireless mic frequency map.
+  write('rf', rfPage({ esc, shell, jsonForScript, SITE, GH }))
+  urls.push(`${SITE}/rf/`)
+
   // Port pages, plus an index of every port we know about.
   const byPort = new Map()
   for (const p of db.protocols) for (const port of p.default_ports ?? []) {
@@ -424,16 +429,17 @@ export function buildPages(db, dist) {
   }
   for (const [number, entries] of byPort) { write(`ports/${number}`, portPage(number, entries)); urls.push(`${SITE}/ports/${number}/`) }
 
-  const rows = [...byPort.entries()].sort((a, b) => a[0] - b[0]).map(([n, es]) =>
-    `<tr><td><strong><a href="/ports/${n}/">${n}</a></strong></td><td>${es.map((e) => e.port.transport).join(', ')}</td>
-     <td>${es.map((e) => `<a href="/protocols/${esc(e.p.id)}/">${esc(e.p.name)}</a>`).join(', ')}</td></tr>`).join('')
+  const rows = [...byPort.entries()].sort((a, b) => a[0] - b[0]).flatMap(([n, es]) =>
+    es.map((e, i) => `<tr>${i === 0 ? `<td rowspan="${es.length}"><strong><a href="/ports/${n}/">${n}</a></strong></td>` : ''}
+     <td>${e.port.transport}</td><td><a href="/protocols/${esc(e.p.id)}/">${esc(e.p.name)}</a></td>
+     <td>${esc(e.port.role ?? '')}${e.port.note ? `<br><span style="color:var(--dimmer);font-size:12.5px">${esc(e.port.note)}</span>` : ''}</td></tr>`)).join('')
   write('ports', shell({
     title: 'Port numbers used in live entertainment systems | showstack',
     description: 'Every UDP and TCP port used by lighting, audio, video, tracking and show control protocols, with sources.',
     canonical: `${SITE}/ports/`,
     body: `<div class="crumb"><a href="/">showstack</a> / ports</div><h2>Ports</h2>
       <p class="lede">Every port number indexed so far, and what listens on it. ${byPort.size} ports across ${db.protocols.length} protocols.</p>
-      <table><tr><th>Port</th><th>Transport</th><th>Used by</th></tr>${rows}</table>
+      <table><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
       <div class="cta"><strong>Missing one?</strong><p>Ports we could not source are deliberately left blank rather than guessed.
       <a href="${GH}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">Open gaps are here.</a></p></div>`,
   }))

@@ -334,3 +334,97 @@ export function speakerNetwork(notation, ampWatts = null) {
   }
   return out
 }
+
+/**
+ * Projector throw: ratio = distance / image width. Give any two, the third
+ * follows. Lens specs quote a ratio range; installers need the distance.
+ */
+export function throwRatio({ distance = null, width = null, ratio = null } = {}) {
+  const num = (x) => (x === null || x === '' ? null : Number(x))
+  const d = num(distance), w = num(width), r = num(ratio)
+  const ok = (x) => x === null || (Number.isFinite(x) && x > 0)
+  if (!ok(d) || !ok(w) || !ok(r)) return null
+  const known = [d, w, r].filter((x) => x !== null).length
+  if (known < 2) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+  if (d !== null && w !== null) return { distance: r2(d), width: r2(w), ratio: r2(d / w) }
+  if (r !== null && w !== null) return { distance: r2(r * w), width: r2(w), ratio: r2(r) }
+  return { distance: r2(d), width: r2(d / r), ratio: r2(r) }
+}
+
+/**
+ * What the audience actually sees off a projection screen.
+ *
+ * Incident light: lux = lumens / area(m2). Reflected luminance on a screen of
+ * gain g, in foot-lamberts: fL = lumens x gain / area(ft2), and
+ * 1 fL = 3.4263 cd/m2 (nits). Cinema reference white is 48 cd/m2 (14 fL)
+ * per the DCI spec; gain redistributes light toward the axis, it does not
+ * create it, which is why high-gain screens fall off when viewed from the side.
+ */
+export function screenLuminance(lumens, widthM, heightM, gain = 1) {
+  const lm = Number(lumens), w = Number(widthM), h = Number(heightM), g = Number(gain)
+  if (![lm, w, h, g].every((x) => Number.isFinite(x) && x > 0)) return null
+  const areaM2 = w * h
+  const areaFt2 = areaM2 * 10.7639
+  const fl = (lm * g) / areaFt2
+  const nits = fl * 3.4263
+  const lux = lm / areaM2
+  const r1 = (x) => Math.round(x * 10) / 10
+  return { areaM2: r1(areaM2), lux: r1(lux), fl: r1(fl), nits: r1(nits) }
+}
+
+/**
+ * Relay / interlock logic as a truth table.
+ *
+ * Rules are lines like "MAIN = GO & !ESTOP". Operators: & | ! and
+ * parentheses; anything named on the right is an input, anything on the left
+ * is an output. Every input combination is evaluated, so the matrix shows
+ * exactly what closes when - the way you check an interlock chain on paper
+ * before you wire it. Outputs may not feed back into expressions: this table
+ * is combinational on purpose, latching belongs in the controller.
+ */
+export function relayLogic(rulesText) {
+  const lines = String(rulesText ?? '').split(/[\n;]/).map((l) => l.trim()).filter(Boolean)
+  if (!lines.length || lines.length > 6) return null
+  const inputs = new Set()
+  const parsed = []
+  for (const line of lines) {
+    const m = line.match(/^([A-Za-z][A-Za-z0-9_]*)\s*=\s*(.+)$/)
+    if (!m) return null
+    const tokens = m[2].match(/[A-Za-z][A-Za-z0-9_]*|\S/g) ?? []
+    if (tokens.some((t) => !/^([A-Za-z][A-Za-z0-9_]*|[&|!()])$/.test(t))) return null
+    for (const t of tokens) if (/^[A-Za-z]/.test(t)) inputs.add(t)
+    parsed.push({ out: m[1], tokens })
+  }
+  const outNames = parsed.map((p) => p.out)
+  if (new Set(outNames).size !== outNames.length) return null
+  for (const o of outNames) if (inputs.has(o)) return null
+  const ins = [...inputs].sort()
+  if (!ins.length || ins.length > 5) return null
+
+  function evaluate(tokens, env) {
+    let i = 0
+    function factor() {
+      const t = tokens[i]
+      if (t === '!') { i++; return !factor() }
+      if (t === '(') { i++; const v = orExpr(); if (tokens[i] !== ')') throw 0; i++; return v }
+      if (t !== undefined && /^[A-Za-z]/.test(t)) { i++; return env[t] }
+      throw 0
+    }
+    function andExpr() { let v = factor(); while (tokens[i] === '&') { i++; const r = factor(); v = v && r } return v }
+    function orExpr() { let v = andExpr(); while (tokens[i] === '|') { i++; const r = andExpr(); v = v || r } return v }
+    const v = orExpr()
+    if (i !== tokens.length) throw 0
+    return v
+  }
+
+  const rows = []
+  try {
+    for (let mask = 0; mask < (1 << ins.length); mask++) {
+      const env = {}
+      ins.forEach((name, k) => { env[name] = Boolean(mask & (1 << (ins.length - 1 - k))) })
+      rows.push({ in: ins.map((n) => env[n]), out: parsed.map((p) => evaluate(p.tokens, env)) })
+    }
+  } catch { return null }
+  return { inputs: ins, outputs: outNames, rows }
+}

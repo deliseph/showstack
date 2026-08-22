@@ -21,6 +21,7 @@ import {
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
+  throwRatio, screenLuminance, relayLogic,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -30,6 +31,7 @@ const MATH_SRC = [
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
+  throwRatio, screenLuminance, relayLogic,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -70,6 +72,12 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
 .meter .tick span{position:absolute;top:2px;left:3px;font-family:var(--mono);font-size:10px;color:var(--dimmer)}
 .ledprev{margin-top:10px;border:1px solid var(--line);border-radius:8px;background-color:#000;
 background-image:radial-gradient(circle,var(--accent) 22%,transparent 26%);max-width:100%}
+.field textarea{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:74px;resize:vertical}
+.ttwrap{overflow-x:auto;margin-top:10px}
+.tt td.on{color:var(--ok);font-weight:700}
+.tt td.off{color:var(--dimmer)}
+.tt th.outcol,.tt td.outcol{border-left:1px solid var(--line);padding-left:12px}
 `
 
   const body = `
@@ -207,6 +215,40 @@ background-image:radial-gradient(circle,var(--accent) 22%,transparent 26%);max-w
   <div class="out" id="lt-out" role="status" aria-live="polite"></div>
   <div class="viz" id="lt-viz" aria-hidden="true"></div>
   <p class="note">List every hop in the chain: console, plugin, system processor, amp DSP. The total is what your time alignment has to absorb, shown as the distance sound covers in that time at 20 °C. Pair it with the speaker delay tool when you align delays to the main PA.</p>
+</div>
+
+<div class="tool" id="throw">
+  <h3>Projector throw</h3>
+  <div class="row">
+    <div class="field"><label for="th-d">Distance m</label><input id="th-d" type="number" min="0.1" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="th-w">Image width m</label><input id="th-w" type="number" min="0.1" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="th-r">Throw ratio</label><input id="th-r" type="number" min="0.1" step="0.01" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="th-out" role="status" aria-live="polite">Enter any two values.</div>
+  <p class="note">Ratio = distance ÷ image width, the number on every lens datasheet. Fill any two, the third follows (the two you touched last are the knowns). A 1.8:1 lens filling a 4 m screen sits at 7.2 m. Zoom lenses quote a range: check both ends still land in the booth.</p>
+</div>
+
+<div class="tool" id="screen">
+  <h3>Screen brightness</h3>
+  <div class="row">
+    <div class="field"><label for="sc-lm">Projector lumens</label><input id="sc-lm" type="number" min="1" value="10000" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="sc-w">Width m</label><input id="sc-w" type="number" min="0.1" step="0.1" value="6" inputmode="decimal"></div>
+    <div class="field"><label for="sc-h">Height m</label><input id="sc-h" type="number" min="0.1" step="0.1" value="3.4" inputmode="decimal"></div>
+    <div class="field"><label for="sc-g">Screen gain</label><input id="sc-g" type="number" min="0.1" step="0.1" value="1.0" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="sc-out" role="status" aria-live="polite"></div>
+  <p class="note">Incident light is lux = lumens ÷ area. What the audience sees is luminance: fL = lumens × gain ÷ area in ft², and 1 fL = 3.4263 cd/m² (nits). <a href="https://www.dcimovies.com/specification/" rel="noopener nofollow">DCI cinema reference</a> is 48 cd/m² (14 fL) in the dark; ambient light on the screen is the number that actually kills contrast. Gain redirects light toward the axis rather than creating it, so high gain trades viewing angle.</p>
+</div>
+
+<div class="tool wide" id="relay">
+  <h3>Relay logic matrix</h3>
+  <div class="row">
+    <div class="field"><label for="rl-rules">Rules (one per line: OUT = expr)</label><textarea id="rl-rules" spellcheck="false">MAIN = GO &amp; !ESTOP
+HORN = GO &amp; (A | B)</textarea></div>
+  </div>
+  <div class="out" id="rl-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap" id="rl-table"></div>
+  <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
 </div>
 
 </div>
@@ -491,6 +533,57 @@ for (const id of ["bm-t", "bm-a", "bm-cd"]) $("#" + id).addEventListener("input"
 for (const id of ["pw-w", "pw-v", "pw-ph", "pw-pf"]) $("#" + id).addEventListener("input", drawPowerMeter);
 for (const id of ["lw-w", "lw-h", "lw-p"]) $("#" + id).addEventListener("input", drawLedPreview);
 
+// ---- Projector throw ----
+const thKeys = ["d", "w", "r"];
+let thEdited = [];
+function thRender() {
+  if (thEdited.length < 2) { $("#th-out").textContent = "Enter any two values."; return; }
+  const map = { d: "distance", w: "width", r: "ratio" };
+  const args = {};
+  for (const k of thEdited) args[map[k]] = $("#th-" + k).value;
+  const r = throwRatio(args);
+  if (!r) { $("#th-out").innerHTML = '<span class="err">Both knowns must be positive numbers.</span>'; return; }
+  $("#th-out").innerHTML = 'Distance <b>' + r.distance + ' m</b> · width <b>' + r.width + ' m</b> · ratio <b>' + r.ratio + ':1</b>';
+}
+for (const k of thKeys) {
+  $("#th-" + k).addEventListener("input", () => {
+    if ($("#th-" + k).value === "") { thEdited = thEdited.filter((x) => x !== k); }
+    else { thEdited = thEdited.filter((x) => x !== k); thEdited.push(k); if (thEdited.length > 2) thEdited.shift(); }
+    thRender();
+  });
+}
+
+// ---- Screen brightness ----
+function scrRender() {
+  const r = screenLuminance($("#sc-lm").value, $("#sc-w").value, $("#sc-h").value, $("#sc-g").value);
+  if (!r) { $("#sc-out").innerHTML = '<span class="err">Lumens, size and gain must be positive.</span>'; return; }
+  const vsDci = r.nits >= 48 ? 'meets' : 'below';
+  $("#sc-out").innerHTML = '<b>' + r.lux + ' lx</b> on screen · <b>' + r.fl + ' fL</b> · <b>' + r.nits +
+    ' cd/m²</b> (' + vsDci + ' the 48 cd/m² DCI dark-room reference) · ' + r.areaM2 + ' m²';
+}
+for (const id of ["sc-lm", "sc-w", "sc-h", "sc-g"]) $("#" + id).addEventListener("input", scrRender);
+
+// ---- Relay logic matrix ----
+function relayRender() {
+  const r = relayLogic($("#rl-rules").value);
+  const host = $("#rl-table");
+  if (!r) {
+    $("#rl-out").innerHTML = '<span class="err">Rules look like: MAIN = GO &amp; !ESTOP - up to 5 inputs, 6 rules, no output on the right-hand side.</span>';
+    host.innerHTML = "";
+    return;
+  }
+  $("#rl-out").innerHTML = r.inputs.length + ' inputs · ' + r.outputs.length + ' outputs · ' + r.rows.length + ' states';
+  const mark = (v) => v ? '<td class="on">1</td>' : '<td class="off">0</td>';
+  const markOut = (v, first) => v ? '<td class="on' + (first ? ' outcol' : '') + '">✓</td>' : '<td class="off' + (first ? ' outcol' : '') + '">·</td>';
+  host.innerHTML = '<table class="tt"><tr>' +
+    r.inputs.map((n) => '<th>' + n + '</th>').join('') +
+    r.outputs.map((n, i) => '<th' + (i === 0 ? ' class="outcol"' : '') + '>' + n + '</th>').join('') + '</tr>' +
+    r.rows.map((row) => '<tr>' + row.in.map(mark).join('') + row.out.map((v, i) => markOut(v, i === 0)).join('') + '</tr>').join('') +
+    '</table>';
+}
+$("#rl-rules").addEventListener("input", relayRender);
+
+
 dmxRender(false);
 dipRenderFromAddress();
 delayRender();
@@ -505,11 +598,14 @@ drawLedPreview();
 ohmRender();
 spkRender();
 latRender();
+thRender();
+scrRender();
+relayRender();
 `
 
   return shell({
-    title: 'Field tools — DMX, delay, timecode, power, beam and LED wall calculators | showstack',
-    description: 'Eleven calculators technicians use daily: DMX address, DIP switches, speaker delay, timecode, power load, Ohm’s law, speaker impedance, latency budget, beam photometrics, LED wall, RF wavelength. Free, offline, tested arithmetic.',
+    title: 'Field tools — DMX, delay, timecode, power, projection and speaker calculators | showstack',
+    description: 'The calculators technicians use daily: DMX address, DIP switches, speaker delay and mixed impedance, timecode, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, relay logic, RF wavelength. Free, offline, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
       '@context': 'https://schema.org',
@@ -521,7 +617,7 @@ latRender();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, Ohm law calculator, speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, RF wavelength calculator',
+      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, relay logic truth table, RF wavelength calculator',
     },
     body,
     extraStyle: style,
