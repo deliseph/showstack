@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-es1-9
+designation: ANSI ES1.9-2026
+title: Event Safety - Crowd Management
+body: ESTA
+domain: safety-management
+year: 2026
+scope: 'Requirements and guidance for crowd management planning at live events:
+  capacity, flow, monitoring, communication and the interfaces between security,
+  production and emergency services.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: Post-Astroworld, the reference US document for what a defensible crowd plan
+  contains.
+confidence: verified
+tags:
+- esta
+- event-safety
+- crowd
+- festival
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

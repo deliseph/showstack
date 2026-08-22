@@ -1,0 +1,37 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-60268-16
+designation: IEC 60268-16:2020
+title: 'Sound system equipment - Part 16: Objective rating of speech intelligibility
+  by speech transmission index'
+body: IEC
+domain: audio
+year: 2020
+scope: 'Defines the Speech Transmission Index (STI): the 0-1 objective measure of
+  how intelligibly a sound system delivers speech, including STIPA measurement for
+  installed systems.'
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/search/?q=60268-16
+  label: IEC Webstore (paid)
+jurisdiction:
+- international
+notes: Voice alarm and PA intelligibility specs are written as STI or STIPA numbers
+  against this document (life-safety systems commonly demand 0.50 or better). If
+  a contract says "intelligible", this is the maths it means.
+confidence: reported
+tags:
+- iec
+- sti
+- intelligibility
+- voice-alarm
+sources:
+- title: 'IEC Webstore: 60268-16'
+  url: https://webstore.iec.ch/en/search/?q=60268-16
+  publisher: IEC
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

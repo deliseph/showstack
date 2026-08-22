@@ -1,0 +1,34 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: nfpa-1126
+designation: NFPA 1126
+title: Standard for the Use of Pyrotechnics Before a Proximate Audience
+body: NFPA
+domain: pyro-flame
+scope: 'Requirements for pyrotechnics fired close to an audience indoors or out:
+  device types, separation distances, operator licensing interfaces, plans and demonstration
+  shots for the authority having jurisdiction.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1126-standard-development/1126
+  label: NFPA 1126 (free online viewing with registration)
+jurisdiction:
+- US
+notes: The Station nightclub fire is the case study behind modern enforcement of
+  this document. The demonstration shot for the fire marshal is not a formality.
+confidence: reported
+tags:
+- nfpa
+- pyro
+- proximate
+- permits
+sources:
+- title: NFPA 1126 standard development page
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1126-standard-development/1126
+  publisher: NFPA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

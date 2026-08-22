@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-19
+designation: ANSI E1.19-2021
+title: Recommended Practice for the Use of Class A Ground-Fault Circuit Interrupters
+  (GFCIs) Intended for Personnel Protection in the Entertainment Industry
+body: ESTA
+domain: electrical
+year: 2021
+scope: Where and how Class A GFCIs should protect people in entertainment power
+  distribution, and where nuisance tripping makes other protection strategies appropriate.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: Wet-location festival power and orchestra-pit distro arguments end by citing
+  this document.
+confidence: verified
+tags:
+- esta
+- electrical
+- gfci
+- power
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

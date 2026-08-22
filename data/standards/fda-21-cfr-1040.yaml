@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: fda-21-cfr-1040
+designation: 21 CFR 1040.10 / 1040.11
+title: 'Performance standards for light-emitting products: laser products'
+body: FDA (CDRH)
+domain: laser
+scope: US federal performance standard for laser products, including the demonstration-laser
+  provisions under which laser light shows operate; show operators additionally
+  require an FDA variance for audience-scanning and Class IIIb/IV display use.
+status: current
+free_to_read: true
+access_url:
+  url: https://www.ecfr.gov/current/title-21/chapter-I/subchapter-J/part-1040
+  label: eCFR part 1040 full text
+jurisdiction:
+- US
+notes: 'The practical chain for US laser shows: product complies with 1040.10, the
+  show runs under an FDA variance, and the operator files annual reports. Internationally
+  the equivalent framework hangs off IEC 60825-1.'
+confidence: verified
+tags:
+- fda
+- laser
+- variance
+- light-shows
+sources:
+- title: 21 CFR Part 1040 (eCFR)
+  url: https://www.ecfr.gov/current/title-21/chapter-I/subchapter-J/part-1040
+  publisher: eCFR
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

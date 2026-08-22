@@ -1,0 +1,37 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: bs-7909
+designation: BS 7909:2011
+title: Code of practice for temporary electrical systems for entertainment and related
+  purposes
+body: BSI
+domain: electrical
+year: 2011
+scope: 'The UK code of practice for temporary electrical systems at events, productions
+  and broadcast: system design, earthing arrangements, RCD protection, documentation
+  and the competence and sign-off of the Senior Person Responsible.'
+status: current
+free_to_read: false
+access_url:
+  url: https://knowledge.bsigroup.com/search?searchkey=BS%207909
+  label: BSI Knowledge (paid)
+jurisdiction:
+- UK
+notes: UK event power is specified, built and signed off "to 7909". The SPR (Senior
+  Person Responsible) role that UK power vendors put on paperwork comes from this
+  document.
+confidence: reported
+tags:
+- bsi
+- electrical
+- event-power
+- uk
+sources:
+- title: 'BSI Knowledge: BS 7909'
+  url: https://knowledge.bsigroup.com/search?searchkey=BS%207909
+  publisher: BSI
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

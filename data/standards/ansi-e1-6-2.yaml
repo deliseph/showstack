@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-6-2
+designation: ANSI E1.6-2-2020
+title: Entertainment Technology - Design, Inspection, and Maintenance of Electric
+  Chain Hoists for the Entertainment Industry
+body: ESTA
+domain: rigging-structural
+year: 2020
+scope: 'Design, inspection and maintenance requirements specific to electric chain
+  hoists used in entertainment: the motors that fly truss over people every day.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: 'Part of the E1.6 family: E1.6-1 covers powered hoist systems, this part
+  the chain hoists themselves, E1.6-3 their selection and use.'
+confidence: verified
+tags:
+- esta
+- rigging
+- hoists
+- truss
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

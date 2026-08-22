@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-4-1
+designation: ANSI E1.4-1-2022
+title: Entertainment Technology - Manual Counterweight Rigging Systems
+body: ESTA
+domain: rigging-structural
+year: 2022
+scope: 'Design, construction, inspection and maintenance requirements for manual
+  counterweight rigging systems: the fly systems in most proscenium theatres, arbors,
+  rope locks, loading galleries and all.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: The document behind how a counterweight house is meant to be built and looked
+  after. If a venue survey finds a fly system with no inspection history, this is
+  the reference to hold it against.
+confidence: verified
+tags:
+- esta
+- rigging
+- counterweight
+- theatre
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

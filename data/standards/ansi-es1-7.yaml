@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-es1-7
+designation: ANSI ES1.7-2021
+title: Event Safety - Weather Preparedness
+body: ESTA
+domain: safety-management
+year: 2021
+scope: 'Requirements for weather preparedness at live events: monitoring, triggers,
+  decision authority and action plans for the weather calls an outdoor show will
+  eventually face.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: The document that turns "keep an eye on the sky" into named thresholds and
+  a named decision-maker. Written into many outdoor event permits since stage-collapse
+  litigation made weather plans standard.
+confidence: verified
+tags:
+- esta
+- event-safety
+- outdoor
+- weather
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

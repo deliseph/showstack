@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: nfpa-160
+designation: NFPA 160
+title: Standard for the Use of Flame Effects Before an Audience
+body: NFPA
+domain: pyro-flame
+scope: 'Requirements for flame effects used before an audience: effect classification,
+  plans, permits, operators, fuel handling and the safety distances between open
+  flame and people.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.nfpa.org/codes-and-standards/nfpa-160-standard-development/160
+  label: NFPA 160 (free online viewing with registration)
+jurisdiction:
+- US
+notes: Flame effects (fire as an effect) are NFPA 160; pyrotechnics (things that
+  go bang) before a proximate audience are NFPA 1126. Permits usually require compliance
+  with the one that actually matches the effect.
+confidence: reported
+tags:
+- nfpa
+- flame
+- pyro
+- permits
+sources:
+- title: NFPA 160 standard development page
+  url: https://www.nfpa.org/codes-and-standards/nfpa-160-standard-development/160
+  publisher: NFPA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

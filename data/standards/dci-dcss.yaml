@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: dci-dcss
+designation: DCI DCSS
+title: Digital Cinema Initiatives - Digital Cinema System Specification
+body: Digital Cinema Initiatives
+domain: video
+scope: 'The studio-consortium specification digital cinema is built to: image formats
+  and 48 cd/m2 screen luminance reference, JPEG 2000 compression, packaging (DCP),
+  security and projection requirements, with SMPTE standards carrying the formal
+  definitions.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.dcimovies.com/specification/
+  label: DCI specification (free download)
+jurisdiction:
+- international
+notes: Where the 14 fL / 48 cd/m2 cinema brightness target that projectionists and
+  screen calculators quote comes from. Event cinema and premieres in venues inherit
+  these expectations even outside DCI-compliant rooms.
+confidence: reported
+tags:
+- dci
+- cinema
+- projection
+- dcp
+sources:
+- title: DCI specification page
+  url: https://www.dcimovies.com/specification/
+  publisher: Digital Cinema Initiatives
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

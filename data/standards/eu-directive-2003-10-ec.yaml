@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: eu-directive-2003-10-ec
+designation: Directive 2003/10/EC
+title: Minimum health and safety requirements regarding exposure of workers to noise
+body: European Union
+domain: safety-management
+year: 2003
+scope: 'EU-wide worker noise exposure limits: lower action value 80 dB(A), upper
+  action value 85 dB(A), exposure limit 87 dB(A) daily/weekly with hearing protection
+  attenuation counted, on a 3 dB exchange rate.'
+status: current
+free_to_read: true
+access_url:
+  url: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32003L0010
+  label: EUR-Lex full text
+jurisdiction:
+- EU
+notes: 'Member states transpose this into national law (UK: Control of Noise at
+  Work Regulations 2005, kept post-Brexit). Article 14 obliges sector codes of conduct
+  for music and entertainment, which is where venue sound-level codes come from.'
+confidence: verified
+tags:
+- eu
+- noise
+- hearing
+- venues
+sources:
+- title: Directive 2003/10/EC
+  url: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32003L0010
+  publisher: EUR-Lex
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

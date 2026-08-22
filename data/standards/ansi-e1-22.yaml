@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-22
+designation: ANSI E1.22-2022
+title: Entertainment Technology - Fire Safety Curtain Systems
+body: ESTA
+domain: machinery
+year: 2022
+scope: Design, construction, installation, testing and maintenance of fire safety
+  curtain systems protecting proscenium openings, including release systems and
+  closing-time requirements.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: 'Covers the iron: the curtain the audience never thinks about until the one
+  night it matters. Local fire codes typically adopt or reference it.'
+confidence: verified
+tags:
+- esta
+- fire-safety
+- stage-machinery
+- theatre
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

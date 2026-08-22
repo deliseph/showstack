@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-5
+designation: ANSI E1.5-2009 (R2024)
+title: Entertainment Technology - Theatrical Fog Made With Aqueous Solutions of
+  Di- And Trihydric Alcohols
+body: ESTA
+domain: safety-management
+year: 2009
+scope: Composition limits and use requirements for glycol and glycerine based theatrical
+  fog so that exposure stays within documented limits for performers and crews who
+  stand in it nightly.
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: 'The fluid-side companion to E1.23: what may be in the tank. Actor unions
+  and venue agreements lean on it in fog disputes.'
+confidence: verified
+tags:
+- esta
+- fog
+- atmospherics
+- health
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,33 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-es1-18
+designation: ANSI ES1.18-2022
+title: Event Safety - Rigging
+body: ESTA
+domain: safety-management
+year: 2022
+scope: 'Event-level rigging safety requirements: competence, documentation, inspection
+  and the interface between venue, production and rigging vendor at live events.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free download)
+jurisdiction:
+- US
+notes: 'Sits above the E1.6 hardware standards: who is allowed to make rigging decisions
+  on the day, and what paper trail the event carries.'
+confidence: verified
+tags:
+- esta
+- event-safety
+- rigging
+sources:
+- title: ESTA Technical Standards Program — published documents
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

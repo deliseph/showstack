@@ -1,0 +1,38 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: en-17206
+designation: EN 17206:2020
+title: Entertainment technology - Machinery for stages and other production areas
+  - Safety requirements and inspections
+body: CEN/CENELEC
+domain: machinery
+year: 2020
+scope: 'The European safety standard for stage machinery: powered flying systems,
+  elevators, revolves and effects machinery, with safety-function requirements expressed
+  against EN ISO 13849 performance levels, plus inspection regimes.'
+status: current
+free_to_read: false
+access_url:
+  url: https://knowledge.bsigroup.com/search?searchkey=EN%2017206
+  label: BSI Knowledge (paid, as BS EN 17206)
+jurisdiction:
+- EU
+- UK
+notes: Successor to the German DIN 56950 family as the pan-European reference. When
+  a European venue asks whether performer flying is "compliant", this plus the machinery
+  directive is what compliance means.
+confidence: reported
+tags:
+- cen
+- stage-machinery
+- performer-flying
+- inspections
+sources:
+- title: 'BSI Knowledge: BS EN 17206'
+  url: https://knowledge.bsigroup.com/search?searchkey=EN%2017206
+  publisher: BSI
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'
