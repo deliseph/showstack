@@ -1,0 +1,57 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: q-lan
+name: Q-LAN
+aka:
+  - QLAN
+category: audio-transport
+summary: >-
+  QSC's gigabit audio and video transport for the Q-SYS ecosystem, carrying
+  low-latency streams between Cores, peripherals and cameras with PTPv2
+  clocking. It is what a Q-SYS install runs on even when Dante or AES67 cards
+  are also fitted.
+transport:
+  - udp
+openness: proprietary-documented
+steward: QSC (Q-SYS)
+status: current
+typical_use:
+  - Q-SYS Core to peripheral audio and video transport in installed systems
+  - Corporate, hospitality and themed-venue AV backbones built on Q-SYS
+gotchas:
+  - >-
+    Q-LAN marks its PTPv2 clock DSCP 46 (EF) and audio DSCP 34, while Dante
+    marks AUDIO as DSCP 46. Shared fabric puts Dante audio in the queue that
+    carries the Q-LAN clock and can starve it: separate by VLAN or remap.
+  - >-
+    Q-LAN audio moves in fixed 16-channel streams at 48 kHz/32-bit (roughly
+    33 Mbps each), so channel counts round up to the next stream whether you
+    use the channels or not.
+  - >-
+    Like every PTP-clocked transport it assumes IGMP snooping with a querier
+    and no Energy Efficient Ethernet on AV ports; QSC's switch requirements
+    are explicit about both.
+confidence: reported
+tags:
+  - audio
+  - networking
+  - qsys
+sources:
+  - title: Quality of Service settings across QLAN, Dante, and AES67
+    url: https://support.qsys.com/en_US/awareness/awareness-%7C-quality-of-service-settings-across-qlan-dante-and-aes67
+    publisher: Q-SYS (QSC)
+    accessed: 2026-08-22
+    primary: true
+  - title: Q-SYS Networked Systems Technical Notes (Q-LAN)
+    url: https://q-syshelp.qsc.com/q-sys_7.0/content/Appendix/q_dn_qlan_notes.pdf
+    publisher: QSC
+    accessed: 2026-08-22
+    primary: true
+  - title: Q-SYS Ethernet switch requirements
+    url: https://help.qsys.com/q-sys_8.0/Content/Networking/Ethernet_Switch_Requirements.htm
+    publisher: Q-SYS (QSC)
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22
