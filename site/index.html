@@ -8,19 +8,44 @@
 <meta property="og:title" content="showstack">
 <meta property="og:description" content="The open index of live entertainment technology. Protocols, standards, software, hardware, and the bilingual vocabulary crews actually use.">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script>(function(){try{var t=localStorage.getItem('ss-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
 <style>
-  :root{
-    --bg:#0d0f12; --panel:#14171c; --panel2:#1a1e25; --line:#252b34;
-    --ink:#e8ecf1; --dim:#9aa4b2; --dimmer:#6b7684;
-    --accent:#7dd3c0; --accent2:#f0b866; --warn:#e8836b; --ok:#8fbf6f;
-    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
-    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  :root{color-scheme:dark;
+    --bg:#0b0e14; --panel:#121722; --panel2:#19212f; --line:#242f42;
+    --ink:#e9edf4; --dim:#9aa8bc; --dimmer:#6e7c94;
+    --accent:#5fd4bb; --accent2:#f0b866; --warn:#ec7f66; --ok:#8cc96a;
+    --glow:rgba(95,212,187,.06);
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  }
+  :root[data-theme="light"]{color-scheme:light;
+    --bg:#f6f7f9; --panel:#ffffff; --panel2:#edf0f4; --line:#dbe1ea;
+    --ink:#141922; --dim:#46536a; --dimmer:#67748b;
+    --accent:#0e8a72; --accent2:#8f6110; --warn:#b6462e; --ok:#3a7a22;
+    --glow:transparent;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
   }
   @media (prefers-color-scheme: light){
-    :root{ --bg:#fbfbfa; --panel:#fff; --panel2:#f4f5f7; --line:#e2e5ea;
-           --ink:#15181d; --dim:#5a6472; --dimmer:#8b95a3;
-           --accent:#137a68; --accent2:#9a6410; --warn:#b8452a; --ok:#3f7a24; }
+    :root:not([data-theme="dark"]){color-scheme:light;
+      --bg:#f6f7f9; --panel:#ffffff; --panel2:#edf0f4; --line:#dbe1ea;
+      --ink:#141922; --dim:#46536a; --dimmer:#67748b;
+      --accent:#0e8a72; --accent2:#8f6110; --warn:#b6462e; --ok:#3a7a22;
+      --glow:transparent;
+      --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
+    }
   }
+  ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  .themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+    border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
+    transition:color .15s,border-color .15s,transform .15s}
+  .themebtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);transform:translateY(-1px)}
+  .themebtn svg{display:block}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation:none!important}}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -28,7 +53,10 @@
   a:hover{text-decoration:underline}
   .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
-  header{border-bottom:1px solid var(--line);padding:28px 0 22px;position:sticky;top:0;background:var(--bg);z-index:20}
+  header{border-bottom:1px solid var(--line);padding:26px 0 20px;position:sticky;top:0;z-index:20;
+    background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
+    background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
   .brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
   .brand h1{font-family:var(--mono);font-size:22px;margin:0;letter-spacing:-.5px}
   .brand h1 span{color:var(--accent)}
@@ -45,7 +73,8 @@
   .quicktools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 4px}
   .quicktools .qlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--dimmer)}
   .quicktools a{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--panel);
-    border:1px solid var(--line);padding:8px 13px;border-radius:9px;display:inline-flex;align-items:center;gap:6px}
+    border:1px solid var(--line);padding:9px 14px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;
+    box-shadow:var(--shadow)}
   .quicktools a:hover{border-color:var(--accent);color:var(--accent);text-decoration:none;transform:translateY(-1px)}
   .quicktools a{transition:transform .12s,border-color .12s,color .12s}
   .quicktools a.more{color:var(--accent);border-style:dashed}
@@ -63,11 +92,12 @@
   .stats{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dimmer);margin-top:14px}
   .stats b{color:var(--ink);font-weight:600}
 
-  main{padding:26px 0 90px}
+  main{padding:26px 0 90px;background:radial-gradient(640px 240px at 50% -80px,var(--glow),transparent)}
   .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
   .grid{display:grid;gap:10px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-  .card:hover{border-color:var(--dim)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;
+    box-shadow:var(--shadow);transition:border-color .2s,transform .2s}
+  .card:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));transform:translateY(-1px)}
   .card h3{margin:0 0 4px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
   .card h3 .id{font-family:var(--mono);font-size:11.5px;color:var(--dimmer);font-weight:400}
   .card p{margin:0;color:var(--dim);font-size:13.5px}
@@ -114,6 +144,7 @@
       <p>the open index of live entertainment technology</p>
       <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a></nav>
       <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
+      <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
     </div>
     <div class="searchrow">
       <input id="q" placeholder="search protocols, ports, software, standards, 中文術語…  try: 5568, psn, 吊桿, safety curtain" autocomplete="off" spellcheck="false">
@@ -290,6 +321,26 @@ function boot(){
   render();
 }
 boot();
+
+/* Theme switcher: auto -> light -> dark. Auto follows the OS via the media
+   query; an explicit pick pins data-theme and persists, re-applied pre-paint
+   by the head script so there is no flash. */
+(function(){
+  var KEY='ss-theme', root=document.documentElement, btn=document.getElementById('themebtn');
+  var ICONS={
+    auto:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg>',
+    light:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5 5l1.9 1.9M17.1 17.1 19 19M19 5l-1.9 1.9M6.9 17.1 5 19"/></svg>',
+    dark:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.6 13.2A8.6 8.6 0 1 1 10.8 3.4a7 7 0 1 0 9.8 9.8z"/></svg>'
+  };
+  function mode(){try{var t=localStorage.getItem(KEY);return t==='light'||t==='dark'?t:'auto'}catch(e){return 'auto'}}
+  function apply(m){
+    if(m==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',m)}
+    try{m==='auto'?localStorage.removeItem(KEY):localStorage.setItem(KEY,m)}catch(e){}
+    if(btn){btn.innerHTML=ICONS[m];btn.setAttribute('aria-label','Theme: '+m+' (click to change)');btn.title='Theme: '+m}
+  }
+  if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
+  apply(mode());
+})();
 </script>
 </body>
 </html>
