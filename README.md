@@ -11,6 +11,8 @@ The protocols, standards, software, hardware and vocabulary that live shows actu
 
 **Live at [showstack-inky.vercel.app](https://showstack-inky.vercel.app/)** — one app serving the searchable index, the [field tools](https://showstack-inky.vercel.app/tools/), the [interop checker](https://showstack-inky.vercel.app/interop/), the [comparisons](https://showstack-inky.vercel.app/compare/), the [port index](https://showstack-inky.vercel.app/ports/) and the free JSON API.
 
+Created by [Migu Mianizt Leung](https://www.linkedin.com/in/mi2dev/) — [Medium](https://medium.com/@mi2dev) · [Instagram](https://instagram.com/mi2.dev)
+
 ---
 
 ## Why this exists

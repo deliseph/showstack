@@ -3,6 +3,9 @@ title: "showstack: the open index of live entertainment technology"
 message: "If you use this dataset, please cite it."
 type: dataset
 authors:
+  - given-names: "Migu Mianizt"
+    family-names: "Leung"
+    alias: "mi2dev"
   - name: "showstack contributors"
 license: CC-BY-4.0
 repository-code: "https://github.com/deliseph/showstack"
