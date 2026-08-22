@@ -11,6 +11,7 @@ import {
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay,
+  dbuToDbv, dbvToDbu,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -245,6 +246,26 @@ describe('RF wavelength', () => {
   test('rejects non-positive frequency', () => {
     assert.equal(rfWavelength(0), null)
     assert.equal(rfWavelength('x'), null)
+  })
+})
+
+describe('dBu / dBV line-level conversion', () => {
+  test('0 dBu and 0 dBV are 2.21 dB apart, independent of level', () => {
+    assert.equal(dbuToDbv(0), -2.21)
+    assert.equal(dbvToDbu(0), 2.21)
+  })
+  test('+4 dBu vs -10 dBV: the textbook 11.79 dB gap between pro and consumer nominal levels', () => {
+    const proAsDbu = 4
+    const consumerAsDbu = dbvToDbu(-10)
+    assert.ok(Math.abs((proAsDbu - consumerAsDbu) - 11.79) < 0.01)
+  })
+  test('round-trips within rounding error', () => {
+    assert.equal(dbvToDbu(dbuToDbv(4)), 4)
+    assert.equal(dbuToDbv(dbvToDbu(-10)), -10)
+  })
+  test('rejects non-numeric input', () => {
+    assert.equal(dbuToDbv('x'), null)
+    assert.equal(dbvToDbu(undefined), null)
   })
 })
 
