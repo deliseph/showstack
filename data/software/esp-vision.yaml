@@ -1,0 +1,71 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: esp-vision
+name: ESP Vision
+aka:
+  - Vision Pro
+vendor: ESP Studios / Zzyzx, Inc. (acquired by Vectorworks, Inc., 2015)
+category: previsualisation
+summary: >-
+  Realtime DMX-driven lighting visualiser sold independently from the mid-2000s
+  until Vectorworks acquired the product and its team in 2015. Its technology
+  became the basis for what Vectorworks now sells as Vectorworks Vision.
+
+license: proprietary
+price_model: one-off-purchase
+
+speaks:
+  - protocol: art-net
+    direction: in
+    note: >-
+      Documented DMX input protocol in the ESP Vision 2.0 era (2006); not
+      necessarily reflective of every release across the product's life.
+    confidence: reported
+
+status: superseded
+superseded_by: vectorworks-vision
+typical_use:
+  - Realtime lighting simulation for touring, broadcast, corporate and theatrical shows, circa 2004-2015
+  - Offline programming against consoles including Wholehog 3, HogPC and grandMA (via MA-Net)
+
+gotchas:
+  - >-
+    Acquired by Vectorworks, Inc. in October 2015. ESP Vision's technical team
+    joined Vectorworks' development group and its previsualisation technology
+    became the basis for Vectorworks Vision; "ESP Vision" has not been sold as an
+    independent product since.
+  - >-
+    Contemporary sources (2004-2006) describe a per-DMX-universe purchase price
+    plus a separate per-universe annual subscription covering upgrades and support.
+    These figures predate the 2015 acquisition by roughly a decade and should not
+    be assumed current.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - vectorworks
+
+sources:
+  - title: 'Vectorworks, Inc. Acquires ESP Vision to Enhance Design and Visualization Workflow Synergies'
+    url: https://www.prweb.com/releases/vectorworks_inc_acquires_esp_vision_to_enhance_design_and_visualization_workflow_synergies/prweb13035318.htm
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+    primary: true
+  - title: 'Vectorworks, Inc. acquires ESP Vision to enhance Design and Visualization workflows'
+    url: https://architosh.com/2015/10/vectorworks-inc-acquires-esp-vision-to-enhance-design-and-visualization-workflows/
+    publisher: Architosh
+    accessed: 2026-08-22
+  - title: ESP Vision 2.0 (road test)
+    url: https://plsn.com/articles/road-tests/esp-vision-20/
+    publisher: PLSN
+    accessed: 2026-08-22
+  - title: ESP Vision Lighting Simulation Software Now Available For Purchase
+    url: https://www.livedesignonline.com/esp-vision-lighting-simulation-software-now-available-for-purchase
+    publisher: Live Design
+    accessed: 2026-08-22
+
+contributed_by: []
+updated: 2026-08-22

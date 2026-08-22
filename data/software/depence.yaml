@@ -1,0 +1,108 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: depence
+name: Depence
+aka:
+  - Depence²
+  - Depence2
+vendor: Syncronorm GmbH
+category: previsualisation
+summary: >-
+  Windows show-design and visualisation platform covering stage lighting, laser,
+  video, fountains and special effects in one real-time 3D model. A separate Control
+  module can drive the actual show output as well as previsualise it.
+
+license: proprietary
+price_model: dongle-locked
+platforms:
+  - windows
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: >-
+      Listed on Syncronorm's system-integration page; used to receive console output
+      for previz, and the separate Control module is marketed as able to drive the
+      real show over the same DMX network protocols.
+    confidence: reported
+  - protocol: sacn
+    direction: in
+    note: Listed alongside Art-Net on Syncronorm's own system-integration page as a supported DMX-over-network input.
+    confidence: verified
+  - protocol: midi
+    direction: in
+    note: Listed among Depence's documented show-control integration protocols.
+    confidence: verified
+  - protocol: ndi
+    direction: in
+    note: NewTek/Vizrt NDI listed as a supported input on Syncronorm's system-integration page.
+    confidence: verified
+  - protocol: psn
+    direction: in
+    note: PosiStageNet listed as a supported tracked-object input on the same page.
+    confidence: verified
+  - protocol: ltc
+    direction: in
+    note: >-
+      Listed as "SMPTE" among Depence's supported protocols; matched here to
+      SMPTE/LTC timecode by name.
+    confidence: reported
+
+homepage:
+  url: https://www.syncronorm.com/products/depence2/overview
+  label: Syncronorm — Depence
+
+status: current
+typical_use:
+  - Previsualising a combined lighting, video, laser and fountain design in one 3D scene before load-in
+  - Rehearsing a multimedia show against a photorealistic model of the venue
+  - Driving the real show over DMX/RDM and analog/digital I/O from the same show file via the Control module
+  - Selling a fountain, laser or architectural lighting concept to a client before installation
+
+gotchas:
+  - >-
+    Windows only, and integrated Intel graphics are explicitly called out as not
+    fully supported. Syncronorm's own spec recommends a dedicated gaming GPU with at
+    least 6 GB VRAM.
+  - >-
+    Licensing is modular and dongle-locked: Stage, Fountain, Special-FX, Laser,
+    Animate and Control are separate paid modules, and none of them run without the
+    USB licence dongle attached, even though the software itself installs on
+    unlimited machines.
+  - >-
+    Perpetual module licences are valid for the current major release only (R4 at
+    time of writing). Minor updates within a release are free; moving to the next
+    major release is a separate paid upgrade.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - show-control
+
+sources:
+  - title: Depence — Overview
+    url: https://www.syncronorm.com/products/depence2/overview
+    publisher: Syncronorm GmbH
+    accessed: 2026-08-22
+    primary: true
+  - title: Depence — System Integration
+    url: https://www.syncronorm.com/products/depence2/show-control/system-integration
+    publisher: Syncronorm GmbH
+    accessed: 2026-08-22
+    primary: true
+  - title: Depence — System Requirements
+    url: https://www.syncronorm.com/products/depence2/system-requirements/page
+    publisher: Syncronorm GmbH
+    accessed: 2026-08-22
+    primary: true
+  - title: Depence — Licensing
+    url: https://www.syncronorm.com/products/depence2/licensing
+    publisher: Syncronorm GmbH
+    accessed: 2026-08-22
+    primary: true
+
+contributed_by: []
+updated: 2026-08-22

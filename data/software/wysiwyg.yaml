@@ -1,0 +1,90 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: wysiwyg
+name: WYSIWYG
+vendor: CAST Group Inc.
+category: previsualisation
+summary: >-
+  Lighting design, plotting and previsualisation software that renders a rig in real
+  time from live console DMX. A longstanding dedicated previz tool for touring,
+  broadcast, theatre and corporate work, sold as Core, Design and Perform editions.
+
+license: proprietary
+price_model: subscription
+platforms:
+  - windows
+
+speaks:
+  - protocol: art-net
+    direction: in
+    note: >-
+      Documented as one of the network options for receiving console DMX (e.g.
+      merged BlackTrax tracking data reaches WYSIWYG this way).
+    confidence: reported
+  - protocol: sacn
+    direction: in
+    note: Documented alongside Art-Net as a network DMX input from the console.
+    confidence: reported
+  - protocol: citp
+    direction: in
+    note: >-
+      Live media-server preview is a supported feature; CAST's own known-issues
+      list references CITP video-display behaviour after a resolution change.
+    confidence: reported
+
+homepage:
+  url: https://cast-soft.com/WYSIWYG/
+  label: CAST Software — WYSIWYG
+
+status: current
+typical_use:
+  - Offline programming and plotting against a rendered rig before load-in
+  - Producing CAD plots and paperwork alongside the visualisation
+  - Simulating BlackTrax-tracked automated fixtures and effects
+  - Selling a look to a designer or client before the rig is in the room
+
+gotchas:
+  - >-
+    WYSIWYG is a Windows-only application. It can run on an ARM-based Mac via
+    Parallels inside a Windows 11 ARM-64 environment, but Intel Mac support via
+    Boot Camp or Parallels is explicitly not officially supported.
+  - >-
+    Dongles and perpetual licences have been discontinued. Licences are cloud-based
+    subscriptions billed monthly or annually, and the software will not run once the
+    subscription lapses.
+  - >-
+    CITP video preview can take up to ten seconds to display correctly after a
+    resolution change, per CAST's own WYSIWYG 2025 known-issues list.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - cad
+
+sources:
+  - title: WYSIWYG — Lighting Design Software
+    url: https://cast-soft.com/WYSIWYG/
+    publisher: CAST Software
+    accessed: 2026-08-22
+    primary: true
+  - title: CAST Software FAQ
+    url: https://cast-soft.com/faq/
+    publisher: CAST Software
+    accessed: 2026-08-22
+    primary: true
+  - title: WYSIWYG 2025 Known Issues
+    url: https://cast-soft.com/WYSIWYG-known-issues/
+    publisher: CAST Software
+    accessed: 2026-08-22
+    primary: true
+  - title: CAST Software — company and product overview
+    url: https://cast-soft.com/
+    publisher: CAST Group Inc.
+    accessed: 2026-08-22
+    primary: true
+
+contributed_by: []
+updated: 2026-08-22

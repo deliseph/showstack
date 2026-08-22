@@ -1,0 +1,108 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: l8
+name: L8
+vendor: L8 LLC
+category: previsualisation
+summary: >-
+  Windows real-time visualiser for lighting, video, laser and moving-object shows,
+  sold in tiered editions from a 64-fixture Community Edition up to a 4000-fixture
+  Unlimited tier with bidirectional Hog and MA-Net console links.
+
+license: proprietary
+price_model: one-off-purchase
+platforms:
+  - windows
+
+speaks:
+  - protocol: art-net
+    direction: bidirectional
+    note: >-
+      DMX input on every edition; the Trace and Unlimited edition pages separately
+      document "DMX output with Art-Net."
+    confidence: verified
+  - protocol: sacn
+    direction: in
+    note: DMX input protocol on every edition, e.g. 2 universes on the entry CE edition.
+    confidence: verified
+  - protocol: ma-net
+    direction: in
+    requires_licence: true
+    note: MA-Net 2/3 DMX input, documented on the Trace and Unlimited editions only.
+    confidence: verified
+  - protocol: hognet
+    direction: bidirectional
+    requires_licence: true
+    note: >-
+      Documented literally as "Hog 3/4 (bidirectional)" DMX input/output on the
+      Trace and Unlimited editions.
+    confidence: verified
+  - protocol: ndi
+    direction: in
+    requires_licence: true
+    note: NDI texture input documented on the Unlimited edition.
+    confidence: verified
+
+homepage:
+  url: https://l8.ltd/
+  label: L8
+
+status: current
+typical_use:
+  - Previsualising lighting, video and laser design against live console DMX before load-in
+  - Simulating moving scenery and tracked objects, with collision detection on the higher tiers
+  - Low-cost offline programming check on the Community Edition before committing to a full licence
+  - Rendering a combined lighting, video and laser look to sell a concept to a client
+
+gotchas:
+  - >-
+    Editions are capped by fixture and universe count, similar to Capture: the CE
+    edition tops out at 64 fixtures and 2 DMX-input universes, while Unlimited
+    reaches 4000 fixtures.
+  - >-
+    MA-Net and Hog console links are reserved for the Trace and Unlimited tiers. The
+    entry CE edition only receives Art-Net or sACN.
+  - >-
+    Every edition's system requirements explicitly exclude Intel graphics; a
+    dedicated Nvidia or AMD GPU is required.
+  - >-
+    L8 LLC and the separately operated LightConverse Ltd. both trace back to the
+    same original LightConverse development team, who split into two independent
+    companies in 2018. They are not the same product today.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - laser
+
+sources:
+  - title: L8 CE edition
+    url: https://l8.ltd/m/l8-ce.html
+    publisher: L8 LLC
+    accessed: 2026-08-22
+    primary: true
+  - title: L8 Trace edition
+    url: https://l8.ltd/m/l8-trace.html
+    publisher: L8 LLC
+    accessed: 2026-08-22
+    primary: true
+  - title: L8 Unlimited edition
+    url: https://l8.ltd/m/l8-unlimited.html
+    publisher: L8 LLC
+    accessed: 2026-08-22
+    primary: true
+  - title: L8 Shop — home
+    url: https://l8.ltd/
+    publisher: L8 LLC
+    accessed: 2026-08-22
+    primary: true
+  - title: From LightConverse to L8
+    url: https://plsn.com/archives/january-2019/from-lightconverse-to-l8/
+    publisher: PLSN
+    accessed: 2026-08-22
+
+contributed_by: []
+updated: 2026-08-22

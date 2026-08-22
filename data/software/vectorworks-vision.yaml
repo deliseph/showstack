@@ -1,0 +1,100 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: vectorworks-vision
+name: Vectorworks Vision
+aka:
+  - Vision
+vendor: Vectorworks, Inc.
+category: previsualisation
+summary: >-
+  Real-time previsualisation companion to Vectorworks Spotlight and Design Suite. It
+  renders a lighting design live from console DMX so a look can be built and cued
+  before load-in, and is licensed separately from the CAD drawing itself.
+
+license: proprietary
+price_model: quote-only
+platforms:
+  - windows
+  - macos
+
+speaks:
+  - protocol: ma-net
+    direction: in
+    requires_licence: true
+    note: >-
+      MA-Net2 input requires a Vision-specific USB dongle; MA-Net3 requires an MA
+      viz-key plus a grandMA3 console or onPC, per Vision's own manual.
+    confidence: verified
+  - protocol: art-net
+    direction: in
+    note: >-
+      Documented by Vectorworks as a DMX-provider option for its Spotlight-integrated
+      previsualisation line, which shares Vision's DMX engine.
+    confidence: reported
+  - protocol: sacn
+    direction: in
+    note: Documented alongside Art-Net as a DMX-provider option for Vectorworks' previsualisation line.
+    confidence: reported
+
+homepage:
+  url: https://www.vectorworks.net/en-US/vision
+  label: Vectorworks Vision
+
+status: current
+typical_use:
+  - Previsualising a lighting design against live console DMX before load-in
+  - Testing focus, colour and gobo choices in a rendered venue model
+  - Offline programming when the physical rig or venue is not available
+  - Rehearsing and cueing a show ahead of tech
+
+gotchas:
+  - >-
+    Vision is not standalone software — it requires an active Vectorworks Spotlight
+    or Design Suite licence. Service Select subscribers get it included (Unlimited
+    tier annually, a 4-universe Plus tier otherwise); everyone else buys Vision
+    Unlimited as a separate add-on module.
+  - >-
+    MA-Net2 and MA-Net3 need different hardware keys — a Vision dongle versus an MA
+    viz-key — and are not interchangeable, matching the generation split documented
+    for the MA-Net protocol itself.
+  - >-
+    Distinct from "Showcase," the real-time previz feature built directly into
+    Spotlight 2025. Vectorworks sells and supports both; existing Vision workflows
+    are unaffected by Showcase's introduction.
+
+confidence: reported
+tags:
+  - previsualisation
+  - lighting
+  - visualiser
+  - vectorworks
+
+sources:
+  - title: Vectorworks Vision — product page
+    url: https://www.vectorworks.net/en-US/vision
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+    primary: true
+  - title: Buy Vectorworks Vision
+    url: https://www.vectorworks.net/en-US/vision/buy
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+    primary: true
+  - title: 'Vision 2024 Help: Setting the DMX Provider'
+    url: https://app-help.vectorworks.net/2024/Vision/2024_Vision/Vision/Setting%20the_DMX_provider.htm
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+    primary: true
+  - title: Connectivity Options with Showcase in Vectorworks Spotlight
+    url: https://www.vectorworks.net/en-US/newsroom/showcase-connections-lighting-consoles
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+    primary: true
+  - title: Previz with Showcase in Vectorworks Spotlight
+    url: https://www.vectorworks.net/en-US/newsroom/showcase-previz-vectorworks-spotlight-2025
+    publisher: Vectorworks, Inc.
+    accessed: 2026-08-22
+
+contributed_by: []
+updated: 2026-08-22
