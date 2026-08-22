@@ -1,0 +1,45 @@
+id: iso-iec-7498-1
+designation: ISO/IEC 7498-1:1994
+title: >-
+  Information technology - Open Systems Interconnection - Basic Reference
+  Model: The Basic Model
+body: ISO/IEC
+domain: networking
+year: 1994
+scope: >-
+  Defines the seven-layer OSI reference model — physical, data link,
+  network, transport, session, presentation, and application — as an
+  abstract framework for describing how open systems communicate. It does
+  not define any wire protocol itself; it is the layer vocabulary
+  ("layer 2", "layer 3") that networking documentation on show networks
+  borrows, even though almost no real protocol stack, including TCP/IP,
+  maps onto all seven layers cleanly.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/20269.html
+  label: ISO catalogue listing (purchase)
+jurisdiction:
+  - International
+notes: >-
+  Second edition, dated 1994-11-15, reviewed and confirmed in 2000; ISO's
+  own catalogue still lists this as the current version with no later
+  edition published. It replaced the first edition, ISO 7498:1984.
+  Companion parts in the same family — 7498-2 (security architecture),
+  7498-3 (naming and addressing), 7498-4 (management framework) — cover
+  material this basic-model part does not.
+confidence: verified
+tags:
+  - iso
+  - iec
+  - osi
+  - reference-model
+  - networking
+sources:
+  - title: ISO/IEC 7498-1:1994 catalogue listing
+    url: https://www.iso.org/standard/20269.html
+    publisher: ISO
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

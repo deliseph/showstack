@@ -1,0 +1,43 @@
+id: displayport-standard
+designation: VESA DisplayPort Standard v2.1b
+title: VESA DisplayPort Standard
+body: VESA
+domain: video
+year: 2025
+scope: >-
+  Defines the DisplayPort interface: the Main Link (up to UHBR20, 80
+  Gbit/s over 4 lanes), Multi-Stream Transport for daisy-chaining
+  monitors, Display Stream Compression, and the connector/cable
+  requirements a device or cable has to meet to claim a given DisplayPort
+  version or UHBR rate.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.displayport.org/faq/
+  label: DisplayPort.org version FAQ (full spec is a VESA member/adopter benefit)
+jurisdiction:
+  - International
+notes: >-
+  DisplayPort 2.1b was announced January 2025, superseding 2.1a, and adds
+  the DP80LL ("low loss") active-cable specification, allowing UHBR20
+  cables roughly 3x the length of the original passive DP80 cable. VESA
+  develops and administers the standard; the full specification text is a
+  member/adopter benefit rather than a public download.
+confidence: verified
+tags:
+  - vesa
+  - displayport
+  - video
+  - connector
+sources:
+  - title: DisplayPort.org FAQ
+    url: https://www.displayport.org/faq/
+    publisher: VESA
+    accessed: 2026-08-22
+    primary: true
+  - title: VESA DisplayPort 2.1b / DP80LL announcement
+    url: https://vesa.org/press/vesa-to-update-displayport-2-1-with-new-active-cable-specification-for-up-to-3x-longer-dp80-cables/
+    publisher: VESA
+    accessed: 2026-08-22
+contributed_by: []
+updated: 2026-08-22

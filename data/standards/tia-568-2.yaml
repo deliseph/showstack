@@ -1,0 +1,51 @@
+id: tia-568-2
+designation: ANSI/TIA-568.2-E
+title: Balanced Twisted-Pair Telecommunications Cabling and Components Standard
+body: TIA
+domain: networking
+year: 2024
+scope: >-
+  Defines the copper structured-cabling requirements for balanced
+  twisted-pair systems: the Category 5e/6/6A/8 electrical performance
+  specifications, connecting hardware, cords, and field-test limits a
+  cable actually has to meet to be sold under its category name. This is
+  the part of the TIA-568 series that a bare "EIA/TIA-568" citation
+  usually means when the subject is copper Ethernet cable and termination
+  quality, as opposed to the wider cabling architecture in TIA-568.0 or
+  the optical-fibre requirements in TIA-568.3.
+status: current
+free_to_read: false
+access_url:
+  url: https://tiaonline.org/standardannouncement/tia-publishes-new-standards-ansi-tia-568-2-e-and-ansi-tia-568-5-1/
+  label: TIA standard announcement (purchase via TIA's official store)
+jurisdiction:
+  - US
+  - International
+notes: >-
+  Developed by TIA committee TR-42; announced 5 November 2024,
+  incorporating the balun (Category 8 test) and power-delivery addenda
+  from the prior -D edition, plus new DC resistance-unbalance limits for
+  Category 5e/6/6A. TIA-568 is a family, not one document: 568.0-E
+  (generic cabling architecture), 568.1-E (commercial building
+  infrastructure), 568.3-E (optical fibre), 568.4-D (broadband coax) and
+  568.5 (single twisted-pair) are separate parts with their own edition
+  letters and dates.
+confidence: verified
+tags:
+  - tia
+  - ansi
+  - cabling
+  - ethernet
+  - structured-cabling
+sources:
+  - title: TIA Publishes New Standards - ANSI/TIA-568.2-E and ANSI/TIA-568.5-1
+    url: https://tiaonline.org/standardannouncement/tia-publishes-new-standards-ansi-tia-568-2-e-and-ansi-tia-568-5-1/
+    publisher: TIA
+    accessed: 2026-08-22
+    primary: true
+  - title: ANSI/TIA-568.2-E Is Here. Are Your Cables Compliant?
+    url: https://www.siemon.com/en/ansi-tia-568-2-e-released/
+    publisher: Siemon
+    accessed: 2026-08-22
+contributed_by: []
+updated: 2026-08-22

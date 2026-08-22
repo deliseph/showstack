@@ -1,0 +1,44 @@
+id: ieee-802-11
+designation: IEEE 802.11-2024
+title: >-
+  IEEE Standard for Information Technology - Telecommunications and
+  Information Exchange between Systems - Local and Metropolitan Area
+  Networks - Specific Requirements - Part 11: Wireless LAN Medium Access
+  Control (MAC) and Physical Layer (PHY) Specifications
+body: IEEE
+domain: networking
+year: 2024
+scope: >-
+  Defines the Wi-Fi family: the MAC layer and the physical-layer radio
+  specifications (the amendments given the marketing names Wi-Fi
+  4/5/6/6E/7) for wireless local area networks in the 2.4, 5, and 6 GHz
+  bands. It is a full revision rather than an amendment on top of the
+  prior text: it folds Amendments 1 through 7, published 2021-2024, into
+  one consolidated base standard.
+status: current
+free_to_read: true
+access_url:
+  url: https://standards.ieee.org/ieee/802.11/10548/
+  label: IEEE SA standard listing (free via the IEEE GET Program)
+jurisdiction:
+  - International
+notes: >-
+  Approved by the IEEE-SA Standards Board 26 September 2024, published 28
+  April 2025; supersedes IEEE 802.11-2020. Marketing generation names are
+  not part of the standard itself: "Wi-Fi 6" is the Wi-Fi Alliance's label
+  for the 802.11ax amendment, now folded into this base text along with
+  802.11ac (Wi-Fi 5), 802.11be (Wi-Fi 7), and the others.
+confidence: verified
+tags:
+  - ieee
+  - wifi
+  - wireless
+  - networking
+sources:
+  - title: IEEE 802.11-2024 standard listing
+    url: https://standards.ieee.org/ieee/802.11/10548/
+    publisher: IEEE Standards Association
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

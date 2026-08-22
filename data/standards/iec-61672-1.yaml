@@ -1,0 +1,39 @@
+id: iec-61672-1
+designation: IEC 61672-1:2013
+title: "Electroacoustics - Sound level meters - Part 1: Specifications"
+body: IEC
+domain: audio
+year: 2013
+scope: >-
+  Specifies the performance requirements and tolerances for sound level
+  meters, including the A, C, and Z frequency-weighting curves that
+  produce dB(A), dB(C), and dB(Z) readings, and the Fast/Slow
+  time-weightings used to integrate a reading. It is the document a
+  meter's accuracy class (Class 1 or Class 2) is actually rated against.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/5708
+  label: IEC Webstore (purchase)
+jurisdiction:
+  - International
+notes: >-
+  Edition 2.0, published 30 September 2013, stability date 2029; a
+  technical revision of the 2002 first edition, which replaced the older
+  "Linear" weighting with the defined Z (zero) weighting used today. Part
+  2 (IEC 61672-2) covers pattern-evaluation tests and Part 3 covers
+  periodic testing — separate documents from this specifications part.
+confidence: verified
+tags:
+  - iec
+  - spl
+  - weighting
+  - sound-level-meter
+sources:
+  - title: IEC 61672-1:2013 publication page
+    url: https://webstore.iec.ch/en/publication/5708
+    publisher: IEC
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

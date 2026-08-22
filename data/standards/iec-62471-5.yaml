@@ -1,0 +1,46 @@
+id: iec-62471-5
+designation: IEC 62471-5:2015
+title: >-
+  Photobiological safety of lamps and lamp systems - Part 5: Image
+  projectors
+body: IEC
+domain: laser
+year: 2015
+scope: >-
+  Defines a risk group classification system (RG1, RG2, RG3) and the
+  measurement conditions for optical radiation emitted by image
+  projectors — theatre projectors, data projectors, and home-use
+  projectors — regardless of whether the light source is a lamp, LED, or
+  laser. This is the part of the 62471 series that actually governs
+  projector risk-group labelling; the base IEC 62471 document covers
+  general lamps and lamp systems and explicitly excludes projection uses
+  from its own scope.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/22639
+  label: IEC Webstore (purchase)
+jurisdiction:
+  - International
+notes: >-
+  Edition 1.0, published 9 June 2015, developed by TC 76 (Optical
+  radiation safety and laser equipment), stability date 2027. Often cited
+  loosely alongside IEC 60825-1 as "IEC/EN 62471" for laser-illuminated
+  projectors: 60825-1 classifies the laser diodes as a source, while this
+  part classifies the projected output an audience is actually exposed
+  to, measured at a defined projection ratio (2.0:1 for interchangeable
+  optics). A European harmonised EN 62471-5 also exists.
+confidence: verified
+tags:
+  - iec
+  - laser
+  - projector
+  - risk-group
+sources:
+  - title: IEC 62471-5:2015 publication page
+    url: https://webstore.iec.ch/en/publication/22639
+    publisher: IEC
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

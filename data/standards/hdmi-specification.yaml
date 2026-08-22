@@ -1,0 +1,48 @@
+id: hdmi-specification
+designation: HDMI Specification 2.2
+title: High-Definition Multimedia Interface Specification Version 2.2
+body: HDMI Forum
+domain: video
+year: 2025
+scope: >-
+  Defines the HDMI interface: TMDS/FRL signalling, connector pinout and
+  types, the audio/video protocols it carries, the EDID and HDMI-CEC
+  control channels, and (from 2.1 onward) the higher-bandwidth modes such
+  as Dynamic HDR and higher resolution/refresh-rate combinations. Each
+  version number describes the maximum a source, sink, or cable can do —
+  the connector shape alone never tells you which version a given port or
+  cable actually supports.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.hdmi.org/spec/hdmi2_1
+  label: HDMI Forum specification overview (full text via Adopter Extranet)
+jurisdiction:
+  - International
+notes: >-
+  Released 25 June 2025 by the HDMI Forum's Technical Working Group,
+  raising maximum bandwidth to 96 Gbit/s over a new "Ultra96" cable and
+  FRL lane structure. The HDMI Forum, Inc. develops and releases the
+  technical specification; HDMI Licensing Administrator, Inc. (HDMI LA)
+  is the separate entity appointed as licensing agent, handling trademark
+  and compliance licensing for adopters. Full specification text requires
+  signing the (no-cost) HDMI Adopter Agreement, not a cash purchase, but
+  is not a public download.
+confidence: verified
+tags:
+  - hdmi
+  - video
+  - display
+  - connector
+sources:
+  - title: HDMI Forum Releases Version 2.2 of the HDMI Specification
+    url: https://hdmiforum.org/hdmi-forum-releases-version-2-2-of-the-hdmi-specification/
+    publisher: HDMI Forum
+    accessed: 2026-08-22
+    primary: true
+  - title: HDMI 2.2 Specification Technology Overview
+    url: https://www.hdmi.org/spec/hdmi2_1
+    publisher: HDMI Licensing Administrator
+    accessed: 2026-08-22
+contributed_by: []
+updated: 2026-08-22

@@ -1,0 +1,46 @@
+id: tia-598
+designation: ANSI/TIA-598-D
+title: Optical Fiber Cable Color Coding
+body: TIA
+domain: networking
+year: 2014
+scope: >-
+  Defines the jacket and print colour convention used to identify optical
+  fibre type by sight: colours such as orange, aqua, and erika violet for
+  the various multimode grades (OM1-OM4), and yellow for single-mode
+  (OS1/OS2), plus codes for buffered fibres and connector strain-relief
+  boots. It is an industry naming convention, not a physical property of
+  the glass, so an unlabelled or repurposed cable has to be confirmed
+  against its printed spec rather than assumed from jacket colour alone.
+status: current
+free_to_read: false
+access_url:
+  url: https://store.accuristech.com/standards/tia-ansi-tia-598-d?product_id=2594507
+  label: TIA's official standards store (purchase)
+jurisdiction:
+  - International
+notes: >-
+  Published 9 July 2014 as a revision of TIA-598-C (2005), with Addendum
+  1 and Addendum 2 (both 2018) adding a jacket colour for OM5 wideband
+  multimode fibre. As of TIA's own June 2023 published standards-revision
+  list, a further -E revision was still "work in progress"; no published
+  -E edition has been found since, so -D with its addenda remains the
+  current text.
+confidence: reported
+tags:
+  - tia
+  - fibre
+  - color-code
+  - cabling
+sources:
+  - title: ANSI/TIA-598-D standard listing
+    url: https://store.accuristech.com/standards/tia-ansi-tia-598-d?product_id=2594507
+    publisher: TIA
+    accessed: 2026-08-22
+    primary: true
+  - title: List of Current TIA Standards Revisions (TIA Fiber Optics Technology Consortium)
+    url: https://www.tiafotc.org/wp-content/uploads/2023/06/List-of-Current-TIA-Standards-Revisions-6-12-2023.pdf
+    publisher: TIA Fiber Optics Technology Consortium
+    accessed: 2026-08-22
+contributed_by: []
+updated: 2026-08-22

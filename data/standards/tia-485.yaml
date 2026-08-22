@@ -1,0 +1,48 @@
+id: tia-485
+designation: ANSI/TIA-485-A
+title: >-
+  Electrical Characteristics of Generators and Receivers for Use in
+  Balanced Digital Multipoint Systems
+body: TIA
+domain: networking
+year: 1998
+scope: >-
+  Defines the electrical layer commonly called RS-485: driver and
+  receiver voltage levels, common-mode range, unit loads, and termination
+  for balanced differential multipoint data transmission over a twisted
+  pair. It specifies electrical characteristics only — no connector, no
+  data-link framing, no protocol — which is why every RS-485-based
+  control protocol has to define its own connector, unit-load budget, and
+  packet framing on top of it.
+status: current
+free_to_read: false
+access_url:
+  url: https://store.accuristech.com/standards/tia-ansi-tia-485-a?product_id=2591400
+  label: TIA's official standards store (purchase)
+jurisdiction:
+  - International
+related_protocols:
+  - dmx512
+  - rdm
+notes: >-
+  Approved 1 March 1998 as a revision of the original EIA-485 (1983); no
+  later edition has been found in TIA's own published revision lists, so
+  -A remains the current text. This is the generic industrial electrical
+  layer both DMX512 and RDM (E1.20) ride on — both are explicitly
+  RS-485 transports in their own showstack entries — with ANSI E1.11
+  (DMX512-A) adding its own connector, termination, and unit-load rules
+  on top of this document.
+confidence: reported
+tags:
+  - tia
+  - rs-485
+  - electrical-layer
+  - dmx
+sources:
+  - title: ANSI/TIA-485-A standard listing
+    url: https://store.accuristech.com/standards/tia-ansi-tia-485-a?product_id=2591400
+    publisher: TIA
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

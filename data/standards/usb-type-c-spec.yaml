@@ -1,0 +1,41 @@
+id: usb-type-c-spec
+designation: USB Type-C Cable and Connector Specification Release 2.5
+title: Universal Serial Bus Type-C Cable and Connector Specification
+body: USB-IF
+domain: networking
+scope: >-
+  Defines the USB-C connector: the 24-pin reversible mechanical design,
+  pin assignment, and the Alternate Mode negotiation mechanism that lets
+  a USB-C port carry DisplayPort or Thunderbolt signalling instead of USB
+  data, plus the electrical and mechanical requirements a cable or
+  connector has to meet to be sold as USB-C.
+status: current
+free_to_read: true
+access_url:
+  url: https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-release-25
+  label: USB-IF document library (free download)
+jurisdiction:
+  - International
+notes: >-
+  Listed on USB-IF's own document library as Release 2.5, the current
+  edition; its exact publication date could not be independently
+  confirmed beyond that listing, so no year is asserted here. Prior
+  releases followed roughly an autumn cadence — 2.2 in October 2022, 2.3
+  in October 2023, 2.4 in October 2024. There is no separate "Thunderbolt
+  connector": Thunderbolt 3 and 4 run over this same 24-pin connector
+  using its Alternate Mode mechanism, where Thunderbolt 1/2 used the
+  older 20-pin Mini DisplayPort connector instead.
+confidence: verified
+tags:
+  - usb
+  - usb-c
+  - connector
+  - usb-if
+sources:
+  - title: USB Type-C Cable and Connector Specification Release 2.5
+    url: https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-release-25
+    publisher: USB-IF
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22
