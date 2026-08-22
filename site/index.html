@@ -17,6 +17,7 @@
     --bg:#0b0e14; --panel:#121722; --panel2:#19212f; --line:#242f42;
     --ink:#e9edf4; --dim:#9aa8bc; --dimmer:#6e7c94;
     --accent:#5fd4bb; --accent2:#f0b866; --warn:#ec7f66; --ok:#8cc96a;
+    --dom-visual:#ffb454; --dom-audio:#4fd1ff; --dom-network:#6ea8fe; --dom-safety:#ec7f66; --dom-control:#b98cf2;
     --glow:rgba(95,212,187,.06);
     --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
     --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
@@ -26,6 +27,7 @@
     --bg:#f6f7f9; --panel:#ffffff; --panel2:#edf0f4; --line:#dbe1ea;
     --ink:#141922; --dim:#46536a; --dimmer:#67748b;
     --accent:#0e8a72; --accent2:#8f6110; --warn:#b6462e; --ok:#3a7a22;
+    --dom-visual:#8f5a10; --dom-audio:#116e93; --dom-network:#22579e; --dom-safety:#b6462e; --dom-control:#7440ab;
     --glow:transparent;
     --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
   }
@@ -34,6 +36,7 @@
       --bg:#f6f7f9; --panel:#ffffff; --panel2:#edf0f4; --line:#dbe1ea;
       --ink:#141922; --dim:#46536a; --dimmer:#67748b;
       --accent:#0e8a72; --accent2:#8f6110; --warn:#b6462e; --ok:#3a7a22;
+      --dom-visual:#8f5a10; --dom-audio:#116e93; --dom-network:#22579e; --dom-safety:#b6462e; --dom-control:#7440ab;
       --glow:transparent;
       --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
     }
@@ -67,6 +70,8 @@
   .pagenav a:hover{color:var(--ink);background:var(--panel);border-color:var(--line);text-decoration:none}
   .pagenav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
     border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+  .pagenav .navgroup{display:inline-flex;gap:4px;padding-left:8px;margin-left:2px;border-left:1px solid var(--line)}
+  @media(max-width:640px){.pagenav .navgroup{border-left:none;padding-left:0;margin-left:0}}
   .ghlink{font-family:var(--mono);font-size:12.5px;color:var(--dim);border:1px solid var(--line);padding:5px 10px;border-radius:6px}
   .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
 
@@ -93,11 +98,21 @@
   .stats b{color:var(--ink);font-weight:600}
 
   main{padding:26px 0 90px;background:radial-gradient(640px 240px at 50% -80px,var(--glow),transparent)}
+  .hgraph{position:relative;height:210px;border-bottom:1px solid var(--line);overflow:hidden;
+    background:linear-gradient(180deg,var(--panel2),var(--bg))}
+  .hgraph canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hgraph::after{content:"";position:absolute;inset:auto 0 0 0;height:80px;
+    background:linear-gradient(180deg,transparent,var(--bg))}
+  @media(max-width:640px){.hgraph{height:140px}}
   .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
+  .showall{display:block;width:100%;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--dim);
+    background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:10px;cursor:pointer}
+  .showall:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
   .grid{display:grid;gap:10px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;
-    box-shadow:var(--shadow);transition:border-color .2s,transform .2s}
-  .card:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));transform:translateY(-1px)}
+  .card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--card-accent,var(--line));
+    border-radius:12px;padding:15px 17px 15px 15px;box-shadow:var(--shadow);transition:border-color .2s,transform .2s}
+  .card:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));
+    border-left-color:var(--card-accent,var(--accent));transform:translateY(-1px)}
   .card h3{margin:0 0 4px;font-size:15.5px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
   .card h3 .id{font-family:var(--mono);font-size:11.5px;color:var(--dimmer);font-weight:400}
   .card p{margin:0;color:var(--dim);font-size:13.5px}
@@ -108,6 +123,11 @@
   .pill.unverified{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
   .pill.port{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,transparent)}
   .pill.safety{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .pill.dom-visual{color:var(--dom-visual);border-color:color-mix(in srgb,var(--dom-visual) 40%,transparent)}
+  .pill.dom-audio{color:var(--dom-audio);border-color:color-mix(in srgb,var(--dom-audio) 40%,transparent)}
+  .pill.dom-network{color:var(--dom-network);border-color:color-mix(in srgb,var(--dom-network) 40%,transparent)}
+  .pill.dom-safety{color:var(--dom-safety);border-color:color-mix(in srgb,var(--dom-safety) 45%,transparent)}
+  .pill.dom-control{color:var(--dom-control);border-color:color-mix(in srgb,var(--dom-control) 40%,transparent)}
   .zh{font-size:13.5px;color:var(--ink);opacity:.85}
 
   details.entry summary{cursor:pointer;list-style:none}
@@ -142,7 +162,7 @@
     <div class="brand">
       <h1>show<span>stack</span></h1>
       <p>the open index of live entertainment technology</p>
-      <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a></nav>
+      <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a></span></nav>
       <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
       <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
     </div>
@@ -153,6 +173,8 @@
     <div class="stats" id="stats"></div>
   </div>
 </header>
+
+<div class="hgraph"><canvas id="hgcanvas" aria-hidden="true"></canvas></div>
 
 <main>
   <div class="wrap">
@@ -205,12 +227,28 @@ const COLS = [
 ];
 
 let active = "all";
+let showAll = false;
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+/* The same five-way grouping used site-wide (see scripts/graph.mjs) so a
+   badge here means the same thing it means on every generated page — a
+   wayfinding grouping of the real category/domain field, not a new fact. */
+function superDomain(catOrDomain){
+  const c = String(catOrDomain ?? "").toLowerCase();
+  if (/light|video/.test(c)) return "visual";
+  if (/audio/.test(c)) return "audio";
+  if (/network|device-management|control-data|monitoring|switch/.test(c)) return "network";
+  if (/rig|machin|track|safety|pyro|laser|electrical|dmx-node/.test(c)) return "safety";
+  return "control";
+}
+
 /* Flatten every entry into one searchable list. The haystack deliberately
    includes ports, aka names and Chinese terms, because those are what people
-   actually type when they are mid-problem. */
+   actually type when they are mid-problem. `score` is a plain, defensible
+   signal — how sourced and how connected an entry is — used only to order
+   the unfiltered front page so it leads with the best-documented entries
+   instead of alphabetical trivia; it never hides anything or affects search. */
 const ITEMS = COLS.flatMap(c => (DATA?.[c.key] ?? []).map(d => {
   const ports = (d.default_ports ?? []).map(p => p.number + " " + p.transport).join(" ");
   const hay = [
@@ -220,13 +258,16 @@ const ITEMS = COLS.flatMap(c => (DATA?.[c.key] ?? []).map(d => {
     (d.regional_variants ?? []).map(r => r.term + " " + r.region).join(" "),
     ports
   ].filter(Boolean).join(" ").toLowerCase();
-  return {col: c.key, d, hay};
+  const score = (d.sources?.length ?? 0) * 2 + (d.spoken_by?.length ?? 0) + (d.speaks?.length ?? 0)
+    + (d.regional_variants?.length ?? 0) + (d.implementations?.length ?? 0) + (d.confidence === "verified" ? 3 : 0);
+  const dom = superDomain(d.category ?? d.domain);
+  return {col: c.key, d, hay, score, dom};
 }));
 
 function pills(col, d){
   const out = [];
-  if (d.category) out.push(`<span class="pill">${esc(d.category)}</span>`);
-  if (d.domain) out.push(`<span class="pill">${esc(d.domain)}</span>`);
+  if (d.category) out.push(`<span class="pill dom-${superDomain(d.category)}">${esc(d.category)}</span>`);
+  if (d.domain) out.push(`<span class="pill dom-${superDomain(d.domain)}">${esc(d.domain)}</span>`);
   if (d.body) out.push(`<span class="pill">${esc(d.body)}</span>`);
   if (d.vendor) out.push(`<span class="pill">${esc(d.vendor)}</span>`);
   for (const p of d.default_ports ?? []) out.push(`<span class="pill port">${p.transport}/${p.number}</span>`);
@@ -280,26 +321,46 @@ function detail(col, d){
 function render(){
   const term = $("#q").value.trim().toLowerCase();
   const terms = term.split(/\s+/).filter(Boolean);
-  const list = ITEMS.filter(i =>
+  const browsing = !term && active === "all";
+  let list = ITEMS.filter(i =>
     (active === "all" || i.col === active) &&
     terms.every(t => i.hay.includes(t))
-  ).slice(0, 300);
+  );
 
-  $("#hint").textContent = term || active !== "all"
-    ? `${list.length} match${list.length === 1 ? "" : "es"}`
-    : `${ITEMS.length} entries. Search a port number, a product, a protocol, or a Chinese term.`;
+  let truncated = false;
+  if (browsing){
+    // Nothing was typed: lead with the best-sourced, most-connected entries
+    // rather than dumping 186 cards alphabetically. Real signal, not curation.
+    list = [...list].sort((a, b) => b.score - a.score);
+    if (!showAll && list.length > 30){ truncated = true; list = list.slice(0, 30); }
+  } else {
+    list = list.slice(0, 300);
+  }
 
-  $("#results").innerHTML = list.length ? list.map(({col, d}) => {
+  $("#hint").textContent = browsing
+    ? (showAll ? `${ITEMS.length} entries, most-documented first.` : `Showing the ${list.length} most-documented of ${ITEMS.length} entries. Search or browse a category for everything else.`)
+    : `${list.length} match${list.length === 1 ? "" : "es"}`;
+
+  $("#results").innerHTML = list.length ? list.map(({col, d, dom}) => {
     const title = esc(d.name ?? d.en ?? d.designation ?? d.id);
     const zh = d.zh_hant ? ` <span class="zh">${esc(d.zh_hant)}</span>` : "";
     const sub = esc(d.summary ?? d.definition_en ?? d.title ?? "");
-    return `<details class="card entry"><summary>
+    return `<details class="card entry" style="--card-accent:var(--dom-${dom})"><summary>
         <h3>${title}${zh}<span class="id">${col}/${esc(d.id)}</span></h3>
         <p>${sub}</p>
         <div class="meta">${pills(col, d)}</div>
       </summary><div class="detail">${detail(col, d)}</div></details>`;
   }).join("") : `<div class="empty">Nothing matches. That is probably a gap worth filling —<br>
       <a href="${REPO}/issues/new?title=${encodeURIComponent("[new entry] " + term)}">open an issue for "${esc(term)}" →</a></div>`;
+
+  const old = $("#showall"); if (old) old.remove();
+  if (truncated){
+    const btn = document.createElement("button");
+    btn.id = "showall"; btn.type = "button"; btn.className = "showall";
+    btn.textContent = `Show all ${ITEMS.length} entries →`;
+    btn.addEventListener("click", () => { showAll = true; render(); });
+    $("#results").after(btn);
+  }
 }
 
 function boot(){
@@ -313,10 +374,11 @@ function boot(){
     document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === active));
     render();
   });
+  const contributorCount = (DATA.contributors ?? []).length;
   $("#stats").innerHTML = `<span><b>${DATA.total}</b> entries</span>
     <span><b>${Math.round((DATA.verified_share ?? 0) * 100)}%</b> verified against a primary source</span>
     <span><b>${DATA.open_gaps}</b> open gaps</span>
-    <span><b>${(DATA.contributors ?? []).length}</b> contributors</span>
+    ${contributorCount ? `<span><b>${contributorCount}</b> contributors</span>` : ""}
     <span>built ${DATA.generated}</span>`;
   $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
   $("#q").addEventListener("input", render);
@@ -324,6 +386,127 @@ function boot(){
   render();
 }
 boot();
+
+/* Homepage's own living-data constellation: the same real speaks-graph idea
+   used on the section-index pages (see scripts/graph.mjs), computed
+   client-side from the DATA already embedded above so the homepage doesn't
+   need a server-built graphJSON of its own. Same physics and same
+   read-colors-from-CSS-at-paint-time approach as NETWORK_JS in
+   scripts/pages.mjs, kept in sync by hand since one runs in Node and the
+   other in the browser. */
+(function(){
+  function buildHomeGraph(maxNodes){
+    maxNodes = maxNodes || 70;
+    if (!DATA) return {nodes: [], edges: []};
+    const protoIds = new Set((DATA.protocols ?? []).map(p => p.id));
+    const nodesById = new Map();
+    const addNode = (id, cat) => { if (!nodesById.has(id)) nodesById.set(id, {id, d: superDomain(cat)}); };
+    for (const p of DATA.protocols ?? []) addNode("p:" + p.id, p.category);
+
+    const edgeSet = [];
+    for (const prod of [...(DATA.software ?? []), ...(DATA.hardware ?? [])]) {
+      const speaks = (prod.speaks ?? []).filter(s => protoIds.has(s.protocol));
+      if (!speaks.length) continue;
+      addNode("x:" + prod.id, prod.category);
+      for (const s of speaks) edgeSet.push(["x:" + prod.id, "p:" + s.protocol]);
+    }
+
+    let nodes = [...nodesById.values()];
+    if (nodes.length > maxNodes) {
+      const protoNodeIds = new Set([...protoIds].map(id => "p:" + id));
+      const protoOnly = nodes.filter(n => protoNodeIds.has(n.id));
+      const productOnly = nodes.filter(n => !protoNodeIds.has(n.id));
+      const degree = new Map();
+      for (const [a, b] of edgeSet) {
+        degree.set(a, (degree.get(a) ?? 0) + 1);
+        degree.set(b, (degree.get(b) ?? 0) + 1);
+      }
+      productOnly.sort((a, b) => (degree.get(b.id) ?? 0) - (degree.get(a.id) ?? 0));
+      const budget = Math.max(0, maxNodes - protoOnly.length);
+      nodes = [...protoOnly, ...productOnly.slice(0, budget)];
+    }
+
+    const keep = new Set(nodes.map(n => n.id));
+    const idx = new Map(nodes.map((n, i) => [n.id, i]));
+    const edges = edgeSet
+      .filter(([a, b]) => keep.has(a) && keep.has(b))
+      .map(([a, b]) => [idx.get(a), idx.get(b)]);
+
+    return {nodes: nodes.map(n => n.d), edges};
+  }
+
+  const el = document.getElementById("hgcanvas");
+  const g = buildHomeGraph();
+  if (!el || !g.nodes.length) return;
+  const ctx = el.getContext("2d");
+  const cs = getComputedStyle(document.documentElement);
+  const DOMCOLOR = {
+    visual: cs.getPropertyValue("--dom-visual").trim(),
+    audio: cs.getPropertyValue("--dom-audio").trim(),
+    network: cs.getPropertyValue("--dom-network").trim(),
+    safety: cs.getPropertyValue("--dom-safety").trim(),
+    control: cs.getPropertyValue("--dom-control").trim(),
+  };
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0;
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function size(){
+    const r = el.parentElement.getBoundingClientRect();
+    W = r.width; H = r.height;
+    el.width = Math.max(1, W * DPR); el.height = Math.max(1, H * DPR);
+    el.style.width = W + "px"; el.style.height = H + "px";
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  size();
+  window.addEventListener("resize", size);
+  const n = g.nodes.length;
+  const pos = g.nodes.map(() => ({x: Math.random() * W, y: Math.random() * H, vx: 0, vy: 0}));
+  function step(){
+    for (let i = 0; i < n; i++){
+      const p = pos[i];
+      p.vx += (W / 2 - p.x) * 0.0006; p.vy += (H / 2 - p.y) * 0.0006;
+      for (let j = 0; j < n; j++){
+        if (i === j) continue;
+        const q = pos[j], dx = p.x - q.x, dy = p.y - q.y, d2 = dx * dx + dy * dy + 0.01;
+        if (d2 < 6000){ const f = 8 / d2; p.vx += dx * f; p.vy += dy * f; }
+      }
+    }
+    g.edges.forEach(e => {
+      const a = pos[e[0]], b = pos[e[1]];
+      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const f = (dist - 64) * 0.0012;
+      a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+    });
+    for (let k = 0; k < n; k++){ const p = pos[k]; p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy; }
+  }
+  for (let s = 0; s < 140; s++) step();
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(150,165,190,.14)";
+    ctx.beginPath();
+    g.edges.forEach(e => {
+      const a = pos[e[0]], b = pos[e[1]];
+      ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+    });
+    ctx.stroke();
+    for (let i = 0; i < n; i++){
+      const p = pos[i];
+      ctx.globalAlpha = .6;
+      ctx.fillStyle = DOMCOLOR[g.nodes[i]] || "#8fa3b8";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.4, 0, 6.29); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+  if (reduce){ draw(); return; }
+  let hidden = false;
+  document.addEventListener("visibilitychange", () => { hidden = document.hidden; });
+  function loop(){
+    if (!hidden){ step(); draw(); }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 
 /* Theme switcher: auto -> light -> dark. Auto follows the OS via the media
    query; an explicit pick pins data-theme and persists, re-applied pre-paint
