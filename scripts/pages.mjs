@@ -207,6 +207,9 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
   <a href="${GH}">Source and corrections</a>.
+  <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
+  <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
+  <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
 </div></footer>
 </body>
 </html>`
