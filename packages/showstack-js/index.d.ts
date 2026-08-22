@@ -144,7 +144,7 @@ export interface Hardware {
   name: string
   aka?: string[]
   vendor: string
-  category: "lighting-console" | "media-server" | "audio-console" | "video-processor" | "dmx-node" | "network-switch" | "dimmer-distro" | "power-distro" | "tracking-system" | "motion-control" | "show-controller" | "timecode-generator" | "io-interface" | "wireless-dmx"
+  category: "lighting-console" | "media-server" | "audio-console" | "video-processor" | "dmx-node" | "network-switch" | "dimmer-distro" | "power-distro" | "tracking-system" | "motion-control" | "show-controller" | "timecode-generator" | "io-interface" | "wireless-dmx" | "amplifier" | "audio-processor"
   summary: string
   speaks?: ({
     protocol: Slug
