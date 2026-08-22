@@ -135,7 +135,7 @@ padding:1.5px 6px;border-radius:6px}
  */
 const THEME_JS = `
 (function(){
-  var KEY='ss-theme', root=document.documentElement, btn=document.getElementById('themebtn');
+  var KEY='ss-theme', root=document.documentElement;
   var ICONS={
     auto:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg>',
     light:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5 5l1.9 1.9M17.1 17.1 19 19M19 5l-1.9 1.9M6.9 17.1 5 19"/></svg>',
@@ -145,10 +145,15 @@ const THEME_JS = `
   function apply(m){
     if(m==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',m)}
     try{m==='auto'?localStorage.removeItem(KEY):localStorage.setItem(KEY,m)}catch(e){}
+    var btn=document.getElementById('themebtn');
     if(btn){btn.innerHTML=ICONS[m];btn.setAttribute('aria-label','Theme: '+m+' (click to change)');btn.title='Theme: '+m}
   }
-  if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
   apply(mode());
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('themebtn');
+    if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
+    apply(mode());
+  });
 })();
 `
 
@@ -186,7 +191,7 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
-<script>(function(){try{var t=localStorage.getItem('ss-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+<script>${THEME_JS}</script>
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
 </head>
@@ -198,7 +203,6 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
 </div></header>
 <main><div class="wrap">${body}</div></main>
 ${extraScript ? `<script>${extraScript}</script>` : ''}
-<script>${THEME_JS}</script>
 <footer><div class="wrap">
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
