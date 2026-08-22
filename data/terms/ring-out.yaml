@@ -1,0 +1,34 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: ring-out
+en: Ring out / ringing out
+domain: audio
+definition_en: >-
+  Deliberately pushing each speaker zone toward feedback before doors, then
+  pulling the specific frequencies that ring first on a parametric or
+  graphic EQ. Normally done on monitor wedges first, then FOH, well before
+  soundcheck proper — not a live-mixing move, and not the same thing as
+  EQing for tone.
+see_also:
+- monitor-wedge
+- gain-before-feedback
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- feedback
+- system-design
+- vocabulary
+sources:
+- title: Ring Out
+  url: https://www.sweetwater.com/insync/ring-out/
+  publisher: Sweetwater InSync
+  accessed: '2026-08-22'
+  primary: true
+- title: Ringing out
+  url: https://en.wikipedia.org/wiki/Ringing_out
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

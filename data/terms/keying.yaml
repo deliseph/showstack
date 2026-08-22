@@ -1,0 +1,39 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: keying
+en: Keying (chroma key / luma key)
+domain: video
+definition_en: >-
+  Making part of an image transparent so another source shows through it.
+  Chroma key removes a specific colour — green or blue screen. Luma key
+  removes a brightness range instead, which is why it still works on
+  footage with no coloured screen at all: titles on black, or pulling a
+  bright practical light through a layer.
+false_friends:
+- >-
+  Calling for "a key" on comms doesn't say which technique. If the
+  background isn't a clean solid colour, chroma key won't pull it — you
+  need luma key or a different composite instead.
+safety_critical: false
+confidence: reported
+tags:
+- video
+- compositing
+- vocabulary
+sources:
+- title: Chroma key
+  url: https://en.wikipedia.org/wiki/Chroma_key
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: A Glossary of Live Production Buzzwords
+  url: https://www.bhphotovideo.com/explora/video/tips-and-solutions/a-glossary-of-live-production-buzzwords
+  publisher: B&H Photo Video / eXplora
+  accessed: '2026-08-22'
+- title: 'Video Post-Production Workflow Guide: Keying'
+  url: https://workflow.frame.io/guide/keying
+  publisher: Frame.io
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,34 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: legs
+en: Legs
+domain: scenic
+definition_en: >-
+  Narrow vertical drapes hung in pairs at the sides of the stage to mask
+  the wings from the audience's sightline. Usually velour or commando
+  cloth, hung with enough fullness that they do not look limp, and
+  numbered from the proscenium upstage the same way battens are. Only the
+  legs create the wing entrances — a border above them masks overhead,
+  not the sides.
+see_also:
+- wings
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- masking
+- drapery
+- vocabulary
+sources:
+- title: Fabric Legs and Borders are on almost every stage… So what do they do exactly?
+  url: https://sewwhatinc.com/blog/2016/05/23/fabric-legs-and-borders-are-on-almost-every-stage-so-what-do-they-do-exactly/
+  publisher: Sew What? Inc.
+  accessed: '2026-08-22'
+  primary: true
+- title: Stage (theatre)
+  url: https://en.wikipedia.org/wiki/Stage_(theatre)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,37 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: flat
+en: Flat
+domain: scenic
+definition_en: >-
+  A rectangular scenic unit — a lightweight frame covered in muslin or
+  luan — built, painted, and either flown in on a batten or braced
+  upright at the edge of the stage with a stage weight or brace. The
+  basic unit most built scenery still reduces to, long before anyone says
+  "unit set" or "modular."
+false_friends:
+- >-
+  Lighting crews use "flat" for shadowless, low-contrast light — the
+  opposite problem from a piece of scenery. "It's reading flat" on comms
+  is almost always about the light, not the build.
+see_also:
+- stage-weight
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- construction
+- vocabulary
+sources:
+- title: Flat (theatre)
+  url: https://en.wikipedia.org/wiki/Flat_(theatre)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: 'Stage Lighting Design, Part 5: Lighting Angles'
+  url: https://blog.etcconnect.com/stage-lighting-design-part-5
+  publisher: ETC (Electronic Theatre Controls)
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

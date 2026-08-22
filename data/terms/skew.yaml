@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: skew
+en: Skew
+domain: networking
+definition_en: >-
+  The gap in arrival time between signals that are supposed to land
+  together. On a parallel bus, skew is why wide, fast parallel interfaces
+  stopped scaling — every wire's propagation delay drifts slightly, and
+  at high clock rates that drift corrupts the word being read. It is one
+  of the main reasons almost everything fast today — USB, SATA, PCIe,
+  Ethernet — went serial instead of parallel.
+false_friends:
+- >-
+  On analogue videotape decks, "skew" is a tension control fixing the top
+  of the picture bending left or right — a mechanical tape problem,
+  unrelated to digital timing.
+safety_critical: false
+confidence: reported
+tags:
+- networking
+- signal-integrity
+- vocabulary
+sources:
+- title: Clock skew
+  url: https://en.wikipedia.org/wiki/Clock_skew
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: 'Chapter 10: Connecting and Operating the VTR'
+  url: https://cool.culturalheritage.org/videopreservation/vid_guide/10/10.html
+  publisher: Video Preservation Website (Conservation OnLine)
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

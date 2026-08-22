@@ -1,0 +1,36 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: deck
+en: Deck / the deck
+domain: scenic
+definition_en: >-
+  The stage floor. Crews say "clear the deck," "walk the deck" before a
+  tech to check for trip hazards, and "deck crew" for whoever works at
+  floor level during the show. A raked deck is a sloped one.
+false_friends:
+- >-
+  In audio and video, a "deck" is a playback or recording transport — a
+  tape deck, an ISO deck. "Roll the deck" and "clear the deck" are
+  instructions to different people about different things.
+see_also:
+- rake
+- ground-stack
+safety_critical: false
+confidence: reported
+tags:
+- scenic
+- stage
+- vocabulary
+sources:
+- title: Stage (theatre)
+  url: https://en.wikipedia.org/wiki/Stage_(theatre)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: Cassette deck
+  url: https://en.wikipedia.org/wiki/Cassette_deck
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

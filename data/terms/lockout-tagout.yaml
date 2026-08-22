@@ -1,0 +1,55 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: lockout-tagout
+en: Lockout/tagout (LOTO)
+zh_hant: 上鎖掛牌
+domain: safety
+definition_en: >-
+  Physically locking an energy-isolating device — a breaker, a disconnect,
+  a valve — in the off position and tagging it before anyone works on the
+  equipment downstream, so a second person cannot re-energise it while a
+  tech's hands are inside. The tag is a warning; the lock is the actual
+  control. US practice under OSHA treats it as one program covering every
+  energy type, verified by trying to start the equipment afterward, not
+  just reading a meter.
+false_friends:
+- >-
+  US LOTO (OSHA 1910.147) verifies by "try-out" — attempting to start the
+  equipment. UK "safe isolation" is narrower, electrical-only, verified by
+  proving dead with a voltage indicator.
+- >-
+  The two overlap but are not one procedure. A site running to one
+  standard is not automatically compliant with the other, whatever a
+  touring rider assumes.
+regional_variants:
+- region: HK
+  term: 上鎖掛牌
+  note: HKSAR EMSD guidance on breaker/switch isolation for electrical work uses 開關掣上鎖掛牌 for this exact procedure.
+see_also:
+- kill
+- dead
+safety_critical: true
+confidence: verified
+tags:
+- safety
+- electrical
+- loto
+- vocabulary
+sources:
+- title: 1910.147 - The control of hazardous energy (lockout/tagout)
+  url: https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147
+  publisher: OSHA
+  accessed: '2026-08-22'
+  primary: true
+- title: 'Safe Isolation vs Lockout Tagout: Key Differences Explained'
+  url: https://www.hseblog.com/safe-isolation-vs-lockout-tagout/
+  publisher: HSEBlog
+  accessed: '2026-08-22'
+- title: 電力安全評估表格的填寫和斷路器上鎖掛牌的處理
+  url: https://www.emsd.gov.hk/filemanager/sc/content_1278/sem20171107-Topic2.pdf
+  publisher: Electrical and Mechanical Services Department, HKSAR Government
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

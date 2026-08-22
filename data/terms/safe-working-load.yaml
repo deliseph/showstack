@@ -1,0 +1,52 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: safe-working-load
+en: Safe working load (SWL) / working load limit (WLL)
+zh_hant: 安全操作負荷
+domain: safety
+definition_en: >-
+  The maximum load a piece of rigging hardware is rated to carry in normal
+  service — not its breaking strength, and not a number to back-calculate
+  yourself from breaking strength by guessing at a safety factor. WLL is
+  the term current US and ISO entertainment-rigging standards use; SWL is
+  the older term, still current in UK and Commonwealth usage, for the
+  same underlying idea. Read the tag or the certificate rather than
+  assume which convention a rider is using.
+false_friends:
+- >-
+  SWL and WLL usually mean the same number today, but SWL historically
+  implied a fixed safety factor — one that varied by hardware type and
+  could be wrongly assumed rather than checked.
+- >-
+  Neither is breaking strength — a lab figure from destructive testing.
+  WLL/SWL already accounts for wear, cyclic and side loading, and is the
+  number you're actually allowed to use.
+see_also:
+- chain-hoist
+- winch
+- stage-weight
+safety_critical: true
+confidence: reported
+tags:
+- safety
+- rigging
+- load
+- vocabulary
+sources:
+- title: Understanding Working Load Limit and Breaking Strength in Theatre Rigging
+  url: https://entertainingsafety.com/knowledge-base/understanding-working-load-limit-and-breaking-strength-in-theatre-rigging/
+  publisher: Entertaining Safety
+  accessed: '2026-08-22'
+  primary: true
+- title: 'Working Load Limit (WLL) vs Safe Working Load (SWL): Definitions, Differences and Calculations'
+  url: https://www.safetyliftingear.com/news/post/wll-vs-swl-difference
+  publisher: Safety Lifting Gear
+  accessed: '2026-08-22'
+- title: 起重機械及起重裝置的檢查、檢驗和測試指南
+  url: https://www.labour.gov.hk/tc/public/pdf/os/C/gearc.pdf
+  publisher: Labour Department, HKSAR Government
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

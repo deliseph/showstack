@@ -1,0 +1,38 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: black-box
+en: Black box
+domain: general
+definition_en: >-
+  A square or rectangular room with black walls and a black floor, built
+  with no fixed stage or seating so it can be reconfigured for whatever
+  the production needs. When someone says "we're in a black box," they
+  mean the venue type — not the other thing this exact phrase means on
+  the same crew.
+false_friends:
+- >-
+  Elsewhere on the same show, "black box" means a system judged only by
+  its inputs and outputs — a media server or DSP unit nobody can see
+  inside. Same words, unrelated to the venue.
+see_also:
+- house
+safety_critical: false
+confidence: reported
+tags:
+- venue
+- scenic
+- vocabulary
+sources:
+- title: Black box theater
+  url: https://en.wikipedia.org/wiki/Black_box_theater
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: Black box
+  url: https://en.wikipedia.org/wiki/Black_box
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+contributed_by: []
+updated: '2026-08-22'

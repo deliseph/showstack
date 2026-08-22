@@ -1,0 +1,46 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: chain-hoist
+en: Chain hoist / chain motor
+domain: automation
+definition_en: >-
+  A powered or hand-chain hoist built to raise and lower a suspended load,
+  used in entertainment rigging as point hoists for trussing, scenery or
+  effects. "Chain motor" usually means the electric version run from a
+  pendant or network control; a plain "chain hoist" can be manual. What
+  makes it a hoist under the entertainment standard is not the chain — it
+  is a locking brake built to hold a suspended load. A winch is a
+  different class of machine.
+false_friends:
+- >-
+  ANSI E1.6-1's own annex draws the line: a hoist lifts with a locking
+  brake for suspension; a winch pulls, and a capstan winch is explicitly
+  outside the standard's scope.
+- >-
+  Crews use "hoist," "chain motor" and "winch" almost interchangeably. If
+  it's actually a winch under that truss, it may not be rated to hold a
+  static load the way a purpose-built hoist is.
+see_also:
+- winch
+- fly
+- safe-working-load
+safety_critical: true
+confidence: verified
+tags:
+- automation
+- rigging
+- hoist
+- vocabulary
+sources:
+- title: 'ANSI E1.6-1 – 2019: Entertainment Technology – Powered Hoist Systems'
+  url: https://tsp.esta.org/tsp/documents/docs/ANSI%20E1.6-1%20-%202019.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-08-22'
+  primary: true
+- title: What is the difference between a chain motor and a manual chain hoist?
+  url: https://www.4wall.com/help/what-is-the-difference-between-a-chain-motor-and-a-manual-chain-hoist--n-209
+  publisher: 4Wall Entertainment
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,33 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: gain-before-feedback
+en: Gain before feedback (GBF)
+domain: audio
+definition_en: >-
+  How much a microphone can be turned up before the system starts to ring,
+  usually talked about in dB of headroom above operating level. Driven far
+  more by mic placement and polar pattern than by EQ — moving a vocal mic
+  six inches closer to the mouth usually buys more GBF than any amount of
+  notching ever will.
+see_also:
+- ring-out
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- feedback
+- system-design
+- vocabulary
+sources:
+- title: Gain before feedback
+  url: https://en.wikipedia.org/wiki/Gain_before_feedback
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: Gain Before Feedback
+  url: https://www.sweetwater.com/insync/gain-before-feedback/
+  publisher: Sweetwater InSync
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

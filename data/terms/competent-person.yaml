@@ -1,0 +1,56 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: competent-person
+en: Competent person
+domain: safety
+definition_en: >-
+  Whoever is legally allowed to sign off that a task, a rig or a piece of
+  equipment is safe. What that actually requires depends entirely on which
+  country's regulation you are standing under — it is not a synonym for
+  "someone who is good at their job," and it is not one qualification you
+  can carry between jurisdictions.
+false_friends:
+- >-
+  US OSHA (29 CFR 1926.32(f)): able to identify hazards AND has authority
+  to fix them on the spot, tied to a specific hazard class such as fall
+  protection or excavation.
+- >-
+  UK law (Management of H&S at Work Regs 1999, reg. 7): a broader
+  general-duty role — sufficient training, experience or knowledge to
+  assist the employer, not tied to one hazard class.
+- >-
+  A sign-off valid under one country's definition does not automatically
+  satisfy the other's, even though riders use the phrase as if it meant
+  one thing worldwide.
+see_also:
+- lockout-tagout
+- safe-working-load
+safety_critical: false
+confidence: verified
+tags:
+- safety
+- compliance
+- vocabulary
+sources:
+- title: Competent Person - Overview
+  url: https://www.osha.gov/competent-person
+  publisher: OSHA
+  accessed: '2026-08-22'
+  primary: true
+- title: 1926.32 - Definitions
+  url: https://www.osha.gov/laws-regs/regulations/standardnumber/1926/1926.32
+  publisher: OSHA
+  accessed: '2026-08-22'
+  primary: true
+- title: 'The Management of Health and Safety at Work Regulations 1999: Regulation 7'
+  url: https://legislation.gov.uk/uksi/1999/3242/regulation/7/made?view=plain
+  publisher: legislation.gov.uk / UK National Archives
+  accessed: '2026-08-22'
+  primary: true
+- title: What is a Competent Person?
+  url: https://hse.gov.uk/involvement/competentperson.htm
+  publisher: UK Health and Safety Executive (HSE)
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

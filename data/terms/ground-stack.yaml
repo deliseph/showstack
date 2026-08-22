@@ -1,0 +1,35 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: ground-stack
+en: Ground stack
+domain: audio
+definition_en: >-
+  A PA array built on the deck rather than flown from a rigging point —
+  cabinets on a stacking frame, on subs, or straight on the floor. Faster
+  to build and needs no rigging sign-off, but it eats sightlines, covers a
+  smaller area evenly than a flown array of the same box count, and puts
+  the entire weight of the hang on the floor instead of overhead.
+see_also:
+- front-fill
+- fly
+- deck
+safety_critical: false
+confidence: reported
+tags:
+- audio
+- pa
+- system-design
+- vocabulary
+sources:
+- title: 'Ground Stacking vs Flown Line Array Systems: Which is Best for Your Event?'
+  url: https://www.ti-audio.com/guides/ground-stacking-vs-flown-line-array-systems.html
+  publisher: TI Audio
+  accessed: '2026-08-22'
+  primary: true
+- title: Line array
+  url: https://en.wikipedia.org/wiki/Line_array
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

@@ -1,0 +1,46 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: winch
+en: Winch
+domain: automation
+definition_en: >-
+  A powered drum that spools wire rope to pull a load, mounted so the rope
+  can run over sheaves at an angle rather than straight down — which is
+  why winches, not chain hoists, run stage-wagon tracks, turntables and
+  diagonal flying effects. Under the entertainment powered-hoist standard
+  a winch is a different machine from a hoist: it pulls rather than holds
+  a suspended load on a locking brake, and a capstan winch is explicitly
+  excluded from that standard's scope.
+false_friends:
+- >-
+  Do not assume a "winch" on a rig plot is rated like a point hoist. ANSI
+  E1.6 covers powered hoists and explicitly excludes capstan winches — the
+  safety case for a winch comes from elsewhere.
+- >-
+  Hoists hold a suspended load on a mechanical locking brake; winches
+  typically use dynamic braking, fine on an incline but not for holding a
+  load static overhead.
+see_also:
+- chain-hoist
+- fly
+- safe-working-load
+safety_critical: true
+confidence: verified
+tags:
+- automation
+- rigging
+- winch
+- vocabulary
+sources:
+- title: 'ANSI E1.6-1 – 2019: Entertainment Technology – Powered Hoist Systems'
+  url: https://tsp.esta.org/tsp/documents/docs/ANSI%20E1.6-1%20-%202019.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-08-22'
+  primary: true
+- title: Winch vs Hoist - Overview and Comparison
+  url: https://southeastrigging.com/the-difference-between-a-winch-and-a-hoist/
+  publisher: Southeast Rigging
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

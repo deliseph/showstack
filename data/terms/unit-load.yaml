@@ -1,0 +1,37 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: unit-load
+en: Unit load
+domain: networking
+definition_en: >-
+  The standard reference load an RS-485 bus segment is rated against —
+  one unit load is roughly a 12 kΩ receiver input. The spec caps a
+  segment at 32 unit loads, but that is not the same as 32 devices: most
+  modern DMX/RS-485 receiver chips present a fraction of a unit load
+  (1/8 UL is common), so a real line can carry well over 32 physical
+  fixtures before it needs an opto-splitter. Check the fixture manual for
+  its actual unit-load figure rather than counting boxes.
+see_also:
+- daisy-chain
+related_protocols:
+- dmx512
+safety_critical: false
+confidence: reported
+tags:
+- networking
+- rs485
+- dmx
+- vocabulary
+sources:
+- title: 'TB511: The Unit Load Concept'
+  url: https://www.renesas.com/en/document/tra/tb511-unit-load-concept
+  publisher: Renesas Electronics
+  accessed: '2026-08-22'
+  primary: true
+- title: The RS-485 Unit Load and Maximum Number of Bus Connections
+  url: https://www.ti.com/lit/pdf/slla166
+  publisher: Texas Instruments
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

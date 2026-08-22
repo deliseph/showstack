@@ -1,0 +1,42 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: daisy-chain
+en: Daisy chain
+domain: networking
+definition_en: >-
+  Wiring devices in a straight line, in and out, rather than back to a
+  central point. DMX and RS-485 in general are meant to run this way —
+  console to fixture to fixture to fixture, terminated at the far end.
+  Splitting one line out to several fixtures from a single point — a
+  passive Y-split, a hub-and-spoke run — is not a daisy chain, and is
+  where most unexplained DMX flicker actually comes from.
+false_friends:
+- >-
+  A climbing "daisy chain" is a sewn webbing sling aid climbers clip into
+  for positioning — real gear, not rated as an anchor, and nothing to do
+  with wiring topology despite the shared name.
+see_also:
+- unit-load
+related_protocols:
+- dmx512
+safety_critical: false
+confidence: reported
+tags:
+- networking
+- rs485
+- dmx
+- topology
+- vocabulary
+sources:
+- title: Daisy chain (electrical engineering)
+  url: https://en.wikipedia.org/wiki/Daisy_chain_(electrical_engineering)
+  publisher: Wikipedia
+  accessed: '2026-08-22'
+  primary: true
+- title: What is a Daisy Chain?
+  url: https://blog.weighmyrack.com/what-is-a-daisy-chain/
+  publisher: WeighMyRack
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'

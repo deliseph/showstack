@@ -1,0 +1,31 @@
+# showstack entry — term
+# Schema: ../../schema/term.schema.json
+
+id: pixel-pitch
+en: Pixel pitch
+domain: video
+definition_en: >-
+  The centre-to-centre distance between LED pixels on a video wall panel,
+  in millimetres — P2.6, P3.9, P4.8 and so on. A smaller pitch packs more
+  pixels into the same panel area and holds up at closer viewing
+  distance, at a real cost in price, weight and power draw. The right
+  pitch is set by minimum viewing distance, not by "smaller is always
+  better."
+safety_critical: false
+confidence: reported
+tags:
+- video
+- led
+- vocabulary
+sources:
+- title: About pixel pitch and viewing distance for LED walls
+  url: https://www.barco.com/en/inspiration/news-insights/2020-03-11-ledtalks-what-is-pixelpitch
+  publisher: Barco
+  accessed: '2026-08-22'
+  primary: true
+- title: Understanding LED video wall pixel pitch
+  url: https://www.christiedigital.com/spotlight/understanding-pixel-pitch-led-video-wall/
+  publisher: Christie Digital
+  accessed: '2026-08-22'
+contributed_by: []
+updated: '2026-08-22'
