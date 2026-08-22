@@ -1,0 +1,64 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: qsys-core-510i
+name: Q-SYS Core 510i
+vendor: QSC (Q-SYS)
+category: audio-processor
+summary: >-
+  Card-based Q-SYS processing core for installed AV: audio DSP, control
+  scripting and video features in one engine, with eight I/O card slots and
+  Q-LAN as its native transport.
+speaks:
+  - protocol: q-lan
+    direction: bidirectional
+    note: Native transport to Q-SYS peripherals, cameras and other Cores.
+    confidence: reported
+  - protocol: dante
+    direction: bidirectional
+    requires_licence: true
+    note: Via Q-SYS Dante license or CDN64 card options.
+    confidence: reported
+  - protocol: aes67
+    direction: bidirectional
+    note: Software AES67 streams for interop with other AoIP systems.
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    note: External control of named controls in the design.
+    confidence: reported
+physical_ports:
+  - 8x I/O card slots (analog, AES3, Dante, telephony options)
+  - 4x GbE (LAN A/B, AUX)
+form_factor: 19-inch rack mount
+rack_units: 2
+status: current
+homepage:
+  url: https://www.qsys.com/products-solutions/q-sys/processing/core-510i/
+  label: Core 510i product page
+docs:
+  url: https://help.qsys.com/q-sys_8.1/Content/Hardware/Cores/Core_510i.htm
+  label: Core 510i help entry
+gotchas:
+  - >-
+    Q-LAN clocking is PTPv2 at DSCP 46 while any Dante card in the same chassis
+    marks its audio DSCP 46: running both fabrics through one switch without
+    VLAN separation or remapping is the classic self-inflicted QoS collision.
+confidence: reported
+tags:
+  - audio
+  - dsp
+  - qsys
+sources:
+  - title: Core 510i product page
+    url: https://www.qsys.com/products-solutions/q-sys/processing/core-510i/
+    publisher: QSC
+    accessed: 2026-08-22
+    primary: true
+  - title: Q-SYS Core 510i specifications
+    url: https://www.qscaudio.com/resource-files/productresources/dn/dsp_cores/core_510i/q_qsys_core_510i_specs.pdf
+    publisher: QSC
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

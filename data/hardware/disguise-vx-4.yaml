@@ -1,0 +1,71 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: disguise-vx-4
+name: disguise vx 4
+vendor: disguise
+category: media-server
+summary: >-
+  Flagship-generation disguise playback server: four 4K60 outputs driven by
+  the Designer software, built for tours and broadcast where the pre-vis file
+  and the show file are the same thing.
+speaks:
+  - protocol: ndi
+    direction: bidirectional
+    note: NDI capture and output are part of the Designer feature set.
+    confidence: reported
+  - protocol: osc
+    direction: bidirectional
+    note: OSC control of Designer cues and parameters.
+    confidence: reported
+  - protocol: psn
+    direction: in
+    note: PosiStageNet tracking input for automation-following content.
+    confidence: reported
+  - protocol: art-net
+    direction: bidirectional
+    note: DMX-over-Ethernet in and out of Designer for lighting integration.
+    confidence: reported
+  - protocol: ltc
+    direction: in
+    note: LTC timecode input for show sync.
+    confidence: reported
+  - protocol: genlock
+    direction: in
+    note: Reference input for output phase lock.
+    confidence: reported
+physical_ports:
+  - 4x DisplayPort 1.2 (VFC-backed outputs)
+  - 2x 25GbE SFP28 media network
+  - 1GbE management
+  - LTC in, genlock reference in
+form_factor: 19-inch rack mount
+rack_units: 4
+status: current
+homepage:
+  url: https://www.disguise.one/en/products/vx-range
+  label: disguise vx range
+docs:
+  url: https://help.disguise.one/hardware/legacy/vx4/vx4-specs
+  label: vx 4 specifications
+gotchas:
+  - >-
+    Outputs go through VFC cards, so the connector on the back is whatever VFC
+    is fitted, and a spare server is only a spare if its VFC loadout matches.
+confidence: reported
+tags:
+  - media-server
+  - video
+sources:
+  - title: vx 4 specifications
+    url: https://help.disguise.one/hardware/legacy/vx4/vx4-specs
+    publisher: disguise
+    accessed: 2026-08-22
+    primary: true
+  - title: disguise vx range
+    url: https://www.disguise.one/en/products/vx-range
+    publisher: disguise
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

@@ -1,0 +1,70 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: hippotizer-boreal-plus-mk2
+name: Hippotizer Boreal+ MK2
+vendor: Green Hippo
+category: media-server
+summary: >-
+  Mid-size touring media server in the Hippotizer V4 family: four outputs with
+  the full Hippotizer toolset of layers, mixes and pixel mapping, sitting
+  between the Amba and the Taiga in the range.
+speaks:
+  - protocol: ndi
+    direction: bidirectional
+    note: NDI input and output are part of Hippotizer V4.
+    confidence: reported
+  - protocol: art-net
+    direction: bidirectional
+    note: DMX personality control in, pixel-mapper output out.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Alternative DMX-over-Ethernet path to Art-Net.
+    confidence: reported
+  - protocol: citp
+    direction: bidirectional
+    note: Thumbnail and media exchange with lighting consoles.
+    confidence: reported
+  - protocol: osc
+    direction: in
+    note: Remote control of engine parameters.
+    confidence: reported
+  - protocol: rttrpm
+    direction: in
+    note: BlackTrax tracking input via RTTrPM.
+    confidence: reported
+  - protocol: mtc
+    direction: in
+    note: Timecode-driven playback.
+    confidence: reported
+form_factor: 19-inch rack mount
+status: current
+homepage:
+  url: https://www.green-hippo.com/boreal-mk2/
+  label: Hippotizer Boreal+ MK2
+docs:
+  url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.6.4/en/topic/boreal-mk2
+  label: Hippotizer V4 manual, Boreal+ MK2
+gotchas:
+  - >-
+    Hippotizer licensing lives on the machine, and the software toolset is the
+    product: two servers of different generations running different V4 builds
+    will not back each other up cleanly mid-tour.
+confidence: reported
+tags:
+  - media-server
+  - video
+sources:
+  - title: Hippotizer Boreal+ MK2 product page
+    url: https://www.green-hippo.com/boreal-mk2/
+    publisher: Green Hippo
+    accessed: 2026-08-22
+    primary: true
+  - title: Hippotizer V4 manual, Boreal+ MK2
+    url: https://www.manula.com/manuals/green-hippo/hippotizer-v4/4.6.4/en/topic/boreal-mk2
+    publisher: Green Hippo
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

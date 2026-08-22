@@ -1,0 +1,53 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: meyer-galaxy-816
+name: Meyer Sound Galileo GALAXY 816
+vendor: Meyer Sound
+category: audio-processor
+summary: >-
+  Loudspeaker system processor with 8 inputs and 16 outputs: the alignment and
+  drive brain in front of a Meyer PA, handling delay, EQ and array processing
+  under Compass control.
+speaks:
+  - protocol: avb-milan
+    direction: bidirectional
+    note: AVB network audio streams alongside analog and AES3 I/O; Milan-certified firmware exists for GALAXY.
+    confidence: reported
+physical_ports:
+  - 8x analog/AES3 inputs
+  - 16x analog outputs
+  - AVB network ports (etherCON)
+form_factor: 19-inch rack mount
+rack_units: 1
+status: current
+homepage:
+  url: https://docs.meyersound.com/products/en/datasheet---galileo-galaxy-816.html
+  label: GALAXY 816 datasheet
+docs:
+  url: https://docs.meyersound.com/products/en/user-guide---galileo-galaxy.html
+  label: Galileo GALAXY user guide
+gotchas:
+  - >-
+    An AVB path into a GALAXY needs AVB-capable switches end to end; it will
+    not cross an ordinary gigabit core, which is the practical difference from
+    the DSCP-marked transports it shares racks with.
+confidence: reported
+tags:
+  - audio
+  - pa
+  - processor
+  - milan
+sources:
+  - title: Galileo GALAXY 816 datasheet
+    url: https://docs.meyersound.com/products/en/datasheet---galileo-galaxy-816.html
+    publisher: Meyer Sound
+    accessed: 2026-08-22
+    primary: true
+  - title: Galileo GALAXY user guide
+    url: https://docs.meyersound.com/products/en/user-guide---galileo-galaxy.html
+    publisher: Meyer Sound
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

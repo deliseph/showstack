@@ -1,0 +1,65 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: netgear-m4250
+name: NETGEAR M4250 (AV Line)
+vendor: NETGEAR
+category: network-switch
+summary: >-
+  Managed switch family designed for AV-over-IP, with an AV-mode interface
+  that applies preconfigured profiles (QoS, IGMP, VLANs) per protocol instead
+  of leaving DSCP tables to hand configuration.
+speaks:
+  - protocol: dante
+    direction: bidirectional
+    note: Transported, with a shipped AV profile that sets Dante's QoS and multicast handling.
+    confidence: reported
+  - protocol: aes67
+    direction: bidirectional
+    note: Transported, AV profile available.
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    note: Transported, AV profile available for NDI's bursty streams.
+    confidence: reported
+  - protocol: sacn
+    direction: bidirectional
+    note: Transported; IGMP snooping with querier is the point of using a managed switch here.
+    confidence: reported
+  - protocol: art-net
+    direction: bidirectional
+    note: Transported.
+    confidence: reported
+  - protocol: avb-milan
+    direction: bidirectional
+    note: AVB licence available on M4250, making it one of the few mainstream switches that can carry Milan.
+    confidence: reported
+physical_ports:
+  - Model-dependent GbE/PoE+ copper plus SFP/SFP+ uplinks
+form_factor: 19-inch rack mount, 1U
+rack_units: 1
+status: current
+homepage:
+  url: https://www.netgear.com/business/wired/switches/av-line-m4250/
+  label: M4250 AV Line
+docs:
+  url: https://www.downloads.netgear.com/files/GDC/M4250/M4250_AV_UM_EN.pdf
+  label: M4250 AV user manual
+gotchas:
+  - >-
+    The AV profiles only help on the ports you actually apply them to: a port
+    left in the default profile still forwards traffic, just without the QoS
+    and IGMP behaviour the rest of the network assumes.
+confidence: reported
+tags:
+  - networking
+  - switch
+  - av-over-ip
+sources:
+  - title: M4250 AV user manual
+    url: https://www.downloads.netgear.com/files/GDC/M4250/M4250_AV_UM_EN.pdf
+    publisher: NETGEAR
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

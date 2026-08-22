@@ -1,0 +1,45 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: l-acoustics-la12x
+name: L-Acoustics LA12X
+vendor: L-Acoustics
+category: amplifier
+summary: >-
+  Four-channel amplified controller that drives and processes L-Acoustics
+  loudspeakers: DSP, preset library and amplification in one 2U box, the
+  standard engine behind K-series line arrays.
+speaks:
+  - protocol: avb-milan
+    direction: in
+    note: AVB network audio input; L-Acoustics is a founding Milan proponent.
+    confidence: reported
+physical_ports:
+  - 4x amplified outputs (speakON)
+  - AES/EBU and analog inputs with fallback
+  - 2x etherCON for network audio and L-Net remote control
+form_factor: 19-inch rack mount
+rack_units: 2
+status: current
+homepage:
+  url: https://www.l-acoustics.com/products/la12x/
+  label: LA12X product page
+gotchas:
+  - >-
+    Remote control and monitoring run over L-Net in LA Network Manager, which
+    is its own management layer on the same Ethernet ports as the AVB audio:
+    plan the network for both, not just the streams.
+confidence: reported
+tags:
+  - audio
+  - amplifier
+  - pa
+  - milan
+sources:
+  - title: LA12X product page
+    url: https://www.l-acoustics.com/products/la12x/
+    publisher: L-Acoustics
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22

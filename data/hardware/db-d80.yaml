@@ -1,0 +1,45 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: db-d80
+name: d&b audiotechnik D80
+vendor: d&b audiotechnik
+category: amplifier
+summary: >-
+  Four-channel touring amplifier with the d&b loudspeaker preset library and
+  array processing on board: the standard drive unit behind GSL, KSL and
+  V-Series rigs, remote-managed from R1.
+speaks:
+  - protocol: aes70-oca
+    direction: bidirectional
+    note: R1 remote control speaks OCA (AES70) to the amplifier over Ethernet.
+    confidence: reported
+physical_ports:
+  - 4x amplified outputs (EP5/NL4 variants)
+  - 4x analog and 2x AES3 inputs
+  - 2x etherCON remote network (OCA)
+form_factor: 19-inch rack mount
+rack_units: 2
+status: current
+homepage:
+  url: https://www.dbaudio.com/global/en/products/electronics/amplifiers/d80/
+  label: D80 product page
+gotchas:
+  - >-
+    The D80 itself takes analog or AES3 audio: networked audio into a d&b rig
+    arrives through a DS10 or DS20 Dante bridge in front of the amps, so the
+    Dante domain ends at the bridge, not at the amplifier.
+confidence: reported
+tags:
+  - audio
+  - amplifier
+  - pa
+  - oca
+sources:
+  - title: D80 product page
+    url: https://www.dbaudio.com/global/en/products/electronics/amplifiers/d80/
+    publisher: d&b audiotechnik
+    accessed: 2026-08-22
+    primary: true
+contributed_by: []
+updated: 2026-08-22
