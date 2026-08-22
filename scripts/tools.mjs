@@ -20,6 +20,7 @@ import {
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
+  ohmsLaw, speakerImpedance, processingDelay,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -28,6 +29,7 @@ const MATH_SRC = [
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
+  ohmsLaw, speakerImpedance, processingDelay,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -57,6 +59,17 @@ bottom:4px;transition:all .12s}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
 .note a{color:var(--accent)}
 label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(--dim);margin-top:8px}
+.toolgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start}
+.toolgrid .tool{margin-bottom:0}
+.tool.wide{grid-column:1/-1}
+.viz{margin-top:10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;overflow:hidden}
+.viz svg{display:block;width:100%;height:auto}
+.meter{position:relative;height:34px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;margin-top:10px;overflow:hidden}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--ok),var(--accent2));transition:width .25s;border-radius:6px 0 0 6px}
+.meter .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--dimmer);opacity:.6}
+.meter .tick span{position:absolute;top:2px;left:3px;font-family:var(--mono);font-size:10px;color:var(--dimmer)}
+.ledprev{margin-top:10px;border:1px solid var(--line);border-radius:8px;background-color:#000;
+background-image:radial-gradient(circle,var(--accent) 22%,transparent 26%);max-width:100%}
 `
 
   const body = `
@@ -64,6 +77,7 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
 <h2>Field tools</h2>
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
 
+<div class="toolgrid">
 <div class="tool" id="dmx">
   <h3>DMX address</h3>
   <div class="row">
@@ -97,7 +111,7 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
   <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
 </div>
 
-<div class="tool" id="tc">
+<div class="tool wide" id="tc">
   <h3>Timecode</h3>
   <div class="row">
     <div class="field"><label for="tc-h">HH</label><input id="tc-h" type="number" min="0" value="1" inputmode="numeric"></div>
@@ -125,6 +139,7 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
     <div class="field"><label for="pw-pf">Power factor</label><input id="pw-pf" type="number" min="0.1" max="1" step="0.05" value="1" inputmode="decimal"></div>
   </div>
   <div class="out" id="pw-out" role="status" aria-live="polite"></div>
+  <div class="meter" id="pw-meter" aria-hidden="true"></div>
   <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
 </div>
 
@@ -136,6 +151,7 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
     <div class="field"><label for="bm-cd">Candela (optional)</label><input id="bm-cd" type="number" min="0" value="" inputmode="numeric" style="width:130px"></div>
   </div>
   <div class="out" id="bm-out" role="status" aria-live="polite"></div>
+  <div class="viz" id="bm-viz" aria-hidden="true"></div>
   <p class="note">Beam diameter = 2 × throw × tan(angle ÷ 2). Illuminance by the inverse square law: lux = candela ÷ throw². Enter the field angle instead to size the visible pool edge — fixture datasheets quote both.</p>
 </div>
 
@@ -147,6 +163,7 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
     <div class="field"><label for="lw-p">Pixel pitch mm</label><input id="lw-p" type="number" min="0.4" step="0.1" value="3.9" inputmode="decimal"></div>
   </div>
   <div class="out" id="lw-out" role="status" aria-live="polite"></div>
+  <div class="ledprev" id="lw-prev" aria-hidden="true"></div>
   <p class="note">Resolution = size ÷ pitch. The minimum comfortable viewing distance shown is the common rule of thumb (1 m per 1 mm of pitch), not a spec — content, brightness and camera use all move it.</p>
 </div>
 
@@ -157,6 +174,42 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
   </div>
   <div class="out" id="rf-out" role="status" aria-live="polite"></div>
   <p class="note">λ = c ÷ f. Antenna lengths include the standard ~5% end-effect shortening (the 468/f rule). Handy for wireless mic and IEM antenna placement: keep transmit and receive antennas at least a wavelength apart where you can.</p>
+</div>
+
+<div class="tool" id="ohm">
+  <h3>Ohm's law</h3>
+  <div class="row">
+    <div class="field"><label for="oh-v">Volts</label><input id="oh-v" type="number" min="0" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-i">Amps</label><input id="oh-i" type="number" min="0" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-r">Ohms</label><input id="oh-r" type="number" min="0.01" step="0.1" inputmode="decimal"></div>
+    <div class="field"><label for="oh-p">Watts</label><input id="oh-p" type="number" min="0" step="1" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
+  <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
+</div>
+
+<div class="tool" id="spkz">
+  <h3>Speaker load</h3>
+  <div class="row">
+    <div class="field"><label for="sz-list">Impedances Ω</label><input id="sz-list" type="text" value="8, 8" style="width:150px" spellcheck="false"></div>
+    <div class="field"><label for="sz-w">Wiring</label><select id="sz-w"><option value="parallel" selected>parallel</option><option value="series">series</option></select></div>
+    <div class="field"><label for="sz-amp">Amp watts (opt)</label><input id="sz-amp" type="number" min="1" inputmode="numeric" style="width:120px"></div>
+  </div>
+  <div class="out" id="sz-out" role="status" aria-live="polite"></div>
+  <div class="viz" id="sz-viz" aria-hidden="true"></div>
+  <p class="note">Parallel halves with every matched box (two 8 Ω = 4 Ω, four = 2 Ω) and the lowest-impedance box takes the most power. Check the amplifier's minimum rated load before you land below 4 Ω, and remember 70/100 V line systems play by transformer-tap rules instead.</p>
+</div>
+
+<div class="tool" id="latency">
+  <h3>Latency budget</h3>
+  <div class="row">
+    <div class="field"><label for="lt-list">Stage delays ms</label><input id="lt-list" type="text" value="0.9, 2.1, 1.5" style="width:200px" spellcheck="false"></div>
+  </div>
+  <div class="out" id="lt-out" role="status" aria-live="polite"></div>
+  <div class="viz" id="lt-viz" aria-hidden="true"></div>
+  <p class="note">List every hop in the chain: console, plugin, system processor, amp DSP. The total is what your time alignment has to absorb, shown as the distance sound covers in that time at 20 °C. Pair it with the speaker delay tool when you align delays to the main PA.</p>
+</div>
+
 </div>
 
 <div class="cta"><strong>A calculation your crew does daily that is missing here?</strong>
@@ -303,6 +356,144 @@ function rfRender() {
 }
 $("#rf-f").addEventListener("input", rfRender);
 
+// ---- Live visuals ----
+// Small, honest pictures of the numbers: the cone you would see, the load on
+// the feed, the pixel density you specified. Each redraws with its inputs.
+function drawBeam() {
+  const t = Number($("#bm-t").value), a = Number($("#bm-a").value);
+  const b = beamDiameter(t, a);
+  const el = $("#bm-viz");
+  if (!b || t <= 0) { el.innerHTML = ""; return; }
+  const W = 320, H = 120, fx = 16, fy = H / 2;
+  const half = Math.min((b.diameter / (2 * t)) * (W - 60), H / 2 - 8);
+  el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">' +
+    '<polygon points="' + fx + ',' + fy + ' ' + (W - 30) + ',' + (fy - half) + ' ' + (W - 30) + ',' + (fy + half) + '"' +
+    ' fill="var(--accent2)" opacity="0.25"/>' +
+    '<line x1="' + fx + '" y1="' + fy + '" x2="' + (W - 30) + '" y2="' + (fy - half) + '" stroke="var(--accent2)" stroke-width="1.5"/>' +
+    '<line x1="' + fx + '" y1="' + fy + '" x2="' + (W - 30) + '" y2="' + (fy + half) + '" stroke="var(--accent2)" stroke-width="1.5"/>' +
+    '<rect x="6" y="' + (fy - 8) + '" width="14" height="16" rx="3" fill="var(--dim)"/>' +
+    '<line x1="' + (W - 30) + '" y1="' + (fy - half) + '" x2="' + (W - 30) + '" y2="' + (fy + half) + '" stroke="var(--accent)" stroke-width="2"/>' +
+    '<text x="' + (W - 24) + '" y="' + (fy + 4) + '" fill="var(--dim)" font-size="11" font-family="monospace">' + b.diameter + 'm</text>' +
+    '</svg>';
+}
+function drawPowerMeter() {
+  const r = powerLoad($("#pw-w").value, $("#pw-v").value, Number($("#pw-ph").value), $("#pw-pf").value);
+  const el = $("#pw-meter");
+  if (!r) { el.innerHTML = ""; return; }
+  const marks = [13, 16, 20, 32, 63, 125];
+  const top = marks.find((m) => m >= r.amps) ?? Math.ceil(r.amps / 100) * 100;
+  const scale = top * 1.25;
+  let html = '<div class="fill" style="width:' + Math.min(100, r.amps / scale * 100) + '%"></div>';
+  for (const m of marks) {
+    if (m > scale) break;
+    html += '<div class="tick" style="left:' + (m / scale * 100) + '%"><span>' + m + 'A</span></div>';
+  }
+  el.innerHTML = html;
+}
+function drawLedPreview() {
+  const r = ledWall($("#lw-w").value, $("#lw-h").value, $("#lw-p").value);
+  const el = $("#lw-prev");
+  if (!r) { el.style.display = "none"; return; }
+  const w = Number($("#lw-w").value), h = Number($("#lw-h").value), p = Number($("#lw-p").value);
+  const boxW = 300, boxH = Math.max(40, Math.min(200, boxW * (h / w)));
+  const dot = Math.max(3, Math.min(24, p * 2.5));
+  el.style.display = "block";
+  el.style.width = boxW + "px";
+  el.style.height = boxH + "px";
+  el.style.backgroundSize = dot + "px " + dot + "px";
+}
+
+// ---- Ohm's law ----
+// The two most recently edited fields are the knowns; the others follow.
+const ohKeys = ["v", "i", "r", "p"];
+let ohEdited = [];
+function ohmRender() {
+  if (ohEdited.length < 2) { $("#oh-out").textContent = "Enter any two values."; return; }
+  const args = {};
+  for (const k of ohEdited) args[k] = $("#oh-" + k).value;
+  const r = ohmsLaw(args);
+  if (!r) { $("#oh-out").innerHTML = '<span class="err">Those two do not make a solvable pair — check the numbers.</span>'; return; }
+  $("#oh-out").innerHTML =
+    '<b>' + r.volts + ' V</b> · <b>' + r.amps + ' A</b> · <b>' + r.ohms + ' Ω</b> · <b>' + r.watts + ' W</b>';
+}
+for (const k of ohKeys) {
+  $("#oh-" + k).addEventListener("input", () => {
+    if ($("#oh-" + k).value === "") { ohEdited = ohEdited.filter((x) => x !== k); }
+    else { ohEdited = ohEdited.filter((x) => x !== k); ohEdited.push(k); if (ohEdited.length > 2) ohEdited.shift(); }
+    ohmRender();
+  });
+}
+
+// ---- Speaker load ----
+function parseList(s) {
+  return String(s).split(/[\s,]+/).filter(Boolean).map(Number);
+}
+function spkRender() {
+  const zs = parseList($("#sz-list").value);
+  const wiring = $("#sz-w").value;
+  const amp = $("#sz-amp").value;
+  const r = speakerImpedance(zs, wiring, amp === "" ? null : amp);
+  const el = $("#sz-viz");
+  if (!r) { $("#sz-out").innerHTML = '<span class="err">List impedances like: 8, 8, 4</span>'; el.innerHTML = ""; return; }
+  $("#sz-out").innerHTML = 'Total load <b>' + r.total + ' Ω</b> across ' + r.count +
+    (r.count === 1 ? ' box' : ' boxes') +
+    (r.share ? ' · power per box: <b>' + r.share.join(" / ") + ' W</b>' : '') +
+    (r.total < 4 ? ' <span class="err">below 4 Ω — check the amp rating</span>' : '');
+  // Wiring picture: parallel drops from two rails, or a series chain.
+  const n = Math.min(zs.length, 6), W = 320, H = 84, bw = 34, gap = (W - 40 - n * bw) / Math.max(1, n - 1 || 1);
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">';
+  if (wiring === "parallel") {
+    s += '<line x1="10" y1="14" x2="' + (W - 10) + '" y2="14" stroke="var(--dim)" stroke-width="1.5"/>' +
+         '<line x1="10" y1="' + (H - 14) + '" x2="' + (W - 10) + '" y2="' + (H - 14) + '" stroke="var(--dim)" stroke-width="1.5"/>';
+    for (let k = 0; k < n; k++) {
+      const x = 20 + k * (bw + (n > 1 ? gap : 0));
+      s += '<line x1="' + (x + bw / 2) + '" y1="14" x2="' + (x + bw / 2) + '" y2="30" stroke="var(--dim)"/>' +
+           '<line x1="' + (x + bw / 2) + '" y1="' + (H - 30) + '" x2="' + (x + bw / 2) + '" y2="' + (H - 14) + '" stroke="var(--dim)"/>' +
+           '<rect x="' + x + '" y="30" width="' + bw + '" height="' + (H - 60) + '" rx="4" fill="var(--panel)" stroke="var(--accent)"/>' +
+           '<text x="' + (x + bw / 2) + '" y="' + (H / 2 + 4) + '" text-anchor="middle" fill="var(--ink)" font-size="11" font-family="monospace">' + zs[k] + 'Ω</text>';
+    }
+  } else {
+    const y = H / 2;
+    s += '<line x1="10" y1="' + y + '" x2="' + (W - 10) + '" y2="' + y + '" stroke="var(--dim)" stroke-width="1.5"/>';
+    for (let k = 0; k < n; k++) {
+      const x = 20 + k * (bw + (n > 1 ? gap : 0));
+      s += '<rect x="' + x + '" y="' + (y - 13) + '" width="' + bw + '" height="26" rx="4" fill="var(--panel)" stroke="var(--accent)"/>' +
+           '<text x="' + (x + bw / 2) + '" y="' + (y + 4) + '" text-anchor="middle" fill="var(--ink)" font-size="11" font-family="monospace">' + zs[k] + 'Ω</text>';
+    }
+  }
+  if (zs.length > 6) s += '<text x="' + (W - 12) + '" y="' + (H - 4) + '" text-anchor="end" fill="var(--dimmer)" font-size="10" font-family="monospace">+' + (zs.length - 6) + ' more</text>';
+  el.innerHTML = s + '</svg>';
+}
+for (const id of ["sz-list", "sz-w", "sz-amp"]) $("#" + id).addEventListener("input", spkRender);
+
+// ---- Latency budget ----
+function latRender() {
+  const stages = parseList($("#lt-list").value);
+  const r = processingDelay(stages);
+  const el = $("#lt-viz");
+  if (!r) { $("#lt-out").innerHTML = '<span class="err">List stage delays like: 0.9, 2.1, 1.5</span>'; el.innerHTML = ""; return; }
+  $("#lt-out").innerHTML = 'Total <b>' + r.totalMs + ' ms</b> · ' + r.samples48k + ' smp @48k · ' +
+    r.samples96k + ' smp @96k · ≈<b>' + r.meters + ' m</b> (' + r.feet + ' ft) of arrival offset';
+  const W = 320, H = 46;
+  let x = 10, s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">';
+  const usable = W - 20, total = r.totalMs || 1;
+  const cols = ["var(--accent)", "var(--accent2)", "var(--ok)", "var(--warn)"];
+  stages.forEach((st, k) => {
+    const w = Math.max(2, st / total * usable);
+    s += '<rect x="' + x + '" y="12" width="' + (w - 2) + '" height="16" rx="3" fill="' + cols[k % cols.length] + '" opacity="0.85"/>' +
+         (w > 26 ? '<text x="' + (x + w / 2 - 1) + '" y="40" text-anchor="middle" fill="var(--dimmer)" font-size="10" font-family="monospace">' + st + '</text>' : '');
+    x += w;
+  });
+  el.innerHTML = s + '</svg>';
+}
+$("#lt-list").addEventListener("input", latRender);
+
+// The original render listeners were bound by reference, so the visuals get
+// their own listeners on the same inputs rather than monkey-patching.
+for (const id of ["bm-t", "bm-a", "bm-cd"]) $("#" + id).addEventListener("input", drawBeam);
+for (const id of ["pw-w", "pw-v", "pw-ph", "pw-pf"]) $("#" + id).addEventListener("input", drawPowerMeter);
+for (const id of ["lw-w", "lw-h", "lw-p"]) $("#" + id).addEventListener("input", drawLedPreview);
+
 dmxRender(false);
 dipRenderFromAddress();
 delayRender();
@@ -311,11 +502,17 @@ powerRender();
 beamRender();
 ledRender();
 rfRender();
+drawBeam();
+drawPowerMeter();
+drawLedPreview();
+ohmRender();
+spkRender();
+latRender();
 `
 
   return shell({
     title: 'Field tools — DMX, delay, timecode, power, beam and LED wall calculators | showstack',
-    description: 'The calculators technicians use daily: DMX address and sACN multicast, DIP switches, speaker delay, drop-frame timecode, power load, beam and photometrics, LED wall resolution, RF wavelength. Free, offline-capable, tested arithmetic.',
+    description: 'Eleven calculators technicians use daily: DMX address, DIP switches, speaker delay, timecode, power load, Ohm’s law, speaker impedance, latency budget, beam photometrics, LED wall, RF wavelength. Free, offline, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
       '@context': 'https://schema.org',
@@ -327,7 +524,7 @@ rfRender();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, beam angle and photometrics calculator, LED wall resolution calculator, RF wavelength calculator',
+      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, power load calculator, Ohm law calculator, speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, RF wavelength calculator',
     },
     body,
     extraStyle: style,

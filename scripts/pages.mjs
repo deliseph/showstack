@@ -54,10 +54,17 @@ const CSS = `
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .wrap{max-width:780px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:18px 0}
+header{border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:30;
+background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 header .wrap{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
 header h1{font-family:var(--mono);font-size:17px;margin:0}header h1 span{color:var(--accent)}
-header nav{margin-left:auto;font-size:13px}header nav a{color:var(--dim);margin-left:14px}
+header nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:7px 12px;border-radius:18px;
+border:1px solid transparent;display:inline-flex;align-items:center;line-height:1}
+header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
+header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
+border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+@media(max-width:640px){header .wrap{flex-direction:column;align-items:flex-start;gap:8px}header nav{margin-left:0}}
 main{padding:34px 0 70px}
 h2{font-size:27px;margin:0 0 6px;line-height:1.25}
 .zh{color:var(--dim);font-weight:400}
@@ -90,6 +97,23 @@ code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);padding:1
 .crumb{font-size:13px;color:var(--dimmer);margin-bottom:14px}
 `
 
+/**
+ * The site nav, with the current section highlighted. Active state is derived
+ * from the canonical URL so no page has to declare it and none can forget to.
+ */
+function navBar(canonical) {
+  const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
+  const items = [
+    ['/', 'Search'], ['/tools/', 'Tools'], ['/interop/', 'Interop'],
+    ['/compare/', 'Compare'], ['/ports/', 'Ports'],
+  ]
+  const links = items.map(([href, label]) => {
+    const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
+    return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
+  }).join('')
+  return `<nav aria-label="Site">${links}<a href="${GH}">GitHub</a></nav>`
+}
+
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
   return `<!doctype html>
 <html lang="en">
@@ -110,7 +134,7 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
 <body>
 <header><div class="wrap">
   <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
-  <nav><a href="/">Search</a><a href="/tools/">Tools</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="${GH}">GitHub</a></nav>
+  ${navBar(canonical)}
   ${h1extra}
 </div></header>
 <main><div class="wrap">${body}</div></main>

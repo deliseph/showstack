@@ -226,3 +226,71 @@ export function framesToTc(frames, rate) {
   const S = Math.floor(n / nominal)
   return { h: Math.floor(S / 3600), m: Math.floor(S / 60) % 60, s: S % 60, f: n % nominal }
 }
+
+/**
+ * Ohm's law / power solver: give any two of volts, amps, ohms, watts and the
+ * other two follow (DC or resistive AC, which is the field-normal use).
+ * Returns null unless exactly two values are provided.
+ */
+export function ohmsLaw({ v, i, r, p } = {}) {
+  const has = (x) => x !== undefined && x !== null && x !== '' && Number.isFinite(Number(x))
+  const given = [has(v), has(i), has(r), has(p)].filter(Boolean).length
+  if (given !== 2) return null
+  let V = has(v) ? Number(v) : null, I = has(i) ? Number(i) : null
+  let R = has(r) ? Number(r) : null, P = has(p) ? Number(p) : null
+  if ((R !== null && R <= 0) || (V !== null && V < 0) || (I !== null && I < 0) || (P !== null && P < 0)) return null
+  if (V !== null && I !== null) { R = I === 0 ? null : V / I; P = V * I }
+  else if (V !== null && R !== null) { I = V / R; P = V * I }
+  else if (V !== null && P !== null) { I = V === 0 ? null : P / V; R = I ? V / I : null }
+  else if (I !== null && R !== null) { V = I * R; P = V * I }
+  else if (I !== null && P !== null) { V = I === 0 ? null : P / I; R = I === 0 ? null : V / I }
+  else if (R !== null && P !== null) { V = Math.sqrt(P * R); I = V / R }
+  const r2 = (x) => (x === null || !Number.isFinite(x)) ? null : Math.round(x * 100) / 100
+  return { volts: r2(V), amps: r2(I), ohms: r2(R), watts: r2(P) }
+}
+
+/**
+ * Loudspeaker load: total impedance of drivers wired in parallel or series,
+ * plus how amplifier power divides among them. In parallel every box sees the
+ * same voltage, so the lower-impedance box takes MORE of the power; in series
+ * they share one current, so power follows impedance instead.
+ */
+export function speakerImpedance(ohms, wiring = 'parallel', ampWatts = null) {
+  if (!Array.isArray(ohms) || ohms.length === 0) return null
+  const zs = ohms.map(Number)
+  if (!zs.every((z) => Number.isFinite(z) && z > 0)) return null
+  let total
+  if (wiring === 'series') total = zs.reduce((a, b) => a + b, 0)
+  else if (wiring === 'parallel') total = 1 / zs.reduce((a, z) => a + 1 / z, 0)
+  else return null
+  const r2 = (x) => Math.round(x * 100) / 100
+  const out = { total: r2(total), count: zs.length }
+  const w = Number(ampWatts)
+  if (Number.isFinite(w) && w > 0) {
+    const sumInv = zs.reduce((a, z) => a + 1 / z, 0)
+    out.share = wiring === 'parallel'
+      ? zs.map((z) => r2(w * (1 / z) / sumInv))
+      : zs.map((z) => r2(w * z / total))
+  }
+  return out
+}
+
+/**
+ * Latency budget: sum the stage delays in a signal chain and convert to the
+ * units a tech aligns with — samples at common rates, and the distance sound
+ * covers in that time (what a DSP hop costs you against the PA).
+ */
+export function processingDelay(stagesMs) {
+  if (!Array.isArray(stagesMs) || stagesMs.length === 0) return null
+  const ms = stagesMs.map(Number)
+  if (!ms.every((x) => Number.isFinite(x) && x >= 0)) return null
+  const total = ms.reduce((a, b) => a + b, 0)
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    totalMs: r2(total),
+    samples48k: Math.round(total * 48),
+    samples96k: Math.round(total * 96),
+    meters: r2(total / 1000 * 343.4),
+    feet: r2(total / 1000 * 343.4 * 3.28084),
+  }
+}
