@@ -47,56 +47,109 @@ const jsonForScript = (obj) =>
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
 const CSS = `
-:root{--bg:#0d0f12;--panel:#14171c;--panel2:#1a1e25;--line:#252b34;--ink:#e8ecf1;--dim:#9aa4b2;--dimmer:#6b7684;
---accent:#7dd3c0;--accent2:#f0b866;--warn:#e8836b;--ok:#8fbf6f;
---mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-@media(prefers-color-scheme:light){:root{--bg:#fbfbfa;--panel:#fff;--panel2:#f4f5f7;--line:#e2e5ea;--ink:#15181d;
---dim:#5a6472;--dimmer:#8b95a3;--accent:#137a68;--accent2:#9a6410;--warn:#b8452a;--ok:#3f7a24}}
+:root{color-scheme:dark;
+--bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#6e7c94;
+--accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
+--glow:rgba(95,212,187,.06);--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+--r-sm:8px;--r-md:12px;--r-lg:16px;
+--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+:root[data-theme="light"]{color-scheme:light;
+--bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
+--accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+--bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
+--accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:780px;margin:0 auto;padding:0 20px}
+.wrap{max-width:800px;margin:0 auto;padding:0 20px}
 header{border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:30;
-background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-header .wrap{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-header h1{font-family:var(--mono);font-size:17px;margin:0}header h1 span{color:var(--accent)}
-header nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:7px 12px;border-radius:18px;
-border:1px solid transparent;display:inline-flex;align-items:center;line-height:1}
+background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
+background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
+header .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{font-family:var(--mono);font-size:17px;margin:0;letter-spacing:-.3px}header h1 span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:8px 12px;border-radius:999px;
+border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;transition:color .15s,background .15s,border-color .15s}
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
 header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
-border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
-@media(max-width:640px){header .wrap{flex-direction:column;align-items:flex-start;gap:8px}header nav{margin-left:0}}
-main{padding:34px 0 70px}
-h2{font-size:27px;margin:0 0 6px;line-height:1.25}
+border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+.themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-left:4px;
+border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
+transition:color .15s,border-color .15s,transform .15s}
+.themebtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);transform:translateY(-1px)}
+.themebtn svg{display:block}
+@media(max-width:640px){header .wrap{flex-direction:row;align-items:center;gap:8px}header nav{margin-left:0;width:100%}}
+main{padding:36px 0 72px;background:
+radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
+h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
 .zh{color:var(--dim);font-weight:400}
 .lede{font-size:17px;color:var(--dim);margin:0 0 18px}
 .meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:26px}
-.pill{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.3px;border:1px solid var(--line);
-color:var(--dimmer);padding:3px 8px;border-radius:20px;background:var(--panel2)}
+.pill{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.4px;border:1px solid var(--line);
+color:var(--dimmer);padding:3.5px 9px;border-radius:999px;background:var(--panel2)}
 .pill.verified{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
 .pill.unverified{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
 .pill.port{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,transparent)}
 .pill.safety{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
 h3{font-family:var(--mono);font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--dimmer);
-margin:30px 0 10px;font-weight:600}
+margin:32px 0 10px;font-weight:600}
 ul{padding-left:20px;margin:0}li{margin-bottom:8px;color:var(--dim)}li strong{color:var(--ink);font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{text-align:left;color:var(--dimmer);font-weight:500;font-family:var(--mono);font-size:12px;
 padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
-td{padding:7px 10px 7px 0;border-bottom:1px solid var(--line);color:var(--dim);vertical-align:top}
+td{padding:8px 10px 8px 0;border-bottom:1px solid var(--line);color:var(--dim);vertical-align:top}
 td strong{color:var(--ink);font-weight:600}
-.ports{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 8px}
+.ports{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:0 0 10px;
+box-shadow:var(--shadow);transition:border-color .2s}
+.ports:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
 .ports .big{font-family:var(--mono);font-size:24px;color:var(--accent2);display:block;margin-bottom:2px}
-.gotcha{background:var(--panel);border-left:2px solid var(--accent2);padding:11px 15px;margin-bottom:9px;
-border-radius:0 7px 7px 0;color:var(--dim);font-size:15px}
-.cta{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:34px 0 0}
+.gotcha{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent2);padding:12px 16px;
+margin-bottom:10px;border-radius:var(--r-sm);color:var(--dim);font-size:15px}
+.cta{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel2)),var(--panel2));
+border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;margin:36px 0 0}
 .cta strong{display:block;margin-bottom:5px}
 .cta p{margin:0;color:var(--dim);font-size:14.5px}
-footer{border-top:1px solid var(--line);padding:22px 0 60px;color:var(--dimmer);font-size:13px}
+footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--dimmer);font-size:13px}
 footer a{color:var(--dim)}
-code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);padding:1.5px 5px;border-radius:4px}
-.crumb{font-size:13px;color:var(--dimmer);margin-bottom:14px}
+code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);border:1px solid var(--line);
+padding:1.5px 6px;border-radius:6px}
+.crumb{font-size:13px;color:var(--dimmer);margin-bottom:14px;font-family:var(--mono)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation:none!important;scroll-behavior:auto!important}}
+`
+
+
+/**
+ * The three-state theme switcher: auto (follow the OS), light, dark.
+ * Auto removes the data-theme attribute so the prefers-color-scheme media
+ * query decides; an explicit choice pins the attribute and persists in
+ * localStorage, read again by the tiny pre-paint script in <head> so pages
+ * never flash the wrong theme. Icons are inline SVG, not emoji.
+ */
+const THEME_JS = `
+(function(){
+  var KEY='ss-theme', root=document.documentElement, btn=document.getElementById('themebtn');
+  var ICONS={
+    auto:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.8a8.2 8.2 0 0 1 0 16.4z" fill="currentColor"/></svg>',
+    light:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5 5l1.9 1.9M17.1 17.1 19 19M19 5l-1.9 1.9M6.9 17.1 5 19"/></svg>',
+    dark:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.6 13.2A8.6 8.6 0 1 1 10.8 3.4a7 7 0 1 0 9.8 9.8z"/></svg>'
+  };
+  function mode(){try{var t=localStorage.getItem(KEY);return t==='light'||t==='dark'?t:'auto'}catch(e){return 'auto'}}
+  function apply(m){
+    if(m==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',m)}
+    try{m==='auto'?localStorage.removeItem(KEY):localStorage.setItem(KEY,m)}catch(e){}
+    if(btn){btn.innerHTML=ICONS[m];btn.setAttribute('aria-label','Theme: '+m+' (click to change)');btn.title='Theme: '+m}
+  }
+  if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
+  apply(mode());
+})();
 `
 
 /**
@@ -113,7 +166,7 @@ function navBar(canonical) {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
   }).join('')
-  return `<nav aria-label="Site">${links}<a href="${GH}">GitHub</a></nav>`
+  return `<nav aria-label="Site">${links}<a href="${GH}">GitHub</a><button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -130,6 +183,10 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
 <meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<script>(function(){try{var t=localStorage.getItem('ss-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
 </head>
@@ -141,6 +198,7 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
 </div></header>
 <main><div class="wrap">${body}</div></main>
 ${extraScript ? `<script>${extraScript}</script>` : ''}
+<script>${THEME_JS}</script>
 <footer><div class="wrap">
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
