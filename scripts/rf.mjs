@@ -19,7 +19,7 @@ const USE_LABEL = {
   prohibited: 'prohibited',
 }
 
-export function rfPage({ esc, shell, jsonForScript, SITE, GH }) {
+export function rfPage({ esc, shell, jsonForScript, SITE, GH, graphJSON }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -177,5 +177,6 @@ drawStrips();
     body,
     extraStyle: style,
     extraScript: script,
+    heroGraph: graphJSON,
   })
 }

@@ -15,7 +15,7 @@ import { NETDATA, qosPlan, linkFill } from './netmath.mjs'
 
 const MATH_SRC = [qosPlan, linkFill].map((f) => f.toString()).join('\n\n')
 
-export function networkPage({ esc, shell, jsonForScript, SITE, GH }) {
+export function networkPage({ esc, shell, jsonForScript, SITE, GH, graphJSON }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -163,5 +163,6 @@ renderFill();
     body,
     extraStyle: style,
     extraScript: script,
+    heroGraph: graphJSON,
   })
 }

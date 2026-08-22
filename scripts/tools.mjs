@@ -34,7 +34,7 @@ const MATH_SRC = [
   throwRatio, screenLuminance, relayLogic,
 ].map((f) => f.toString()).join('\n\n')
 
-export function toolsPage({ esc, shell, SITE, GH }) {
+export function toolsPage({ esc, shell, SITE, GH, graphJSON }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -622,5 +622,6 @@ relayRender();
     body,
     extraStyle: style,
     extraScript: script,
+    heroGraph: graphJSON,
   })
 }

@@ -19,6 +19,7 @@ import { interopPage } from './interop.mjs'
 import { toolsPage } from './tools.mjs'
 import { networkPage } from './network.mjs'
 import { rfPage } from './rf.mjs'
+import { SUPER_DOMAINS, superDomain, buildGraph } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -50,6 +51,7 @@ const CSS = `
 :root{color-scheme:dark;
 --bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#6e7c94;
 --accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
+--dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;--dom-safety:#ec7f66;--dom-control:#b98cf2;
 --glow:rgba(95,212,187,.06);--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
 --r-sm:8px;--r-md:12px;--r-lg:16px;
 --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
@@ -57,10 +59,12 @@ const CSS = `
 :root[data-theme="light"]{color-scheme:light;
 --bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
 --accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
 --glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
 --bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
 --accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
 --glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
@@ -81,6 +85,8 @@ border:1px solid transparent;display:inline-flex;align-items:center;line-height:
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
 header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
 border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;border-left:1px solid var(--line)}
+@media(max-width:640px){header nav .navgroup{border-left:none;padding-left:0;margin-left:0}}
 .themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-left:4px;
 border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
 transition:color .15s,border-color .15s,transform .15s}
@@ -99,6 +105,11 @@ color:var(--dimmer);padding:3.5px 9px;border-radius:999px;background:var(--panel
 .pill.unverified{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
 .pill.port{color:var(--accent2);border-color:color-mix(in srgb,var(--accent2) 40%,transparent)}
 .pill.safety{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.pill.dom-visual{color:var(--dom-visual);border-color:color-mix(in srgb,var(--dom-visual) 40%,transparent)}
+.pill.dom-audio{color:var(--dom-audio);border-color:color-mix(in srgb,var(--dom-audio) 40%,transparent)}
+.pill.dom-network{color:var(--dom-network);border-color:color-mix(in srgb,var(--dom-network) 40%,transparent)}
+.pill.dom-safety{color:var(--dom-safety);border-color:color-mix(in srgb,var(--dom-safety) 45%,transparent)}
+.pill.dom-control{color:var(--dom-control);border-color:color-mix(in srgb,var(--dom-control) 40%,transparent)}
 h3{font-family:var(--mono);font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:var(--dimmer);
 margin:32px 0 10px;font-weight:600}
 ul{padding-left:20px;margin:0}li{margin-bottom:8px;color:var(--dim)}li strong{color:var(--ink);font-weight:600}
@@ -122,6 +133,12 @@ footer a{color:var(--dim)}
 code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);border:1px solid var(--line);
 padding:1.5px 6px;border-radius:6px}
 .crumb{font-size:13px;color:var(--dimmer);margin-bottom:14px;font-family:var(--mono)}
+.hgraph{position:relative;height:200px;border-bottom:1px solid var(--line);overflow:hidden;
+background:linear-gradient(180deg,var(--panel2),var(--bg))}
+.hgraph canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hgraph::after{content:"";position:absolute;inset:auto 0 0 0;height:70px;
+background:linear-gradient(180deg,transparent,var(--bg))}
+@media(max-width:640px){.hgraph{height:130px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation:none!important;scroll-behavior:auto!important}}
 `
 
@@ -158,23 +175,114 @@ const THEME_JS = `
 `
 
 /**
- * The site nav, with the current section highlighted. Active state is derived
- * from the canonical URL so no page has to declare it and none can forget to.
+ * The living-data constellation: a small, real graph of which products speak
+ * which protocols, drawn as a quietly drifting force layout behind the hero
+ * band on section-index pages. Colors are read from the domain CSS variables
+ * at runtime, not hardcoded, so the constellation always matches whatever
+ * theme (and whatever future palette tweak) the badges are using — one
+ * source of truth, not two things that can drift apart.
+ *
+ * Settles for a moment before the first paint so it never starts as a
+ * chaotic scatter, then drifts at low amplitude indefinitely. Respects
+ * prefers-reduced-motion (renders one static settled frame) and pauses
+ * while the tab is hidden.
+ */
+const NETWORK_JS = `
+(function(){
+  function boot(){
+    var el=document.getElementById('hgcanvas');
+    if(!el||!window.__ssGraph)return;
+    var g=window.__ssGraph, ctx=el.getContext('2d');
+    var cs=getComputedStyle(document.documentElement);
+    var DOMCOLOR={
+      visual:cs.getPropertyValue('--dom-visual').trim(),
+      audio:cs.getPropertyValue('--dom-audio').trim(),
+      network:cs.getPropertyValue('--dom-network').trim(),
+      safety:cs.getPropertyValue('--dom-safety').trim(),
+      control:cs.getPropertyValue('--dom-control').trim()
+    };
+    var reduce=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W=0,H=0,DPR=Math.min(window.devicePixelRatio||1,2);
+    function size(){
+      var r=el.parentElement.getBoundingClientRect();
+      W=r.width;H=r.height;
+      el.width=Math.max(1,W*DPR);el.height=Math.max(1,H*DPR);
+      el.style.width=W+'px';el.style.height=H+'px';
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    size();
+    window.addEventListener('resize', size);
+    var n=g.nodes.length;
+    var pos=g.nodes.map(function(){return {x:Math.random()*W,y:Math.random()*H,vx:0,vy:0}});
+    function step(){
+      for(var i=0;i<n;i++){
+        var p=pos[i];
+        p.vx+=(W/2-p.x)*0.0006; p.vy+=(H/2-p.y)*0.0006;
+        for(var j=0;j<n;j++){ if(i===j)continue;
+          var q=pos[j], dx=p.x-q.x, dy=p.y-q.y, d2=dx*dx+dy*dy+0.01;
+          if(d2<6000){ var f=8/d2; p.vx+=dx*f; p.vy+=dy*f; }
+        }
+      }
+      g.edges.forEach(function(e){
+        var a=pos[e[0]], b=pos[e[1]];
+        var dx=b.x-a.x, dy=b.y-a.y, dist=Math.sqrt(dx*dx+dy*dy)||1;
+        var f=(dist-64)*0.0012;
+        a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f;
+      });
+      for(var k=0;k<n;k++){ var p=pos[k]; p.vx*=0.86; p.vy*=0.86; p.x+=p.vx; p.y+=p.vy; }
+    }
+    for(var s=0;s<140;s++) step();
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      ctx.lineWidth=1;
+      ctx.strokeStyle='rgba(150,165,190,.14)';
+      ctx.beginPath();
+      g.edges.forEach(function(e){
+        var a=pos[e[0]], b=pos[e[1]];
+        ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      });
+      ctx.stroke();
+      for(var i=0;i<n;i++){
+        var p=pos[i];
+        ctx.globalAlpha=.6;
+        ctx.fillStyle=DOMCOLOR[g.nodes[i]]||'#8fa3b8';
+        ctx.beginPath();ctx.arc(p.x,p.y,2.4,0,6.29);ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    }
+    if(reduce){ draw(); return; }
+    var hidden=false;
+    document.addEventListener('visibilitychange',function(){hidden=document.hidden});
+    function loop(){
+      if(!hidden){ step(); draw(); }
+      requestAnimationFrame(loop);
+    }
+    loop();
+  }
+  document.addEventListener('DOMContentLoaded', boot);
+})();
+`
+
+/**
+ * The site nav, with the current section highlighted, grouped so the visual
+ * spacing matches what the links actually are: the primary search, then the
+ * field-calculator utilities, then the whole-index views. Active state is
+ * derived from the canonical URL so no page has to declare it and none can
+ * forget to.
  */
 function navBar(canonical) {
   const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
-  const items = [
-    ['/', 'Search'], ['/tools/', 'Tools'], ['/network/', 'Network'], ['/rf/', 'RF'],
-    ['/interop/', 'Interop'], ['/compare/', 'Compare'], ['/ports/', 'Ports'],
-  ]
-  const links = items.map(([href, label]) => {
+  const link = (href, label) => {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
-  }).join('')
-  return `<nav aria-label="Site">${links}<a href="${GH}">GitHub</a><button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button></nav>`
+  }
+  const search = link('/', 'Search')
+  const tools = ['/tools/', '/network/', '/rf/'].map((h, i) => link(h, ['Tools', 'Network', 'RF'][i])).join('')
+  const views = ['/interop/', '/compare/', '/ports/'].map((h, i) => link(h, ['Interop', 'Compare', 'Ports'][i])).join('')
+  return `<nav aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span><a href="${GH}">GitHub</a><button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button></nav>`
 }
 
-function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
+function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '', heroGraph = null }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -192,6 +300,7 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <script>${THEME_JS}</script>
+${heroGraph ? `<script>${NETWORK_JS}</script>` : ''}
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
 </head>
@@ -201,6 +310,12 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
   ${navBar(canonical)}
   ${h1extra}
 </div></header>
+${/* Safe by construction, not by escaping: heroGraph only ever contains the
+    five fixed super-domain codes from graph.mjs, never a raw contributed
+    string, so there is nothing here a hostile YAML field could inject into.
+    Only passed on section-index pages (tools/network/rf/ports/compare), never
+    on the per-entry pages the zero-body-script test below is guarding. */''}
+${heroGraph ? `<div class="hgraph"><canvas id="hgcanvas" aria-hidden="true"></canvas></div><script>window.__ssGraph=${heroGraph};</script>` : ''}
 <main><div class="wrap">${body}</div></main>
 ${extraScript ? `<script>${extraScript}</script>` : ''}
 <footer><div class="wrap">
@@ -244,7 +359,7 @@ function protocolPage(p, gap) {
   b += `<p class="lede">${esc(p.summary)}</p>`
 
   b += `<div class="meta">`
-  b += `<span class="pill">${esc(p.category)}</span>`
+  b += `<span class="pill dom-${superDomain(p.category)}">${esc(p.category)}</span>`
   if (p.openness) b += `<span class="pill">${esc(p.openness)}</span>`
   if (p.steward) b += `<span class="pill">${esc(p.steward)}</span>`
   if (p.confidence) b += `<span class="pill ${esc(p.confidence)}">${esc(p.confidence)}</span>`
@@ -338,7 +453,7 @@ function termPage(t, gap) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / glossary / ${esc(t.id)}</div>`
   b += `<h2>${esc(t.en)}${t.zh_hant ? ` <span class="zh">${esc(t.zh_hant)}</span>` : ''}</h2>`
-  b += `<div class="meta"><span class="pill">${esc(t.domain)}</span>${t.safety_critical ? '<span class="pill safety">safety critical</span>' : ''}</div>`
+  b += `<div class="meta"><span class="pill dom-${superDomain(t.domain)}">${esc(t.domain)}</span>${t.safety_critical ? '<span class="pill safety">safety critical</span>' : ''}</div>`
   b += `<p class="lede">${esc(t.definition_en)}</p>`
   if (t.definition_zh_hant) b += `<h3>中文</h3><p style="color:var(--dim)">${esc(t.definition_zh_hant)}</p>`
   if (t.regional_variants?.length) {
@@ -380,7 +495,7 @@ function productPage(kind, e, gap) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / ${kind} / ${esc(e.id)}</div>`
   b += `<h2>${esc(e.name)}</h2><p class="lede">${esc(e.summary)}</p>`
-  b += `<div class="meta"><span class="pill">${esc(e.category)}</span>`
+  b += `<div class="meta"><span class="pill dom-${superDomain(e.category)}">${esc(e.category)}</span>`
   if (e.vendor) b += `<span class="pill">${esc(e.vendor)}</span>`
   if (e.license) b += `<span class="pill">${esc(e.license)}</span>`
   if (e.price_model) b += `<span class="pill">${esc(e.price_model)}</span>`
@@ -415,7 +530,7 @@ function standardPage(s, gap) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / standards / ${esc(s.id)}</div>`
   b += `<h2>${esc(s.designation)}</h2><p class="lede">${esc(s.title)}</p>`
-  b += `<div class="meta"><span class="pill">${esc(s.body)}</span><span class="pill">${esc(s.domain)}</span>`
+  b += `<div class="meta"><span class="pill">${esc(s.body)}</span><span class="pill dom-${superDomain(s.domain)}">${esc(s.domain)}</span>`
   if (s.year) b += `<span class="pill">${s.year}</span>`
   if (s.free_to_read === true) b += `<span class="pill verified">free to read</span>`
   if (s.free_to_read === false) b += `<span class="pill">paid</span>`
@@ -452,7 +567,13 @@ export function buildPages(db, dist) {
     ...db.software.map((e) => ({ ...e, kind: 'software' })),
     ...db.hardware.map((e) => ({ ...e, kind: 'hardware' })),
   ]
-  const helpers = { esc, trunc, shell, SITE, GH, products }
+  // The living-data constellation: one real, capped graph of who speaks what,
+  // computed once and threaded into every section-index page's hero band
+  // (never onto individual entry pages, which stay quiet for fast reference
+  // use). See graph.mjs for why the shape is safe to embed unescaped.
+  const graphJSON = jsonForScript(buildGraph(db))
+
+  const helpers = { esc, trunc, shell, SITE, GH, products, graphJSON }
   const livePairs = []
   for (const [aId, bId, ask] of PAIRS) {
     const a = protoById[aId]
@@ -475,15 +596,15 @@ export function buildPages(db, dist) {
 
   // The field-tool calculators. Market-validated daily utilities: DMX/DIP
   // addressing, speaker delay, timecode. Same arithmetic the test suite runs.
-  write('tools', toolsPage({ esc, shell, SITE, GH }))
+  write('tools', toolsPage({ esc, shell, SITE, GH, graphJSON }))
   urls.push(`${SITE}/tools/`)
 
   // The converged-network planner: QoS queues, DSCP collisions, link fill.
-  write('network', networkPage({ esc, shell, jsonForScript, SITE, GH }))
+  write('network', networkPage({ esc, shell, jsonForScript, SITE, GH, graphJSON }))
   urls.push(`${SITE}/network/`)
 
   // The per-country wireless mic frequency map.
-  write('rf', rfPage({ esc, shell, jsonForScript, SITE, GH }))
+  write('rf', rfPage({ esc, shell, jsonForScript, SITE, GH, graphJSON }))
   urls.push(`${SITE}/rf/`)
 
   // Port pages, plus an index of every port we know about.
@@ -507,6 +628,7 @@ export function buildPages(db, dist) {
       <table><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
       <div class="cta"><strong>Missing one?</strong><p>Ports we could not source are deliberately left blank rather than guessed.
       <a href="${GH}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">Open gaps are here.</a></p></div>`,
+    heroGraph: graphJSON,
   }))
   urls.push(`${SITE}/ports/`)
 
