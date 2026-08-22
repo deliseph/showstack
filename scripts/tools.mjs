@@ -65,11 +65,16 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
    tallest card, so a short calculator next to a tall one leaves dead space
    underneath it. Multi-column flow instead packs each card into whichever
    column is shortest so far, using the card's own height — no row to be
-   uneven. .tool.wide breaks the columns for the handful of cards (timecode,
-   relay logic, the audio-unit reference) that need the full measure. */
+   uneven. Each domain group gets its OWN small column container rather
+   than one page-wide one: a column-span:all break (a wide card, or a group
+   label) forces every column to resync to the same height at that point,
+   so one shared container turns every group boundary back into the exact
+   row-height-mismatch gap this layout exists to avoid. Scoping the columns
+   per group keeps that resync cheap — it only has to balance 2-4 cards,
+   not the whole page. */
 .toolgroup{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;
-color:var(--dimmer);margin:0 0 10px;column-span:all}
-.toolgroup:not(:first-child){margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+color:var(--dimmer);margin:28px 0 10px}
+.toolgroup:first-of-type{margin-top:0}
 .toolgrid{columns:2;column-gap:18px}
 .toolgrid .tool{break-inside:avoid;margin:0 0 18px}
 .tool.wide{column-span:all}
@@ -95,8 +100,8 @@ border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:
 <h2>Field tools</h2>
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
 
-<div class="toolgrid">
 <div class="toolgroup">Addressing &amp; show control</div>
+<div class="toolgrid">
 <div class="tool" id="dmx">
   <h3>DMX address</h3>
   <div class="row">
@@ -146,8 +151,10 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="ttwrap" id="rl-table"></div>
   <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
 </div>
+</div>
 
 <div class="toolgroup">Audio</div>
+<div class="toolgrid">
 <div class="tool" id="delay">
   <h3>Speaker delay</h3>
   <div class="row">
@@ -192,15 +199,19 @@ HORN = GO &amp; (A | B)</textarea></div>
     <tr><th>Unit</th><th>Reference</th><th>Measures</th></tr>
     <tr><td><b>dB SPL</b></td><td>20 µPa (threshold of hearing)</td><td>Sound pressure in air — what a bare SPL meter reads before any weighting is applied.</td></tr>
     <tr><td><b>dB(A)</b></td><td>SPL, A-weighted</td><td>Rolls off bass steeply to approximate ear sensitivity at moderate levels. Standard for noise-exposure limits and most SPL-meter defaults — under-represents low end.</td></tr>
+    <tr><td><b>dB(C)</b></td><td>SPL, C-weighted</td><td>Nearly flat 31.5 Hz–8 kHz, only rolling off at the extremes. Used for peak/impact readings and subwoofer or system alignment, where dB(A) hides too much low end — the gap between an A- and C-weighted reading of the same signal is a quick tell for how bass-heavy it is.</td></tr>
     <tr><td><b>dB(Z)</b></td><td>SPL, unweighted</td><td>Flat 10 Hz–20 kHz ±1.5 dB per IEC 61672-1 ("Z" = zero weighting). The true acoustic level, used where the low end matters: sub alignment, cinema and room calibration.</td></tr>
     <tr><td><b>dBu</b></td><td>0.775 V RMS</td><td>Line-level signal voltage, independent of load impedance — the professional-gear standard.</td></tr>
     <tr><td><b>dBV</b></td><td>1 V RMS</td><td>Line-level signal voltage on the simpler round-number reference — consumer and semi-pro gear.</td></tr>
   </table>
   <p class="note">SPL and dBu/dBV are not the same kind of measurement and do not convert into each other: one is acoustic pressure in air, the other is electrical voltage in a cable. A mixer's output meter reading "0 dBu" says nothing about how loud the room is.</p>
   <p class="note">Ohms (Ω) also names two different things on this page. <b>Resistance</b> — the Ohm's law tool below, a lamp or heater element — opposes current the same way at any frequency, all of it dissipated as heat. <b>Impedance</b> — the Speaker load tool above — is resistance's AC generalisation, Z = R + jX: a reactance X from the driver's voice coil and crossover that shifts with frequency. A loudspeaker's "8 Ω" is a nominal average, not a fixed value — the real number can swing from under 5 Ω to well over 40 Ω near cone resonance. That is why the speaker load arithmetic above is exact for a stated nominal figure, while Ohm's law's resistive-only assumption is indicative, not exact, once it is pointed at a driver instead of a lamp.</p>
+  <p class="note">Light and sound both obey the <b>inverse square law</b> because both radiate from a small source across an expanding sphere: double the distance and the energy spreads over 4× the area, so the level at any point is quartered. For light that is illuminance — lux = candela ÷ throw², see <a href="#beam">Beam &amp; throw</a> below — a fixture twice as far away lights its target at a quarter the lux, all else equal. For sound in a free field (no walls or ground reflection filling it back in) the same physics shows up as a level drop rather than a ratio: −6 dB every doubling of distance, +6 dB every halving. How to use it: to sanity-check a claimed SPL at FOH against a spec measured at 1 m, count doublings of distance and subtract 6 dB each — a source rated 100 dB at 1 m is roughly 88 dB by 4 m (two doublings) outdoors. Indoors, reflections refill part of that drop, so 6 dB/doubling is the conservative, worst-case figure for clearance and neighbour-noise planning, not what a meter will actually read in a live room.</p>
+</div>
 </div>
 
 <div class="toolgroup">Lighting &amp; video</div>
+<div class="toolgrid">
 <div class="tool" id="beam">
   <h3>Beam &amp; throw</h3>
   <div class="row">
@@ -247,8 +258,10 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="sc-out" role="status" aria-live="polite"></div>
   <p class="note">Incident light is lux = lumens ÷ area. What the audience sees is luminance: fL = lumens × gain ÷ area in ft², and 1 fL = 3.4263 cd/m² (nits). <a href="https://www.dcimovies.com/specification/" rel="noopener nofollow">DCI cinema reference</a> is 48 cd/m² (14 fL) in the dark; ambient light on the screen is the number that actually kills contrast. Gain redirects light toward the axis rather than creating it, so high gain trades viewing angle.</p>
 </div>
+</div>
 
 <div class="toolgroup">Power &amp; electrical</div>
+<div class="toolgrid">
 <div class="tool" id="power">
   <h3>Power load</h3>
   <div class="row">
@@ -275,8 +288,10 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
   <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
 </div>
+</div>
 
 <div class="toolgroup">RF</div>
+<div class="toolgrid">
 <div class="tool" id="rf">
   <h3>RF wavelength</h3>
   <div class="row">

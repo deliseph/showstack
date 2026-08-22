@@ -20,6 +20,9 @@ import { toolsPage } from './tools.mjs'
 import { networkPage } from './network.mjs'
 import { rfPage } from './rf.mjs'
 import { signalsPage } from './signals.mjs'
+import { signalsDataPage } from './signals-data.mjs'
+import { signalsMediaPage } from './signals-media.mjs'
+import { signalsDisplayPage } from './signals-display.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -500,12 +503,18 @@ export function buildPages(db, dist) {
   write('rf', rfPage({ esc, shell, jsonForScript, SITE, GH }))
   urls.push(`${SITE}/rf/`)
 
-  // Signal & connector reference: serial vs parallel, display-protocol
-  // versions, structured cabling categories, fibre types, RS-485/DMX unit
-  // loads, and connector pinouts. Hand-authored explainer content, not
-  // generated from the YAML dataset — see signals.mjs for why.
+  // Signal & connector reference: a short hub page linking three category
+  // pages instead of one page cramming everything together. Hand-authored
+  // explainer content, not generated from the YAML dataset — see
+  // signals.mjs for why.
   write('signals', signalsPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/signals/`)
+  write('signals/data', signalsDataPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/signals/data/`)
+  write('signals/media', signalsMediaPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/signals/media/`)
+  write('signals/display', signalsDisplayPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/signals/display/`)
 
   // Port pages, plus an index of every port we know about.
   const byPort = new Map()
