@@ -1,0 +1,64 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: etc-sensor3-rack
+name: ETC Sensor3 Dimmer Rack
+vendor: ETC
+category: dimmer-distro
+status: current
+summary: Installed dimmer and constant-power rack with per-module electronics, network feedback
+  and the CEM3 control module that reports load, breaker state and rack temperature back to
+  the console.
+speaks:
+- protocol: sacn
+  direction: in
+  note: sACN input from the console.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Art-Net input.
+  confidence: reported
+- protocol: etcnet3
+  direction: bidirectional
+  note: Net3 for control, feedback and configuration.
+  confidence: reported
+- protocol: dmx512
+  direction: in
+  note: DMX input as a backup or primary path.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM for module reporting on supported configurations.
+  confidence: unverified
+physical_ports:
+- DMX in (XLR5)
+- 2x Ethernet
+- Dimmer / relay / constant-power modules
+- Feeder lugs
+form_factor: Floor-standing dimmer rack
+homepage:
+  url: https://www.etcconnect.com/
+  label: ETC
+gotchas:
+- A dimmer module and a constant-power (ThruPower or relay) module are physically interchangeable
+  and electrically very different. Putting an LED fixture on a dimmer module is how expensive
+  things get damaged.
+- CEM3 feedback only reaches the console if the rack is on the control network. Many installs
+  wire DMX only, and then nobody sees the breaker trip.
+- Rack load and feeder size are a building electrical matter. Adding a moving-light rig to
+  a house dimmer rack is a load calculation, not a patching exercise.
+tags:
+- dimmer
+- power
+- etc
+- install
+- sensor3
+sources:
+- title: ETC
+  url: https://www.etcconnect.com/
+  publisher: ETC
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,88 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: grandma2-full-size
+name: grandMA2 full-size
+vendor: MA Lighting
+category: lighting-console
+released: 2010
+status: superseded
+superseded_by: grandma3-full-size
+summary: 'The console that defined large-scale lighting control for a decade: 4096 parameters
+  per unit, three internal screens plus externals, and the MA-Net2 session model that lets
+  several desks and NPUs act as one system.'
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in and out.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in and out.
+  confidence: reported
+- protocol: ma-net
+  direction: bidirectional
+  note: MA-Net2 for sessions with other grandMA2 devices and NPUs.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Direct DMX from the rear XLR5 ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM on the local DMX ports.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX for media server thumbnails.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI notes, MIDI timecode and MSC.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC input for timecode-driven sequences.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: PosiStageNet input for tracking-driven follow.
+  confidence: reported
+physical_ports:
+- 8x XLR5F DMX
+- 2x etherCON
+- MIDI in/out
+- LTC in
+- DVI outputs for external screens
+- Audio in
+form_factor: Console, three internal displays
+homepage:
+  url: https://www.malighting.com/
+  label: MA Lighting
+gotchas:
+- MA-Net2 and MA-Net3 are different and do not interoperate. A grandMA2 and a grandMA3 cannot
+  share a session; the grandMA3 runs a grandMA2 compatibility mode instead, on separate hardware
+  or a separate boot.
+- Still everywhere in rental stock and on riders long after being superseded, so a "grandMA"
+  request needs pinning down to a generation before the truck is loaded.
+- 'Sessions are the whole point and the whole risk: an accidental second session master on
+  the same network is one of the classic ways a rig goes dark mid-show.'
+tags:
+- lighting
+- console
+- grandma
+- ma-lighting
+- historical
+sources:
+- title: MA Lighting
+  url: https://www.malighting.com/
+  publisher: MA Lighting
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

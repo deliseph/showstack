@@ -1,0 +1,47 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: freed
+name: FreeD
+category: tracking-position
+openness: proprietary-documented
+status: current
+summary: Camera tracking data protocol originally from Vinten, carrying pan, tilt, roll, position,
+  zoom and focus. The de facto interchange format between a tracked camera and a render engine
+  in virtual production and AR graphics.
+transport:
+- udp
+- rs232
+default_ports:
+- number: 6000
+  transport: udp
+  role: Common default; the port is configurable per system
+  iana_registered: false
+  note: 'No registered port: each vendor picks a default.'
+typical_use:
+- Feeding camera position to Unreal Engine in an LED volume
+- Driving AR graphics from a tracked camera
+- Virtual set and broadcast graphics
+gotchas:
+- FreeD carries lens data as encoder counts, not as calibrated focal length. Without a lens
+  calibration file the render engine cannot match the real lens, and the composite will not
+  line up.
+- Several incompatible variants exist under the same name, differing in packet layout and
+  unit conventions. "FreeD" between two vendors is a thing to test, not to assume.
+- It is a one-way broadcast with no acknowledgement. A dropped packet is a dropped frame of
+  tracking, which is why the network carrying it should be dedicated.
+confidence: reported
+tags:
+- camera-tracking
+- virtual-production
+- freed
+- ar
+- unreal
+sources:
+- title: Vinten camera robotics
+  url: https://www.vinten.com/
+  publisher: Vinten
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

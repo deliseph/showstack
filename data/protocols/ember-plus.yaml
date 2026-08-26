@@ -1,0 +1,52 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ember-plus
+name: Ember+
+category: device-management
+openness: open-published
+first_published: 2010
+status: current
+summary: Open control and monitoring protocol from Lawo, widely adopted across broadcast for
+  exposing device parameters as a browsable tree that any controller can read and set.
+transport:
+- tcp
+default_ports:
+- number: 9000
+  transport: tcp
+  role: Ember+ provider, common default
+  iana_registered: false
+  note: Configurable per device.
+spec_url:
+  url: https://github.com/Lawo/ember-plus
+  label: Ember+ on GitHub
+steward: Lawo, with an open specification and reference implementation
+typical_use:
+- Controlling and monitoring broadcast infrastructure from a single panel
+- Exposing a device parameter tree to a facility control system
+- Third-party integration with audio and video routers
+gotchas:
+- The parameter tree is vendor-defined. Two Ember+ devices expose completely different structures,
+  so a controller has to be told what to look for.
+- It is a control protocol with no media path and no notion of show state. Losing Ember+ means
+  losing control, not losing signal, which changes how you plan around it.
+implementations:
+- name: Lawo/ember-plus
+  url: https://github.com/Lawo/ember-plus
+  language: C++
+  license: BSL-1.0
+confidence: reported
+tags:
+- ember-plus
+- broadcast
+- control
+- lawo
+- monitoring
+sources:
+- title: Ember+ on GitHub
+  url: https://github.com/Lawo/ember-plus
+  publisher: Lawo
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

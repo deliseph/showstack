@@ -1,0 +1,94 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: chamsys-mq500m-stadium
+name: ChamSys MagicQ MQ500M Stadium
+vendor: ChamSys
+category: lighting-console
+released: 2019
+status: current
+summary: Ten-universe-plus flagship MagicQ console with a 15.6 inch touchscreen, ten motorised
+  faders and dual gigabit network. The Stadium variant adds redundant PSUs and the higher
+  output licence count.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: Output and input; sACN priority and merging handled in the console patch.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net 4 output, and input for remote or backup desks.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Direct DMX from the rear XLR5 ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Discovery and parameter setting from the console.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Two-way OSC for external control surfaces and show control.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI notes and MSC over the DIN ports.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC in and out.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Linear timecode input for timecoded playbacks.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX for media server thumbnails and visualiser feeds.
+  confidence: reported
+physical_ports:
+- 4x XLR5F DMX out
+- 1x XLR5M DMX in
+- 2x etherCON Gigabit
+- MIDI in/out/thru
+- LTC in (XLR)
+- 2x USB
+- DVI out
+form_factor: Console, built-in 15.6-inch touchscreen
+rack_units: 0
+runs_software:
+- chamsys-magicq
+homepage:
+  url: https://secure.chamsys.co.uk/products/consoles
+  label: ChamSys consoles
+docs:
+  url: https://secure.chamsys.co.uk/help/
+  label: MagicQ documentation
+gotchas:
+- MagicQ output universes are licensed. The free PC version outputs a limited number of universes
+  without a dongle or console, which is why a show file that runs on the desk may not output
+  fully from a laptop.
+- The Stadium designation is about redundancy and universe count, not a different feature
+  set. Show files move between MagicQ consoles freely, but the patch may exceed a smaller
+  desk's licensed output.
+- MagicQ has both "Execute" and "Playback" windows and a deeply modal interface. A visiting
+  operator who knows Eos or grandMA will need a briefing, not just a channel list.
+tags:
+- lighting
+- console
+- magicq
+- chamsys
+sources:
+- title: ChamSys consoles
+  url: https://secure.chamsys.co.uk/products/consoles
+  publisher: ChamSys
+  accessed: '2026-08-26'
+  primary: true
+- title: MagicQ documentation
+  url: https://secure.chamsys.co.uk/help/
+  publisher: ChamSys
+  accessed: '2026-08-26'
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

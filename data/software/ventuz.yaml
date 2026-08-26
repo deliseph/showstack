@@ -1,0 +1,62 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: ventuz
+name: Ventuz
+vendor: Ventuz Technology
+category: media-server
+license: proprietary
+price_model: quote-only
+status: current
+platforms:
+- windows
+summary: Real-time 3D graphics and interactive content platform used for broadcast graphics,
+  data-driven visuals, live event screens and interactive installations.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in and out.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI send and receive.
+  confidence: reported
+- protocol: sdi
+  direction: bidirectional
+  note: SDI in and out with suitable capture hardware.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control.
+  confidence: unverified
+typical_use:
+- Live data-driven graphics on event screens
+- Broadcast-style overlays for a live show
+- Interactive installations and touch walls
+homepage:
+  url: https://www.ventuz.com/
+  label: Ventuz
+gotchas:
+- Ventuz is a development environment before it is a playback tool. Budget engineering time,
+  not just content time.
+- Designer and Runtime are licensed separately. A machine that can play the show may not be
+  able to edit it, which is deliberate and occasionally inconvenient on site.
+tags:
+- graphics
+- real-time
+- 3d
+- broadcast
+- data-driven
+sources:
+- title: Ventuz
+  url: https://www.ventuz.com/
+  publisher: Ventuz Technology
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

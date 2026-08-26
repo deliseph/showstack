@@ -1,0 +1,75 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: smode
+name: Smode
+vendor: Smode Tech
+category: media-server
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+summary: Real-time 3D compositing and media server software combining generative content creation
+  and playback in one environment, used for concert visuals, projection mapping and LED stage
+  design.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in for console control and out for fixture control.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in for console control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI send and receive.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC for timeline sync.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: PosiStageNet input for tracked objects.
+  confidence: unverified
+- protocol: smpte-st-2110
+  direction: bidirectional
+  note: ST 2110 on suitably equipped systems.
+  confidence: unverified
+typical_use:
+- Generative concert visuals
+- Projection mapping with live content
+- LED screen content driven from a lighting console
+homepage:
+  url: https://smode.fr/
+  label: Smode
+gotchas:
+- Smode is both the design tool and the playback engine, which is efficient and means a design
+  change on site is a live edit to the thing that is playing the show.
+- Real-time generative content is GPU-bound in ways that pre-rendered playback is not. The
+  machine that ran the design at 60 fps in the studio may not with the full show loaded.
+tags:
+- media-server
+- generative
+- 3d
+- smode
+- projection
+sources:
+- title: Smode
+  url: https://smode.fr/
+  publisher: Smode Tech
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

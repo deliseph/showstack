@@ -1,0 +1,70 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: mdns-dns-sd
+name: mDNS / DNS-SD
+aka:
+- Bonjour
+- Zeroconf
+- Avahi
+category: network-transport
+openness: open-published
+first_published: 2013
+status: current
+summary: 'Multicast DNS and DNS Service Discovery: how devices on a local network announce
+  and find each other with no DNS server and no configuration. Dante, NDI, NMOS, OSC discovery
+  and half the show network depends on it working.'
+transport:
+- udp
+default_ports:
+- number: 5353
+  transport: udp
+  role: mDNS
+  iana_registered: true
+multicast:
+  used: true
+  ranges:
+  - 224.0.0.251 (IPv4)
+  - ff02::fb (IPv6)
+  note: 'Link-local scope: mDNS does not cross a router, which is why devices vanish when
+    someone segments the network.'
+spec_url:
+  url: https://datatracker.ietf.org/doc/html/rfc6762
+  label: RFC 6762 (mDNS)
+steward: IETF
+typical_use:
+- Dante device discovery
+- NDI source discovery
+- Finding a console or media server without knowing its IP
+gotchas:
+- mDNS is link-local by design and does not route. Putting devices on separate VLANs or subnets
+  makes them disappear from each other unless a reflector or repeater is configured.
+- Many managed switches filter or rate-limit multicast at 224.0.0.251 as a security default,
+  which silently breaks discovery while unicast traffic works perfectly.
+- Wireless access points frequently block multicast between clients. A laptop on wifi that
+  cannot see a device on the wired network is usually this, not a firewall.
+implementations:
+- name: Avahi
+  url: https://avahi.org/
+  language: C
+  license: LGPL-2.1-or-later
+confidence: verified
+tags:
+- mdns
+- bonjour
+- discovery
+- zeroconf
+- multicast
+sources:
+- title: 'RFC 6762: Multicast DNS'
+  url: https://datatracker.ietf.org/doc/html/rfc6762
+  publisher: IETF
+  accessed: '2026-08-26'
+  primary: true
+- title: 'RFC 6763: DNS-Based Service Discovery'
+  url: https://datatracker.ietf.org/doc/html/rfc6763
+  publisher: IETF
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

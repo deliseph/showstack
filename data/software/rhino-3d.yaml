@@ -1,0 +1,42 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: rhino-3d
+name: Rhino 3D
+vendor: Robert McNeel & Associates
+category: cad-drafting
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: NURBS modelling application used for scenic design, complex geometry and stage architecture,
+  and increasingly as the geometry source for projection mapping and LED screen design.
+typical_use:
+- Modelling complex scenic geometry
+- Producing the surface model a projection map is built against
+- Fabrication drawings for a scenic shop
+homepage:
+  url: https://www.rhino3d.com/
+  label: Rhino 3D
+gotchas:
+- A mapping model needs clean, correctly scaled geometry with sane units. A beautiful visual
+  model with inconsistent scale is unusable to a media server.
+- Grasshopper work is often the real deliverable in complex scenic design, and it does not
+  survive export to a mesh format. Hand over the definition, not only the geometry.
+tags:
+- cad
+- 3d
+- scenic
+- nurbs
+- mapping
+sources:
+- title: Rhino 3D
+  url: https://www.rhino3d.com/
+  publisher: Robert McNeel & Associates
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

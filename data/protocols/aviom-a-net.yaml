@@ -1,0 +1,39 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: aviom-a-net
+name: Aviom A-Net
+category: audio-transport
+openness: proprietary-closed
+status: current
+summary: 'Proprietary digital audio distribution for personal monitor mixing: a rack sends
+  a fixed set of channels down Cat5 to personal mixers on stage, where each musician builds
+  their own mix locally.'
+transport:
+- ethernet-l2
+typical_use:
+- Personal monitor mixing for a band
+- Houses of worship where musicians mix themselves
+- Reducing monitor engineer workload on stage
+gotchas:
+- A-Net runs on Cat5 and is not Ethernet. It must not be patched into a network switch, and
+  the cable run limits are stricter than networking habits suggest.
+- The channel set is fixed at the source. A musician can only mix what the engineer sent,
+  so the channel allocation is a rehearsal decision, not a soundcheck one.
+- Pro16 and Pro64 are two different A-Net generations with different capabilities. Mixing
+  them requires a converter, not just a cable.
+confidence: reported
+tags:
+- audio
+- monitors
+- aviom
+- personal-mixing
+- proprietary
+sources:
+- title: Aviom
+  url: https://www.aviom.com/
+  publisher: Aviom
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

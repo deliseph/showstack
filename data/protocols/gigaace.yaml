@@ -1,0 +1,36 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: gigaace
+name: gigaACE
+category: audio-transport
+openness: proprietary-closed
+status: current
+summary: Allen & Heath's point-to-point audio and control link, carrying 128 bidirectional
+  channels plus control between a dLive surface and its MixRack over a single Cat5e cable
+  or fibre.
+transport:
+- ethernet-l2
+typical_use:
+- Linking a dLive surface to its MixRack
+- Extending a console to a stage rack over fibre
+- Redundant surface-to-rack connection
+gotchas:
+- It uses Ethernet cabling and connectors and is not Ethernet. Patching gigaACE into a network
+  switch does nothing useful and can confuse the switch.
+- Because all the audio lives in the MixRack, the gigaACE link can drop and the show keeps
+  making sound. That is a genuine design advantage and worth knowing before you panic.
+confidence: reported
+tags:
+- audio
+- allen-heath
+- dlive
+- point-to-point
+sources:
+- title: Allen & Heath
+  url: https://www.allen-heath.com/
+  publisher: Allen & Heath
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

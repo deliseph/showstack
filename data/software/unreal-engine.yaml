@@ -1,0 +1,75 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: unreal-engine
+name: Unreal Engine
+vendor: Epic Games
+category: content-creation
+license: proprietary
+price_model: freemium
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: Real-time 3D engine that became core infrastructure for virtual production and increasingly
+  for live event content, driving LED volumes with camera-tracked in-camera VFX.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out via plugins.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: DMX in and out through the built-in DMX plugin.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN through the DMX plugin.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI via plugin.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode via plugin and hardware.
+  confidence: unverified
+- protocol: psn
+  direction: in
+  note: PosiStageNet via plugin.
+  confidence: unverified
+- protocol: freed
+  direction: in
+  note: FreeD camera tracking input via Live Link, the usual path in an LED volume.
+  confidence: reported
+typical_use:
+- LED volume virtual production
+- Real-time generated content for concert screens
+- Previsualisation of a lighting and video design
+homepage:
+  url: https://www.unrealengine.com/
+  label: Unreal Engine
+gotchas:
+- 'A virtual production volume is a synchronised system: engine frame rate, genlock, camera
+  shutter and LED processor all have to agree, and any one of them being wrong looks like
+  a content fault.'
+- nDisplay clusters need identical machines and configuration. A mismatched node is not a
+  degraded node, it is a visibly wrong one.
+- Project size and build times make last-minute changes expensive. Treat content freeze the
+  way a broadcast production would.
+tags:
+- real-time
+- 3d
+- virtual-production
+- unreal
+- dmx
+sources:
+- title: Unreal Engine
+  url: https://www.unrealengine.com/
+  publisher: Epic Games
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

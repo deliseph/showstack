@@ -1,0 +1,73 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: avid-venue-s6l-32d
+name: Avid VENUE S6L-32D
+vendor: Avid
+category: audio-console
+released: 2016
+status: current
+summary: Modular VENUE system with a 32-fader control surface, separate E6L engine and Stage
+  64 I/O, notable for running Pro Tools and AAX plug-ins natively inside the live mix path.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Via optional engine card.
+  requires_licence: true
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via optional card.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Through Dante in AES67 mode.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI for snapshot and external control.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC for snapshot automation.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: OSC control via Eucon and third-party apps.
+  confidence: unverified
+physical_ports:
+- AVB link between surface, engine and stage rack
+- Optional MADI / Dante engine cards
+- Word clock
+- MIDI
+- Redundant PSU
+form_factor: Control surface plus E6L engine and Stage 64 I/O
+homepage:
+  url: https://www.avid.com/
+  label: Avid
+gotchas:
+- 'The plug-in rack is the reason to choose it and the main thing to plan for: DSP is finite,
+  and an engine that ran the show last tour may not run this one''s plug-in list.'
+- Surface, engine and stage rack are linked over AVB on dedicated cabling. This is not a general
+  show network and should not be shared with one.
+- AAX plug-in licences travel on iLok, not with the desk. A show file that opens without its
+  iLok is a show file with empty inserts.
+tags:
+- audio
+- console
+- avid
+- venue
+- plugins
+sources:
+- title: Avid
+  url: https://www.avid.com/
+  publisher: Avid
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

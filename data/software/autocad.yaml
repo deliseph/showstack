@@ -1,0 +1,46 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: autocad
+name: AutoCAD
+vendor: Autodesk
+category: cad-drafting
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+- web
+summary: General-purpose CAD, and the format most venue drawings, ground plans and structural
+  drawings arrive in. Often the common denominator between a venue, a scenic shop and a production
+  office.
+typical_use:
+- Reading venue-supplied ground plans and sections
+- Producing drawings for a scenic shop
+- Exchanging drawings with architects and structural engineers
+homepage:
+  url: https://www.autodesk.com/products/autocad/
+  label: AutoCAD
+gotchas:
+- DWG version compatibility is a real workflow tax. Ask which version a venue or shop needs
+  before sending a file.
+- A venue drawing is not a survey. Structural steel, rigging points and sightlines on an old
+  DWG are a starting point to be verified, not a fact.
+- Vectorworks and AutoCAD exchange via DWG with loss. Symbols, classes and layer structure
+  rarely survive intact in either direction.
+tags:
+- cad
+- drafting
+- autodesk
+- dwg
+- drawings
+sources:
+- title: AutoCAD
+  url: https://www.autodesk.com/products/autocad/
+  publisher: Autodesk
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,64 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: db-ds100
+name: d&b audiotechnik DS100 Signal Engine
+vendor: d&b audiotechnik
+category: audio-processor
+status: current
+summary: 64x64 matrix processor and the engine behind d&b Soundscape. Takes positional data
+  for sources and renders them across a loudspeaker system, which is why it turns up wherever
+  object-based audio and performer tracking meet.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: 64 in / 64 out over Dante.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: AES67 mode.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: OSC is the control surface for object positions, used by tracking systems and show
+    control.
+  confidence: reported
+- protocol: rttrpm
+  direction: in
+  note: Positional data from BlackTrax and other RTTrPM sources, usually via a bridge.
+  confidence: unverified
+- protocol: psn
+  direction: in
+  note: PosiStageNet positions, usually via a bridge.
+  confidence: unverified
+physical_ports:
+- 2x etherCON Dante (primary/secondary)
+- Ethernet control
+- Redundant PSU
+form_factor: 19-inch rack processor
+rack_units: 1
+homepage:
+  url: https://www.dbaudio.com/
+  label: d&b audiotechnik
+gotchas:
+- Soundscape is an approach, not a plug-in. The DS100 renders objects across a specific speaker
+  layout that has to be designed for it, so retrofitting Soundscape onto an existing left-right
+  PA does not work.
+- Object positions arrive by OSC. Whatever generates them - a tracking system, a console plug-in,
+  a show controller - is a live dependency of the audio, which is a different reliability
+  conversation than a normal matrix.
+tags:
+- audio
+- processor
+- soundscape
+- object-audio
+- tracking
+sources:
+- title: d&b audiotechnik
+  url: https://www.dbaudio.com/
+  publisher: d&b audiotechnik
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,41 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: l-acoustics-soundvision
+name: L-Acoustics Soundvision
+vendor: L-Acoustics
+category: previsualisation
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+- macos
+summary: 3D acoustical and mechanical simulation for L-Acoustics systems, predicting SPL coverage
+  and array mechanics in a modelled venue before anything is rigged.
+typical_use:
+- Designing an L-Acoustics system for a specific room
+- Checking mechanical safety of an array configuration
+- Producing coverage maps for a client or promoter
+homepage:
+  url: https://www.l-acoustics.com/
+  label: L-Acoustics
+gotchas:
+- Predictions are only as good as the venue model. A rough box model gives rough answers,
+  especially for balcony coverage.
+- Soundvision designs; LA Network Manager deploys. The gains, delays and presets have to be
+  transferred deliberately.
+tags:
+- audio
+- system-design
+- simulation
+- l-acoustics
+sources:
+- title: L-Acoustics
+  url: https://www.l-acoustics.com/
+  publisher: L-Acoustics
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

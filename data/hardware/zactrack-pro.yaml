@@ -1,0 +1,62 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: zactrack-pro
+name: zactrack PRO
+vendor: zactrack
+category: tracking-system
+status: current
+summary: UWB radio-based performer tracking system that drives automated followspots, moving
+  lights and audio object positions without needing line of sight to cameras.
+speaks:
+- protocol: psn
+  direction: out
+  note: PosiStageNet output of tracked positions.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Direct fixture control output for tracked followspot behaviour.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: sACN output for tracked fixture control.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: OSC for integration with audio and show control.
+  confidence: reported
+- protocol: rttrpm
+  direction: out
+  note: RTTrPM output for audio object positions.
+  confidence: unverified
+physical_ports:
+- UWB anchors over network
+- Performer tags
+- Ethernet control
+form_factor: Server plus distributed UWB anchors and worn tags
+homepage:
+  url: https://zactrack.com/
+  label: zactrack
+gotchas:
+- UWB does not need line of sight the way optical tracking does, which is its main advantage
+  over camera systems in a busy set. Anchor placement is still the whole accuracy story.
+- Tags are worn by performers, so wardrobe, battery life and quick changes are part of the
+  system design, not an afterthought.
+- Tracking output usually drives lighting and audio at once. Whoever owns the tracking system
+  has become a dependency of two departments; agree the failure plan before the show, not
+  during.
+tags:
+- tracking
+- uwb
+- followspot
+- psn
+- zactrack
+sources:
+- title: zactrack
+  url: https://zactrack.com/
+  publisher: zactrack
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,41 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: shoflo
+name: Shoflo
+vendor: Shoflo
+category: production-management
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- web
+summary: Browser-based live rundown and cue sheet tool that keeps a production team on the
+  same running order in real time, with timing that updates for everyone as the show moves.
+typical_use:
+- Live rundown for a broadcast or corporate show
+- Keeping stage management, video and audio on one running order
+- Tracking actual versus planned timing during a show
+homepage:
+  url: https://shoflo.tv/
+  label: Shoflo
+gotchas:
+- It is only useful if everyone has it open. A rundown half the crew is reading from a printout
+  is worse than a printout for everyone.
+- Browser-based means it depends on venue internet, which is the least reliable part of most
+  venues. Have a printed fallback for the moment the wifi drops.
+tags:
+- production
+- rundown
+- cue-sheet
+- collaboration
+- web
+sources:
+- title: Shoflo
+  url: https://shoflo.tv/
+  publisher: Shoflo
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

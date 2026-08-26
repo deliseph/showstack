@@ -1,0 +1,42 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: cinema-4d
+name: Cinema 4D
+vendor: Maxon
+category: content-creation
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: 3D modelling, animation and rendering application widely used for concert and event
+  screen content, largely because of its motion graphics tooling and its long-standing After
+  Effects workflow.
+typical_use:
+- Animated 3D content for LED walls
+- Stage and set visualisation
+- Renders for client approval
+homepage:
+  url: https://www.maxon.net/en/cinema-4d
+  label: Cinema 4D
+gotchas:
+- Render time is a schedule risk on event timelines. A change requested at rehearsal may not
+  be renderable before the show.
+- 'The same aspect, pitch and colour pipeline caveats apply as with any content tool: match
+  the actual screen map, not a nominal resolution.'
+tags:
+- 3d
+- content
+- maxon
+- motion-graphics
+sources:
+- title: Cinema 4D
+  url: https://www.maxon.net/en/cinema-4d
+  publisher: Maxon
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

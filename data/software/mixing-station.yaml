@@ -1,0 +1,55 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: mixing-station
+name: Mixing Station
+vendor: David Giga
+category: audio-mixing
+license: proprietary
+price_model: freemium
+status: current
+platforms:
+- windows
+- macos
+- linux
+- ios
+- android
+summary: Third-party remote control app for a wide range of digital consoles - X32/M32, dLive,
+  SQ, Yamaha and others - widely used because it often outruns the manufacturer app for stage-side
+  mixing.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Uses each console's own network control protocol, OSC where the console offers it.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control where the console supports it.
+  confidence: unverified
+typical_use:
+- Mixing monitors from the stage on a tablet
+- Ringing out wedges while standing at the microphone
+- Giving a musician control of their own monitor mix
+homepage:
+  url: https://mixingstation.app/
+  label: Mixing Station
+gotchas:
+- Any tablet mixing app depends on Wi-Fi. A single access point on a stage full of bodies
+  and RF is the weak link, not the app.
+- Third-party, so console firmware updates can break it before an update lands. Do not update
+  console firmware the week of a show that depends on it.
+tags:
+- audio
+- remote-control
+- tablet
+- monitors
+- third-party
+sources:
+- title: Mixing Station
+  url: https://mixingstation.app/
+  publisher: Mixing Station
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

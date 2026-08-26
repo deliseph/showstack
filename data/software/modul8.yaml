@@ -1,0 +1,61 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: modul8
+name: Modul8
+vendor: GarageCUBE
+category: video-playback
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- macos
+summary: Real-time video mixing software for VJs and live visuals, layer-based with strong
+  live manipulation, often paired with MadMapper for projection mapping output.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control from surfaces.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: DMX/Art-Net control on supported versions.
+  confidence: unverified
+- protocol: ndi
+  direction: bidirectional
+  note: NDI in and out.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode sync via third-party bridges.
+  confidence: unverified
+typical_use:
+- Live VJ performance
+- Club and festival visuals
+- Feeding MadMapper for mapped output
+homepage:
+  url: https://www.modul8.ch/
+  label: Modul8
+gotchas:
+- Built for live improvisation rather than repeatable cue playback. A show that must run identically
+  every night is better served by a cue-based player.
+- The Modul8 to MadMapper pairing is a Syphon handoff on macOS, which means both applications
+  and the OS version have to agree.
+tags:
+- video
+- vj
+- live-visuals
+- macos
+sources:
+- title: Modul8
+  url: https://www.modul8.ch/
+  publisher: GarageCUBE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

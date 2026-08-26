@@ -1,0 +1,56 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: bss-blu-806
+name: BSS Soundweb London BLU-806
+vendor: BSS Audio
+category: audio-processor
+status: current
+summary: 'Networked DSP with a configurable processing engine, BLU link digital audio bus
+  and Dante, aimed at fixed installs: conference centres, stadiums, hotels and multi-zone
+  venues.'
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Dante card fitted on the 806 variant.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via Dante AES67 mode.
+  confidence: unverified
+- protocol: bacnet
+  direction: bidirectional
+  note: Integration with building management systems.
+  confidence: unverified
+physical_ports:
+- BLU link ring
+- 2x Dante etherCON
+- Analogue in/out cards
+- Control ports
+- GPIO
+form_factor: 19-inch rack DSP
+rack_units: 1
+homepage:
+  url: https://bssaudio.com/
+  label: BSS Audio
+gotchas:
+- BLU link and Dante are two separate digital audio networks in the same box. The BLU link
+  ring is for BSS devices; Dante is for everything else, and they are bridged inside the DSP,
+  not automatically.
+- 'The whole configuration lives in a single Audio Architect file. There is no useful front
+  panel: without the design file, an installed system is very hard to modify on site.'
+tags:
+- audio
+- dsp
+- bss
+- install
+- harman
+sources:
+- title: BSS Audio
+  url: https://bssaudio.com/
+  publisher: BSS Audio
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

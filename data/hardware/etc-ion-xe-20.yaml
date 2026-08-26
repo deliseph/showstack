@@ -1,0 +1,87 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: etc-ion-xe-20
+name: ETC Ion Xe 20
+vendor: ETC
+category: lighting-console
+released: 2017
+status: current
+summary: Compact Eos-family console with twenty motorised faders and a single external monitor,
+  running the same Eos software as an Apex. The workhorse of regional theatre and mid-size
+  touring.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: sACN output, the Eos default.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net output.
+  confidence: reported
+- protocol: etcnet3
+  direction: bidirectional
+  note: ETCNet3 for ETC gateways, Net3 and Sensor racks.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Local DMX out via the rear ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM through Net3 gateways.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out, widely used with QLab.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI notes and MSC.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC in and out.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC timecode in.
+  confidence: reported
+- protocol: mtc
+  direction: in
+  note: MIDI timecode in.
+  confidence: reported
+physical_ports:
+- 2x XLR5F DMX / RDM
+- 2x etherCON
+- MIDI in/out
+- LTC in
+- USB
+- DisplayPort
+form_factor: Console, 20 motorised faders
+runs_software:
+- eos-family
+homepage:
+  url: https://www.etcconnect.com/Products/Consoles/
+  label: ETC consoles
+gotchas:
+- Eos show files move between every console in the family, but output capacity does not. An
+  Ion Xe is licensed to a lower parameter count than an Apex, so a file that plays back on
+  the big desk may exceed it.
+- Eos speaks sACN, Art-Net and ETCNet3 at once and will happily output all three. Two consoles
+  quietly outputting the same universe on different protocols is a merge problem that looks
+  like a fixture fault.
+tags:
+- lighting
+- console
+- eos
+- etc
+sources:
+- title: ETC consoles
+  url: https://www.etcconnect.com/Products/Consoles/
+  publisher: ETC
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

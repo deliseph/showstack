@@ -1,0 +1,52 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: open-sound-meter
+name: Open Sound Meter
+vendor: Pavel Smokotnin
+category: monitoring-diagnostics
+license: GPL-3.0-or-later
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+- ios
+- android
+summary: Free, open-source dual-channel FFT measurement application covering transfer function,
+  impulse response and RTA. The credible zero-cost route into system measurement.
+typical_use:
+- Learning system alignment without a Smaart licence
+- Quick checks when the measurement rig is not on the truck
+- Teaching measurement in a training context
+homepage:
+  url: https://opensoundmeter.com/
+  label: Open Sound Meter
+repo:
+  url: https://github.com/psmokotnin/osm
+  label: psmokotnin/osm
+gotchas:
+- Interface and driver quality set the noise floor and the latency stability. A cheap USB
+  interface limits what any measurement software can tell you.
+- 'The same measurement discipline applies as with any FFT tool: reference feed, microphone
+  position and coherence still decide whether the trace means anything.'
+tags:
+- audio
+- measurement
+- open-source
+- fft
+- free
+sources:
+- title: Open Sound Meter
+  url: https://opensoundmeter.com/
+  publisher: Open Sound Meter
+  accessed: '2026-08-26'
+  primary: true
+- title: psmokotnin/osm on GitHub
+  url: https://github.com/psmokotnin/osm
+  publisher: GitHub
+  accessed: '2026-08-26'
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

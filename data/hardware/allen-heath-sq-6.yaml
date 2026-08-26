@@ -1,0 +1,66 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: allen-heath-sq-6
+name: Allen & Heath SQ-6
+vendor: Allen & Heath
+category: audio-console
+released: 2018
+status: current
+summary: Compact 48-channel 96 kHz console with very low latency, 24 mic inputs and an expansion
+  slot. The desk that covers small theatre, corporate and worship work where a dLive is oversized.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Via optional SLink / option card.
+  requires_licence: true
+  confidence: reported
+- protocol: aes50
+  direction: bidirectional
+  note: SLink port supports AES50-compatible expanders.
+  confidence: unverified
+- protocol: madi
+  direction: bidirectional
+  note: Via option card.
+  confidence: unverified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI over DIN and USB.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: MIDI/TCP control; OSC through third-party bridges.
+  confidence: unverified
+physical_ports:
+- 24x XLR in
+- 12x XLR out
+- SLink port
+- Option card slot
+- MIDI in/out
+- 2x USB
+- Ethernet
+form_factor: Console, 25 faders
+homepage:
+  url: https://www.allen-heath.com/
+  label: Allen & Heath
+gotchas:
+- The 96 kHz architecture buys genuinely low latency, which matters for in-ear monitor work,
+  and it halves some channel counts on option cards. Check the card spec at 96 kHz, not at
+  48.
+- SLink carries several protocols depending on what is plugged in. The same socket talking
+  to a different expander is a different protocol, so label the ends.
+tags:
+- audio
+- console
+- allen-heath
+- sq
+- 96khz
+sources:
+- title: Allen & Heath
+  url: https://www.allen-heath.com/
+  publisher: Allen & Heath
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

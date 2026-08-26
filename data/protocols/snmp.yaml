@@ -1,0 +1,54 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: snmp
+name: SNMP
+aka:
+- Simple Network Management Protocol
+category: device-management
+openness: open-published
+first_published: 1988
+status: current
+summary: The long-standing network device monitoring protocol. In live entertainment it is
+  how switches, UPSs, projectors and increasingly amplifiers and processors report status
+  into a monitoring dashboard.
+transport:
+- udp
+default_ports:
+- number: 161
+  transport: udp
+  role: SNMP agent
+  iana_registered: true
+- number: 162
+  transport: udp
+  role: SNMP trap receiver
+  iana_registered: true
+spec_url:
+  url: https://datatracker.ietf.org/doc/html/rfc3411
+  label: RFC 3411 (SNMPv3 framework)
+steward: IETF
+typical_use:
+- Monitoring switch port status and errors on a show network
+- Alerting when a UPS goes to battery
+- Projector lamp hours and status in an installation
+gotchas:
+- SNMPv1 and v2c send the community string in clear text and are effectively unauthenticated.
+  On a venue network reachable from anywhere, that is a real exposure; v3 exists for a reason.
+- Traps are fire-and-forget UDP. A trap that never arrives looks exactly like nothing having
+  gone wrong.
+- Vendor MIBs are what make the data meaningful. Without the MIB you get numbered OIDs and
+  no idea which one is the temperature.
+confidence: verified
+tags:
+- snmp
+- monitoring
+- network
+- management
+sources:
+- title: 'RFC 3411: SNMP management frameworks'
+  url: https://datatracker.ietf.org/doc/html/rfc3411
+  publisher: IETF
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,81 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: digico-quantum-338
+name: DiGiCo Quantum 338
+vendor: DiGiCo
+category: audio-console
+released: 2020
+status: current
+summary: FPGA-based touring console with 122 input channels, 3 x 17-inch touchscreens and
+  Quantum processing including Mustard and Spice Rack channel strips. The desk a very large
+  share of international touring riders name.
+speaks:
+- protocol: madi
+  direction: bidirectional
+  note: Native MADI on the rear, the DiGiCo optical and coax stage-rack backbone.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via optional DMI card.
+  requires_licence: true
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via DMI Dante card in AES67 mode.
+  requires_licence: true
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out for the digital rack.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI for snapshot triggering and external control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control of the desk.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC for snapshot firing against timecode.
+  confidence: reported
+- protocol: mtc
+  direction: in
+  note: MIDI timecode in.
+  confidence: unverified
+physical_ports:
+- Optical and coax MADI
+- 2x DMI card slots
+- Word clock in/out
+- MIDI in/out
+- LTC in
+- Redundant PSU
+- Gigabit control
+form_factor: Touring console, 3 x 17-inch touchscreens
+homepage:
+  url: https://digico.biz/
+  label: DiGiCo
+gotchas:
+- 'Channel count is not fixed: it depends on how the FPGA resources are allocated between
+  channels, buses and processing. A session that opens is not proof it will run at the sample
+  rate you want.'
+- DMI slots are the entire connectivity story beyond MADI. A Dante rider on a Quantum needs
+  a DMI Dante card physically fitted, and rental stock is not consistently populated.
+- Session files are version-locked to console software. Carry the exact version, or a session
+  from the previous city may not load.
+tags:
+- audio
+- console
+- digico
+- touring
+sources:
+- title: DiGiCo
+  url: https://digico.biz/
+  publisher: DiGiCo
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

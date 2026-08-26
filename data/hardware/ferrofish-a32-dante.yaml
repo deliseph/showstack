@@ -1,0 +1,60 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: ferrofish-a32-dante
+name: Ferrofish A32 Dante
+vendor: Ferrofish
+category: io-interface
+status: current
+summary: 32 in, 32 out analogue interface with both MADI and Dante, commonly used as the bridge
+  between a MADI-based console world and a Dante-based system world.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: 32 channels to and from Dante.
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Optical and coaxial MADI.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via Dante AES67 mode.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+physical_ports:
+- 32x analogue in (DB25)
+- 32x analogue out (DB25)
+- MADI optical and coax
+- 2x Dante etherCON
+- Word clock in/out
+form_factor: 19-inch rack interface
+rack_units: 1
+homepage:
+  url: https://www.ferrofish.com/
+  label: Ferrofish
+gotchas:
+- MADI channel count halves at 96 kHz. A 64-channel MADI plan silently becomes 32 channels
+  when someone changes sample rate for the broadcast feed.
+- It is a clock decision point as much as a format converter. Decide whether MADI or Dante
+  is the clock source and configure it deliberately, or you get intermittent ticks nobody
+  can locate.
+tags:
+- audio
+- io
+- madi
+- dante
+- ferrofish
+- bridge
+sources:
+- title: Ferrofish
+  url: https://www.ferrofish.com/
+  publisher: Ferrofish
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

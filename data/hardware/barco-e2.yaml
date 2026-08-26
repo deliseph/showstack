@@ -1,0 +1,53 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: barco-e2
+name: Barco Event Master E2
+vendor: Barco
+category: video-processor
+status: current
+summary: 'Large-format presentation switcher and screen management system for corporate and
+  arena work: multiple mixable layers across several outputs, with soft-edge blending and
+  native backup pathways.'
+speaks:
+- protocol: sdi
+  direction: bidirectional
+  note: 3G-SDI inputs and outputs on the standard cards.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Genlock reference input.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: Control via third-party systems over the network API.
+  confidence: unverified
+physical_ports:
+- Modular input cards (SDI, HDMI, DisplayPort)
+- Modular output cards
+- Genlock in/loop
+- Gigabit control
+form_factor: 19-inch rack frame
+rack_units: 4
+homepage:
+  url: https://www.barco.com/
+  label: Barco
+gotchas:
+- 'E2 systems are configured as a whole show: inputs, backgrounds, layers and destinations.
+  A "spare E2" is only a spare if the show file and the same card population go with it.'
+- Layer count is a resource shared across destinations, not a per-screen number. Adding a
+  screen late can silently cost you layers on the main screen.
+tags:
+- video
+- switcher
+- barco
+- corporate
+sources:
+- title: Barco
+  url: https://www.barco.com/
+  publisher: Barco
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

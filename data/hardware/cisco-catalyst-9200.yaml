@@ -1,0 +1,68 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: cisco-catalyst-9200
+name: Cisco Catalyst 9200 Series
+vendor: Cisco
+category: network-switch
+status: current
+summary: Enterprise access switch commonly specified for permanent show networks in venues,
+  where the IT department owns the estate and wants a switch their tooling already manages.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: Transported. IGMP snooping and querier configuration are what make sACN behave here.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Transported. Art-Net broadcast on older nodes is what floods a badly configured VLAN.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Transported. Requires QoS DSCP trust and correct queue mapping.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Transported, with the same QoS requirements as Dante.
+  confidence: reported
+- protocol: ptp-1588
+  direction: bidirectional
+  note: Transparent or boundary clock support varies sharply by model and licence.
+  confidence: unverified
+- protocol: snmp
+  direction: bidirectional
+  note: SNMP agent and traps, the usual way a venue monitors its switches.
+  confidence: reported
+physical_ports:
+- 24 or 48 Gigabit access ports
+- Uplink module (1G/10G/25G SFP)
+- PoE+ / PoE++ on PoE models
+- Console port
+form_factor: 19-inch rack switch
+rack_units: 1
+homepage:
+  url: https://www.cisco.com/
+  label: Cisco
+gotchas:
+- Out of the box this is not a media switch. Multicast will flood without an IGMP querier
+  somewhere on the VLAN, and audio will glitch without DSCP trust configured on the access
+  ports.
+- The IT department owns it. Getting a VLAN, a querier and QoS configured for a show is a
+  scheduling problem weeks ahead, not something to raise at load-in.
+- Energy-efficient Ethernet and some power-saving features interact badly with PTP and low-latency
+  audio. Turn them off on media ports.
+tags:
+- networking
+- switch
+- cisco
+- install
+- igmp
+sources:
+- title: Cisco
+  url: https://www.cisco.com/
+  publisher: Cisco
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

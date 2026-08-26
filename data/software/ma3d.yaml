@@ -1,0 +1,50 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: ma3d
+name: MA 3D
+vendor: MA Lighting
+category: previsualisation
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+summary: MA Lighting's visualiser, bundled with the grandMA software line, showing the rig
+  in 3D driven live by the console for pre-programming and rehearsal without the physical
+  fixtures.
+speaks:
+- protocol: ma-net
+  direction: in
+  note: Driven directly over MA-Net from a grandMA session.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Art-Net input where MA-Net is not used.
+  confidence: unverified
+typical_use:
+- Pre-programming a grandMA show off site
+- Rehearsing cues without the rig
+- Checking fixture positions against the plot
+homepage:
+  url: https://www.malighting.com/
+  label: MA Lighting
+gotchas:
+- Version-locked to the console software generation. MA 3D for grandMA2 and the grandMA3 visualiser
+  are not the same product and do not share files.
+- The visualiser knows the rig you built in it. Time spent making the model match the real
+  plot is what determines whether the pre-programming is usable on site.
+tags:
+- previs
+- visualiser
+- grandma
+- ma-lighting
+sources:
+- title: MA Lighting
+  url: https://www.malighting.com/
+  publisher: MA Lighting
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

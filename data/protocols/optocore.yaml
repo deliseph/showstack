@@ -1,0 +1,38 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: optocore
+name: Optocore
+category: audio-transport
+openness: proprietary-closed
+first_published: 1996
+status: current
+summary: 'Fibre-optic audio, video and data transport built as a redundant ring, used where
+  very high channel counts have to travel long distances with deterministic latency: stadiums,
+  festivals and broadcast compounds.'
+transport:
+- fibre
+typical_use:
+- Long fibre runs between FOH, stage and broadcast
+- High channel-count festival distribution
+- Redundant ring backbone for a large audio system
+gotchas:
+- The ring is the redundancy. Breaking the ring to add a device mid-show removes the protection
+  that justified the system.
+- Optocore, MADI and Dante frequently coexist in the same rack through converter cards. Where
+  the clock originates in that mix is the thing to decide deliberately.
+confidence: reported
+tags:
+- audio
+- fibre
+- optocore
+- redundant-ring
+- stadium
+sources:
+- title: Optocore
+  url: https://www.optocore.com/
+  publisher: Optocore
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

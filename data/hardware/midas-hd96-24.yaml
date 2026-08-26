@@ -1,0 +1,71 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: midas-hd96-24
+name: Midas HD96-24
+vendor: Midas
+category: audio-console
+released: 2019
+status: current
+summary: Midas flagship with 144 input channels, a 24-fader surface and three touchscreens,
+  using AES50 to its DL series stage boxes and carrying the Midas preamp lineage.
+speaks:
+- protocol: aes50
+  direction: bidirectional
+  note: AES50 to DL stage boxes, the Midas and Klark Teknik backbone.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via expansion card.
+  requires_licence: true
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via expansion card.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: LTC input.
+  confidence: unverified
+physical_ports:
+- AES50 ports
+- Expansion card slots
+- Word clock
+- MIDI
+- AES3 in/out
+- Redundant PSU
+form_factor: Touring console, 24 faders, 3 touchscreens
+homepage:
+  url: https://www.midasconsoles.com/
+  label: Midas
+gotchas:
+- AES50 runs on shielded Cat5e and is latency-critical. Unshielded cable or a patch through
+  a switch will not work, no matter how short the run.
+- The Midas, Klark Teknik and Behringer AES50 ecosystems overlap. A DL stage box may well
+  work with an X32, which is useful and also a way to end up with unexpected gear on a rider.
+tags:
+- audio
+- console
+- midas
+- aes50
+sources:
+- title: Midas
+  url: https://www.midasconsoles.com/
+  publisher: Midas
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

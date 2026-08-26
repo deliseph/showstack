@@ -1,0 +1,58 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: nmos
+name: AMWA NMOS
+aka:
+- IS-04
+- IS-05
+- Networked Media Open Specifications
+category: video-control
+openness: open-published
+first_published: 2016
+status: current
+summary: The discovery and connection layer that makes SMPTE ST 2110 usable. IS-04 lets devices
+  register and be found; IS-05 does the actual connection management, telling a receiver which
+  sender to listen to. Without it, a 2110 plant is hand-edited SDP files.
+transport:
+- http
+- websocket
+- udp
+default_ports:
+- number: 80
+  transport: tcp
+  role: IS-04/IS-05 HTTP APIs on the device (port is deployment-dependent)
+  iana_registered: false
+spec_url:
+  url: https://specs.amwa.tv/nmos/
+  label: AMWA NMOS specifications
+steward: Advanced Media Workflow Association (AMWA)
+standards:
+- smpte-st-2110-10
+typical_use:
+- Discovering senders and receivers in an ST 2110 plant
+- Making a connection from a broadcast controller
+- Registering device capabilities on a media network
+gotchas:
+- NMOS is not one thing. IS-04 (discovery), IS-05 (connection), IS-08 (audio channel mapping)
+  and others are separate specifications, and "NMOS support" without a list of IS numbers
+  means very little.
+- Registry-based and peer-to-peer discovery both exist. A device configured for one will not
+  appear to a controller expecting the other.
+- It carries no media. Every NMOS problem is a control-plane problem, and the ST 2110 essence
+  flows are unaffected by it - which is why a plant can be "working" and completely unroutable.
+confidence: reported
+tags:
+- nmos
+- st2110
+- broadcast
+- discovery
+- ip-video
+sources:
+- title: AMWA NMOS specifications
+  url: https://specs.amwa.tv/nmos/
+  publisher: AMWA
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

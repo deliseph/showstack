@@ -1,0 +1,44 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: after-effects
+name: Adobe After Effects
+vendor: Adobe
+category: content-creation
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: Motion graphics and compositing application, and the tool most show content for LED
+  walls and projection is actually finished in before it reaches a media server.
+typical_use:
+- Producing looping content for LED screens
+- Titles and lower thirds for event screens
+- Compositing camera plates for stage content
+homepage:
+  url: https://www.adobe.com/products/aftereffects.html
+  label: Adobe After Effects
+gotchas:
+- Export codec matters more than the source project. A media server wants a codec it can decode
+  in real time at the required resolution, which is rarely the export default.
+- Colour management between After Effects, the media server and the LED processor is where
+  content stops matching the approval render. Agree the pipeline before the content is made.
+- Content pixel dimensions must match the screen map, not a convenient 4K frame. Scaling on
+  the server costs quality and sometimes performance.
+tags:
+- content
+- motion-graphics
+- adobe
+- led
+- codec
+sources:
+- title: Adobe After Effects
+  url: https://www.adobe.com/products/aftereffects.html
+  publisher: Adobe
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

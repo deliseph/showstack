@@ -37,6 +37,10 @@ speaks:
     direction: bidirectional
     note: Transported, listed alongside AES67.
     confidence: reported
+  - protocol: snmp
+    direction: out
+    note: SNMP monitoring of switch state.
+    confidence: unverified
 
 physical_ports:
   - 10x etherCON 10/100/1000 (front)

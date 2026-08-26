@@ -1,0 +1,60 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: luminex-gigacore-10
+name: Luminex GigaCore 10
+vendor: Luminex Network Intelligence
+category: network-switch
+status: current
+summary: Compact eight-port managed gigabit switch with the same Groups model and profile
+  system as the larger GigaCores, sized for a single rack, a stage box or a small touring
+  rig.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Transported, with protocol-aware handling.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Transported. IGMP snooping is the reason to use it over an unmanaged switch.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Transported.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Transported.
+  confidence: reported
+- protocol: avb-milan
+  direction: bidirectional
+  note: AVB support depending on model and firmware.
+  confidence: unverified
+physical_ports:
+- 8x etherCON Gigabit
+- 2x SFP cage on some variants
+- PoE on PoE models
+form_factor: Half-rack managed switch
+rack_units: 1
+homepage:
+  url: https://www.luminex.be/
+  label: Luminex Network Intelligence
+gotchas:
+- 'Same Groups abstraction as the bigger GigaCores, so profiles port across the range. Export
+  and carry the profile: a swapped spare boots to defaults.'
+- Eight ports goes fast once consoles, nodes, media servers and a laptop are on it. Plan the
+  port count with the spare laptop and the visiting engineer included.
+tags:
+- networking
+- switch
+- luminex
+- touring
+sources:
+- title: Luminex Network Intelligence
+  url: https://www.luminex.be/
+  publisher: Luminex Network Intelligence
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

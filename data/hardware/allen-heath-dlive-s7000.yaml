@@ -1,0 +1,74 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: allen-heath-dlive-s7000
+name: Allen & Heath dLive S7000
+vendor: Allen & Heath
+category: audio-console
+released: 2016
+status: current
+summary: Large dLive surface with 36 faders and a 15-inch touchscreen, driving a separate
+  DM MixRack engine over gigaACE. Strong in theatre, houses of worship and mid-to-large touring.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Via I/O card in the MixRack or surface.
+  requires_licence: true
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via I/O card.
+  confidence: reported
+- protocol: aes50
+  direction: bidirectional
+  note: Via card, for compatibility with AES50 stage boxes.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control and scene recall.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Native OSC over TCP, widely used with QLab and show control.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC input for scene firing.
+  confidence: unverified
+physical_ports:
+- gigaACE link to MixRack
+- I/O card slots (Dante, MADI, Waves)
+- Word clock
+- MIDI
+- Ethernet control
+form_factor: Control surface plus separate DM MixRack
+homepage:
+  url: https://www.allen-heath.com/
+  label: Allen & Heath
+gotchas:
+- The surface is a control surface. All the audio lives in the MixRack, so the surface can
+  be swapped or lost mid-show without dropping audio, which is a genuine operational advantage
+  worth designing around.
+- gigaACE runs on Cat5e and looks like Ethernet. It is not, and it must not be patched into
+  a general network switch.
+- dLive OSC is well documented and open, which makes it one of the easier large consoles to
+  drive from QLab or a show controller.
+tags:
+- audio
+- console
+- allen-heath
+- dlive
+- osc
+sources:
+- title: Allen & Heath
+  url: https://www.allen-heath.com/
+  publisher: Allen & Heath
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,51 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: kinesys-elevation-1-plus
+name: Kinesys Elevation 1+
+vendor: Kinesys
+category: motion-control
+status: current
+summary: Motor control system for chain hoists in entertainment rigging, driving hoists with
+  position feedback and monitored safety functions, operated from Vector or K2 control software.
+speaks:
+- protocol: psn
+  direction: out
+  note: PosiStageNet output of axis positions to lighting and media systems.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: Integration with show control systems.
+  confidence: unverified
+physical_ports:
+- Motor output connectors
+- Position feedback inputs
+- Control network
+- E-stop circuit
+form_factor: Rack or road-case motor control system
+homepage:
+  url: https://kinesys.com/
+  label: Kinesys
+gotchas:
+- Position feedback and monitored safety are what separate this from a basic hoist controller.
+  A rig running variable-speed positional moves over an audience is a different safety category
+  to a dead-hang motor, governed by documents like DIN 56950-5 and EN 17206.
+- The e-stop circuit is hardwired and is not a software function. It must reach every position
+  where a person could be hurt, which is a cabling design decision made at the plot stage.
+- Axis positions can be published to lighting and media so that followspots and projection
+  track moving scenery. That makes the motion system a live dependency of the visual departments.
+tags:
+- automation
+- rigging
+- motion-control
+- kinesys
+- safety
+sources:
+- title: Kinesys
+  url: https://kinesys.com/
+  publisher: Kinesys
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

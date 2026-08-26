@@ -1,0 +1,54 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: rdm-controller-jese
+name: RDM Controller
+vendor: JESE
+category: monitoring-diagnostics
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+summary: 'RDM discovery and configuration tool for DMX networks: find every responder on a
+  line, read and set addresses and personalities, and check sensor data without touching the
+  fixture.'
+speaks:
+- protocol: rdm
+  direction: bidirectional
+  note: Full RDM discovery, GET and SET.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX output and monitoring alongside RDM.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: RDM over Art-Net where supported.
+  confidence: unverified
+typical_use:
+- Addressing a rig from the floor without a ladder
+- Finding the fixture that is not responding
+- Auditing what is actually on a DMX line
+homepage:
+  url: https://www.jese.co.uk/
+  label: JESE
+gotchas:
+- RDM only reaches devices where every splitter and node in the path passes it. One non-RDM
+  splitter makes everything downstream invisible, which reads as "the fixtures are broken".
+- RDM traffic shares the DMX line with control data. Discovery during a show can visibly disturb
+  output on some older fixtures.
+tags:
+- rdm
+- dmx
+- diagnostics
+- addressing
+sources:
+- title: JESE
+  url: https://www.jese.co.uk/
+  publisher: JESE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

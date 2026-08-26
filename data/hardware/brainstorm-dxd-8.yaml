@@ -1,0 +1,52 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: brainstorm-dxd-8
+name: Brainstorm DXD-8 Distripalyzer
+vendor: Brainstorm Electronics
+category: timecode-generator
+status: current
+summary: 'Timecode distribution amplifier, analyser and generator in one: reads LTC, shows
+  what it actually is, regenerates it clean, and feeds eight outputs. The diagnostic box for
+  when timecode "is not working".'
+speaks:
+- protocol: ltc
+  direction: bidirectional
+  note: Reads, analyses, regenerates and distributes LTC.
+  confidence: reported
+- protocol: mtc
+  direction: out
+  note: MIDI timecode output.
+  confidence: unverified
+physical_ports:
+- LTC in (XLR)
+- 8x LTC out (XLR)
+- MIDI out
+- Video reference in
+form_factor: 19-inch rack unit
+rack_units: 1
+homepage:
+  url: https://www.brainstormtime.com/
+  label: Brainstorm Electronics
+gotchas:
+- Most "timecode problems" are level, frame rate or drop-frame mismatches rather than a dead
+  cable. A box that displays the incoming rate and flags drop-frame settles the argument in
+  seconds.
+- Daisy-chaining timecode through device thru ports degrades it. A distribution amplifier
+  that regenerates rather than buffers is the difference between eight good feeds and eight
+  progressively worse ones.
+tags:
+- timecode
+- ltc
+- distribution
+- diagnostics
+- brainstorm
+sources:
+- title: Brainstorm Electronics
+  url: https://www.brainstormtime.com/
+  publisher: Brainstorm Electronics
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

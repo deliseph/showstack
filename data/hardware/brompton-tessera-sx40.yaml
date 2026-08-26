@@ -1,0 +1,62 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: brompton-tessera-sx40
+name: Brompton Tessera SX40
+vendor: Brompton Technology
+category: video-processor
+status: current
+summary: 4K LED processor and the de facto standard for high-end LED walls, especially virtual
+  production. Drives up to four 10G outputs and carries Brompton features like Dynamic Calibration,
+  ThermaCal and frame remapping.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Art-Net control of processor parameters.
+  confidence: unverified
+- protocol: sdi
+  direction: in
+  note: 12G / quad 3G-SDI input depending on configuration.
+  confidence: reported
+- protocol: smpte-st-2110
+  direction: in
+  note: ST 2110 input on suitably licensed systems.
+  confidence: unverified
+- protocol: genlock
+  direction: in
+  note: Genlock reference input for camera-synchronous operation.
+  confidence: reported
+physical_ports:
+- 12G-SDI and quad 3G-SDI inputs
+- HDMI 2.0 input
+- 4x 10G fibre outputs to Tessera receiver cards
+- Genlock in/out
+- Gigabit Ethernet control
+form_factor: 19-inch rack processor
+rack_units: 1
+homepage:
+  url: https://www.bromptontech.com/
+  label: Brompton Technology
+gotchas:
+- Brompton processors only drive panels fitted with Tessera receiver cards. A panel is "Brompton
+  compatible" or it is not, and that is a hardware fact about the panel, not a setting.
+- Frame rate, genlock and shutter angle are one problem on a camera shoot. The processor can
+  be locked and still beat against a camera if the shutter is wrong, which reads as a processor
+  fault and is not one.
+- Dynamic Calibration and extended dynamic range features require calibration data loaded
+  for the specific panel batch. Mixing calibrated and uncalibrated tiles in one wall shows
+  up instantly on camera.
+tags:
+- led
+- processor
+- brompton
+- virtual-production
+sources:
+- title: Brompton Technology
+  url: https://www.bromptontech.com/
+  publisher: Brompton Technology
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

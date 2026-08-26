@@ -1,0 +1,64 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: propresenter
+name: ProPresenter
+vendor: Renewed Vision
+category: cue-playback
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: 'Presentation and lyric playback software dominant in worship and widely used for
+  conferences: slides, lyrics, video, lower thirds and multi-screen output with a live operator
+  workflow.'
+speaks:
+- protocol: ndi
+  direction: bidirectional
+  note: NDI in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI triggering.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: Network API control.
+  confidence: unverified
+- protocol: art-net
+  direction: in
+  note: DMX control of ProPresenter on supported versions.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode sync on supported versions.
+  confidence: unverified
+typical_use:
+- Lyrics and slides in a worship service
+- Conference presentation playback with lower thirds
+- Multi-screen text and video for an event
+homepage:
+  url: https://renewedvision.com/propresenter/
+  label: ProPresenter
+gotchas:
+- Stage display and audience display are separate outputs with separate content. A confidence
+  monitor showing the audience feed is the most common operator complaint and is a configuration
+  issue.
+- Presentation files reference media by path. Moving a show to another machine without the
+  media folder produces a deck full of missing content.
+tags:
+- presentation
+- worship
+- lyrics
+- multi-screen
+sources:
+- title: ProPresenter
+  url: https://renewedvision.com/propresenter/
+  publisher: Renewed Vision
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

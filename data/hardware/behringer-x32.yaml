@@ -1,0 +1,76 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: behringer-x32
+name: Behringer X32
+vendor: Behringer
+category: audio-console
+released: 2012
+status: current
+summary: 32-channel digital console that reset the price of digital mixing, with 40 input
+  channels, motorised faders, AES50 stage box support and a large ecosystem of remote-control
+  apps. Ubiquitous in schools, clubs, houses of worship and small touring.
+speaks:
+- protocol: aes50
+  direction: bidirectional
+  note: Two AES50 ports for S16 / S32 stage boxes.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via optional expansion card.
+  requires_licence: true
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via optional expansion card.
+  confidence: reported
+- protocol: word-clock
+  direction: in
+  note: Word clock input.
+  confidence: unverified
+- protocol: midi
+  direction: bidirectional
+  note: MIDI in and out over DIN.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Undocumented-but-stable OSC protocol that a whole generation of third-party apps and
+    QLab workflows is built on.
+  confidence: reported
+physical_ports:
+- 32x XLR in
+- 16x XLR out
+- 2x AES50
+- Expansion card slot
+- MIDI in/out
+- AES3 out
+- USB
+- Ethernet
+form_factor: Console, 25 motorised faders
+homepage:
+  url: https://www.behringer.com/
+  label: Behringer
+gotchas:
+- The X32 OSC implementation is the reason it appears in so many show-control rigs, and it
+  is not formally published by the vendor. Community documentation is what everyone actually
+  uses, so treat behaviour as reported, not guaranteed.
+- X32 and M32 are near-identical hardware with different preamps and branding. Show files
+  largely interchange, which is convenient and occasionally surprising.
+- AES50 needs shielded Cat5e and a direct run. The single most common X32 fault call is an
+  unshielded cable to the stage box.
+tags:
+- audio
+- console
+- behringer
+- x32
+- osc
+- budget
+sources:
+- title: Behringer
+  url: https://www.behringer.com/
+  publisher: Behringer
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

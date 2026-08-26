@@ -1,0 +1,75 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: avolites-tiger-touch-3
+name: Avolites Tiger Touch III
+vendor: Avolites
+category: lighting-console
+released: 2021
+status: current
+summary: Mid-size Titan console with a single large touchscreen, twenty motorised faders and
+  integrated wing options. The desk most Avolites rental stock is built around.
+speaks:
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net output and input.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Direct DMX from the rear XLR5 outputs.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM from Titan.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX thumbnails from media servers.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI over DIN.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC timecode input.
+  confidence: reported
+physical_ports:
+- 4x XLR5F DMX out
+- 2x etherCON Gigabit
+- MIDI in/out
+- LTC in
+- USB
+- DisplayPort
+form_factor: Console with integrated 15-inch touchscreen
+runs_software:
+- avolites-titan
+homepage:
+  url: https://www.avolites.com/products/lighting-consoles/
+  label: Avolites lighting consoles
+gotchas:
+- Same Titan software as the Diamond 9, so the same forward-only show file rule applies.
+- The onboard DMX outputs are a small fraction of the licensed universe count. Anything past
+  the rear XLRs needs nodes on the network, which is a different failure mode to plan for.
+tags:
+- lighting
+- console
+- titan
+- avolites
+sources:
+- title: Avolites lighting consoles
+  url: https://www.avolites.com/products/lighting-consoles/
+  publisher: Avolites
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,53 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: lightconverse
+name: LightConverse
+vendor: LightConverse
+category: previsualisation
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+summary: Real-time 3D lighting and stage visualiser used for previsualisation and design presentation,
+  with a large fixture library and live console input over the usual lighting protocols.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Art-Net input from a console.
+  confidence: reported
+- protocol: sacn
+  direction: in
+  note: sACN input from a console.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP for media server and console integration.
+  confidence: unverified
+typical_use:
+- Pre-programming and rehearsing a show off site
+- Presenting a lighting design to a client
+- Checking beam coverage and sightlines before load-in
+homepage:
+  url: https://lightconverse.net/
+  label: LightConverse
+gotchas:
+- Visualiser output is a rendering, not a photometric prediction. Use it for looks and positions,
+  not to prove illuminance on a subject.
+- Fixture library accuracy varies. A fixture that renders with the wrong zoom range will make
+  a pre-programmed show wrong in a way nobody catches until the rig is up.
+tags:
+- previs
+- visualiser
+- lighting
+- 3d
+sources:
+- title: LightConverse
+  url: https://lightconverse.net/
+  publisher: LightConverse
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

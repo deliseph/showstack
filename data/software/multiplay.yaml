@@ -1,0 +1,46 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: multiplay
+name: Multiplay
+vendor: Da-Share
+category: cue-playback
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+summary: Free Windows theatre sound cue playback application, long used in amateur and educational
+  theatre for straightforward cue lists of audio files with fades and hotkeys.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: MIDI triggering.
+  confidence: unverified
+typical_use:
+- Amateur and school theatre sound cues
+- A no-budget playback machine
+- Teaching cue-based sound operation
+homepage:
+  url: https://www.da-share.com/software/multiplay/
+  label: Multiplay
+gotchas:
+- Development has been quiet for a long time. It still works for simple cue lists but should
+  not be specified for a production that needs support.
+- Windows audio device handling is the usual failure. Lock the output device and disable Windows
+  sound enhancements before the show.
+tags:
+- cue-playback
+- theatre
+- windows
+- free
+- amateur
+sources:
+- title: Multiplay
+  url: https://www.da-share.com/software/multiplay/
+  publisher: Da-Share
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

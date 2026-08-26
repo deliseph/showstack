@@ -1,0 +1,52 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: iperf3
+name: iperf3
+vendor: ESnet / Lawrence Berkeley National Laboratory
+category: networking-utility
+license: BSD-3-Clause
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: Command-line network throughput measurement tool. Run between two machines it establishes
+  what a link actually delivers, which is the fastest way to settle whether a network can
+  carry a media load.
+typical_use:
+- Proving a fibre run before the show rack depends on it
+- Testing a venue link before committing to media over IP
+- Finding the switch or cable that is negotiating at 100 Mbit
+homepage:
+  url: https://software.es.net/iperf/
+  label: iperf3
+repo:
+  url: https://github.com/esnet/iperf
+  label: esnet/iperf
+gotchas:
+- Throughput is not the same as suitability for media. A link can pass a gigabit of TCP and
+  still be useless for PTP-locked audio if it is queueing badly.
+- Test in both directions and with UDP as well as TCP. Asymmetric faults and multicast problems
+  do not show up in a single default TCP run.
+- A default test saturates the link. Do not run it on a live show network.
+tags:
+- networking
+- diagnostics
+- throughput
+- open-source
+- free
+sources:
+- title: iperf3
+  url: https://software.es.net/iperf/
+  publisher: ESnet
+  accessed: '2026-08-26'
+  primary: true
+- title: esnet/iperf on GitHub
+  url: https://github.com/esnet/iperf
+  publisher: GitHub
+  accessed: '2026-08-26'
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

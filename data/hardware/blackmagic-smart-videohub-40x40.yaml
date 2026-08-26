@@ -1,0 +1,46 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: blackmagic-smart-videohub-40x40
+name: Blackmagic Smart Videohub 40x40
+vendor: Blackmagic Design
+category: video-processor
+status: current
+summary: 40 in, 40 out 12G-SDI routing matrix with a front-panel control and network control.
+  The unglamorous box that decides which source reaches which destination on a large video
+  rack.
+speaks:
+- protocol: sdi
+  direction: bidirectional
+  note: 12G-SDI routing across all ports.
+  confidence: reported
+physical_ports:
+- 40x 12G-SDI in
+- 40x 12G-SDI out
+- Reference in
+- Ethernet
+- USB
+form_factor: 19-inch rack router
+rack_units: 4
+homepage:
+  url: https://www.blackmagicdesign.com/products/smartvideohub
+  label: Blackmagic Videohub
+gotchas:
+- Router labels are the whole usability story. An unlabelled Videohub in a dark rack at 2am
+  is functionally a random number generator; export the label set with the show file.
+- Routing changes are instant and global. A crosspoint changed to check a source will also
+  change it for anyone else using that destination, including the record.
+tags:
+- video
+- router
+- blackmagic
+- sdi
+sources:
+- title: Blackmagic Videohub
+  url: https://www.blackmagicdesign.com/products/smartvideohub
+  publisher: Blackmagic Design
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

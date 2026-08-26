@@ -1,0 +1,44 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: vectorworks-braceworks
+name: Vectorworks Braceworks
+vendor: Vectorworks
+category: production-management
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: Structural load analysis add-on for Vectorworks that calculates loads on trusses,
+  hoists and rigging points from the drawn rig, integrated with the Spotlight design workflow.
+typical_use:
+- Load calculations from a drawn lighting and audio rig
+- Producing hoist load figures for a venue
+- Checking a truss span against manufacturer data
+homepage:
+  url: https://www.vectorworks.net/
+  label: Vectorworks
+gotchas:
+- 'Results depend entirely on the drawn model being accurate: real fixture weights, real cable
+  weights, real hang points. A rig drawn with default weights produces confident, wrong numbers.'
+- It is an aid to a qualified rigger and an engineer, not a substitute for either. The output
+  is an input to a rigging plan.
+- Truss and hoist manufacturer data has to be loaded and current. Analysing a generic truss
+  and hanging a specific one is not the same calculation.
+tags:
+- rigging
+- load
+- vectorworks
+- structural
+- production
+sources:
+- title: Vectorworks
+  url: https://www.vectorworks.net/
+  publisher: Vectorworks
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

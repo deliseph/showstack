@@ -1,0 +1,64 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: daslight
+name: Daslight
+vendor: Daslight (Nicolaudie)
+category: lighting-control
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: DMX control software from the Nicolaudie family, sold with USB-DMX interfaces and
+  aimed at clubs, bars, small venues and architectural installations that need stand-alone
+  playback.
+speaks:
+- protocol: dmx512
+  direction: out
+  note: DMX via the bundled interface.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Art-Net output.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: unverified
+- protocol: midi
+  direction: in
+  note: MIDI triggering.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: OSC control.
+  confidence: unverified
+typical_use:
+- Club and bar lighting
+- Architectural installations with stand-alone playback
+- Small mobile rigs
+homepage:
+  url: https://www.daslight.com/
+  label: Daslight
+gotchas:
+- The licence is tied to the interface hardware, so the dongle is the licence. A lost interface
+  is a lost licence, not just lost output.
+- Stand-alone mode uploads a limited version of the show to the interface. Not everything
+  programmed on the computer survives the upload.
+tags:
+- lighting
+- club
+- architectural
+- nicolaudie
+- dongle
+sources:
+- title: Daslight
+  url: https://www.daslight.com/
+  publisher: Nicolaudie
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'
