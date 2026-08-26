@@ -41,11 +41,23 @@ describe('documented band edges', () => {
       }
     }
   })
-  test('gap regions say so instead of guessing', () => {
-    assert.equal(RFDATA.regions.tw.bands.length, 0)
-    assert.ok(RFDATA.regions.tw.gapNote.length > 20)
-    assert.equal(RFDATA.regions.cn.bands.length, 0)
+  test('Taiwan: the LP0002 segments, including the 700/800 MHz ones', () => {
+    const tw = bands('tw').map((b) => [b.from, b.to])
+    assert.deepEqual(tw, [[227.1, 227.4], [229.4, 230.0], [231.0, 231.9], [510, 530], [748, 758], [803, 806]])
+  })
+  test('Hong Kong exempt rows are spot frequencies, not one continuous band', () => {
+    const hk = bands('hk').filter((b) => b.use === 'unlicensed')
+    assert.ok(hk.length >= 8, 'the exempt list is a set of spot frequencies')
+    // Nothing between the spots may read as permitted: 40 MHz is not on the list.
+    assert.equal(rfCheck(RFDATA, 'hk', 40).legal, false)
+    assert.equal(rfCheck(RFDATA, 'hk', 37.10).legal, true)
+    assert.equal(rfCheck(RFDATA, 'hk', 44.87).legal, true)
+    // The UHF band plan is still unsourced, and the row has to keep saying so.
     assert.ok(RFDATA.regions.hk.gapNote.length > 20)
+  })
+  test('gap regions say so instead of guessing', () => {
+    assert.equal(RFDATA.regions.cn.bands.length, 0)
+    assert.ok(RFDATA.regions.cn.gapNote.length > 20)
   })
 })
 
