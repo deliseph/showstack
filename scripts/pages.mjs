@@ -77,26 +77,57 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16p
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
-header{border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:30;
+/* The header is sticky, so every pixel it occupies is a pixel of the page the
+   reader never gets back. On a 390px phone the old one wrapped the nav onto
+   three or four rows and ate half the viewport. Now it is at most two rows:
+   an identity bar, and a nav that scrolls sideways instead of wrapping. */
+header{border-bottom:1px solid var(--line);padding:10px 0;position:sticky;top:0;z-index:30;
 background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
 background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
-header .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-header h1{font-family:var(--mono);font-size:17px;margin:0;letter-spacing:-.3px}header h1 span{color:var(--accent)}
-header nav{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+header .wrap{max-width:1120px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hbar{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+header h1{font-family:var(--mono);font-size:17px;margin:0;letter-spacing:-.3px;white-space:nowrap}
+header h1 span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:3px;align-items:center;min-width:0;justify-content:flex-start}
 header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:8px 12px;border-radius:999px;
-border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;transition:color .15s,background .15s,border-color .15s}
+border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;white-space:nowrap;flex:0 0 auto;
+transition:color .15s,background .15s,border-color .15s}
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
 header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
 border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
-header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;border-left:1px solid var(--line)}
-@media(max-width:640px){header nav .navgroup{border-left:none;padding-left:0;margin-left:0}}
-.themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin-left:4px;
+header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;
+border-left:1px solid var(--line);flex:0 0 auto}
+.ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
+padding:6px 10px;border-radius:999px;white-space:nowrap}
+.ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
+.themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
 border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
-transition:color .15s,border-color .15s,transform .15s}
+flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
 .themebtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);transform:translateY(-1px)}
 .themebtn svg{display:block}
-@media(max-width:640px){header .wrap{flex-direction:row;align-items:center;gap:8px}header nav{margin-left:0;width:100%}}
+/* Sideways-scrolling rail. Two rules matter on a phone: nothing may wrap, and
+   the reader has to be able to see that there is more off the right edge, so
+   the rail is masked rather than cut. */
+.rail{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+.rail::-webkit-scrollbar{display:none}
+.rail>*{scroll-snap-align:start}
+@media(max-width:1100px){
+  header nav{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+}
+@media(max-width:860px){
+  header{padding:8px 0}
+  header .wrap{gap:6px}
+  .hbar{width:100%}
+  .hbar .themebtn{margin-left:auto}
+  header nav{margin-left:0;width:100%;padding-bottom:2px;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  header nav a{padding:7px 11px}
+  header nav .navgroup{padding-left:6px;margin-left:3px}
+}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -122,6 +153,10 @@ th{text-align:left;color:var(--dimmer);font-weight:500;font-family:var(--mono);f
 padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
 td{padding:8px 10px 8px 0;border-bottom:1px solid var(--line);color:var(--dim);vertical-align:top}
 td strong{color:var(--ink);font-weight:600}
+/* A four-column table does not fit a 390px screen and never will. Let it
+   scroll inside its own box rather than widening the whole document, which
+   is what makes a page feel broken on a phone. */
+@media(max-width:640px){table{display:block;max-width:100%;overflow-x:auto}}
 .ports{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:0 0 10px;
 box-shadow:var(--shadow);transition:border-color .2s}
 .ports:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
@@ -168,6 +203,11 @@ const THEME_JS = `
     var btn=document.getElementById('themebtn');
     if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
     apply(mode());
+    /* The nav is a sideways rail on a phone, so the page you are actually on
+       can start off-screen to the right. Bring it into view without moving the
+       page itself. */
+    var cur=document.querySelector('header nav a.active');
+    if(cur&&cur.scrollIntoView){try{cur.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
   });
 })();
 `
@@ -188,7 +228,7 @@ function navBar(canonical) {
   const search = link('/', 'Search')
   const tools = ['/tools/', '/network/', '/rf/'].map((h, i) => link(h, ['Tools', 'Network', 'RF'][i])).join('')
   const views = ['/interop/', '/compare/', '/ports/', '/signals/'].map((h, i) => link(h, ['Interop', 'Compare', 'Ports', 'Signals'][i])).join('')
-  return `<nav aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span><a href="${GH}">GitHub</a><button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button></nav>`
+  return `<nav class="rail" aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -214,7 +254,11 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
 </head>
 <body>
 <header><div class="wrap">
-  <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
+  <div class="hbar">
+    <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
+    <a class="ghlink" href="${GH}">GitHub</a>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
+  </div>
   ${navBar(canonical)}
   ${h1extra}
 </div></header>
