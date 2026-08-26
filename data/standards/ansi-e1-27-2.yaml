@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-27-2
+designation: ANSI E1.27-2-2009 (R2019)
+title: Recommended Practice for Permanently Installed Control Cables for Use with ANSI E1.11
+  (DMX512-A) and USITT DMX512/1990 Products
+body: ESTA
+domain: control-data
+year: 2009
+scope: 'The installed-cable companion to E1.27-1: cable types, pathways and termination practice
+  for permanent DMX infrastructure in a venue.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_E1-27-2_2009_R2019.pdf
+  label: ESTA TSP (free PDF)
+jurisdiction:
+- US
+- International
+notes: If you are specifying a new build or a refit, this is the document to hand the electrical
+  contractor alongside the riser diagram.
+confidence: verified
+tags:
+- esta
+- ansi
+- dmx
+- cable
+- installation
+related_protocols:
+- dmx512
+sources:
+- title: ANSI E1.27-2-2009 (R2019) full text
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_E1-27-2_2009_R2019.pdf
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

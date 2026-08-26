@@ -1,0 +1,41 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: bs-7671
+designation: BS 7671:2018+A2:2022
+title: Requirements for Electrical Installations - IET Wiring Regulations, 18th Edition
+body: BSI
+domain: electrical
+year: 2022
+scope: 'The UK national standard for electrical installations: earthing arrangements, protective
+  devices, cable selection, RCD requirements, inspection and testing, and the special-location
+  sections that cover temporary installations for events.'
+status: current
+free_to_read: false
+access_url:
+  url: https://knowledge.bsigroup.com/search?searchkey=BS%207671
+  label: BSI Knowledge (paid)
+jurisdiction:
+- UK
+notes: BS 7909 covers temporary systems for entertainment; BS 7671 is the general installation
+  standard it sits on. Section 711 (exhibitions, shows and stands) is the part event electricians
+  reach for. Not statutory in itself, but compliance is how you demonstrate you met the Electricity
+  at Work Regulations.
+confidence: reported
+tags:
+- bsi
+- uk
+- electrical
+- wiring-regulations
+sources:
+- title: 'BSI Knowledge: BS 7671'
+  url: https://knowledge.bsigroup.com/search?searchkey=BS%207671
+  publisher: BSI
+  accessed: '2026-08-26'
+  primary: true
+- title: IET Wiring Regulations
+  url: https://electrical.theiet.org/bs-7671/
+  publisher: IET
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

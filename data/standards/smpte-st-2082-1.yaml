@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: smpte-st-2082-1
+designation: SMPTE ST 2082-1:2022
+title: 12 Gb/s Signal/Data Serial Interface - Electrical
+body: SMPTE
+domain: video
+year: 2022
+scope: '12G-SDI: the 11.88 Gb/s single-link electrical interface that carries 2160p up to
+  60 fps on one coax.'
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/doc/st2082-1/
+  label: SMPTE public access
+jurisdiction:
+- International
+notes: 'Cable loss at 12G is brutal compared with 1.5G: runs that were unremarkable in HD
+  need better coax, shorter distance, or fibre. Belden and Canare publish per-cable distance
+  figures against each SDI rate - use those, not habit.'
+confidence: reported
+tags:
+- smpte
+- sdi
+- 12g
+- uhd
+related_protocols:
+- sdi
+sources:
+- title: SMPTE ST 2082-1 (public access)
+  url: https://pub.smpte.org/doc/st2082-1/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

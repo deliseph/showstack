@@ -3,6 +3,7 @@
 
 id: legs
 en: Legs
+zh_hant: 側幕
 domain: scenic
 definition_en: >-
   Narrow vertical drapes hung in pairs at the sides of the stage to mask
@@ -11,6 +12,8 @@ definition_en: >-
   numbered from the proscenium upstage the same way battens are. Only the
   legs create the wing entrances — a border above them masks overhead,
   not the sides.
+definition_zh_hant: >-
+  掛在舞台兩側、成對出現的窄幕，用來遮擋側台視線並形成入口。
 see_also:
 - wings
 safety_critical: false

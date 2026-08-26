@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: gb-7000-1
+designation: GB 7000.1-2015
+title: 'Luminaires - Part 1: General requirements and tests (灯具 第1部分：一般要求与试验)'
+body: SAMR / SAC
+domain: electrical
+year: 2015
+scope: 'The Chinese national luminaire safety standard, the domestic counterpart of IEC 60598-1:
+  construction, creepage and clearance, temperature rise, insulation and marking requirements
+  for luminaires sold in mainland China.'
+status: current
+free_to_read: true
+access_url:
+  url: https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=4DEBB5925A2F390C48D7B3148ACA0C65
+  label: 国家标准全文公开 (free full text)
+jurisdiction:
+- CN
+notes: Published 2015-12-31, effective 2017-01-01, and free to read on the national full-text
+  portal. This is the base document for CCC marking of lighting equipment; a fixture certified
+  only to IEC or UL is not automatically acceptable for sale in mainland China. GB/T 7000.1-2023
+  is the newer revision.
+confidence: reported
+tags:
+- gb
+- china
+- luminaire
+- ccc
+- safety
+sources:
+- title: GB 7000.1-2015 full text, 国家标准全文公开系统
+  url: https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=4DEBB5925A2F390C48D7B3148ACA0C65
+  publisher: SAMR
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: line-array
+en: Line array
+zh_hant: 線陣列
+domain: audio
+definition_en: A column of loudspeaker elements hung close together so they behave as one
+  long source, throwing further and covering more evenly front to back than a stack of separate
+  boxes. Coverage is set by splay angles between elements, calculated in the manufacturer
+  prediction software before it leaves the shop.
+definition_zh_hant: 多個音箱單元緊密排列成一列，使其表現如同一個長形音源，投射更遠、前後覆蓋更均勻。覆蓋範圍由單元之間的夾角決定，在出庫前就以原廠預測軟體算好。
+regional_variants:
+- region: UK / US
+  term: Line array
+- region: HK / TW
+  term: 線陣列 / 線陣
+false_friends:
+- A line array is not automatically louder. It trades vertical directivity for even coverage,
+  and hung with the wrong splay it is just an expensive point source with comb filtering.
+see_also:
+- ground-stack
+- delay-tower
+tags:
+- audio
+- pa
+- loudspeaker
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

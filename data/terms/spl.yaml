@@ -1,0 +1,41 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: spl
+en: SPL (sound pressure level)
+zh_hant: 聲壓級
+domain: audio
+definition_en: 'How loud it is at a given point, in decibels relative to 20 micropascals.
+  Always qualified: a frequency weighting (A, C or Z), a time weighting (fast, slow) or
+  an averaging period (LAeq over 15 minutes, an hour, the show).'
+definition_zh_hant: 某一位置的音量大小，以相對於 20 微帕的分貝值表示。必須加上限定條件：頻率權重（A、C 或 Z）、時間權重（快、慢）或平均時距（15
+  分鐘、一小時或整場的 LAeq）。
+regional_variants:
+- region: UK / US
+  term: SPL
+- region: HK / TW
+  term: 聲壓級 / SPL / 音壓
+false_friends:
+- A venue limit of "100 dB" means nothing until you know the weighting, the averaging time
+  and the measurement position. 100 dBA slow at FOH and 100 dBC peak at the barrier are
+  wildly different limits.
+see_also:
+- gain-before-feedback
+tags:
+- audio
+- noise
+- compliance
+sources:
+- title: IEC 61672-1 sound level meters
+  url: https://webstore.iec.ch/en/publication/5708
+  publisher: IEC
+  accessed: '2026-08-26'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

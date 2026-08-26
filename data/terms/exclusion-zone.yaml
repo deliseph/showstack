@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: exclusion-zone
+en: Exclusion zone
+zh_hant: 管制區
+domain: safety
+definition_en: 'An area kept clear of people while something dangerous happens in it: a
+  load moving overhead, a piece of automation running, a pyrotechnic firing, a laser projecting.
+  Marked, briefed and enforced by a named person, not assumed.'
+definition_zh_hant: 在危險作業進行期間淨空人員的區域：頭頂有負載移動、自動化設備運行、煙火擊發、雷射投射等。必須劃設、宣達，並由指定人員執行，不能只是默認。
+regional_variants:
+- region: UK
+  term: Exclusion zone / sterile area
+- region: US
+  term: Clear zone / hot zone
+- region: HK / TW
+  term: 管制區 / 淨空區
+false_friends:
+- '"The area under the truss" is not automatically an exclusion zone. It becomes one when
+  someone declares it, marks it and stands on it. An unenforced zone is a line on a plan.'
+see_also:
+- lockout-tagout
+- competent-person
+safety_critical: true
+tags:
+- safety
+- site
+- procedure
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

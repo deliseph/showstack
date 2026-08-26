@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-13849-1
+designation: ISO 13849-1:2023
+title: 'Safety of machinery - Safety-related parts of control systems - Part 1: General principles
+  for design'
+body: ISO
+domain: machinery
+year: 2023
+scope: How to design and rate the control system that makes a machine safe, using Performance
+  Levels PL a to PL e derived from architecture, component reliability and diagnostic coverage.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/69883.html
+  label: ISO Store (purchase)
+jurisdiction:
+- International
+notes: This is where "PL d, Category 3" on a stage automation or hoist controller spec comes
+  from. It is a property of the whole safety chain - sensor, logic, contactor - not of the
+  PLC alone, so a PL d controller wired to a single unmonitored limit switch is not a PL d
+  system.
+confidence: reported
+tags:
+- iso
+- machinery
+- performance-level
+- automation
+- safety
+sources:
+- title: ISO 13849-1:2023 catalogue page
+  url: https://www.iso.org/standard/69883.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,36 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-12100
+designation: ISO 12100:2010
+title: Safety of machinery - General principles for design - Risk assessment and risk reduction
+body: ISO
+domain: machinery
+year: 2010
+scope: 'The type-A machinery safety standard: the risk assessment method and the three-step
+  hierarchy (design out, then guard, then inform) that every machinery standard below it assumes
+  you have already applied.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/51528.html
+  label: ISO Store (purchase)
+jurisdiction:
+- International
+notes: EN 17206 and DIN 56950 are entertainment-specific machinery standards sitting on top
+  of this one. If a stage automation supplier hands you a risk assessment, this is the method
+  it should be following.
+confidence: reported
+tags:
+- iso
+- machinery
+- risk-assessment
+- automation
+sources:
+- title: ISO 12100:2010 catalogue page
+  url: https://www.iso.org/standard/51528.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

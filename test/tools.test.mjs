@@ -12,6 +12,7 @@ import {
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay,
   dbuToDbv, dbvToDbu,
+  bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -334,5 +335,135 @@ describe('processing delay budget', () => {
   test('rejects empty and negative stages', () => {
     assert.equal(processingDelay([]), null)
     assert.equal(processingDelay([1, -2]), null)
+  })
+})
+
+describe('bridle tension', () => {
+  test('the three angles every rigger is taught', () => {
+    // Dead hang: each leg takes half.
+    assert.deepEqual(bridleTension(500, 0).perLegKg, 250)
+    // 45 degrees from vertical: 1/cos45 = 1.414, so 500/(2*0.7071).
+    assert.equal(bridleTension(500, 45).perLegKg, 353.55)
+    assert.equal(bridleTension(500, 45).multiplier, 1.41)
+    // 60 degrees from vertical, 120 included: each leg takes the WHOLE load.
+    const wide = bridleTension(500, 60)
+    assert.equal(wide.perLegKg, 500)
+    assert.equal(wide.multiplier, 2)
+    assert.equal(wide.includedAngle, 120)
+  })
+  test('vertical components always sum back to the load', () => {
+    for (const angle of [0, 15, 30, 45, 60, 75]) {
+      const r = bridleTension(1000, angle)
+      assert.ok(Math.abs(r.verticalKg * 2 - 1000) < 0.5, `angle ${angle}`)
+    }
+  })
+  test('horizontal pull is what the structure feels sideways', () => {
+    // At 45 degrees the sideways pull equals the vertical share.
+    const r = bridleTension(500, 45)
+    assert.equal(r.horizontalKg, r.verticalKg)
+  })
+  test('refuses angles at or past horizontal', () => {
+    assert.equal(bridleTension(500, 89), null)
+    assert.equal(bridleTension(500, 90), null)
+    assert.equal(bridleTension(500, -1), null)
+    assert.equal(bridleTension('abc', 30), null)
+  })
+})
+
+describe('voltage drop', () => {
+  test('single phase: 2 * I * L * rho / A', () => {
+    // 32 A, 50 m one-way, 6 mm^2 copper, 230 V.
+    // 2 * 32 * 50 * 0.0172 / 6 = 9.17 V = 3.99%.
+    const r = voltageDrop(32, 50, 6, 230, 1)
+    assert.equal(r.dropVolts, 9.17)
+    assert.equal(r.dropPercent, 3.99)
+    assert.equal(r.withinLighting, false)  // over the 3% lighting convention
+    assert.equal(r.withinPower, true)      // inside the 5% power convention
+  })
+  test('three phase uses sqrt(3), not 2', () => {
+    const one = voltageDrop(32, 50, 6, 400, 1)
+    const three = voltageDrop(32, 50, 6, 400, 3)
+    assert.ok(three.dropVolts < one.dropVolts)
+    assert.ok(Math.abs(three.dropVolts / one.dropVolts - Math.sqrt(3) / 2) < 0.01)
+  })
+  test('aluminium is worse than copper for the same size', () => {
+    assert.ok(voltageDrop(32, 50, 6, 230, 1, 'aluminium').dropVolts >
+              voltageDrop(32, 50, 6, 230, 1, 'copper').dropVolts)
+  })
+  test('rejects impossible inputs', () => {
+    assert.equal(voltageDrop(32, 50, 0, 230, 1), null)
+    assert.equal(voltageDrop(32, 50, 6, 0, 1), null)
+    assert.equal(voltageDrop(32, 50, 6, 230, 2), null)
+  })
+})
+
+describe('three-phase balance', () => {
+  test('balanced legs cancel in the neutral', () => {
+    const r = phaseBalance(60, 60, 60)
+    assert.equal(r.neutralAmps, 0)
+    assert.equal(r.imbalancePercent, 0)
+  })
+  test('one leg loaded puts the whole current in the neutral', () => {
+    assert.equal(phaseBalance(60, 0, 0).neutralAmps, 60)
+  })
+  test('a worked unbalanced case', () => {
+    // sqrt(80^2+40^2+30^2 - 80*40 - 40*30 - 30*80) = sqrt(2100) = 45.83
+    const r = phaseBalance(80, 40, 30)
+    assert.equal(r.neutralAmps, 45.83)
+    assert.equal(r.worstLeg, 'L1')
+    assert.equal(r.maxAmps, 80)
+  })
+  test('rejects negatives and rubbish', () => {
+    assert.equal(phaseBalance(-1, 0, 0), null)
+    assert.equal(phaseBalance(10, 'x', 10), null)
+  })
+})
+
+describe('noise dose', () => {
+  test('EU 3 dB exchange against an 85 dB(A) 8 hour criterion', () => {
+    // Every 3 dB halves the permitted time: 100 dB(A) is 5 halvings from 85.
+    const r = noiseDose(100, 2, 85, 3)
+    assert.equal(r.permittedMinutes, 15)
+    assert.equal(r.dosePercent, 800)
+    assert.equal(r.overExposed, true)
+  })
+  test('at the criterion for the criterion duration, dose is exactly 100%', () => {
+    const r = noiseDose(85, 8, 85, 3)
+    assert.equal(r.dosePercent, 100)
+    assert.equal(r.overExposed, false)
+  })
+  test('OSHA 5 dB exchange against 90 dB(A) gives a different answer', () => {
+    // 95 dB(A) is one 5 dB step above 90, so 4 hours, not 8.
+    assert.equal(noiseDose(95, 4, 90, 5).permittedHours, 4)
+    // The same level under the EU rule is far stricter.
+    assert.ok(noiseDose(95, 4, 85, 3).permittedHours < 1)
+  })
+  test('rejects rubbish', () => {
+    assert.equal(noiseDose('x', 2), null)
+    assert.equal(noiseDose(100, -1), null)
+    assert.equal(noiseDose(100, 2, 85, 0), null)
+  })
+})
+
+describe('third-order intermodulation', () => {
+  test('two carriers give 2a-b and 2b-a', () => {
+    const r = intermod3([470.1, 471.3])
+    assert.deepEqual(r.products.map((p) => p.mhz), [468.9, 472.5])
+    assert.equal(r.clashes.length, 0)
+  })
+  test('a product landing on a channel in use is flagged', () => {
+    // 2*470 - 471 = 469, which is a frequency in the list.
+    const r = intermod3([469, 470, 471])
+    assert.ok(r.clashes.length > 0)
+    assert.ok(r.clashes.some((p) => p.clashesWith === 469))
+  })
+  test('three carriers also produce a+b-c', () => {
+    const r = intermod3([500, 510, 520])
+    assert.ok(r.products.some((p) => p.order === 'a+b-c'))
+  })
+  test('needs at least two frequencies', () => {
+    assert.equal(intermod3([500]), null)
+    assert.equal(intermod3([]), null)
+    assert.equal(intermod3('abc'), null)
   })
 })

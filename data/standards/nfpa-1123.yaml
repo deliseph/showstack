@@ -1,0 +1,35 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: nfpa-1123
+designation: NFPA 1123
+title: Code for Fireworks Display
+body: NFPA
+domain: pyro-flame
+year: 2022
+scope: 'Outdoor fireworks displays: separation distances by shell size, site inspection, firing
+  crew qualification, storage and transport of the product, and misfire procedure.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1123-standard-development/1123
+  label: NFPA (free read-only access after registration)
+jurisdiction:
+- US
+notes: NFPA 1123 is outdoor display fireworks; NFPA 1126 is pyrotechnics used before a proximate
+  audience, which is what most indoor and stage effects fall under. Picking the wrong one
+  is how a site plan ends up with separation distances an arena floor cannot possibly provide.
+confidence: reported
+tags:
+- nfpa
+- pyrotechnics
+- fireworks
+- us
+sources:
+- title: NFPA 1123 code page
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1123-standard-development/1123
+  publisher: NFPA
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

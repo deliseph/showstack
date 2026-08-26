@@ -3,6 +3,7 @@
 
 id: keying
 en: Keying (chroma key / luma key)
+zh_hant: 去背／鍵控
 domain: video
 definition_en: >-
   Making part of an image transparent so another source shows through it.
@@ -10,6 +11,8 @@ definition_en: >-
   removes a brightness range instead, which is why it still works on
   footage with no coloured screen at all: titles on black, or pulling a
   bright practical light through a layer.
+definition_zh_hant: >-
+  將畫面的一部分變成透明，讓另一個訊號透出。色鍵（chroma key）看顏色，亮度鍵（luma key）看亮度。
 false_friends:
 - >-
   Calling for "a key" on comms doesn't say which technique. If the

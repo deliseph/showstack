@@ -22,6 +22,7 @@ import {
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
   throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
+  bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -32,6 +33,7 @@ const MATH_SRC = [
   powerLoad, beamDiameter, illuminance, ledWall, rfWavelength,
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
   throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
+  bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -44,7 +46,16 @@ export function toolsPage({ esc, shell, SITE, GH }) {
 .field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
 border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:110px}
 .field input:focus-visible,.field select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.field select{width:auto}
+.field select{width:auto;max-width:100%}
+/* A long <option> makes a <select> as wide as its longest label, which on a
+   390px screen pushes the whole document sideways. Clamp the field, not just
+   the control, since the field is the flex item that was growing. */
+.field{max-width:100%;min-width:0}
+.field textarea{max-width:100%}
+@media(max-width:640px){
+  .field select,.field textarea{width:100%}
+  .tool{padding:16px 15px}
+}
 .out{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
 border-radius:7px;padding:10px 13px;margin-top:6px;overflow-x:auto}
 .out b{color:var(--accent2)}
@@ -89,6 +100,42 @@ color:var(--dimmer);margin:28px 0 10px}
 background-image:radial-gradient(circle,var(--accent) 22%,transparent 26%);max-width:100%}
 .field textarea{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
 border-radius:7px;font-family:var(--mono);font-size:14px;width:300px;min-height:74px;resize:vertical}
+/* Animated explainers. Each one draws the SHOW, not an abstract graph: a
+   bridle over a truss, a lamp at the end of a long cable run, three legs of
+   a distro, a dose clock, a spectrum with your channels on it. The motion is
+   there to make the cause visible - the tension arrows grow as the angle
+   opens, the lamp dims as the run gets longer - and every one of them is
+   switched off entirely by prefers-reduced-motion via the global rule. */
+.scene{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+padding:10px;overflow:hidden}
+.scene svg{display:block;width:100%;height:auto;max-width:540px;margin:0 auto}
+.field input[type=range]{accent-color:var(--accent);width:100%;min-width:140px}
+.scene .lbl{font-family:var(--mono);font-size:10px;fill:var(--dimmer)}
+.scene .val{font-family:var(--mono);font-size:12px;fill:var(--ink);font-weight:600}
+.scene .warnfill{fill:var(--warn)}
+.scene .okfill{fill:var(--ok)}
+@keyframes ss-sway{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@keyframes ss-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes ss-flow{to{stroke-dashoffset:-24}}
+@keyframes ss-sweep{0%{transform:translateX(0)}100%{transform:translateX(var(--sweep,300px))}}
+@keyframes ss-flicker{0%,100%{opacity:var(--glowop,.8)}47%{opacity:var(--glowop,.8)}
+50%{opacity:calc(var(--glowop,.8) * .45)}53%{opacity:var(--glowop,.8)}}
+.sway{animation:ss-sway 3.4s ease-in-out infinite;transform-origin:center}
+.pulse{animation:ss-pulse 1.9s ease-in-out infinite}
+.flow{stroke-dasharray:5 7;animation:ss-flow 1.1s linear infinite}
+.sweep{animation:ss-sweep 4.5s linear infinite}
+.flick{animation:ss-flicker 2.6s ease-in-out infinite}
+.bars{display:flex;gap:8px;align-items:flex-end;height:120px;margin-top:12px}
+.bars .leg{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;
+text-align:center;font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+.bars .leg i{display:block;border-radius:5px 5px 0 0;background:var(--accent);
+transition:height .35s ease,background .35s ease;min-height:2px}
+.bars .leg.hot i{background:var(--warn)}
+.bars .leg.neutral i{background:var(--accent2)}
+.bars .leg b{color:var(--ink);font-weight:600;display:block;margin-bottom:3px}
+.imlist{margin-top:10px;font-family:var(--mono);font-size:12.5px;max-height:190px;overflow-y:auto}
+.imlist div{padding:3px 0;border-bottom:1px solid var(--line);color:var(--dim)}
+.imlist div.clash{color:var(--warn);font-weight:600}
 .ttwrap{overflow-x:auto;margin-top:10px}
 .tt td.on{color:var(--ok);font-weight:700}
 .tt td.off{color:var(--dimmer)}
@@ -208,6 +255,23 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Ohms (Ω) also names two different things on this page. <b>Resistance</b> — the Ohm's law tool below, a lamp or heater element — opposes current the same way at any frequency, all of it dissipated as heat. <b>Impedance</b> — the Speaker load tool above — is resistance's AC generalisation, Z = R + jX: a reactance X from the driver's voice coil and crossover that shifts with frequency. A loudspeaker's "8 Ω" is a nominal average, not a fixed value — the real number can swing from under 5 Ω to well over 40 Ω near cone resonance. That is why the speaker load arithmetic above is exact for a stated nominal figure, while Ohm's law's resistive-only assumption is indicative, not exact, once it is pointed at a driver instead of a lamp.</p>
   <p class="note">Light and sound both obey the <b>inverse square law</b> because both radiate from a small source across an expanding sphere: double the distance and the energy spreads over 4× the area, so the level at any point is quartered. For light that is illuminance — lux = candela ÷ throw², see <a href="#beam">Beam &amp; throw</a> below — a fixture twice as far away lights its target at a quarter the lux, all else equal. For sound in a free field (no walls or ground reflection filling it back in) the same physics shows up as a level drop rather than a ratio: −6 dB every doubling of distance, +6 dB every halving. How to use it: to sanity-check a claimed SPL at FOH against a spec measured at 1 m, count doublings of distance and subtract 6 dB each — a source rated 100 dB at 1 m is roughly 88 dB by 4 m (two doublings) outdoors. Indoors, reflections refill part of that drop, so 6 dB/doubling is the conservative, worst-case figure for clearance and neighbour-noise planning, not what a meter will actually read in a live room.</p>
 </div>
+
+<div class="tool wide" id="dose">
+  <h3>Noise exposure dose</h3>
+  <div class="row">
+    <div class="field"><label for="ns-l">Level LAeq (dB)</label><input id="ns-l" type="number" min="60" max="140" value="100" inputmode="decimal"></div>
+    <div class="field"><label for="ns-h">Exposure (hours)</label><input id="ns-h" type="number" min="0" step="0.25" value="2" inputmode="decimal"></div>
+    <div class="field"><label for="ns-r">Rule</label><select id="ns-r">
+      <option value="85|3|8" selected>EU — 85 dB(A), 3 dB</option>
+      <option value="80|3|8">EU lower action — 80 dB(A), 3 dB</option>
+      <option value="90|5|8">OSHA — 90 dB(A), 5 dB</option>
+      <option value="85|5|8">85 dB(A), 5 dB</option>
+    </select></div>
+  </div>
+  <div class="out" id="ns-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="ns-viz" aria-hidden="true"></div>
+  <p class="note">The rule selector picks the criterion level, the exchange rate and the criterion duration together. Exchange rate is the whole argument: 3 dB halves the permitted time for every 3 dB louder, 5 dB is far more permissive, and which one applies is a matter of jurisdiction, not physics. This is <em>crew</em> exposure under <a href="/standards/eu-directive-2003-10-ec/">2003/10/EC</a> or <a href="/standards/osha-1910-95/">OSHA 1910.95</a>. Audience exposure is a separate question with its own document — in Germany, <a href="/standards/din-15905-5/">DIN 15905-5</a>.</p>
+</div>
 </div>
 
 <div class="toolgroup">Lighting &amp; video</div>
@@ -260,6 +324,22 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 </div>
 
+
+<div class="toolgroup">Rigging &amp; load</div>
+<div class="toolgrid">
+<div class="tool wide" id="bridle">
+  <h3>Bridle angle — why it is never half each</h3>
+  <div class="row">
+    <div class="field"><label for="br-w">Load (kg)</label><input id="br-w" type="number" min="0" value="500" inputmode="decimal"></div>
+    <div class="field"><label for="br-a">Leg angle from vertical (°)</label><input id="br-a" type="range" min="0" max="80" value="30" style="width:200px"></div>
+    <div class="field"><label for="br-an">or type °</label><input id="br-an" type="number" min="0" max="80" value="30" inputmode="decimal" style="width:90px"></div>
+  </div>
+  <div class="out" id="br-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="br-viz" aria-hidden="true"></div>
+  <p class="note"><b>This is a geometry explainer, not a design tool.</b> It shows one symmetric two-leg bridle with the load hanging at the apex, and nothing else: no sling angle derating, no shock load, no self-weight, no assessment of whether the structure can take the sideways pull it shows you. Real bridles are designed by a qualified rigger against <a href="/standards/din-56950-1/">DIN 56950-1</a>, <a href="/standards/en-17206/">EN 17206</a> or the local equivalent. What it is good for is the thing people get wrong from memory: tension per leg is W / (2 cos θ), so at 60° from vertical each leg is carrying the <em>whole</em> load, not half of it.</p>
+</div>
+</div>
+
 <div class="toolgroup">Power &amp; electrical</div>
 <div class="toolgrid">
 <div class="tool" id="power">
@@ -277,6 +357,34 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
 </div>
 
+
+<div class="tool" id="vdrop">
+  <h3>Voltage drop</h3>
+  <div class="row">
+    <div class="field"><label for="vd-i">Current (A)</label><input id="vd-i" type="number" min="0" value="32" inputmode="decimal"></div>
+    <div class="field"><label for="vd-l">Run, one way (m)</label><input id="vd-l" type="number" min="0" value="50" inputmode="decimal"></div>
+    <div class="field"><label for="vd-a">Conductor (mm²)</label><input id="vd-a" type="number" min="0.5" step="0.5" value="6" inputmode="decimal"></div>
+    <div class="field"><label for="vd-v">Supply (V)</label><input id="vd-v" type="number" min="1" value="230" inputmode="decimal"></div>
+    <div class="field"><label for="vd-ph">Phase</label><select id="vd-ph"><option value="1" selected>1φ</option><option value="3">3φ</option></select></div>
+    <div class="field"><label for="vd-m">Metal</label><select id="vd-m"><option value="copper" selected>Copper</option><option value="aluminium">Aluminium</option></select></div>
+  </div>
+  <div class="out" id="vd-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="vd-viz" aria-hidden="true"></div>
+  <p class="note">Single phase drops over the out-and-back pair (k = 2); a balanced three-phase line-to-line drop uses √3. Resistivity is taken at 20 °C, so a warm cable on a busy dimmer run is worse than this says. The 3 % and 5 % marks are the usual lighting and power conventions from installation practice — your local wiring rules, <a href="/standards/bs-7671/">BS 7671</a> or <a href="/standards/nfpa-70/">NFPA 70</a>, are what actually apply.</p>
+</div>
+
+<div class="tool" id="phase">
+  <h3>Three-phase balance</h3>
+  <div class="row">
+    <div class="field"><label for="ph-1">L1 (A)</label><input id="ph-1" type="number" min="0" value="80" inputmode="decimal" style="width:90px"></div>
+    <div class="field"><label for="ph-2">L2 (A)</label><input id="ph-2" type="number" min="0" value="40" inputmode="decimal" style="width:90px"></div>
+    <div class="field"><label for="ph-3">L3 (A)</label><input id="ph-3" type="number" min="0" value="30" inputmode="decimal" style="width:90px"></div>
+  </div>
+  <div class="out" id="ph-out" role="status" aria-live="polite"></div>
+  <div class="bars" id="ph-bars" aria-hidden="true"></div>
+  <p class="note">Balanced legs cancel in the neutral; one leg alone puts its whole current there. The distro is sized by its <em>worst</em> leg, never by the total divided by three. This is the linear-load figure: LED drivers and switch-mode supplies inject triplen harmonics that add rather than cancel in the neutral, so a rig full of them can exceed this with the legs looking even.</p>
+</div>
+
 <div class="tool" id="ohm">
   <h3>Ohm's law</h3>
   <div class="row">
@@ -292,6 +400,19 @@ HORN = GO &amp; (A | B)</textarea></div>
 
 <div class="toolgroup">RF</div>
 <div class="toolgrid">
+<div class="tool wide" id="im">
+  <h3>Third-order intermod check</h3>
+  <div class="row">
+    <div class="field"><label for="im-f">Frequencies in use (MHz, comma or space separated)</label>
+      <textarea id="im-f" spellcheck="false">470.100, 471.300, 472.500, 474.700</textarea></div>
+    <div class="field"><label for="im-g">Guard (MHz)</label><input id="im-g" type="number" min="0" step="0.05" value="0.3" inputmode="decimal" style="width:90px"></div>
+  </div>
+  <div class="out" id="im-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="im-viz" aria-hidden="true"></div>
+  <div class="imlist" id="im-list"></div>
+  <p class="note">Two transmitters make products at 2a−b and 2b−a; three make a+b−c. Third order is the set that matters because the products land near the originals and are strong enough to open a receiver. A product in empty spectrum is harmless — the ones flagged in red are landing on a channel you are actually using. This is a check, not a coordination tool: it ignores transmitter power, antenna placement, receiver selectivity, fifth-order products and every broadcaster already on air, which is what the <a href="/rf/">frequency map</a> and a real coordination pass are for.</p>
+</div>
+
 <div class="tool" id="rf">
   <h3>RF wavelength</h3>
   <div class="row">
@@ -304,7 +425,7 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 
 <div class="cta"><strong>A calculation your crew does daily that is missing here?</strong>
-<p><a href="${GH}/issues/new?labels=tooling&amp;title=tools%3A+">Name it</a> — if the arithmetic can be written down and tested, it belongs on this page. Rigging load maths is deliberately absent: point loads and bridle forces belong with a qualified rigger and the <a href="/standards/">governing standards</a>, not a web form.</p></div>
+<p><a href="${GH}/issues/new?labels=tooling&amp;title=tools%3A+">Name it</a> — if the arithmetic can be written down and tested, it belongs on this page. The one piece of rigging maths here is labelled as a geometry explainer for a reason: point loads and real bridle design belong with a qualified rigger and the <a href="/standards/">governing standards</a>, not a web form.</p></div>
 `
 
   const script = `
@@ -649,6 +770,204 @@ function relayRender() {
 $("#rl-rules").addEventListener("input", relayRender);
 
 
+// ---- Bridle geometry explainer ----
+// The picture is the point: as the slider opens the legs, the arrows on them
+// grow and the number climbs past "half each". The truss sways because a
+// still drawing of a hanging load reads as a diagram, and a moving one reads
+// as a thing above your head.
+function brRender(fromSlider) {
+  if (fromSlider) $("#br-an").value = $("#br-a").value;
+  else $("#br-a").value = Math.min(80, Math.max(0, Number($("#br-an").value) || 0));
+  const w = Number($("#br-w").value), a = Number($("#br-a").value);
+  const r = bridleTension(w, a);
+  const out = $("#br-out");
+  if (!r) { out.innerHTML = '<span class="err">Load must be 0 or more, angle 0–80° from vertical.</span>'; $("#br-viz").innerHTML = ""; return; }
+  const cls = r.multiplier >= 2 ? "err" : "";
+  out.innerHTML = '<b>' + r.perLegKg + ' kg</b> in each leg — <span class="' + cls + '">' +
+    r.multiplier + '× what "half each" would give you</span> · included angle ' + r.includedAngle + '° · ' +
+    'each point also pulled <b>' + r.horizontalKg + ' kg</b> sideways';
+  brDraw(r, a);
+}
+function brDraw(r, angleDeg) {
+  const W = 460, H = 228;
+  const beamY = 26, apexY = 140, cx = W / 2;
+  const dx = (apexY - beamY) * Math.tan((angleDeg * Math.PI) / 180);
+  const lx = Math.max(12, cx - dx), rx = Math.min(W - 12, cx + dx);
+  // Arrow weight tracks the multiplier, so the picture gets heavier as the
+  // number does. Capped so a 70 degree bridle does not draw a black bar.
+  const wgt = Math.min(9, 1.6 + (r.multiplier - 1) * 3.4);
+  const col = r.multiplier >= 2 ? "var(--warn)" : r.multiplier >= 1.4 ? "var(--accent2)" : "var(--accent)";
+  const label = (x, y, t, c) => '<text x="' + x + '" y="' + y + '" class="val" fill="' + (c || "var(--ink)") + '" text-anchor="middle">' + t + '</text>';
+  $("#br-viz").innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Bridle geometry">' +
+    // structure
+    '<rect x="0" y="' + (beamY - 12) + '" width="' + W + '" height="10" fill="var(--line)"/>' +
+    '<circle cx="' + lx + '" cy="' + beamY + '" r="5" fill="var(--dim)"/>' +
+    '<circle cx="' + rx + '" cy="' + beamY + '" r="5" fill="var(--dim)"/>' +
+    // sideways pull on each point, drawn only when it is worth noticing
+    (r.horizontalKg > 1 ?
+      '<line x1="' + lx + '" y1="' + (beamY - 16) + '" x2="' + (lx + 26) + '" y2="' + (beamY - 16) + '" stroke="var(--warn)" stroke-width="2" class="pulse"/>' +
+      '<line x1="' + rx + '" y1="' + (beamY - 16) + '" x2="' + (rx - 26) + '" y2="' + (beamY - 16) + '" stroke="var(--warn)" stroke-width="2" class="pulse"/>' : '') +
+    '<g class="sway">' +
+    // the two legs
+    '<line x1="' + lx + '" y1="' + beamY + '" x2="' + cx + '" y2="' + apexY + '" stroke="' + col + '" stroke-width="' + wgt + '" stroke-linecap="round"/>' +
+    '<line x1="' + rx + '" y1="' + beamY + '" x2="' + cx + '" y2="' + apexY + '" stroke="' + col + '" stroke-width="' + wgt + '" stroke-linecap="round"/>' +
+    // hoist and truss
+    '<rect x="' + (cx - 13) + '" y="' + apexY + '" width="26" height="20" rx="4" fill="var(--dim)"/>' +
+    '<line x1="' + cx + '" y1="' + (apexY + 20) + '" x2="' + cx + '" y2="' + (apexY + 32) + '" stroke="var(--dimmer)" stroke-width="3"/>' +
+    '<rect x="' + (cx - 90) + '" y="' + (apexY + 32) + '" width="180" height="12" rx="3" fill="var(--dimmer)"/>' +
+    '</g>' +
+    // the angle itself
+    '<line x1="' + cx + '" y1="' + apexY + '" x2="' + cx + '" y2="' + beamY + '" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="3 3"/>' +
+    label((lx + cx) / 2 - 14, (beamY + apexY) / 2, r.perLegKg + ' kg', col) +
+    label((rx + cx) / 2 + 14, (beamY + apexY) / 2, r.perLegKg + ' kg', col) +
+    '<text x="' + cx + '" y="' + (H - 8) + '" class="lbl" text-anchor="middle">load ' + $("#br-w").value + ' kg · legs ' + angleDeg + '° from vertical · ×' + r.multiplier + ' per leg</text>' +
+    '</svg>';
+}
+$("#br-w").addEventListener("input", () => brRender(false));
+$("#br-a").addEventListener("input", () => brRender(true));
+$("#br-an").addEventListener("input", () => brRender(false));
+
+// ---- Voltage drop ----
+// The lamp at the far end is the whole explanation: the run gets longer, the
+// glow gets weaker. Luminous output falls much faster than voltage, so the
+// glow is scaled by roughly the cube of the ratio - exaggerated on purpose,
+// and the numbers above it are the honest ones.
+function vdRender() {
+  const r = voltageDrop($("#vd-i").value, $("#vd-l").value, $("#vd-a").value,
+                        $("#vd-v").value, Number($("#vd-ph").value), $("#vd-m").value);
+  if (!r) { $("#vd-out").innerHTML = '<span class="err">Check the inputs: conductor and supply must be above zero.</span>'; $("#vd-viz").innerHTML = ""; return; }
+  const verdict = r.withinLighting ? '<span class="ok">inside the 3% lighting convention</span>'
+    : r.withinPower ? '<span class="err">over 3%</span> — inside the 5% power convention'
+    : '<span class="err">over 5%: size up the cable or shorten the run</span>';
+  $("#vd-out").innerHTML = '<b>' + r.dropVolts + ' V</b> lost (' + r.dropPercent + '%) · <b>' +
+    r.voltsAtLoad + ' V</b> at the load · ' + verdict;
+  vdDraw(r);
+}
+function vdDraw(r) {
+  const W = 460, H = 120, y = 58;
+  const v = Number($("#vd-v").value);
+  const ratio = Math.max(0, Math.min(1, r.voltsAtLoad / v));
+  const glow = Math.max(0.06, Math.pow(ratio, 3));
+  const bad = !r.withinPower;
+  const cableCol = bad ? "var(--warn)" : r.withinLighting ? "var(--accent)" : "var(--accent2)";
+  $("#vd-viz").innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Voltage drop along a cable run">' +
+    '<rect x="8" y="' + (y - 22) + '" width="46" height="44" rx="5" fill="var(--panel)" stroke="var(--line)"/>' +
+    '<text x="31" y="' + (y + 4) + '" class="lbl" text-anchor="middle">DISTRO</text>' +
+    '<line x1="54" y1="' + y + '" x2="' + (W - 78) + '" y2="' + y + '" stroke="var(--line)" stroke-width="7" stroke-linecap="round"/>' +
+    '<line x1="54" y1="' + y + '" x2="' + (W - 78) + '" y2="' + y + '" stroke="' + cableCol + '" stroke-width="3" class="flow"/>' +
+    // the lamp
+    '<circle cx="' + (W - 46) + '" cy="' + y + '" r="26" fill="var(--accent2)" opacity="' + (glow * 0.4).toFixed(3) + '"' +
+      (bad ? ' class="flick" style="--glowop:' + (glow * 0.4).toFixed(3) + '"' : '') + '/>' +
+    '<circle cx="' + (W - 46) + '" cy="' + y + '" r="13" fill="var(--accent2)" opacity="' + glow.toFixed(3) + '"' +
+      (bad ? ' class="flick" style="--glowop:' + glow.toFixed(3) + '"' : '') + '/>' +
+    '<circle cx="' + (W - 46) + '" cy="' + y + '" r="13" fill="none" stroke="var(--dim)" stroke-width="1.5"/>' +
+    '<text x="' + (W - 46) + '" y="' + (y + 44) + '" class="val" text-anchor="middle" fill="' + cableCol + '">' + r.voltsAtLoad + ' V</text>' +
+    '<text x="' + ((W - 78 + 54) / 2) + '" y="' + (y - 14) + '" class="lbl" text-anchor="middle">' +
+      $("#vd-l").value + ' m · ' + $("#vd-a").value + ' mm² · ' + $("#vd-i").value + ' A</text>' +
+    '<text x="' + ((W - 78 + 54) / 2) + '" y="' + (y + 26) + '" class="val" text-anchor="middle" fill="' + cableCol + '">−' + r.dropVolts + ' V (' + r.dropPercent + '%)</text>' +
+    '</svg>';
+}
+for (const id of ["#vd-i", "#vd-l", "#vd-a", "#vd-v", "#vd-ph", "#vd-m"]) $(id).addEventListener("input", vdRender);
+
+// ---- Three-phase balance ----
+function phRender() {
+  const r = phaseBalance($("#ph-1").value, $("#ph-2").value, $("#ph-3").value);
+  if (!r) { $("#ph-out").innerHTML = '<span class="err">Three leg currents, zero or more.</span>'; $("#ph-bars").innerHTML = ""; return; }
+  const hot = r.imbalancePercent > 20;
+  $("#ph-out").innerHTML = 'Neutral carrying <b>' + r.neutralAmps + ' A</b> · ' +
+    (hot ? '<span class="err">' : '<span class="ok">') + r.imbalancePercent + '% imbalance</span> · ' +
+    'size the distro on <b>' + r.worstLeg + ' at ' + r.maxAmps + ' A</b>, not on the average of ' + r.meanAmps + ' A';
+  const legs = [["L1", r.maxAmps === Number($("#ph-1").value)], ["L2", false], ["L3", false]];
+  const vals = [Number($("#ph-1").value), Number($("#ph-2").value), Number($("#ph-3").value)];
+  const top = Math.max(1, r.maxAmps, r.neutralAmps);
+  let html = "";
+  vals.forEach((v, i) => {
+    const isMax = v === r.maxAmps;
+    html += '<div class="leg' + (isMax && hot ? " hot" : "") + '"><b>' + v + 'A</b>' +
+      '<i style="height:' + Math.max(2, (v / top) * 82) + '%"></i>' + legs[i][0] + '</div>';
+  });
+  html += '<div class="leg neutral"><b>' + r.neutralAmps + 'A</b><i style="height:' +
+    Math.max(2, (r.neutralAmps / top) * 82) + '%"></i>N</div>';
+  $("#ph-bars").innerHTML = html;
+}
+for (const id of ["#ph-1", "#ph-2", "#ph-3"]) $(id).addEventListener("input", phRender);
+
+// ---- Noise dose ----
+// Drawn as the show day: a bar of permitted time with the actual exposure
+// laid over it, so running past the end of the allowance is something you
+// see rather than a percentage you have to interpret.
+function nsRender() {
+  const parts = $("#ns-r").value.split("|");
+  const r = noiseDose($("#ns-l").value, $("#ns-h").value, Number(parts[0]), Number(parts[1]), Number(parts[2]));
+  if (!r) { $("#ns-out").innerHTML = '<span class="err">Level in dB, exposure in hours.</span>'; $("#ns-viz").innerHTML = ""; return; }
+  const t = r.permittedMinutes < 90 ? r.permittedMinutes + ' min' : r.permittedHours + ' h';
+  $("#ns-out").innerHTML = 'Permitted at that level: <b>' + t + '</b> · you are at <b class="' +
+    (r.overExposed ? "err" : "") + '">' + r.dosePercent + '%</b> of the daily dose' +
+    (r.overExposed ? ' — <span class="err">over</span>' : '') +
+    (r.levelForDuration !== null ? ' · ' + $("#ns-h").value + ' h would need <b>' + r.levelForDuration + ' dB(A)</b>' : '');
+  nsDraw(r);
+}
+function nsDraw(r) {
+  const W = 460, H = 92, y = 34, barH = 26, x0 = 10, x1 = W - 10;
+  const span = Math.max(r.permittedHours, Number($("#ns-h").value), 0.1);
+  const px = (h) => x0 + (Math.min(h, span) / span) * (x1 - x0);
+  const doseW = px(Number($("#ns-h").value)) - x0;
+  const okW = px(r.permittedHours) - x0;
+  const over = r.overExposed;
+  $("#ns-viz").innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Noise dose against permitted time">' +
+    '<rect x="' + x0 + '" y="' + y + '" width="' + (x1 - x0) + '" height="' + barH + '" rx="5" fill="var(--panel)" stroke="var(--line)"/>' +
+    '<rect x="' + x0 + '" y="' + y + '" width="' + okW + '" height="' + barH + '" rx="5" fill="var(--ok)" opacity="0.28"/>' +
+    '<rect x="' + x0 + '" y="' + (y + 5) + '" width="' + doseW + '" height="' + (barH - 10) + '" rx="3" fill="' +
+      (over ? "var(--warn)" : "var(--ok)") + '"' + (over ? ' class="pulse"' : '') + '/>' +
+    '<line x1="' + px(r.permittedHours) + '" y1="' + (y - 6) + '" x2="' + px(r.permittedHours) + '" y2="' + (y + barH + 6) + '" stroke="var(--accent2)" stroke-width="2"/>' +
+    '<text x="' + Math.min(W - 42, px(r.permittedHours)) + '" y="' + (y - 11) + '" class="lbl" text-anchor="middle">limit</text>' +
+    '<text x="' + x0 + '" y="' + (y + barH + 20) + '" class="lbl">0 h</text>' +
+    '<text x="' + x1 + '" y="' + (y + barH + 20) + '" class="lbl" text-anchor="end">' + (Math.round(span * 10) / 10) + ' h</text>' +
+    '<text x="' + (W / 2) + '" y="' + (y + barH + 20) + '" class="val" text-anchor="middle" fill="' +
+      (over ? "var(--warn)" : "var(--ok)") + '">' + r.dosePercent + '% of the daily dose</text>' +
+    '</svg>';
+}
+for (const id of ["#ns-l", "#ns-h", "#ns-r"]) $(id).addEventListener("input", nsRender);
+
+// ---- Third-order intermod ----
+function imRender() {
+  const freqs = parseList($("#im-f").value);
+  const r = intermod3(freqs, $("#im-g").value);
+  if (!r) { $("#im-out").innerHTML = '<span class="err">Give at least two frequencies in MHz.</span>'; $("#im-viz").innerHTML = ""; $("#im-list").innerHTML = ""; return; }
+  const n = r.clashes.length;
+  $("#im-out").innerHTML = freqs.length + ' carriers · <b>' + r.products.length + '</b> third-order products · ' +
+    (n ? '<span class="err"><b>' + n + '</b> landing on a channel in use</span>' : '<span class="ok">none landing on a channel in use</span>');
+  $("#im-list").innerHTML = r.products.map((p) =>
+    '<div class="' + (p.clashesWith !== null ? "clash" : "") + '">' + p.mhz.toFixed(3) + ' MHz · ' + p.order +
+    ' from ' + p.from.join(", ") + (p.clashesWith !== null ? ' → hits ' + p.clashesWith : '') + '</div>').join("");
+  imDraw(freqs, r);
+}
+function imDraw(freqs, r) {
+  const W = 460, H = 128, base = 84;
+  const all = freqs.concat(r.products.map((p) => p.mhz));
+  const lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+  const span = (hi - lo) || 1;
+  const px = (f) => 12 + ((f - lo) / span) * (W - 24);
+  const mark = (f, h, col, cls) => '<line x1="' + px(f) + '" y1="' + base + '" x2="' + px(f) + '" y2="' + (base - h) +
+    '" stroke="' + col + '" stroke-width="2.5" stroke-linecap="round"' + (cls ? ' class="' + cls + '"' : '') + '/>';
+  $("#im-viz").innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Spectrum with intermodulation products">' +
+    '<line x1="8" y1="' + base + '" x2="' + (W - 8) + '" y2="' + base + '" stroke="var(--line)" stroke-width="1.5"/>' +
+    r.products.map((p) => mark(p.mhz, p.clashesWith !== null ? 34 : 16,
+      p.clashesWith !== null ? "var(--warn)" : "var(--dimmer)", p.clashesWith !== null ? "pulse" : "")).join("") +
+    freqs.map((f) => mark(f, 58, "var(--accent)")).join("") +
+    '<rect x="12" y="' + (base - 62) + '" width="2" height="62" fill="var(--accent)" opacity="0.35" class="sweep" style="--sweep:' + (W - 26) + 'px"/>' +
+    '<text x="12" y="' + (base + 18) + '" class="lbl">' + lo.toFixed(1) + ' MHz</text>' +
+    '<text x="' + (W - 12) + '" y="' + (base + 18) + '" class="lbl" text-anchor="end">' + hi.toFixed(1) + ' MHz</text>' +
+    '<text x="' + (W / 2) + '" y="' + (H - 8) + '" class="lbl" text-anchor="middle">tall = yours · short = product · red = collision</text>' +
+    '</svg>';
+}
+$("#im-f").addEventListener("input", imRender);
+$("#im-g").addEventListener("input", imRender);
+
 dmxRender(false);
 dipRenderFromAddress();
 dbuvRender("dbu");
@@ -667,11 +986,16 @@ latRender();
 thRender();
 scrRender();
 relayRender();
+brRender(true);
+vdRender();
+phRender();
+nsRender();
+imRender();
 `
 
   return shell({
-    title: 'Field tools — DMX, delay, timecode, power, audio levels and speaker calculators | showstack',
-    description: 'The calculators technicians use daily: DMX address, DIP switches, speaker delay and mixed impedance, timecode, relay logic, dBu/dBV and SPL weighting reference, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, RF wavelength. Free, offline, tested arithmetic.',
+    title: 'Field tools — bridle angle, voltage drop, phase balance, noise dose, RF intermod, DMX, delay and timecode | showstack',
+    description: 'The calculators technicians use daily: bridle angle, voltage drop, three-phase balance, noise dose, RF intermod, DMX address, DIP switches, speaker delay and mixed impedance, timecode, relay logic, dBu/dBV and SPL weighting reference, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, RF wavelength. Free, offline, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
       '@context': 'https://schema.org',
@@ -683,7 +1007,7 @@ relayRender();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, relay logic truth table, dBu/dBV line-level converter, SPL weighting (dBA/dBZ) reference, impedance vs resistance reference, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, RF wavelength calculator',
+      featureList: 'bridle angle and leg tension explainer, cable voltage drop calculator, three-phase load balance and neutral current calculator, noise exposure dose calculator, third-order intermodulation checker, DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, relay logic truth table, dBu/dBV line-level converter, SPL weighting (dBA/dBZ) reference, impedance vs resistance reference, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, RF wavelength calculator',
     },
     body,
     extraStyle: style,

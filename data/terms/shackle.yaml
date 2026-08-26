@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: shackle
+en: Shackle
+zh_hant: 卸扣
+domain: rigging
+definition_en: The U-shaped steel connector, closed with a pin, that joins a sling or steel
+  to a hoist, a beam clamp or a truss. Rated by working load limit and stamped with it;
+  the pin type matters, since a screw pin can back out under a rotating load where a bolt-type
+  pin will not.
+definition_zh_hant: U 形鋼製連接件，以插銷閉合，用來把吊帶或鋼索連到葫蘆、樑夾或桁架上。以工作負載限值分級並打印在本體上。插銷型式很重要：螺旋插銷在負載轉動時可能鬆脫，螺栓型則不會。
+regional_variants:
+- region: UK / US
+  term: Shackle / bow shackle / D shackle
+- region: HK / TW
+  term: 卸扣 / U 型扣
+false_friends:
+- A hardware-store shackle that looks identical is not rated and is not traceable. Only
+  a marked, rated shackle from a known batch belongs above people.
+see_also:
+- safe-working-load
+- rigging-point
+safety_critical: true
+tags:
+- rigging
+- hardware
+- load
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

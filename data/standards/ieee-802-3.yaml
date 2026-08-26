@@ -1,0 +1,45 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-802-3
+designation: IEEE 802.3-2022
+title: IEEE Standard for Ethernet
+body: IEEE
+domain: networking
+year: 2022
+scope: 'The Ethernet standard itself: the MAC layer and every copper and fibre physical layer
+  from 10BASE-T to 400GBASE, plus the Power over Ethernet clauses that feed half the boxes
+  on a modern show network.'
+status: current
+free_to_read: true
+access_url:
+  url: https://standards.ieee.org/ieee/802.3/10422/
+  label: IEEE (free via the GET Program)
+jurisdiction:
+- International
+notes: Free to download through the IEEE GET Program, which opens the 802 family at no cost.
+  Everything else in this index that says "runs over Ethernet" - sACN, Art-Net, Dante, AES67,
+  ST 2110 - is standing on this document.
+confidence: verified
+tags:
+- ieee
+- ethernet
+- networking
+related_protocols:
+- sacn
+- art-net
+- dante
+- aes67
+- smpte-st-2110
+sources:
+- title: IEEE 802.3-2022 standard page
+  url: https://standards.ieee.org/ieee/802.3/10422/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+- title: IEEE GET Program (free access to 802 standards)
+  url: https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68
+  publisher: IEEE
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

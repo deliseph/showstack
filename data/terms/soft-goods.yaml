@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: soft-goods
+en: Soft goods
+zh_hant: 軟景／布幕類
+domain: scenic
+definition_en: 'Everything on the stage made of cloth: legs, borders, tabs, cyc, gauzes,
+  black-out drapes. Bought or hired by fullness and flame-retardant rating rather than by
+  dimensions alone.'
+definition_zh_hant: 舞台上所有布類的統稱：側幕、橫幕、大幕、天幕、紗幕、遮光幕。採購或租用時以打摺量與防焰等級為準，而非只看尺寸。
+regional_variants:
+- region: UK / US
+  term: Soft goods / softs
+- region: HK / TW
+  term: 軟景 / 布幕
+false_friends:
+- '"Inherently flame retardant" and "treated" are not the same certificate. Treated fabric
+  loses its rating after washing, and a venue asking for a flame certificate wants the current
+  one.'
+see_also:
+- legs
+- scrim
+- cyclorama
+tags:
+- scenic
+- drape
+- fire
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,36 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: smpte-st-292-1
+designation: SMPTE ST 292-1:2018
+title: 1.5 Gb/s Signal/Data Serial Interface
+body: SMPTE
+domain: video
+year: 2018
+scope: 'HD-SDI: the 1.485 Gb/s serial interface over 75 ohm coax that carries 1080i and 720p,
+  with its scrambling, embedded audio and ancillary data space.'
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/doc/st292-1/
+  label: SMPTE public access
+jurisdiction:
+- International
+notes: 'The reason "SDI" alone is not a spec: ST 292-1 is 1.5G, ST 424 is 3G, ST 2081 is 6G
+  and ST 2082 is 12G, and a cable run that is fine at 1.5G can fail entirely at 12G. Match
+  the rate, not just the connector.'
+confidence: reported
+tags:
+- smpte
+- sdi
+- video
+related_protocols:
+- sdi
+sources:
+- title: SMPTE ST 292-1 (public access)
+  url: https://pub.smpte.org/doc/st292-1/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

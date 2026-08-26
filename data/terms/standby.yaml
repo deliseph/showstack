@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: standby
+en: Standby
+zh_hant: 準備
+domain: stage-management
+definition_en: The warning the stage manager gives before a cue, so everyone taking it can
+  get their hand on the right control and answer. Convention is a standby, an acknowledgement
+  from each department, then GO on the action.
+definition_zh_hant: 舞台監督在指令之前給出的預備通知，讓所有要執行的人先把手放到正確的操作位置並回覆。慣例是先報 standby，各部門逐一回應，動作點上再喊
+  GO。
+regional_variants:
+- region: UK
+  term: Standby
+- region: US
+  term: Warning / standby / place
+- region: HK / TW
+  term: Standby / 準備
+false_friends:
+- A standby is not a cue. The number in a standby names the cue that is coming; taking it
+  on the standby is the classic way to fire a lighting state a bar early.
+see_also:
+- cue
+- call
+tags:
+- stage-management
+- cueing
+- headset
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

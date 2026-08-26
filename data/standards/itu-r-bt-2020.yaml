@@ -1,0 +1,36 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: itu-r-bt-2020
+designation: ITU-R BT.2020-2
+title: Parameter values for ultra-high definition television systems for production and international
+  programme exchange
+body: ITU-R
+domain: video
+year: 2015
+scope: 'The UHDTV parameter set: 4K and 8K raster sizes, frame rates, 10 and 12 bit depths,
+  and the wide colour gamut usually just called Rec. 2020.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.itu.int/rec/R-REC-BT.2020/en
+  label: ITU (free download)
+jurisdiction:
+- International
+notes: The Rec. 2020 gamut is wider than any display panel currently reaches, so real hardware
+  works inside it, usually to something near DCI-P3. "2020 container, P3 content" is the normal
+  state of affairs and is worth pinning down in a spec before a screen arrives.
+confidence: verified
+tags:
+- itu
+- colour
+- uhd
+- rec2020
+sources:
+- title: Recommendation ITU-R BT.2020
+  url: https://www.itu.int/rec/R-REC-BT.2020/en
+  publisher: ITU
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

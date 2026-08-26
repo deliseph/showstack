@@ -118,28 +118,54 @@ export const RFDATA = {
     },
     hk: {
       name: 'Hong Kong',
+      // The licence-exempt list is spot frequencies, not a continuous band.
+      // Drawing 33-47.5 MHz as one green block, as this row used to, tells a
+      // reader that 40 MHz is fine. It is not: it is simply not on the list.
       bands: [
-        { from: 33, to: 47.5, use: 'unlicensed', label: 'General-purpose mics, exempt (10-100 mW depending on segment)' },
-        { from: 174, to: 184, use: 'licensed', label: 'Corporate use via Private Mobile Radio System Licence, 20 mW' },
+        { from: 33.12, to: 33.16, use: 'unlicensed', label: 'Exempt spot frequency 33.14 MHz, 20 mW e.r.p.' },
+        { from: 36.38, to: 36.42, use: 'unlicensed', label: 'Exempt spot frequency 36.40 MHz, 20 mW e.r.p.' },
+        { from: 36.53, to: 36.57, use: 'unlicensed', label: 'Exempt spot frequency 36.55 MHz, 20 mW e.r.p.' },
+        { from: 36.68, to: 36.72, use: 'unlicensed', label: 'Exempt spot frequency 36.70 MHz, 20 mW e.r.p.' },
+        { from: 36.83, to: 36.87, use: 'unlicensed', label: 'Exempt spot frequency 36.85 MHz, 20 mW e.r.p.' },
+        { from: 36.96, to: 37.24, use: 'unlicensed', label: 'Exempt block carrying the 37.10 MHz mic frequency, 20 mW e.r.p.' },
+        { from: 42.87, to: 42.91, use: 'unlicensed', label: 'Exempt spot frequency 42.89 MHz, 20 mW e.r.p.' },
+        { from: 44.85, to: 44.89, use: 'unlicensed', label: 'Exempt spot frequency 44.87 MHz, 20 mW e.r.p.' },
+        { from: 174, to: 184, use: 'licensed', label: 'VHF, via a private radio system licence, 20 mW' },
       ],
-      gapNote: 'OFCA documents the exempt low bands and the 174/184 MHz licensed route; the band plan professional UHF systems run under in HK venues was not verifiable from public OFCA pages at research time. If you hold an OFCA assignment, cite it and open a PR.',
+      gapNote: 'This row lists only the licence-exempt spot frequencies, and they are NOT the whole picture. Hong Kong venues run professional UHF systems every night, type-approved to HKCA 1008 (low power radio microphones, 20 mW), and OFCA also assigns spectrum case by case under a private radio system licence (GN-5/2018). The UHF band plan those run under is published by OFCA in the Table of Frequency Allocations and in OFCA I 402, neither of which was reachable from this build environment, so it is deliberately not transcribed here rather than guessed. If you have the OFCA I 402 radio-microphone rows or an assignment letter in front of you, that is the PR that closes this.',
+      note: 'Broadcasting holds 614-806 MHz on a primary basis in Hong Kong, with 678-686 and 798-806 MHz co-primary with mobile, so UHF mic use is a white-space question, not a free-for-all: scan on site and work around what is on air.',
       sources: [
         { title: 'OFCA: wireless microphones (consumer guide)', url: 'https://www.ofca.gov.hk/en/consumer_focus/guide/help_for_consumers/information_on_radio_applications/wireless_microphones/index.html' },
+        { title: 'HKCA 1008: Performance Specification for Low Power Radio Microphones', url: 'https://www.ofca.gov.hk/filemanager/ofca/en/content_401/hkca1008.pdf' },
+        { title: 'OFCA I 402: Telecommunications (Telecommunications Apparatus) (Exemption from Licensing) Order', url: 'https://www.ofca.gov.hk/filemanager/ofca/common/Industry/telecom/standard/i402e.pdf' },
+        { title: 'Hong Kong Table of Frequency Allocations', url: 'https://www.ofca.gov.hk/filemanager/ofca/en/content_144/hk_freq_table_en.pdf' },
+        { title: 'GN-5/2018: Guidelines for application for private radio system licences', url: 'https://www.coms-auth.hk/filemanager/statement/en/upload/447/gn052018e.pdf' },
       ],
     },
     tw: {
       name: 'Taiwan',
-      bands: [],
-      gapNote: 'Wireless mics fall under the NCC 低功率射頻器材技術規範; the current band tables were not verifiable online at research time. Local crews: cite the current LP0002 revision and open a PR.',
+      bands: [
+        { from: 227.1, to: 227.4, use: 'unlicensed', label: 'LP0002 低功率無線麥克風 VHF segment' },
+        { from: 229.4, to: 230.0, use: 'unlicensed', label: 'LP0002 低功率無線麥克風 VHF segment' },
+        { from: 231.0, to: 231.9, use: 'unlicensed', label: 'LP0002 低功率無線麥克風 VHF segment' },
+        { from: 510, to: 530, use: 'unlicensed', label: 'LP0002 UHF segment - the one most rental stock is tuned to' },
+        { from: 748, to: 758, use: 'unlicensed', label: 'LP0002 UHF segment inside what most countries sold to mobile' },
+        { from: 803, to: 806, use: 'unlicensed', label: 'LP0002 UHF segment inside what most countries sold to mobile' },
+      ],
+      note: 'Occupied bandwidth is capped at 200 kHz below 1 GHz and 600 kHz above it, so a wideband system legal elsewhere can fail here on bandwidth alone. Note the 748-758 and 803-806 segments: Taiwan keeps mic allocations inside the 700/800 MHz range that the US, EU, Japan and Australia cleared for mobile, so a system bought for Taiwan is illegal in most of them, and vice versa. Check the current LP0002 revision before ordering: the band table has moved before.',
       sources: [
-        { title: 'NCC 低功率射頻器材技術規範 (LP0002)', url: 'https://www.ncc.gov.tw/chinese/news_detail.aspx?site_content_sn=8&is_history=1&pages=6&sn_f=32162' },
+        { title: 'NCC 低功率射頻器材技術規範 LP0002 (113.02.06 修訂)', url: 'https://www.ncc.gov.tw/chinese/files/24020/538_49880_240206_3.pdf' },
+        { title: 'LP0002 as published in the 行政院公報', url: 'https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg026132/ch06/type1/gov53/num22/images/Eg01.pdf' },
       ],
     },
     cn: {
       name: 'China (mainland)',
       bands: [],
-      gapNote: 'MIIT governs radio microphone allocations; no primary table could be verified at research time. This row is deliberately empty rather than guessed - if you can cite the current MIIT provisions, open a PR.',
-      sources: [],
+      gapNote: 'The governing document is MIIT Announcement 2019 No. 52 and its annex 《微功率短距离无线电发射设备目录和技术要求》, which lists the device categories that need no frequency licence, no station licence and no type approval, with a band and power limit for each. The radio-microphone rows of that annex were not retrievable from this build environment, so this row stays empty rather than guessed. Transcribing those rows, with the announcement cited, closes this gap.',
+      note: 'Whatever the annex allows, the spurious-emission limit of -54 dBm across 48.5-72.5, 76-108, 167-223, 470-566 and 606-798 MHz applies, which is what catches imported gear at type approval.',
+      sources: [
+        { title: '工业和信息化部公告 2019年第52号 (policy explainer, gov.cn)', url: 'https://www.gov.cn/zhengce/2019-11/28/content_5456762.htm' },
+      ],
     },
     sg: {
       name: 'Singapore',

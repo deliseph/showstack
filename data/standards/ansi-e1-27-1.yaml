@@ -1,0 +1,40 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-27-1
+designation: ANSI E1.27-1-2006 (R2016)
+title: Entertainment Technology - Standard for Portable Control Cables for Use with ANSI E1.11
+  (DMX512-A) and USITT DMX512/1990 Products
+body: ESTA
+domain: control-data
+year: 2006
+scope: 'What a portable DMX cable actually has to be: characteristic impedance, conductor
+  and shield construction, connector wiring, and the marking that distinguishes it from microphone
+  cable.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/docs/E1-27-1_2006R2016.pdf
+  label: ESTA TSP (free PDF)
+jurisdiction:
+- US
+- International
+notes: This is the standard that says, in writing, that a 3-pin mic cable is not a DMX cable.
+  It works on a short run at low load and then does not, usually on the longest run of the
+  rig in front of an audience. Free to read, so there is no excuse for the argument.
+confidence: verified
+tags:
+- esta
+- ansi
+- dmx
+- cable
+related_protocols:
+- dmx512
+sources:
+- title: ANSI E1.27-1-2006 (R2016) full text
+  url: https://tsp.esta.org/tsp/documents/docs/E1-27-1_2006R2016.pdf
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

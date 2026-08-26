@@ -1,0 +1,41 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: aes11
+designation: AES11-2009 (r2019)
+title: AES Recommended Practice for Digital Audio Engineering - Synchronization of digital
+  audio equipment in studio operations
+body: AES
+domain: audio
+year: 2009
+scope: 'Digital Audio Reference Signal (DARS): what a house sync signal for digital audio
+  looks like, how accurate it must be, and how equipment locks to it.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.aes.org/publications/standards/search.cfm?docID=18
+  label: AES Standards Store
+jurisdiction:
+- International
+notes: The document behind the word clock distribution amp in the bottom of the rack. In an
+  AES67 or Dante world the equivalent job is done by PTP, and mixing the two - some devices
+  on DARS, some on PTP, no defined relationship between them - is a reliable way to generate
+  clicks nobody can find.
+confidence: reported
+tags:
+- aes
+- clock
+- sync
+- word-clock
+related_protocols:
+- word-clock
+- aes67
+- ptp-1588
+sources:
+- title: AES11 standard listing
+  url: https://www.aes.org/publications/standards/search.cfm?docID=18
+  publisher: AES
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

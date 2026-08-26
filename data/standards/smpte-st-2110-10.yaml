@@ -1,0 +1,44 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: smpte-st-2110-10
+designation: SMPTE ST 2110-10:2022
+title: 'Professional Media Over Managed IP Networks: System Timing and Definitions'
+body: SMPTE
+domain: video
+year: 2022
+scope: 'The system layer of ST 2110: how the separate video, audio and ancillary essence streams
+  are carried in RTP, described in SDP, and locked to a common PTP reference so a receiver
+  can reassemble them in step.'
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/pub/st2110-10/st2110-10-2022.pdf
+  label: SMPTE public access (free PDF)
+jurisdiction:
+- International
+notes: 'SMPTE opened its standards library, so the ST 2110 documents are free to read. The
+  essence parts are separate: -20 uncompressed video, -30 PCM audio, -40 ancillary data. "We
+  support 2110" without saying which parts is not an answer.'
+confidence: verified
+tags:
+- smpte
+- st2110
+- video-over-ip
+- ptp
+related_protocols:
+- smpte-st-2110
+- ptp-1588
+- aes67
+sources:
+- title: SMPTE ST 2110-10:2022 (public PDF)
+  url: https://pub.smpte.org/pub/st2110-10/st2110-10-2022.pdf
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+- title: SMPTE ST 2110 standards suite overview
+  url: https://www.smpte.org/standards/st2110
+  publisher: SMPTE
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

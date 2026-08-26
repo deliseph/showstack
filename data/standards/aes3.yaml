@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: aes3
+designation: AES3-2009 (r2019)
+title: AES standard for digital audio - Digital input-output interfacing - Serial transmission
+  format for two-channel linearly represented digital audio data
+body: AES
+domain: audio
+year: 2009
+scope: 'AES/EBU: two channels of linear PCM on one balanced 110 ohm pair, self-clocking, with
+  status and user bits alongside the samples. The consumer S/PDIF interface is the same data
+  on different electricals.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.aes.org/publications/standards/search.cfm?docID=13
+  label: AES Standards Store
+jurisdiction:
+- International
+notes: An AES3 pair carries its own clock, so a device fed AES3 usually has to slave to it.
+  That is why the AES/EBU feed from a playback machine is so often the accidental clock master
+  of a rack that was supposed to follow word clock.
+confidence: reported
+tags:
+- aes
+- digital-audio
+- aes-ebu
+related_protocols:
+- madi
+- word-clock
+sources:
+- title: AES3 standard listing
+  url: https://www.aes.org/publications/standards/search.cfm?docID=13
+  publisher: AES
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

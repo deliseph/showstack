@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: technical-rider
+en: Technical rider
+zh_hant: 技術需求書
+domain: production-management
+definition_en: 'The document an act sends ahead listing what the venue must provide: PA,
+  monitors, lighting, power, stage size, rigging points, crew calls, and the input list.
+  Contractually attached to the deal, so its contents are negotiable before signature and
+  expensive afterwards.'
+definition_zh_hant: 演出方事先送出、列明場館必須提供項目的文件：PA、監聽、燈光、電力、舞台尺寸、吊點、工作人員需求與輸入表。它是合約的附件，簽約前可談，簽約後改動代價很高。
+regional_variants:
+- region: UK / US
+  term: Tech rider / technical rider
+- region: HK / TW
+  term: 技術需求書 / Rider
+false_friends:
+- The hospitality rider and the technical rider are separate documents with separate approvers.
+  Sending the tech rider to catering, or the other way round, delays both.
+see_also:
+- load-in
+- plot
+tags:
+- production
+- contract
+- paperwork
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

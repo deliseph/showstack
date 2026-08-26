@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: gb-36726
+designation: GB 36726-2018
+title: Mechanical equipment on stages - Fire curtain (舞台机械 刚性防火隔离幕)
+body: SAMR / SAC
+domain: machinery
+year: 2018
+scope: 'Mandatory Chinese national standard for the rigid proscenium fire curtain: design
+  principles, main components, material combustion performance, operating methods, key performance
+  parameters, and provisions for acceptance testing, operation and maintenance.'
+status: current
+free_to_read: false
+access_url:
+  url: https://std.samr.gov.cn/gb/search/gbDetailed?id=7643B2F2502C267CE05397BE0A0AAF6A
+  label: 全国标准信息公共服务平台
+jurisdiction:
+- CN
+notes: 'Mandatory, not advisory: GB without the /T prefix is a compulsory standard. Applies
+  to vertical-winch, monolithic rigid curtains at the proscenium of new, rebuilt and extended
+  theatres, and to modifications of existing ones. Proposed by the Ministry of Culture and
+  Tourism, drafted with the China Performing Arts Equipment Technology Association and the
+  Tianjin Fire Research Institute.'
+confidence: reported
+tags:
+- gb
+- china
+- fire-curtain
+- stage-machinery
+- mandatory
+sources:
+- title: GB 36726-2018 record, 全国标准信息公共服务平台
+  url: https://std.samr.gov.cn/gb/search/gbDetailed?id=7643B2F2502C267CE05397BE0A0AAF6A
+  publisher: SAMR
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: shock-load
+en: Shock load
+zh_hant: 衝擊負載
+domain: rigging
+definition_en: 'A sudden change in the velocity of a suspended load, which produces a force
+  far greater than its static weight. A hoist snatching up slack, a scenic piece dropping
+  onto its dead, a person falling into a lanyard: all of them briefly load the system many
+  times harder than the mass alone would suggest.'
+definition_zh_hant: 懸吊負載速度突然改變所產生的力，遠大於其靜態重量。葫蘆猛然吃緊、景片落到定位、人員墜落被安全繩拉住，這些瞬間對系統的負載都遠高於質量本身所暗示的數字。
+regional_variants:
+- region: UK / US
+  term: Shock load
+- region: HK / TW
+  term: 衝擊負載
+false_friends:
+- Design factors on rigging hardware cover normal use, not shock. "It is rated to five times
+  the load" is not permission to drop things onto it.
+see_also:
+- safe-working-load
+- bridle
+safety_critical: true
+tags:
+- rigging
+- load
+- safety
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

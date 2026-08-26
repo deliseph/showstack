@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: deadman
+en: Deadman / hold-to-run
+zh_hant: 持壓運轉開關
+domain: automation
+definition_en: A control that only allows motion while an operator is actively holding it,
+  so releasing it, or gripping it in panic, stops the move. Standard on stage automation,
+  hoist controllers and anything that moves scenery with people nearby.
+definition_zh_hant: 只有在操作者持續按住時才允許動作的控制器；放手或驚慌之下用力握死，動作即停止。舞台自動化、電動葫蘆控制器，以及任何在人員附近移動景物的設備都以此為標準配備。
+regional_variants:
+- region: UK
+  term: Deadman / hold-to-run
+- region: US
+  term: Deadman switch / enable
+- region: HK / TW
+  term: 持壓開關 / 安全開關
+false_friends:
+- 'A three-position enabling device is not the same as a simple hold-to-run button: it stops
+  both when released AND when squeezed fully, which is the behaviour that matters when someone
+  is startled.'
+see_also:
+- e-stop
+safety_critical: true
+tags:
+- automation
+- safety
+- control
+confidence: reported
+sources:
+- title: ISO 13849-1 safety-related parts of control systems
+  url: https://www.iso.org/standard/69883.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,43 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: cns-62471-7
+designation: CNS 62471-7
+title: 'Photobiological safety of lamps and lamp systems - Part 7: Light sources and luminaires
+  primarily emitting visible radiation (光源及光源系統之光生物安全性－第7部：主要發射可見光輻射之光源及燈具)'
+body: BSMI (經濟部標準檢驗局)
+domain: electrical
+year: 2021
+scope: 'The Taiwanese adoption of IEC/TR 62471-7: how to assess the photobiological risk -
+  blue light, thermal and retinal hazards - of lamps and luminaires whose output is mainly
+  visible light.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.cnsonline.com.tw/
+  label: 國家標準(CNS)網路服務系統 (free viewing, registration)
+jurisdiction:
+- TW
+notes: Taiwan's CNS standards are viewable free through 標準檢驗局's CNSonline service. Relevant
+  to high-output LED and laser-phosphor fixtures pointed at performers and audience, and the
+  companion to IEC 62471-5 for image projectors. CNS numbers that mirror an IEC number are
+  normally identical adoptions, but the edition can lag.
+confidence: reported
+tags:
+- cns
+- taiwan
+- photobiological
+- led
+- safety
+sources:
+- title: 國家標準(CNS)網路服務系統
+  url: https://www.cnsonline.com.tw/
+  publisher: 經濟部標準檢驗局
+  accessed: '2026-08-26'
+  primary: true
+- title: 經濟部標準檢驗局 中華民國國家標準分類目錄
+  url: https://www.bsmi.gov.tw/wSite/lp?ctNode=9334&CtUnit=2422&BaseDSD=7&mp=1
+  publisher: BSMI
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

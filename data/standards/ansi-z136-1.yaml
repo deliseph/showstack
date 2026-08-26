@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-z136-1
+designation: ANSI Z136.1-2022
+title: American National Standard for Safe Use of Lasers
+body: ANSI / LIA
+domain: laser
+year: 2022
+scope: 'The US laser safety framework: maximum permissible exposure, nominal hazard zone calculation,
+  control measures by laser class, and the Laser Safety Officer role. Z136.1 is the parent
+  document of the Z136 series.'
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.ansi.org/standards/lia/ansiz13612022
+  label: ANSI Webstore (purchase)
+jurisdiction:
+- US
+notes: IEC 60825-1 classifies the product; Z136.1 governs how you may operate it and who is
+  responsible. A US show laser also has to satisfy the FDA/CDRH requirements in 21 CFR 1040
+  and, for audience scanning, a variance. Three separate hurdles, commonly confused for one.
+confidence: reported
+tags:
+- ansi
+- laser
+- lso
+- safety
+- us
+sources:
+- title: ANSI Z136.1-2022 listing
+  url: https://webstore.ansi.org/standards/lia/ansiz13612022
+  publisher: ANSI
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

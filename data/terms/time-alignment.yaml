@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: time-alignment
+en: Time alignment
+zh_hant: 時間對齊
+domain: audio
+definition_en: Delaying the earlier-arriving loudspeaker so that sound from two sources
+  reaches the listener together. Applies between subs and tops, between main hangs and fills,
+  and between the stage and a delay tower.
+definition_zh_hant: 對較早到達的音箱加上延遲，使兩個音源的聲音同時抵達聽眾。適用於超低音與中高音之間、主音箱與補聲之間，以及舞台與延遲塔之間。
+regional_variants:
+- region: UK / US
+  term: Time alignment / alignment
+- region: HK / TW
+  term: 時間對齊 / 對時
+false_friends:
+- Aligning at one seat misaligns at another. Alignment is a compromise across the coverage
+  area, which is why the measurement position is a decision, not a convenience.
+see_also:
+- delay-tower
+- crossover
+tags:
+- audio
+- delay
+- system-tuning
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

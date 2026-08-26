@@ -3,6 +3,7 @@
 
 id: skew
 en: Skew
+zh_hant: 時間偏差
 domain: networking
 definition_en: >-
   The gap in arrival time between signals that are supposed to land
@@ -11,6 +12,8 @@ definition_en: >-
   at high clock rates that drift corrupts the word being read. It is one
   of the main reasons almost everything fast today — USB, SATA, PCIe,
   Ethernet — went serial instead of parallel.
+definition_zh_hant: >-
+  本應同時到達的訊號之間的到達時間差。在多對纜線、多路影像或多台機器同步時都會出現。
 false_friends:
 - >-
   On analogue videotape decks, "skew" is a tension control fixing the top

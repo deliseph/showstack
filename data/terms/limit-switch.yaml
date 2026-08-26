@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: limit-switch
+en: Limit switch
+zh_hant: 限位開關
+domain: automation
+definition_en: 'A sensor that tells an automation controller a moving axis has reached the
+  end of its travel. Usually two layers: soft limits set in software for normal operation,
+  and hard limits wired into the safety circuit for when the software is wrong.'
+definition_zh_hant: 告訴自動化控制器某一運動軸已到達行程末端的感測器。通常分兩層：軟體中設定、供正常運作使用的軟限位，以及接入安全迴路、在軟體出錯時作用的硬限位。
+regional_variants:
+- region: UK / US
+  term: Limit switch
+- region: HK / TW
+  term: 限位開關 / 極限開關
+false_friends:
+- A soft limit is a setting and can be edited or lost with a show file. A hard limit is
+  wiring. If a rig has only soft limits, it has no protection against the file being wrong.
+see_also:
+- e-stop
+- deadman
+safety_critical: true
+tags:
+- automation
+- control
+- safety
+confidence: reported
+sources:
+- title: ANSI E1.43 Performer Flying Systems
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

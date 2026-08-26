@@ -1,0 +1,42 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-1588
+designation: IEEE 1588-2019
+title: IEEE Standard for a Precision Clock Synchronization Protocol for Networked Measurement
+  and Control Systems
+body: IEEE
+domain: networking
+year: 2019
+scope: 'PTP version 2.1: the master/slave clock election, the sync and delay-request message
+  exchange, and the profile mechanism that AES67, ST 2059 and AVB each specialise. This is
+  how packets on a show network agree what time it is to sub-microsecond accuracy.'
+status: current
+free_to_read: false
+access_url:
+  url: https://standards.ieee.org/ieee/1588/6825/
+  label: IEEE (purchase)
+jurisdiction:
+- International
+notes: 'Almost nobody deploys bare 1588. You deploy a profile of it: AES67 media profile,
+  SMPTE ST 2059-2, or gPTP (802.1AS). Two devices can both be "PTPv2" and never lock because
+  they are on different profiles or different domain numbers.'
+confidence: verified
+tags:
+- ieee
+- ptp
+- clock
+- sync
+related_protocols:
+- ptp-1588
+- aes67
+- smpte-st-2110
+- dante
+sources:
+- title: IEEE 1588-2019 standard page
+  url: https://standards.ieee.org/ieee/1588/6825/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

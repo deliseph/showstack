@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: e-stop
+en: E-stop / emergency stop
+zh_hant: 緊急停止
+domain: automation
+definition_en: 'The mushroom-head button that removes motive power from an automation system
+  immediately. It is a category of safety function with a defined behaviour, not just a
+  big red switch: it must be hardwired, must not rely on the software that might be the
+  thing failing, and must be reachable from wherever a person could be hurt.'
+definition_zh_hant: 按下即切斷自動化系統動力的蕈狀頭按鈕。它是一種有明確行為定義的安全功能，不只是一顆紅色大按鈕：必須為硬體佈線、不得依賴可能正在故障的軟體，且在任何可能造成人員傷害的位置都必須伸手可及。
+regional_variants:
+- region: UK / US
+  term: E-stop / emergency stop
+- region: HK / TW
+  term: 緊急停止 / 急停
+false_friends:
+- An e-stop is not a pause and not a hold. It drops power, which on some machines means
+  a controlled brake and on others means the load stops where friction leaves it. Know which
+  before you need it.
+see_also:
+- deadman
+- lockout-tagout
+safety_critical: true
+tags:
+- automation
+- safety
+- control
+confidence: reported
+sources:
+- title: ISO 13850 / machinery emergency stop principles
+  url: https://www.iso.org/standard/59970.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -3,11 +3,14 @@
 
 id: deck
 en: Deck / the deck
+zh_hant: 舞台面／台板
 domain: scenic
 definition_en: >-
   The stage floor. Crews say "clear the deck," "walk the deck" before a
   tech to check for trip hazards, and "deck crew" for whoever works at
   floor level during the show. A raked deck is a sloped one.
+definition_zh_hant: >-
+  舞台地板。「clear the deck」即淨空舞台面。台灣亦稱「台板」，香港常說「台面」。
 false_friends:
 - >-
   In audio and video, a "deck" is a playback or recording transport — a

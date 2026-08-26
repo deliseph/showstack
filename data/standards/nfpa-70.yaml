@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: nfpa-70
+designation: NFPA 70 (National Electrical Code)
+title: 'NFPA 70: National Electrical Code'
+body: NFPA
+domain: electrical
+year: 2023
+scope: The US electrical installation code. Article 520 covers theatres, motion picture and
+  television studios and similar locations; Article 530 covers motion picture and television
+  studios; Article 525 covers carnivals, circuses, fairs and similar events.
+status: current
+free_to_read: true
+access_url:
+  url: https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70
+  label: NFPA (free read-only access after registration)
+jurisdiction:
+- US
+notes: NFPA publishes its codes for free reading online. Articles 520, 525 and 530 are the
+  ones that decide whether a US venue power tie-in, a company switch or a festival distro
+  is acceptable, and UL 1573 luminaires are listed against Article 520.
+confidence: reported
+tags:
+- nfpa
+- nec
+- us
+- electrical
+- article-520
+sources:
+- title: NFPA 70 code page
+  url: https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70
+  publisher: NFPA
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

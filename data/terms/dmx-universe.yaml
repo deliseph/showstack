@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dmx-universe
+en: Universe
+zh_hant: 一條 DMX 線路 (universe)
+domain: lighting
+definition_en: 'One complete DMX512 stream of 512 channels. Everything about rig capacity
+  is counted in universes: a console outputs so many, a node converts so many, a fixture
+  in its largest personality eats a chunk of one.'
+definition_zh_hant: 一組完整的 DMX512 訊號，含 512 個通道。燈光系統的容量都以 universe 計算：控台輸出幾條、節點轉換幾條、燈具在最大模式下吃掉其中多少通道。
+regional_variants:
+- region: UK / US
+  term: Universe
+- region: HK / TW
+  term: Universe / 宇宙 / 線路
+false_friends:
+- An sACN universe number and an Art-Net universe are not the same field. Art-Net splits
+  a 15-bit port-address into Net, Sub-Net and Universe, so "universe 5" can mean two different
+  wires.
+see_also:
+- patch
+related_protocols:
+- dmx512
+- sacn
+- art-net
+tags:
+- lighting
+- dmx
+- addressing
+sources:
+- title: ANSI E1.31 (sACN)
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

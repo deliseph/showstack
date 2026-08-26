@@ -3,6 +3,7 @@
 
 id: winch
 en: Winch
+zh_hant: 捲揚機
 domain: automation
 definition_en: >-
   A powered drum that spools wire rope to pull a load, mounted so the rope
@@ -12,6 +13,8 @@ definition_en: >-
   a winch is a different machine from a hoist: it pulls rather than holds
   a suspended load on a locking brake, and a capstan winch is explicitly
   excluded from that standard's scope.
+definition_zh_hant: >-
+  以捲筒收放鋼索拉動負載的動力設備。與電動葫蘆不同，捲揚機的鋼索纏在捲筒上，可做水平或斜向牽引。
 false_friends:
 - >-
   Do not assume a "winch" on a rig plot is rated like a point hoist. ANSI

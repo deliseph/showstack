@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: colour-temperature
+en: Colour temperature (CCT)
+zh_hant: 色溫
+domain: lighting
+definition_en: 'The apparent warmth or coolness of white light, in kelvin: tungsten around
+  3200 K, daylight around 5600 K. Correlated colour temperature says where a source sits
+  on that scale, but says nothing about how well it renders colour.'
+definition_zh_hant: 白光偏暖或偏冷的表觀程度，單位為 K：鎢絲燈約 3200 K，日光約 5600 K。相關色溫只說明光源落在這條刻度的哪個位置，完全不描述其演色能力。
+regional_variants:
+- region: UK / US
+  term: Colour temperature / CCT
+- region: HK / TW
+  term: 色溫
+false_friends:
+- Two fixtures at the same CCT can render skin completely differently. CCT is one axis;
+  colour rendering (CRI, or better, TM-30 Rf and Rg) is another, and camera work cares about
+  both.
+see_also:
+- gel
+tags:
+- lighting
+- colour
+- camera
+sources:
+- title: ITU-R BT.709 parameter values
+  url: https://www.itu.int/rec/R-REC-BT.709/en
+  publisher: ITU
+  accessed: '2026-08-26'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

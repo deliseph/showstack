@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-60118-4
+designation: IEC 60118-4:2014+AMD1:2017
+title: 'Electroacoustics - Hearing aids - Part 4: Induction-loop systems for hearing aid purposes
+  - System performance requirements'
+body: IEC
+domain: accessibility
+year: 2017
+scope: 'The performance standard for audio frequency induction loop systems (hearing loops):
+  field strength, frequency response, background noise and overspill, plus how the installed
+  system is verified.'
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/23252
+  label: IEC Webstore (purchase)
+jurisdiction:
+- International
+notes: 'A loop that is installed but not commissioned to this standard is the normal failure:
+  the T-coil symbol on the door and nothing usable in the back third of the room. Ask for
+  the field-strength measurement report, not the installation invoice.'
+confidence: reported
+tags:
+- iec
+- hearing-loop
+- accessibility
+- assistive-listening
+sources:
+- title: IEC 60118-4:2014 publication page
+  url: https://webstore.iec.ch/en/publication/23252
+  publisher: IEC
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

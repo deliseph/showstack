@@ -1,0 +1,42 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: multicast
+en: Multicast
+zh_hant: 多播
+domain: networking
+definition_en: Sending one copy of a stream to a group address that many receivers can subscribe
+  to, instead of one copy per receiver. How sACN, Dante, AES67 and ST 2110 scale past a
+  handful of devices.
+definition_zh_hant: 把一份串流送到群組位址，由多個接收端訂閱，而不是為每個接收端各送一份。sACN、Dante、AES67 與 ST 2110 能擴展到大量設備，靠的就是這個機制。
+regional_variants:
+- region: UK / US
+  term: Multicast
+- region: HK
+  term: 多播 / Multicast
+- region: TW
+  term: 群播
+false_friends:
+- Without IGMP snooping a switch treats multicast as broadcast and floods every port. That
+  is why a small DMX-over-IP network works fine and a big one falls over on the same gear.
+see_also:
+- vlan
+- qos
+related_protocols:
+- sacn
+- dante
+- aes67
+- smpte-st-2110
+tags:
+- networking
+- multicast
+- igmp
+sources:
+- title: ANSI E1.31 (sACN) multicast addressing
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

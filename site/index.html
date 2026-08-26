@@ -56,25 +56,48 @@
   a:hover{text-decoration:underline}
   .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
-  header{border-bottom:1px solid var(--line);padding:26px 0 20px;position:sticky;top:0;z-index:20;
+  /* The header is sticky and it is the first thing a phone sees, so its
+     collapsed height is a design constraint, not an afterthought. Desktop
+     keeps the roomy version; below 860px it becomes: one identity row, one
+     sideways-scrolling nav rail, the search field, one sideways-scrolling
+     tab rail — and the first two hide themselves once you scroll, leaving a
+     ~96px bar instead of the half-screen block this used to be. */
+  header{border-bottom:1px solid var(--line);padding:22px 0 16px;position:sticky;top:0;z-index:20;
     background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
     background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
-  .brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-  .brand h1{font-family:var(--mono);font-size:22px;margin:0;letter-spacing:-.5px}
-  .brand h1 span{color:var(--accent)}
-  .brand p{margin:0;color:var(--dim);font-size:13.5px}
-  .navwrap{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .pagenav{display:flex;gap:4px;flex-wrap:wrap}
-  .pagenav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:7px 12px;border-radius:18px;
-    border:1px solid transparent;display:inline-flex;align-items:center;line-height:1}
+  header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+  /* Brand over tagline rather than beside it. Side by side, the two of them
+     are ~440px of the row, which is what pushed the nav and the GitHub link
+     onto a second and third line on a laptop. Stacked they are ~200px and
+     everything fits on one row down to about 900px. */
+  .hbar{display:flex;flex-direction:column;align-items:flex-start;gap:1px;flex:0 0 auto;min-width:0}
+  .hbar h1{font-family:var(--mono);font-size:22px;margin:0;letter-spacing:-.5px;white-space:nowrap}
+  .hbar h1 span{color:var(--accent)}
+  .tagline{margin:0;color:var(--dim);font-size:13px;white-space:nowrap}
+  .hbar .themebtn{margin-left:4px}
+  .navwrap{display:flex;align-items:center;gap:8px;flex:0 0 auto;order:3;margin-left:auto}
+  /* Sideways-scrolling rail: nothing wraps, and the mask tells the reader
+     there is more content past the right edge. */
+  .rail{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap!important;scrollbar-width:none;min-width:0;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+  .rail::-webkit-scrollbar{display:none}
+  .rail>*{scroll-snap-align:start;flex:0 0 auto}
+  .pagenav{display:flex;gap:2px;align-items:center;flex:1 1 0;min-width:0;justify-content:flex-start;order:2}
+  .pagenav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:8px 10px;border-radius:18px;
+    border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;white-space:nowrap}
   .pagenav a:hover{color:var(--ink);background:var(--panel);border-color:var(--line);text-decoration:none}
   .pagenav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
     border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
-  .pagenav .navgroup{display:inline-flex;gap:4px;padding-left:8px;margin-left:2px;border-left:1px solid var(--line)}
-  @media(max-width:640px){.pagenav .navgroup{border-left:none;padding-left:0;margin-left:0}}
-  .ghlink{font-family:var(--mono);font-size:12.5px;color:var(--dim);border:1px solid var(--line);padding:5px 10px;border-radius:6px}
+  .pagenav .navgroup{display:flex;gap:2px;padding-left:7px;margin-left:3px;border-left:1px solid var(--line)}
+  .ghlink{font-family:var(--mono);font-size:12.5px;color:var(--dim);border:1px solid var(--line);padding:6px 10px;border-radius:999px;white-space:nowrap}
   .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
+  /* Below ~1100px the nav rail starts to overflow, so fade its right edge to
+     say so. Above that it fits and a permanent fade would just look broken. */
+  @media(max-width:1100px){
+    .pagenav{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  }
 
   .quicktools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 4px}
   .quicktools .qlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--dimmer)}
@@ -84,19 +107,66 @@
   .quicktools a:hover{border-color:var(--accent);color:var(--accent);text-decoration:none;transform:translateY(-1px)}
   .quicktools a{transition:transform .12s,border-color .12s,color .12s}
   .quicktools a.more{color:var(--accent);border-style:dashed}
-  .searchrow{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .searchrow{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;flex:1 0 100%;min-width:0;order:4}
   #q{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);color:var(--ink);
      font-family:var(--mono);font-size:14px;padding:11px 13px;border-radius:8px;outline:none}
   #q:focus{border-color:var(--accent)}
   #q::placeholder{color:var(--dimmer)}
-  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .tab{background:var(--panel);border:1px solid var(--line);color:var(--dim);font-family:var(--mono);
        font-size:12px;padding:8px 11px;border-radius:8px;cursor:pointer}
   .tab[aria-selected="true"]{background:var(--panel2);color:var(--ink);border-color:var(--accent)}
   .tab b{color:var(--dimmer);font-weight:400;margin-left:5px}
 
-  .stats{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dimmer);margin-top:14px}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dimmer);margin:0 0 18px}
   .stats b{color:var(--ink);font-weight:600}
+
+  /* --- phone layout ----------------------------------------------------- */
+  @media(max-width:860px){
+    header{padding:10px 0 8px}
+    .tagline{display:none}
+    .hbar{flex-direction:row;align-items:center;gap:10px}
+    .navwrap{margin-left:auto;order:2}
+    .pagenav{flex:1 0 100%;order:3;
+      -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+    .pagenav .navgroup{border-left:none;padding-left:0;margin-left:0}
+    .searchrow{margin-top:10px;gap:8px}
+    #q{width:100%;flex:1 0 100%;min-width:0;font-size:16px}
+    .tabs{flex:1 0 100%;min-width:0;
+      -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent)}
+    .tab{min-height:38px}
+    /* Once you are reading results, the identity row and the nav rail have
+       done their job. Collapsing them keeps the sticky bar to the search
+       field and the category tabs; scrolling back to the top restores them. */
+    html[data-scrolled] .hbar,
+    html[data-scrolled] .navwrap,
+    html[data-scrolled] .pagenav{display:none}
+    html[data-scrolled] .searchrow{margin-top:0}
+    main{padding-top:16px}
+    /* Both of these are one-line rails on a phone: a wrapped chip cloud
+       costs four rows of screen to say what one scrollable row says. */
+    .stats{gap:4px 16px;font-size:11px;margin-bottom:12px;flex-wrap:nowrap;overflow-x:auto;
+      scrollbar-width:none;white-space:nowrap;
+      -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent)}
+    .stats::-webkit-scrollbar{display:none}
+    .stats span{flex:0 0 auto}
+    .quicktools{margin:4px 0 14px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+      -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+    .quicktools::-webkit-scrollbar{display:none}
+    .quicktools a,.quicktools .qlabel{flex:0 0 auto}
+    .cta{padding:13px 15px}
+    .cta h2{font-size:14.5px}
+    .cta p{font-size:13px}
+  }
+  @media(max-width:520px){
+    .card{padding:13px 14px 13px 12px}
+    .card h3{font-size:15px}
+    footer{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+  }
 
   main{padding:26px 0 90px;background:radial-gradient(640px 240px at 50% -80px,var(--glow),transparent)}
   .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
@@ -134,6 +204,7 @@
   .detail h4:first-child{margin-top:0}
   .detail ul{margin:0;padding-left:18px;color:var(--dim)}
   .detail li{margin-bottom:5px}
+  .detail table{display:block;overflow-x:auto;max-width:100%}
   table{width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono)}
   th{text-align:left;color:var(--dimmer);font-weight:500;padding:5px 8px 5px 0;border-bottom:1px solid var(--line)}
   td{padding:5px 8px 5px 0;border-bottom:1px solid var(--line);color:var(--dim)}
@@ -154,25 +225,25 @@
 <body>
 <header>
   <div class="wrap">
-    <div class="brand">
+    <div class="hbar">
       <h1>show<span>stack</span></h1>
-      <p>the open index of live entertainment technology</p>
-      <div class="navwrap">
-        <nav class="pagenav" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
-        <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
-        <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
-      </div>
+      <p class="tagline">the open index of live entertainment technology</p>
     </div>
+    <div class="navwrap">
+      <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
+      <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
+    </div>
+    <nav class="pagenav rail" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
     <div class="searchrow">
-      <input id="q" placeholder="search protocols, ports, software, standards, 中文術語…  try: 5568, psn, 吊桿, safety curtain" autocomplete="off" spellcheck="false">
-      <div class="tabs" id="tabs"></div>
+      <input id="q" placeholder="search: 5568, psn, 吊桿, safety curtain…" autocomplete="off" spellcheck="false">
+      <div class="tabs rail" id="tabs" role="tablist"></div>
     </div>
-    <div class="stats" id="stats"></div>
   </div>
 </header>
 
 <main>
   <div class="wrap">
+    <div class="stats" id="stats"></div>
     <div class="quicktools" aria-label="Field tools">
       <span class="qlabel">Field tools</span>
       <a href="/tools/#dmx">DMX address</a>
@@ -187,6 +258,11 @@
       <a href="/rf/">RF map</a>
       <a href="/tools/#throw">Throw ratio</a>
       <a href="/tools/#relay">Relay logic</a>
+      <a href="/tools/#bridle">Bridle angle</a>
+      <a href="/tools/#vdrop">Voltage drop</a>
+      <a href="/tools/#phase">Phase balance</a>
+      <a href="/tools/#dose">Noise dose</a>
+      <a href="/tools/#im">RF intermod</a>
       <a class="more" href="/tools/">All tools →</a>
     </div>
     <div class="cta">
@@ -377,10 +453,36 @@ function boot(){
     <span>built ${DATA.generated}</span>`;
   $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
   $("#q").addEventListener("input", render);
+  compactOnScroll();
   window.addEventListener("keydown", e => { if (e.key === "/" && document.activeElement !== $("#q")){ e.preventDefault(); $("#q").focus() } });
   render();
 }
 boot();
+
+/* The sticky header carries the search field, the tabs, the nav and the
+   identity row. All four are worth having when you arrive; only the first two
+   are worth 96px of a phone screen while you are reading results. Past 120px
+   of scroll the top two rows collapse (CSS, in the phone media query), and
+   scrolling back to the top brings them straight back. rAF-throttled so the
+   handler never runs more than once per frame. */
+function compactOnScroll(){
+  const root = document.documentElement;
+  let ticking = false;
+  const sync = () => {
+    ticking = false;
+    const compact = window.scrollY > 120;
+    if (compact === root.hasAttribute("data-scrolled")) return;
+    if (compact) root.setAttribute("data-scrolled", ""); else root.removeAttribute("data-scrolled");
+  };
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(sync);
+  }, {passive: true});
+  // Typing in a collapsed header must not leave the field hidden behind it.
+  $("#q").addEventListener("focus", () => { if (window.scrollY < 140) window.scrollTo({top: 0}) });
+  sync();
+}
 
 /* Theme switcher: auto -> light -> dark. Auto follows the OS via the media
    query; an explicit pick pins data-theme and persists, re-applied pre-paint

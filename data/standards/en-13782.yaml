@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: en-13782
+designation: EN 13782:2015
+title: Temporary structures - Tents - Safety
+body: CEN
+domain: rigging-structural
+year: 2015
+scope: Safety requirements for the design, manufacture, installation, maintenance and operation
+  of tents and marquees used as temporary structures, including wind loading and anchoring.
+status: current
+free_to_read: false
+access_url:
+  url: https://standards.cencenelec.eu/dyn/www/f?p=205:110:0::::FSP_PROJECT:38129
+  label: CEN (via national member bodies, paid)
+jurisdiction:
+- EU
+- EEA
+- UK
+notes: The wind-speed thresholds in a festival production plan - when to clear a tent, when
+  to drop it - trace back to a document like this via the supplier's operations manual. Ask
+  the marquee contractor which standard their manual is written to.
+confidence: reported
+tags:
+- cen
+- en
+- tent
+- temporary-structure
+- wind
+sources:
+- title: 'CEN standards catalogue: EN 13782'
+  url: https://standards.cencenelec.eu/dyn/www/f?p=205:110:0::::FSP_PROJECT:38129
+  publisher: CEN
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: nfpa-101
+designation: NFPA 101 (Life Safety Code)
+title: 'NFPA 101: Life Safety Code'
+body: NFPA
+domain: safety-management
+year: 2024
+scope: 'Occupant life safety in buildings: means of egress, occupant load calculation, assembly
+  occupancy requirements, and the provisions for stages and platforms including proscenium
+  fire curtains and smoke venting.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.nfpa.org/codes-and-standards/nfpa-101-standard-development/101
+  label: NFPA (free read-only access after registration)
+jurisdiction:
+- US
+notes: The chapter on assembly occupancies is what an inspector is holding when they ask about
+  your egress width, your aisle, your occupant load and whether that scenic build is blocking
+  a route. Free to read online, which makes it worth actually reading before a load-in argument.
+confidence: reported
+tags:
+- nfpa
+- life-safety
+- egress
+- assembly
+- venue
+sources:
+- title: NFPA 101 code page
+  url: https://www.nfpa.org/codes-and-standards/nfpa-101-standard-development/101
+  publisher: NFPA
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

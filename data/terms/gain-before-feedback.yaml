@@ -3,6 +3,7 @@
 
 id: gain-before-feedback
 en: Gain before feedback (GBF)
+zh_hant: 回授前增益
 domain: audio
 definition_en: >-
   How much a microphone can be turned up before the system starts to ring,
@@ -10,6 +11,8 @@ definition_en: >-
   more by mic placement and polar pattern than by EQ — moving a vocal mic
   six inches closer to the mouth usually buys more GBF than any amount of
   notching ever will.
+definition_zh_hant: >-
+  麥克風在系統開始鳴叫（回授）之前還能推多大。決定於音箱與麥克風的相對位置、指向性與空間，而不是等化器。
 see_also:
 - ring-out
 safety_critical: false

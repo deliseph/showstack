@@ -447,3 +447,185 @@ export function relayLogic(rulesText) {
   } catch { return null }
   return { inputs: ins, outputs: outNames, rows }
 }
+
+/**
+ * Bridle geometry: a symmetric two-leg bridle carrying a load.
+ *
+ * Tension per leg is W / (2 cos theta), where theta is each leg's angle from
+ * vertical. That is the whole safety story in one formula: at 0 degrees each
+ * leg takes half the load, at 60 degrees each leg takes the WHOLE load, and
+ * past that it climbs without limit. Riggers usually talk in the included
+ * angle between the legs, which is 2 theta, so both are returned.
+ *
+ * The horizontal component is returned too, because that is the force trying
+ * to pull the two structural points toward each other, and it is the part
+ * people forget when they bridle off two beams that were never designed to
+ * be pushed sideways.
+ */
+export function bridleTension(loadKg, legAngleDeg) {
+  const w = Number(loadKg), a = Number(legAngleDeg)
+  if (!Number.isFinite(w) || w < 0) return null
+  // 90 degrees from vertical is a horizontal leg: cos is 0 and tension is
+  // infinite. Stop short of it rather than returning Infinity.
+  if (!Number.isFinite(a) || a < 0 || a >= 89) return null
+  const rad = (a * Math.PI) / 180
+  const perLeg = w / (2 * Math.cos(rad))
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    perLegKg: r2(perLeg),
+    // Multiplier against the naive "half each" assumption people start from.
+    multiplier: r2(perLeg / (w / 2 || 1)),
+    includedAngle: r2(a * 2),
+    horizontalKg: r2(perLeg * Math.sin(rad)),
+    verticalKg: r2(perLeg * Math.cos(rad)),
+  }
+}
+
+/**
+ * Voltage drop on a run of cable.
+ *
+ * Vdrop = k * I * L * rho / A, where L is the ONE-WAY length, A the conductor
+ * cross-section in mm^2, rho the resistivity in ohm mm^2/m, and k accounts for
+ * the return path: 2 for single phase (out and back), sqrt(3) for a balanced
+ * three-phase line-to-line drop.
+ *
+ * Resistivity is quoted at 20 C. Real cable on a hot dimmer run is warmer and
+ * therefore worse, so this is the optimistic figure, which is the right way
+ * round for a limit check.
+ */
+export function voltageDrop(amps, lengthM, csaMm2, volts, phase = 1, material = 'copper') {
+  const i = Number(amps), l = Number(lengthM), a = Number(csaMm2), v = Number(volts)
+  const p = Number(phase)
+  if (!Number.isFinite(i) || i < 0 || !Number.isFinite(l) || l < 0) return null
+  if (!Number.isFinite(a) || a <= 0 || !Number.isFinite(v) || v <= 0) return null
+  if (!(p === 1 || p === 3)) return null
+  const rho = material === 'aluminium' ? 0.0282 : 0.0172
+  const k = p === 3 ? Math.sqrt(3) : 2
+  const drop = (k * i * l * rho) / a
+  const pct = (drop / v) * 100
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    dropVolts: r2(drop),
+    dropPercent: r2(pct),
+    voltsAtLoad: r2(v - drop),
+    // 3% is the usual limit for a lighting circuit, 5% for power. Both are
+    // conventions from installation practice, not a single global rule.
+    withinLighting: pct <= 3,
+    withinPower: pct <= 5,
+  }
+}
+
+/**
+ * Three-phase load balance.
+ *
+ * For linear loads at unity power factor the neutral current of a
+ * three-phase four-wire supply is
+ *   In = sqrt(I1^2 + I2^2 + I3^2 - I1*I2 - I2*I3 - I3*I1)
+ * which is zero when the three legs are equal, and equals the leg current
+ * when only one leg is loaded.
+ *
+ * Imbalance is reported against the mean, the way a distro sheet reports it.
+ * The neutral figure is a LINEAR-load figure: switch-mode supplies and LED
+ * drivers inject triplen harmonics that add in the neutral, so a rig full of
+ * them can exceed this even when the legs look balanced.
+ */
+export function phaseBalance(l1, l2, l3) {
+  const a = Number(l1), b = Number(l2), c = Number(l3)
+  if (![a, b, c].every((x) => Number.isFinite(x) && x >= 0)) return null
+  const sq = a * a + b * b + c * c - a * b - b * c - c * a
+  const neutral = Math.sqrt(Math.max(0, sq))
+  const mean = (a + b + c) / 3
+  const max = Math.max(a, b, c)
+  const min = Math.min(a, b, c)
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    neutralAmps: r2(neutral),
+    meanAmps: r2(mean),
+    maxAmps: r2(max),
+    minAmps: r2(min),
+    imbalancePercent: mean > 0 ? r2(((max - min) / mean) * 100) : 0,
+    // A distro is sized by its worst leg, never by the total divided by three.
+    worstLeg: max === a ? 'L1' : max === b ? 'L2' : 'L3',
+  }
+}
+
+/**
+ * Noise exposure dose.
+ *
+ * Permitted time at a level is T = T_criterion * 2^((Lc - L)/q), where q is
+ * the exchange rate: 3 dB in the EU and in most of the world, 5 dB under the
+ * US OSHA general-industry rule. Dose is the fraction of that time used.
+ *
+ * The criterion level and exchange rate are both arguments because they are
+ * jurisdictional, not physical: EU 2003/10/EC works to 85 dB(A) with a 3 dB
+ * exchange, OSHA 1910.95 to 90 dB(A) with a 5 dB exchange, and getting the
+ * pair wrong changes the answer by hours.
+ */
+export function noiseDose(laeq, hours, criterion = 85, exchangeRate = 3, criterionHours = 8) {
+  const l = Number(laeq), h = Number(hours), c = Number(criterion)
+  const q = Number(exchangeRate), ch = Number(criterionHours)
+  if (!Number.isFinite(l) || !Number.isFinite(h) || h < 0) return null
+  if (!Number.isFinite(c) || !Number.isFinite(q) || q <= 0 || !Number.isFinite(ch) || ch <= 0) return null
+  const permittedHours = ch * Math.pow(2, (c - l) / q)
+  const dose = permittedHours > 0 ? (h / permittedHours) * 100 : Infinity
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    permittedHours: r2(permittedHours),
+    permittedMinutes: Math.round(permittedHours * 60),
+    dosePercent: r2(dose),
+    overExposed: dose > 100,
+    // The level that would put exactly this duration at 100% of the dose.
+    levelForDuration: h > 0 ? r2(c - q * (Math.log(h / ch) / Math.log(2))) : null,
+  }
+}
+
+/**
+ * Third-order intermodulation between wireless channels.
+ *
+ * Two transmitters at a and b produce products at 2a - b and 2b - a; three
+ * produce a + b - c and its permutations. Third-order products are the ones
+ * that matter in practice because they land close to the originals and are
+ * strong enough to open a receiver's squelch.
+ *
+ * Returns each product, and marks the ones that fall within `guardMhz` of a
+ * frequency in use, because a product in empty spectrum is harmless and a
+ * product on top of your lead vocal is not.
+ */
+export function intermod3(freqsMhz, guardMhz = 0.3) {
+  const list = (Array.isArray(freqsMhz) ? freqsMhz : [])
+    .map(Number)
+    .filter((f) => Number.isFinite(f) && f > 0)
+  const guard = Number(guardMhz)
+  if (list.length < 2 || !Number.isFinite(guard) || guard < 0) return null
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  const products = []
+  const push = (mhz, from) => {
+    if (mhz <= 0) return
+    const f = r3(mhz)
+    const hit = list.find((x) => Math.abs(x - f) <= guard)
+    products.push({ mhz: f, order: from.length === 2 ? '2a-b' : 'a+b-c', from: from.slice(), clashesWith: hit ?? null })
+  }
+  for (let i = 0; i < list.length; i++) {
+    for (let j = 0; j < list.length; j++) {
+      if (i === j) continue
+      push(2 * list[i] - list[j], [list[i], list[j]])
+    }
+  }
+  for (let i = 0; i < list.length; i++) {
+    for (let j = i + 1; j < list.length; j++) {
+      for (let k = 0; k < list.length; k++) {
+        if (k === i || k === j) continue
+        push(list[i] + list[j] - list[k], [list[i], list[j], list[k]])
+      }
+    }
+  }
+  // Same frequency can arrive from several combinations; keep the first.
+  const seen = new Set()
+  const unique = products.filter((p) => {
+    const key = p.mhz + '|' + p.order
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  }).sort((x, y) => x.mhz - y.mhz)
+  return { products: unique, clashes: unique.filter((p) => p.clashesWith !== null) }
+}

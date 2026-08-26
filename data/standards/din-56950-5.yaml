@@ -1,0 +1,44 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: din-56950-5
+designation: DIN 56950-5
+title: 'Entertainment technology - Machinery installations - Part 5: Safety requirements for
+  electric chain hoist systems'
+body: DIN
+domain: machinery
+year: 2020
+scope: 'The part of the DIN 56950 series specific to electric chain hoists: construction,
+  braking, control and inspection requirements for the hoists that fly almost every touring
+  rig.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.dinmedia.de/en/standard/din-56950-5/329525900
+  label: DIN Media (purchase)
+jurisdiction:
+- DE
+- International practice
+notes: This is the document behind the D8 / D8 Plus / C1 classification language on hoist
+  data sheets and in touring riders. A D8 hoist is not rated to hold a load over people; C1
+  is. Getting that wrong is the single most consequential spec error in rigging.
+confidence: reported
+tags:
+- din
+- chain-hoist
+- rigging
+- d8
+- c1
+- safety
+sources:
+- title: DIN 56950-5 catalogue entry
+  url: https://www.dinmedia.de/en/standard/din-56950-5/329525900
+  publisher: DIN Media
+  accessed: '2026-08-26'
+  primary: true
+- title: DIN 56950-5 scope summary
+  url: https://www.sis.se/en/produkter/domestic-and-commercial-equipment-entertainment-sports/equipment-for-entertainment/theatre-stage-and-studio-equipment/din-56950-5/
+  publisher: SIS
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'
