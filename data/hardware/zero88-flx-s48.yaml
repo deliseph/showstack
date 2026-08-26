@@ -1,0 +1,66 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: zero88-flx-s48
+name: Zero 88 FLX S48
+vendor: Zero 88
+category: lighting-console
+released: 2016
+status: current
+summary: Compact 48-fader console aimed at schools, small venues and touring band rigs, with
+  a simple two-mode workflow and modest universe count. The desk that turns up when the budget
+  did not stretch to an Eos.
+speaks:
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Art-Net output.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Two DMX outputs on the rear.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM on the local DMX ports.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI in and out.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC input for timecode playback.
+  confidence: reported
+physical_ports:
+- 2x XLR5F DMX
+- 1x Ethernet
+- MIDI in/out
+- USB
+- LTC in
+form_factor: Console, 48 faders
+homepage:
+  url: https://zero88.com/
+  label: Zero 88
+gotchas:
+- Universe count is low compared with a touring desk. Fine for a house rig, tight once a visiting
+  LED wall or a pixel-mapped set arrives.
+- FLX and FLX S are different products with different fader counts and capabilities; a rider
+  that just says "FLX" needs clarifying.
+tags:
+- lighting
+- console
+- zero88
+- education
+sources:
+- title: Zero 88
+  url: https://zero88.com/
+  publisher: Zero 88
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

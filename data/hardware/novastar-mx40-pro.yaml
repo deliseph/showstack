@@ -1,0 +1,55 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: novastar-mx40-pro
+name: NovaStar MX40 Pro
+vendor: NovaStar
+category: video-processor
+status: current
+summary: All-in-one 4K LED controller with sending-card capability built in, widely deployed
+  on rental LED because it pairs with the enormous installed base of NovaStar receiving cards.
+speaks:
+- protocol: sdi
+  direction: in
+  note: 3G-SDI input.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Art-Net brightness and control on some firmware.
+  confidence: unverified
+- protocol: genlock
+  direction: in
+  note: Genlock reference for camera work.
+  confidence: unverified
+physical_ports:
+- HDMI 2.0 in
+- 3G-SDI in
+- DisplayPort 1.2 in
+- 20x Gigabit Ethernet outputs
+- 4x 10G fibre
+- Genlock
+- Gigabit control
+form_factor: 19-inch rack controller
+rack_units: 1
+homepage:
+  url: https://www.novastar.tech/
+  label: NovaStar
+gotchas:
+- NovaStar receiving cards, sending cards and firmware versions have to match. A wall assembled
+  from two hire stocks with different receiving card generations may simply not map.
+- Screen configuration files travel with the wall, not the processor. Losing the file means
+  rebuilding the map panel by panel on site.
+tags:
+- led
+- processor
+- novastar
+- rental
+sources:
+- title: NovaStar
+  url: https://www.novastar.tech/
+  publisher: NovaStar
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

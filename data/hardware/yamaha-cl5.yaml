@@ -1,0 +1,70 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: yamaha-cl5
+name: Yamaha CL5
+vendor: Yamaha
+category: audio-console
+released: 2012
+status: current
+summary: 72-channel Dante-native console that made Dante the default in installed and mid-size
+  touring audio. Still one of the most widely installed large-format desks in theatres and
+  houses of worship.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Dante is native, with primary and secondary ports.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via Dante AES67 mode on supported firmware.
+  confidence: unverified
+- protocol: madi
+  direction: bidirectional
+  note: Via Mini-YGDAI card.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control and scene recall.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Limited OSC via third-party bridges rather than natively.
+  confidence: unverified
+physical_ports:
+- 2x Dante etherCON (primary/secondary)
+- Mini-YGDAI card slots
+- Word clock in/out
+- MIDI in/out
+- AES3
+- Redundant PSU
+form_factor: Console, 5 fader banks
+homepage:
+  url: https://www.yamahaproaudio.com/
+  label: Yamaha Professional Audio
+gotchas:
+- Dante device names and channel labels are the whole patch. A CL5 dropped into a house system
+  with clashing Dante names will fight the existing devices for identity.
+- CL and QL series share much of the workflow but not the channel counts. A CL5 file does
+  not simply open on a QL1.
+- The console can be the Dante clock master or a follower. Two Yamaha desks both configured
+  as preferred master on one network is a classic install fault.
+tags:
+- audio
+- console
+- yamaha
+- dante
+- install
+sources:
+- title: Yamaha Professional Audio
+  url: https://www.yamahaproaudio.com/
+  publisher: Yamaha
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

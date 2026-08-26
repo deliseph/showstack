@@ -1,0 +1,72 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: christie-pandoras-box
+name: Christie Pandoras Box
+vendor: Christie
+category: media-server
+status: current
+summary: Long-running media server and show control platform, originally coolux, covering
+  projection mapping, LED and multi-display playback with its own Widget Designer companion
+  for control logic.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in for console control, out from Widget Designer.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in for console control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out, heavily used via Widget Designer.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX via interfaces.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI in and out.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC timeline sync.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI in and out.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: PosiStageNet tracking input.
+  confidence: unverified
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX thumbnails to consoles.
+  confidence: reported
+form_factor: Rack server, plus Widget Designer software
+homepage:
+  url: https://www.christiedigital.com/
+  label: Christie
+gotchas:
+- 'Pandoras Box and Widget Designer are two products that are almost always deployed together.
+  Ask which one a workflow depends on: the show logic often lives in Widget Designer, not
+  in the server.'
+- The coolux heritage means a lot of field knowledge, forum threads and show files predate
+  the Christie branding. Version numbers matter more than the badge on the box.
+tags:
+- media-server
+- pandoras-box
+- christie
+- coolux
+sources:
+- title: Christie
+  url: https://www.christiedigital.com/
+  publisher: Christie
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

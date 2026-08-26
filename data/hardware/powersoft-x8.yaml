@@ -1,0 +1,52 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: powersoft-x8
+name: Powersoft X8
+vendor: Powersoft
+category: amplifier
+status: current
+summary: Eight-channel touring amplifier platform with onboard DSP, Dante and AES67 input
+  and per-channel load monitoring. Notable for its very high power density in 2U.
+speaks:
+- protocol: dante
+  direction: in
+  note: Dante audio input with redundancy.
+  confidence: reported
+- protocol: aes67
+  direction: in
+  note: AES67 input mode.
+  confidence: reported
+- protocol: aes50
+  direction: in
+  note: Not supported; listed here only to prevent confusion.
+  confidence: unverified
+physical_ports:
+- 8x amplifier output (speakON / Phoenix depending on variant)
+- 2x etherCON Dante
+- Analogue and AES3 inputs
+- Ethernet control
+form_factor: 19-inch rack amplifier
+rack_units: 2
+homepage:
+  url: https://www.powersoft.com/
+  label: Powersoft
+gotchas:
+- Mains inrush and total draw on a rack of high-density amplifiers is the real constraint,
+  not the audio. Size the distro on the amplifier's worst case, not its idle draw.
+- Presets are tied to specific loudspeaker models. Loading the wrong preset can damage drivers,
+  so preset management is a safety matter, not a convenience.
+tags:
+- audio
+- amplifier
+- powersoft
+- dante
+sources:
+- title: Powersoft
+  url: https://www.powersoft.com/
+  publisher: Powersoft
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

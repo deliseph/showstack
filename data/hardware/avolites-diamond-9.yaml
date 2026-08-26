@@ -1,0 +1,86 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: avolites-diamond-9
+name: Avolites Diamond 9
+vendor: Avolites
+category: lighting-console
+released: 2018
+status: current
+summary: Avolites flagship running Titan, sold in 5, 7 and 9 panel widths with dual redundant
+  PSUs and hot-swappable fader modules. The desk Titan was rebuilt around after the Sapphire
+  generation.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: sACN output, with priority per universe.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net output and input.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Direct DMX out of the rear XLRs.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM discovery and patch from Titan.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX for media server thumbnails in the pixel mapper.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI and MIDI timecode over DIN.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC input for timecoded cue lists.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC in and out.
+  confidence: reported
+physical_ports:
+- DMX XLR5 outputs (count varies by panel width)
+- 2x etherCON Gigabit
+- MIDI in/out
+- LTC in
+- USB
+- DisplayPort for external screens
+form_factor: Modular console, 5 / 7 / 9 panel widths
+runs_software:
+- avolites-titan
+homepage:
+  url: https://www.avolites.com/products/lighting-consoles/
+  label: Avolites lighting consoles
+gotchas:
+- Titan show files are forward-compatible but not backward-compatible. A file saved on a newer
+  Titan version will not open on an older one, which bites when a spare desk in the shop has
+  not been updated.
+- Avolites separates the "Fixture" and "Palette" model in a way that differs from Eos and
+  grandMA. Cue content stored in palettes updates globally, which is powerful and is also
+  how a whole show accidentally changes colour.
+- The panel width changes fader and wheel count, not capability. A show programmed on a D9-330
+  fits a D9-215 but with far fewer physical playbacks, so plan the playback layout for the
+  smallest desk on the tour.
+tags:
+- lighting
+- console
+- titan
+- avolites
+sources:
+- title: Avolites lighting consoles
+  url: https://www.avolites.com/products/lighting-consoles/
+  publisher: Avolites
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

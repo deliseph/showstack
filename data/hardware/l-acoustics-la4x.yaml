@@ -1,0 +1,47 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: l-acoustics-la4x
+name: L-Acoustics LA4X
+vendor: L-Acoustics
+category: amplifier
+status: current
+summary: Four-channel amplified controller for smaller L-Acoustics systems, with the same
+  LA Network Manager control and preset model as the LA12X but at lower power.
+speaks:
+- protocol: aes67
+  direction: in
+  note: AES67 input on current firmware.
+  confidence: unverified
+- protocol: dante
+  direction: in
+  note: Not native; AVB and AES67 are the network audio paths.
+  confidence: unverified
+physical_ports:
+- 4x amplifier output
+- AES3 in
+- Analogue in
+- 2x etherCON control network
+form_factor: 19-inch rack amplified controller
+rack_units: 2
+homepage:
+  url: https://www.l-acoustics.com/
+  label: L-Acoustics
+gotchas:
+- Presets are matched to specific L-Acoustics cabinets and are not optional. The amplified
+  controller and the box are one system.
+- LA4X and LA12X share the control software but not the power or channel capability. A system
+  designed in Soundvision around LA12X will not simply drop onto LA4X.
+tags:
+- audio
+- amplifier
+- l-acoustics
+sources:
+- title: L-Acoustics
+  url: https://www.l-acoustics.com/
+  publisher: L-Acoustics
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

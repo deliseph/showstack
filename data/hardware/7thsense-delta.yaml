@@ -1,0 +1,56 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: 7thsense-delta
+name: 7thSense Delta Media Server
+vendor: 7thSense
+category: media-server
+status: current
+summary: High-frame-rate uncompressed playback server built for domes, planetariums, theme
+  parks and large-format projection, where frame-accurate multi-channel playback matters more
+  than live compositing.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Art-Net control in.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC for show sync.
+  confidence: reported
+- protocol: midi-show-control
+  direction: in
+  note: MSC for show control integration.
+  confidence: unverified
+- protocol: ndi
+  direction: out
+  note: NDI output on suitably configured systems.
+  confidence: unverified
+form_factor: 19-inch rack server, configuration varies by channel count
+homepage:
+  url: https://7thsense.one/
+  label: 7thSense
+gotchas:
+- Delta is a playback engine, not a live compositor. Content is prepared and ingested; last-minute
+  creative changes are a content pipeline job, not a knob on the server.
+- Uncompressed high-frame-rate playback is storage-bandwidth bound. The disk subsystem is
+  part of the spec, so a "same model" spare with different storage may not sustain the same
+  show.
+tags:
+- media-server
+- 7thsense
+- dome
+- themed-entertainment
+sources:
+- title: 7thSense
+  url: https://7thsense.one/
+  publisher: 7thSense
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

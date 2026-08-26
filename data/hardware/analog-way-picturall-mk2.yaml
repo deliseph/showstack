@@ -1,0 +1,58 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: analog-way-picturall-mk2
+name: Analog Way Picturall Mark II
+vendor: Analog Way
+category: media-server
+status: current
+summary: Linux-based media server range aimed at reliable multi-output playback and soft-edge
+  blending, sold from compact single-output units up to large multi-output frames.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Art-Net control input.
+  confidence: reported
+- protocol: sacn
+  direction: in
+  note: sACN control input.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: reported
+- protocol: ndi
+  direction: in
+  note: NDI input.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC sync.
+  confidence: reported
+- protocol: midi
+  direction: in
+  note: MIDI control.
+  confidence: unverified
+form_factor: 19-inch rack server, size varies by model
+homepage:
+  url: https://www.analogway.com/
+  label: Analog Way
+gotchas:
+- Picturall is a playback and blending server rather than a generative compositor. If the
+  brief involves real-time 3D or notch blocks, this is the wrong tool.
+- Analog Way also makes presentation switchers (Aquilon, Midra). "An Analog Way" on a rider
+  is ambiguous between a server and a switcher.
+tags:
+- media-server
+- analog-way
+- picturall
+- blending
+sources:
+- title: Analog Way
+  url: https://www.analogway.com/
+  publisher: Analog Way
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

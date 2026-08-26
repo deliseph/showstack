@@ -1,0 +1,68 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: modulo-kinetic
+name: Modulo Kinetic
+vendor: Modulo Pi
+category: media-server
+status: current
+summary: French media server platform built around a real-time 3D engine, used for projection
+  mapping, LED and immersive installs. Splits into a Designer workstation for authoring and
+  V-Node playback machines driven from it.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in for console control, out for fixture and pixel control.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in for console control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out for show control.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI input and output.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC for timeline sync.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: PosiStageNet for tracked objects and moving scenery.
+  confidence: reported
+- protocol: rttrpm
+  direction: in
+  note: RTTrPM tracking input.
+  confidence: reported
+- protocol: smpte-st-2110
+  direction: bidirectional
+  note: ST 2110 on suitably equipped nodes.
+  confidence: unverified
+form_factor: Rack workstation plus V-Node playback servers
+homepage:
+  url: https://www.modulo-pi.com/
+  label: Modulo Pi
+gotchas:
+- Designer and V-Node are separate machines with separate roles. The show is authored on Designer
+  and played by the nodes, so a rider asking for "a Kinetic" needs to say how many of each.
+- The 3D scene is the master. Warping and blending live in the scene rather than in per-output
+  correction, which is powerful and means the on-site alignment workflow is not the same as
+  a warp-per-projector server.
+tags:
+- media-server
+- projection-mapping
+- 3d
+- modulo-pi
+sources:
+- title: Modulo Pi
+  url: https://www.modulo-pi.com/
+  publisher: Modulo Pi
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

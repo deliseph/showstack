@@ -1,0 +1,63 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: etc-response-mk2-gateway
+name: ETC Response Mk2 DMX/RDM Gateway
+vendor: ETC
+category: dmx-node
+status: current
+summary: One, two, four or eight port DMX/RDM gateway for Net3 systems, configured from the
+  console or from Concert. The standard way an Eos rig reaches copper DMX in an installed
+  venue.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in, DMX out, and DMX in to sACN.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net supported alongside sACN.
+  confidence: reported
+- protocol: etcnet3
+  direction: bidirectional
+  note: Net3 device discovery and configuration.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX out and in on the physical ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM proxy for discovery and configuration from the console.
+  confidence: reported
+physical_ports:
+- 1-8x XLR5F DMX/RDM
+- 1x etherCON or RJ45
+- PoE on supported models
+form_factor: Wall, rack or portable variants
+rack_units: 1
+homepage:
+  url: https://www.etcconnect.com/
+  label: ETC
+gotchas:
+- A gateway set to output and a console outputting the same universe over a second protocol
+  is the classic double-drive fault. Decide sACN or Art-Net per universe and stick to it.
+- RDM through a gateway only works if every device in that DMX chain passes RDM. One non-RDM
+  splitter in the line makes everything past it invisible.
+- Gateways hold configuration locally. A swapped spare comes up in its previous show's configuration
+  unless it was reset, which is worse than a factory default because it looks configured.
+tags:
+- dmx
+- node
+- gateway
+- etc
+- rdm
+sources:
+- title: ETC
+  url: https://www.etcconnect.com/
+  publisher: ETC
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

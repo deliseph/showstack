@@ -1,0 +1,55 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: wireless-solution-blackbox-f2
+name: Wireless Solution W-DMX BlackBox F-2 G6
+vendor: Wireless Solution
+category: wireless-dmx
+status: current
+summary: Two-universe W-DMX transceiver operating in 2.4 and 5 GHz, with RDM support and the
+  option to act as transmitter or receiver. The main alternative ecosystem to CRMX.
+speaks:
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX in or out on the XLR ports depending on mode.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM over the wireless link.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net on Ethernet-equipped variants.
+  confidence: unverified
+- protocol: sacn
+  direction: bidirectional
+  note: sACN on Ethernet-equipped variants.
+  confidence: unverified
+physical_ports:
+- XLR5 DMX in/out
+- Antenna connectors
+- Ethernet on network variants
+form_factor: Half-rack transceiver
+rack_units: 1
+homepage:
+  url: https://www.wirelessdmx.com/
+  label: Wireless Solution
+gotchas:
+- Not compatible with CRMX. Confirm which system the fixtures have built in before hiring
+  transmitters.
+- Dual-band operation helps enormously on a congested site, but only if the receivers also
+  support 5 GHz. A mixed-generation receiver stock pins you to 2.4 GHz.
+tags:
+- dmx
+- wireless
+- w-dmx
+- rdm
+sources:
+- title: Wireless Solution
+  url: https://www.wirelessdmx.com/
+  publisher: Wireless Solution
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

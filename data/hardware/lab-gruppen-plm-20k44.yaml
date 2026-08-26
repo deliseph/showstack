@@ -1,0 +1,54 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: lab-gruppen-plm-20k44
+name: Lab.gruppen PLM 20K44
+vendor: Lab.gruppen
+category: amplifier
+status: current
+summary: Four-channel 20 kW touring amplifier with Lake processing built in, Dante and AES3
+  input, and per-output load verification. A standard in large-format PA racks.
+speaks:
+- protocol: dante
+  direction: in
+  note: Dante input, primary and secondary.
+  confidence: reported
+- protocol: aes67
+  direction: in
+  note: Via Dante AES67 mode.
+  confidence: unverified
+- protocol: word-clock
+  direction: in
+  note: Clock follows the Dante or AES3 source.
+  confidence: unverified
+physical_ports:
+- 4x amplifier output
+- 2x etherCON Dante
+- AES3 in
+- Analogue in
+- Ethernet control
+form_factor: 19-inch rack amplifier
+rack_units: 2
+homepage:
+  url: https://labgruppen.com/
+  label: Lab.gruppen
+gotchas:
+- The Lake processing inside is the system tuning. Swapping an amplifier without moving its
+  Lake module configuration replaces the tuning as well as the amplifier.
+- Load verification will flag a driver fault before it is audible, which is only useful if
+  someone is actually watching the monitoring during the show.
+tags:
+- audio
+- amplifier
+- lab-gruppen
+- lake
+- dante
+sources:
+- title: Lab.gruppen
+  url: https://labgruppen.com/
+  publisher: Lab.gruppen
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

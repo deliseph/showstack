@@ -1,0 +1,58 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: blackmagic-atem-4me-constellation-hd
+name: Blackmagic ATEM 4 M/E Constellation HD
+vendor: Blackmagic Design
+category: video-processor
+status: current
+summary: Four mix/effects live production switcher with forty SDI inputs, built-in multiview,
+  chroma key and streaming. The switcher that made multi-M/E production affordable for small
+  crews.
+speaks:
+- protocol: sdi
+  direction: bidirectional
+  note: 3G-SDI in and out across all ports.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Blackburst / tri-level reference input.
+  confidence: reported
+- protocol: ndi
+  direction: out
+  note: NDI via separate Blackmagic conversion, not native.
+  confidence: unverified
+physical_ports:
+- 40x 3G-SDI in
+- 24x 3G-SDI out
+- Reference in
+- 2x Ethernet
+- USB-C webcam out
+- Analogue audio in
+form_factor: 19-inch rack switcher
+rack_units: 2
+homepage:
+  url: https://www.blackmagicdesign.com/products/atem
+  label: Blackmagic ATEM
+gotchas:
+- ATEM control is a software panel or a hardware panel over IP; the switcher has almost no
+  front-panel control of its own. Losing the control network means losing the ability to cut.
+- ATEM Software Control version must match the switcher firmware. A laptop that has auto-updated
+  will refuse to talk to a switcher that has not.
+- The audio mixer inside is capable but easy to overlook, and an embedded-audio problem often
+  turns out to be a Fairlight setting rather than a source.
+tags:
+- video
+- switcher
+- blackmagic
+- atem
+- broadcast
+sources:
+- title: Blackmagic ATEM
+  url: https://www.blackmagicdesign.com/products/atem
+  publisher: Blackmagic Design
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

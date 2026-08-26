@@ -1,0 +1,54 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: focusrite-rednet-a16r-mk2
+name: Focusrite RedNet A16R MkII
+vendor: Focusrite
+category: io-interface
+status: current
+summary: 16 in, 16 out analogue-to-Dante interface with redundant network and PSU, used to
+  get analogue sources and destinations onto a Dante network in a rack.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: 16x16 analogue to Dante, primary and secondary ports.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: AES67 mode.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+physical_ports:
+- 16x analogue in (DB25)
+- 16x analogue out (DB25)
+- 2x etherCON Dante
+- Word clock in/out
+- Redundant PSU
+form_factor: 19-inch rack interface
+rack_units: 1
+homepage:
+  url: https://focusrite.com/
+  label: Focusrite
+gotchas:
+- Dante device naming is the patch. Two identically named RedNet units on the same network
+  is an immediate identity clash.
+- Redundant Dante means two physically separate networks, not two cables into the same switch.
+  Wiring both ports to one switch provides no redundancy at all.
+tags:
+- audio
+- io
+- dante
+- focusrite
+- rednet
+sources:
+- title: Focusrite
+  url: https://focusrite.com/
+  publisher: Focusrite
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

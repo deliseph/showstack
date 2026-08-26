@@ -1,0 +1,48 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: tait-navigator
+name: TAIT Navigator
+vendor: TAIT
+category: motion-control
+status: current
+summary: 'Automation control platform for large-scale stage machinery: multi-axis motion,
+  3D visualisation of the moving set, cue sequencing and the safety architecture around performer
+  flying and heavy scenery.'
+speaks:
+- protocol: psn
+  direction: out
+  note: PosiStageNet output of axis and object positions.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: Show control integration.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode-driven automation sequences.
+  confidence: unverified
+form_factor: Operator console plus distributed drive and safety hardware
+homepage:
+  url: https://www.taittowers.com/
+  label: TAIT
+gotchas:
+- Automation is the department with the shortest tolerance for improvisation. A cue change
+  is a re-commissioning question, not a keystroke, and the schedule has to reflect that.
+- Publishing axis positions to lighting and video is now routine, which means the automation
+  network is load-bearing for departments that do not own it. Agree who is allowed to touch
+  it.
+tags:
+- automation
+- motion-control
+- tait
+- stage-machinery
+sources:
+- title: TAIT
+  url: https://www.taittowers.com/
+  publisher: TAIT
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

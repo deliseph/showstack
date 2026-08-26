@@ -1,0 +1,53 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: analog-way-aquilon-rs4
+name: Analog Way Aquilon RS4
+vendor: Analog Way
+category: video-processor
+status: current
+summary: 4K/8K-capable presentation switcher and screen management system for large corporate
+  and live events, with mixable layers, soft edge blending and redundant power.
+speaks:
+- protocol: sdi
+  direction: bidirectional
+  note: 12G and 3G-SDI on the input and output cards.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Reference input.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: Third-party control over the network API.
+  confidence: unverified
+physical_ports:
+- Modular 4K input cards
+- Modular output cards
+- Genlock
+- Redundant PSU
+- Gigabit control
+form_factor: 19-inch rack frame
+rack_units: 4
+homepage:
+  url: https://www.analogway.com/
+  label: Analog Way
+gotchas:
+- Layer budget depends on the input format. Running 4K sources consumes the machine's processing
+  far faster than HD, so a layer count quoted in HD terms is misleading for a 4K show.
+- Aquilon and Picturall are both Analog Way and do different jobs. Confirm which one a rider
+  means before speccing.
+tags:
+- video
+- switcher
+- analog-way
+- 4k
+sources:
+- title: Analog Way
+  url: https://www.analogway.com/
+  publisher: Analog Way
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

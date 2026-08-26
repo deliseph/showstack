@@ -1,0 +1,56 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: biamp-tesira-forte
+name: Biamp TesiraFORTÉ
+vendor: Biamp
+category: audio-processor
+status: current
+summary: Fixed-I/O networked DSP for meeting rooms, lecture theatres and small venues, with
+  AEC variants for conferencing and Dante on most models. The box behind a very large share
+  of corporate and hotel AV audio.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Dante on the network-equipped variants.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: AES67 mode on supported firmware.
+  confidence: unverified
+- protocol: bacnet
+  direction: bidirectional
+  note: Control integration with building systems.
+  confidence: unverified
+physical_ports:
+- Analogue mic/line in
+- Analogue out
+- Dante etherCON
+- Control Ethernet
+- GPIO
+- USB audio on some variants
+form_factor: 19-inch rack DSP
+rack_units: 1
+homepage:
+  url: https://www.biamp.com/
+  label: Biamp
+gotchas:
+- Acoustic echo cancellation is a model feature, not a setting. A non-AEC TesiraFORTE cannot
+  be turned into a conferencing DSP in software.
+- Tesira systems are designed and compiled in Tesira software and pushed to the device. Live
+  tweaking is limited by design, which is deliberate for installs and frustrating in a rehearsal.
+tags:
+- audio
+- dsp
+- biamp
+- install
+- conferencing
+sources:
+- title: Biamp
+  url: https://www.biamp.com/
+  publisher: Biamp
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

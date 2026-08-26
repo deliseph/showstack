@@ -1,0 +1,58 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: rosendahl-nanosyncs-hd
+name: Rosendahl nanosyncs HD
+vendor: Rosendahl Studiotechnik
+category: timecode-generator
+status: current
+summary: Compact master clock and sync generator producing word clock, video reference and
+  LTC from one stable source. The small box that stops a rack from having three different
+  opinions about time.
+speaks:
+- protocol: ltc
+  direction: bidirectional
+  note: LTC generate and read.
+  confidence: reported
+- protocol: word-clock
+  direction: out
+  note: Word clock distribution outputs.
+  confidence: reported
+- protocol: genlock
+  direction: out
+  note: Blackburst and tri-level video reference.
+  confidence: reported
+- protocol: mtc
+  direction: out
+  note: MIDI timecode output.
+  confidence: unverified
+physical_ports:
+- Word clock outputs (BNC)
+- Video reference outputs (BNC)
+- LTC in/out (XLR)
+- MIDI out
+form_factor: Half-rack sync generator
+rack_units: 1
+homepage:
+  url: https://www.rosendahl-studiotechnik.com/
+  label: Rosendahl Studiotechnik
+gotchas:
+- One master clock is the point. Adding a second "just for the video rack" recreates exactly
+  the problem this box exists to solve.
+- LTC, word clock and video reference are three different things that all get called "sync".
+  Be explicit about which one a device needs before wiring the rack.
+tags:
+- timecode
+- sync
+- clock
+- ltc
+- rosendahl
+sources:
+- title: Rosendahl Studiotechnik
+  url: https://www.rosendahl-studiotechnik.com/
+  publisher: Rosendahl Studiotechnik
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

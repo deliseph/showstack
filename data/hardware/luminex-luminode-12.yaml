@@ -1,0 +1,60 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: luminex-luminode-12
+name: Luminex LumiNode 12
+vendor: Luminex Network Intelligence
+category: dmx-node
+status: current
+summary: Twelve-port Ethernet-to-DMX node with per-port protocol selection, merging, and the
+  LumiNode processing model that lets each port do conversion, merge or filter independently.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in and out per port.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in and out per port.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX out and in on the XLR ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM discovery and proxy.
+  confidence: reported
+- protocol: kinet
+  direction: bidirectional
+  note: KiNET output for Color Kinetics fixtures.
+  confidence: unverified
+physical_ports:
+- 12x XLR5 DMX/RDM
+- 2x etherCON Gigabit
+- PoE input on supported models
+form_factor: 19-inch rack node
+rack_units: 1
+homepage:
+  url: https://www.luminex.be/
+  label: Luminex Network Intelligence
+gotchas:
+- 'Every port is independently configured, which is the strength and the trap: twelve ports
+  can be twelve different protocol and universe settings, and none of that is visible from
+  the front of the rack.'
+- Merging happens in the node. Two consoles merged HTP at a node behaves differently from
+  two consoles merged by priority at the fixture, and the difference only shows during a handover.
+tags:
+- dmx
+- node
+- luminex
+- rdm
+sources:
+- title: Luminex Network Intelligence
+  url: https://www.luminex.be/
+  publisher: Luminex Network Intelligence
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

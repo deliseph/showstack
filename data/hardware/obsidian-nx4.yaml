@@ -1,0 +1,76 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: obsidian-nx4
+name: Obsidian Control Systems NX4
+vendor: Obsidian Control Systems
+category: lighting-console
+released: 2019
+status: current
+summary: ONYX console with four internal DMX ports, dual touchscreens and motorised faders.
+  ONYX is the successor to the M-Series and Martin M-PC line, and the software runs free on
+  a PC with output limited by hardware key.
+speaks:
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net output.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Four DMX ports on the console itself.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: RDM discovery on the local ports.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX for media server integration.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI and MSC.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC timecode in.
+  confidence: reported
+physical_ports:
+- 4x XLR5F DMX
+- 2x Gigabit Ethernet
+- MIDI in/out
+- LTC in
+- USB
+form_factor: Console with dual integrated touchscreens
+runs_software:
+- onyx
+homepage:
+  url: https://obsidiancontrol.com/
+  label: Obsidian Control Systems
+gotchas:
+- 'ONYX output beyond the console''s own ports is unlocked by hardware: a console, a NET dongle
+  or an NX wing. A PC alone runs the software fully but outputs only a limited universe count.'
+- ONYX inherited the M-Series show file lineage. Older M-PC files import, but not everything
+  survives, so budget time rather than assuming a clean conversion.
+tags:
+- lighting
+- console
+- onyx
+- obsidian
+sources:
+- title: Obsidian Control Systems
+  url: https://obsidiancontrol.com/
+  publisher: Obsidian Control Systems
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

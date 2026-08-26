@@ -1,0 +1,74 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: yamaha-rivage-pm7
+name: Yamaha RIVAGE PM7
+vendor: Yamaha
+category: audio-console
+released: 2017
+status: current
+summary: 'Yamaha flagship digital mixing system: a CS-R10 style control surface with the DSP-RX
+  engine, TWINLANe fibre ring to the RPio stage boxes, and a large complement of onboard Rupert
+  Neve and Yamaha modelling.'
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Dante is native on the RPio boxes and the engine.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via Dante AES67 mode.
+  confidence: unverified
+- protocol: madi
+  direction: bidirectional
+  note: Via HY card.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Word clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control and scene recall.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC via the console API.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: LTC input for scene automation.
+  confidence: unverified
+physical_ports:
+- TWINLANe fibre ring
+- HY card slots (Dante, MADI)
+- Word clock in/out
+- MIDI
+- Redundant PSU
+form_factor: Control surface plus separate DSP engine and RPio I/O
+homepage:
+  url: https://www.yamahaproaudio.com/
+  label: Yamaha Professional Audio
+gotchas:
+- TWINLANe and Dante are two different networks on the same system and they are not interchangeable.
+  TWINLANe carries the high channel-count ring between engine and RPio; Dante is how everything
+  else gets in.
+- RIVAGE is a system, not a console. The surface without its DSP engine does nothing, which
+  changes what a "spare desk" means on a tour.
+- PM7 and PM10 differ in DSP capability and I/O, and share files only within limits. Confirm
+  the model, not just "a RIVAGE".
+tags:
+- audio
+- console
+- yamaha
+- rivage
+- dante
+sources:
+- title: Yamaha Professional Audio
+  url: https://www.yamahaproaudio.com/
+  publisher: Yamaha
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,61 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: lumenradio-crmx-nova-tx2
+name: LumenRadio CRMX Nova TX2
+vendor: LumenRadio
+category: wireless-dmx
+status: current
+summary: Two-universe CRMX transmitter with RDM support, the wireless DMX system built into
+  a very large share of modern fixtures. Frequency-hopping in 2.4 GHz with automatic clear-channel
+  selection.
+speaks:
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX in on the XLR, DMX out wirelessly to CRMX receivers.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Bidirectional RDM over the wireless link.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Art-Net input on network-equipped models.
+  confidence: unverified
+- protocol: sacn
+  direction: in
+  note: sACN input on network-equipped models.
+  confidence: unverified
+physical_ports:
+- 2x XLR5 DMX in
+- Antenna connectors
+- Ethernet on network models
+- PowerCON
+form_factor: Half-rack transmitter
+rack_units: 1
+homepage:
+  url: https://lumenradio.com/
+  label: LumenRadio
+gotchas:
+- CRMX and W-DMX are different, incompatible systems. A fixture with a built-in CRMX receiver
+  will not pair with a W-DMX transmitter, and both are commonly called just "wireless DMX"
+  on a rider.
+- Receivers stay linked to the last transmitter they were paired with, stored in the fixture.
+  A fixture that arrives from another job will ignore your transmitter until it is unlinked.
+- 2.4 GHz is shared with Wi-Fi, comms and everything else. CRMX hops and copes well, but a
+  dense festival site is still a spectrum planning problem, not a plug-and-play one.
+tags:
+- dmx
+- wireless
+- crmx
+- lumenradio
+- rdm
+sources:
+- title: LumenRadio
+  url: https://lumenradio.com/
+  publisher: LumenRadio
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

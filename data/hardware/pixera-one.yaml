@@ -1,0 +1,69 @@
+# showstack entry - hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: pixera-one
+name: AV Stumpfl PIXERA one
+vendor: AV Stumpfl
+category: media-server
+status: current
+summary: Single-box PIXERA server for mid-size projection and LED work, running the same PIXERA
+  software as the larger two and four output machines. Real-time 3D compositing with node-based
+  content flow.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in for console control.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in for console control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI send and receive.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: LTC timeline sync.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: PosiStageNet input for tracked objects.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP/MSEX thumbnails to lighting consoles.
+  confidence: unverified
+form_factor: 19-inch rack server
+rack_units: 2
+homepage:
+  url: https://pixera.one/
+  label: PIXERA
+gotchas:
+- PIXERA licences by output count and feature set. A machine that plays the show in the shop
+  may not have the licence tier the venue rig needs, and licences are tied to hardware.
+- The timeline and the node graph are two different mental models running at once. Content
+  that behaves in the node graph can still be sequenced wrongly on the timeline, and vice
+  versa.
+tags:
+- media-server
+- pixera
+- av-stumpfl
+- projection
+sources:
+- title: PIXERA
+  url: https://pixera.one/
+  publisher: AV Stumpfl
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'
