@@ -1,0 +1,49 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: smaart
+name: Smaart
+vendor: Rational Acoustics
+category: monitoring-diagnostics
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: 'Dual-channel FFT measurement software: transfer function, impulse response, RTA
+  and SPL logging. The standard tool for aligning and tuning a PA system against a reference.'
+speaks:
+- protocol: dante
+  direction: in
+  note: Measurement input via Dante Virtual Soundcard or a Dante interface.
+  confidence: unverified
+typical_use:
+- Aligning subs to tops and delays to mains
+- Verifying system EQ against a measurement
+- Logging SPL against a venue limit
+homepage:
+  url: https://www.rationalacoustics.com/
+  label: Rational Acoustics
+gotchas:
+- The measurement microphone position is the measurement. Two engineers measuring the same
+  system three metres apart get different, equally correct answers.
+- Transfer function needs a genuine reference feed of the same signal. A reference taken after
+  processing measures nothing useful about that processing.
+- Coherence is the honesty indicator. Low coherence means the data in that band should not
+  be acted on, however convincing the trace looks.
+tags:
+- audio
+- measurement
+- system-tuning
+- fft
+- spl
+sources:
+- title: Rational Acoustics
+  url: https://www.rationalacoustics.com/
+  publisher: Rational Acoustics
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

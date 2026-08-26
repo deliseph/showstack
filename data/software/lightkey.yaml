@@ -1,0 +1,61 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: lightkey
+name: Lightkey
+vendor: Lightkey
+category: lighting-control
+license: proprietary
+price_model: freemium
+status: current
+platforms:
+- macos
+summary: macOS lighting control application aimed at small venues, bands and installations,
+  with a free tier limited by fixture count and a straightforward live-oriented interface.
+speaks:
+- protocol: dmx512
+  direction: out
+  note: DMX out via USB interfaces.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Art-Net output.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: reported
+- protocol: midi
+  direction: in
+  note: MIDI triggering from surfaces.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: OSC control.
+  confidence: unverified
+typical_use:
+- Small venue and club lighting from a Mac
+- Band-operated lighting without a dedicated operator
+- Small installations
+homepage:
+  url: https://lightkeyapp.com/
+  label: Lightkey
+gotchas:
+- The free tier caps fixture count rather than time. A rig that grows past the cap stops being
+  free mid-project.
+- macOS only, and lighting laptops in small venues are often whatever is available. Confirm
+  the platform before promising this to a venue.
+tags:
+- lighting
+- macos
+- small-venue
+- budget
+sources:
+- title: Lightkey
+  url: https://lightkeyapp.com/
+  publisher: Lightkey
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

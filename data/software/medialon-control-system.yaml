@@ -1,0 +1,79 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: medialon-control-system
+name: Medialon Control System
+vendor: Medialon (Barco)
+category: show-control
+license: proprietary
+price_model: quote-only
+status: current
+platforms:
+- windows
+summary: 'Show control platform for themed entertainment, museums and permanent installations:
+  device drivers, a scripting language and a timeline, running unattended for years at a time.'
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI control.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC in and out.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net for lighting integration.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN for lighting integration.
+  confidence: unverified
+- protocol: dmx512
+  direction: bidirectional
+  note: DMX via interfaces.
+  confidence: reported
+- protocol: ltc
+  direction: bidirectional
+  note: LTC generation and chase.
+  confidence: reported
+- protocol: modbus-tcp
+  direction: bidirectional
+  note: Modbus for building and ride systems.
+  confidence: unverified
+- protocol: opc-ua
+  direction: bidirectional
+  note: OPC UA for industrial integration.
+  confidence: unverified
+typical_use:
+- Unattended daily operation of an attraction
+- Integrating lighting, audio, video and ride control
+- Museum and visitor-centre show sequences
+homepage:
+  url: https://www.medialon.com/
+  label: Medialon
+gotchas:
+- Installations outlive the people who programmed them. Documentation and commented code are
+  the deliverable as much as the running show.
+- Device drivers are the whole integration story. A device with no driver is a scripting project,
+  not a checkbox.
+- 'Unattended operation means failure handling has to be designed, not discovered: what happens
+  when a projector does not respond at 09:00 is a specification question.'
+tags:
+- show-control
+- installation
+- themed-entertainment
+- medialon
+sources:
+- title: Medialon
+  url: https://www.medialon.com/
+  publisher: Medialon
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

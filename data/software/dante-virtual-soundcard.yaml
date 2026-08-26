@@ -1,0 +1,52 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: dante-virtual-soundcard
+name: Dante Virtual Soundcard
+vendor: Audinate
+category: networking-utility
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: Turns a computer's Ethernet port into a Dante audio interface, giving a DAW or playback
+  machine up to 64 channels in and out with no hardware beyond the network card.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Presents Dante channels as an ASIO / Core Audio device.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: AES67 mode where the network supports it.
+  confidence: unverified
+typical_use:
+- Multitrack recording of a live show from the console
+- Playback into a Dante system without an interface
+- Virtual soundcheck
+homepage:
+  url: https://www.audinate.com/products/software/dante-virtual-soundcard
+  label: Dante Virtual Soundcard
+gotchas:
+- A general-purpose laptop is a poor real-time audio device. Wi-Fi, power management and background
+  updates all cause dropouts that look like network faults.
+- The licence is tied to the machine. A spare laptop is not a spare unless it is licensed
+  and configured in advance.
+- Virtual soundcheck is only as good as the channel naming. Record with the device and channel
+  names the show file expects, or playback lands on the wrong inputs.
+tags:
+- audio
+- dante
+- virtual-soundcheck
+- recording
+sources:
+- title: Dante Virtual Soundcard
+  url: https://www.audinate.com/products/software/dante-virtual-soundcard
+  publisher: Audinate
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

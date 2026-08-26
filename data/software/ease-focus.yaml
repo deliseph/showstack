@@ -1,0 +1,42 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: ease-focus
+name: EASE Focus
+vendor: AFMG
+category: previsualisation
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+- macos
+summary: Vendor-neutral loudspeaker array simulation using manufacturer GLL data, so systems
+  from different brands can be modelled and compared in the same room.
+typical_use:
+- Comparing array proposals from different manufacturers
+- Modelling a system when the vendor tool is not available
+- Teaching array behaviour
+homepage:
+  url: https://www.afmg.eu/
+  label: AFMG
+gotchas:
+- GLL data quality varies by manufacturer. A vendor-neutral tool inherits whatever the vendor
+  chose to publish.
+- It models acoustics, not rigging. Mechanical safety still has to come from the manufacturer's
+  own tool and a rigger.
+tags:
+- audio
+- system-design
+- simulation
+- gll
+- vendor-neutral
+sources:
+- title: AFMG
+  url: https://www.afmg.eu/
+  publisher: AFMG
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

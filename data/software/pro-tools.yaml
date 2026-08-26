@@ -1,0 +1,66 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: pro-tools
+name: Pro Tools
+vendor: Avid
+category: audio-playback
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: The dominant professional DAW, and in a live context the machine behind playback
+  tracks, virtual soundcheck recording and show-tape delivery. Timecode-locked playback is
+  its most common live role.
+speaks:
+- protocol: ltc
+  direction: in
+  note: Chases LTC via a synchroniser or interface.
+  confidence: reported
+- protocol: mtc
+  direction: bidirectional
+  note: MIDI timecode in and out.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via Dante Virtual Soundcard or a Dante interface.
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via MADI interface hardware.
+  confidence: reported
+- protocol: word-clock
+  direction: in
+  note: Clocks to an external word clock via the interface.
+  confidence: reported
+typical_use:
+- Timecode-locked playback tracks
+- Multitrack recording of a live show
+- Virtual soundcheck
+homepage:
+  url: https://www.avid.com/pro-tools
+  label: Pro Tools
+gotchas:
+- Playback rigs are almost always redundant, two machines locked to the same timecode. A single-machine
+  playback rig is a single point of failure for the whole show.
+- Plug-in licences live on iLok. A session that opens on the programming machine can open
+  with empty inserts on the show machine.
+- Chasing timecode and generating it are different jobs. Decide once whether the DAW is the
+  clock master or a follower and label the rack accordingly.
+tags:
+- audio
+- daw
+- playback
+- timecode
+- recording
+sources:
+- title: Pro Tools
+  url: https://www.avid.com/pro-tools
+  publisher: Avid
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

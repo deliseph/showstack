@@ -1,0 +1,62 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: dmxcontrol-3
+name: DMXControl 3
+vendor: DMXControl Projects e.V.
+category: lighting-control
+license: GPL-3.0-or-later
+price_model: open-source
+status: current
+platforms:
+- windows
+summary: Free and open-source Windows lighting control software with a full fixture library,
+  effects engine and multi-universe output. A genuine no-cost option for schools and small
+  venues.
+speaks:
+- protocol: dmx512
+  direction: out
+  note: DMX out via supported USB interfaces.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net output and input.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: sACN output.
+  confidence: reported
+- protocol: midi
+  direction: in
+  note: MIDI triggering.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: unverified
+typical_use:
+- School and youth theatre lighting
+- Small venue rigs with no console budget
+- Learning lighting control without a licence cost
+homepage:
+  url: https://www.dmxcontrol.org/
+  label: DMXControl
+gotchas:
+- Community-maintained, so hardware interface support is uneven. Check that the specific USB-DMX
+  widget is supported before buying it.
+- Documentation is strongest in German. English material exists but is less complete.
+tags:
+- lighting
+- open-source
+- free
+- windows
+- education
+sources:
+- title: DMXControl
+  url: https://www.dmxcontrol.org/
+  publisher: DMXControl Projects e.V.
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

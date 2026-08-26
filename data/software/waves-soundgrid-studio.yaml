@@ -1,0 +1,54 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: waves-soundgrid-studio
+name: Waves SoundGrid Studio
+vendor: Waves Audio
+category: audio-mixing
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: Networked audio processing system that offloads plug-ins to a dedicated SoundGrid
+  server, letting a live console run large plug-in racks at low latency without loading the
+  mixing desk.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Via a SoundGrid/Dante interface, not natively.
+  confidence: unverified
+- protocol: madi
+  direction: bidirectional
+  note: Via SoundGrid interface hardware.
+  confidence: unverified
+typical_use:
+- Plug-in racks on a live console
+- Multitrack recording and virtual soundcheck
+- Offloading processing from the mixing surface
+homepage:
+  url: https://www.waves.com/
+  label: Waves Audio
+gotchas:
+- SoundGrid is its own network on its own NIC. Sharing that NIC with a show network or the
+  internet causes exactly the dropouts it exists to avoid.
+- Plug-in licences are on a Waves account and USB drive. The server is useless without them,
+  so the licence drive is show-critical hardware.
+- Latency is low but not zero. Inserting a SoundGrid rack on a monitor path is a decision
+  to make deliberately with the monitor engineer.
+tags:
+- audio
+- plugins
+- soundgrid
+- waves
+- live
+sources:
+- title: Waves Audio
+  url: https://www.waves.com/
+  publisher: Waves Audio
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

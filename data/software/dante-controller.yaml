@@ -1,0 +1,59 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: dante-controller
+name: Dante Controller
+vendor: Audinate
+category: networking-utility
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+- macos
+summary: 'The routing and configuration tool for every Dante network: subscribe channels between
+  devices, set sample rate and latency, name devices, and read the clock status that tells
+  you why audio is ticking.'
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Discovers, routes and configures Dante devices. Does not itself carry audio.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Configures AES67 mode on capable devices.
+  confidence: unverified
+- protocol: ptp-1588
+  direction: bidirectional
+  note: Displays PTP clock status, master election and offsets.
+  confidence: reported
+typical_use:
+- Patching a Dante network
+- Diagnosing clock and latency problems
+- Naming devices before a show file references them
+homepage:
+  url: https://www.audinate.com/products/software/dante-controller
+  label: Dante Controller
+gotchas:
+- Device names are the patch. Renaming a device breaks every subscription that referenced
+  the old name, which is why naming happens before programming, not after.
+- The clock status tab is the first place to look for ticks and dropouts, not the audio path.
+  One device set as preferred master while another insists on being master is the classic
+  cause.
+- Latency is set per device and the network must accommodate the highest. A single device
+  left at 0.15 ms on a multi-switch network will drop audio while everything else looks fine.
+tags:
+- audio
+- dante
+- networking
+- diagnostics
+- free
+sources:
+- title: Dante Controller
+  url: https://www.audinate.com/products/software/dante-controller
+  publisher: Audinate
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

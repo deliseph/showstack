@@ -1,0 +1,71 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: stage-precision
+name: Stage Precision
+vendor: Stage Precision
+category: tracking
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+summary: 'Integration and data-routing platform that sits between tracking systems, media
+  servers, lighting and automation: it takes positional data in any of several formats, calibrates
+  and transforms it, and republishes it where it is needed.'
+speaks:
+- protocol: psn
+  direction: bidirectional
+  note: PosiStageNet in and out.
+  confidence: reported
+- protocol: rttrpm
+  direction: bidirectional
+  note: RTTrPM in and out.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC in and out.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Art-Net in and out.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: sACN in and out.
+  confidence: unverified
+- protocol: ndi
+  direction: in
+  note: NDI input for camera and video sources.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode input.
+  confidence: unverified
+typical_use:
+- Bridging a tracking system to media servers and lighting
+- Calibrating tracking data to a stage coordinate system
+- Routing and transforming show data between departments
+homepage:
+  url: https://stage-precision.com/
+  label: Stage Precision
+gotchas:
+- 'It becomes a single point of failure by design: everything routes through it. Plan the
+  redundancy the same way you would for a media server.'
+- Coordinate systems are the whole job. Lighting, automation, audio and video rarely agree
+  on where the origin is or which way Z points, and reconciling that is the actual work.
+tags:
+- tracking
+- integration
+- psn
+- rttrpm
+- data-routing
+sources:
+- title: Stage Precision
+  url: https://stage-precision.com/
+  publisher: Stage Precision
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

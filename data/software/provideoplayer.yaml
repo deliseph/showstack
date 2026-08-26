@@ -1,0 +1,58 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: provideoplayer
+name: ProVideoPlayer (PVP)
+vendor: Renewed Vision
+category: video-playback
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- macos
+summary: Multi-screen video playback and blending software aimed at worship, corporate and
+  touring, with playlist-based operation and edge blending across several outputs.
+speaks:
+- protocol: ndi
+  direction: bidirectional
+  note: NDI in and out.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: unverified
+- protocol: midi
+  direction: in
+  note: MIDI triggering.
+  confidence: unverified
+- protocol: art-net
+  direction: in
+  note: DMX/Art-Net control on supported versions.
+  confidence: unverified
+typical_use:
+- Multi-screen video in a worship or corporate context
+- Blended wide-screen playback
+- IMAG with playback in one machine
+homepage:
+  url: https://renewedvision.com/
+  label: Renewed Vision
+gotchas:
+- Output configuration is tied to the machine's display arrangement. Moving a show file to
+  a machine with different screens is not a clean transfer.
+- Frequently deployed alongside ProPresenter in the same rack, doing different jobs. Confirm
+  which one owns which output.
+tags:
+- video
+- playback
+- multi-screen
+- blending
+- worship
+sources:
+- title: Renewed Vision
+  url: https://renewedvision.com/
+  publisher: Renewed Vision
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

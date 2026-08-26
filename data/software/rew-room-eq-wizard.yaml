@@ -1,0 +1,43 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: rew-room-eq-wizard
+name: REW (Room EQ Wizard)
+vendor: John Mulcahy
+category: monitoring-diagnostics
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: Free acoustic measurement software covering swept-sine and RTA measurement, waterfall
+  and decay analysis, and filter design. Widely used for room analysis and system verification.
+typical_use:
+- Measuring room decay and modal behaviour
+- Verifying a system response after tuning
+- Designing correction filters
+homepage:
+  url: https://www.roomeqwizard.com/
+  label: REW
+gotchas:
+- REW is strongest at room and steady-state analysis. It is not a live dual-channel alignment
+  tool in the way Smaart or Open Sound Meter are, so do not reach for it mid-soundcheck.
+- Swept-sine measurements need a quiet room. A measurement taken over a load-in tells you
+  about the load-in.
+tags:
+- audio
+- measurement
+- acoustics
+- room
+- free
+sources:
+- title: REW
+  url: https://www.roomeqwizard.com/
+  publisher: Room EQ Wizard
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

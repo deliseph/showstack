@@ -1,0 +1,62 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: mitti
+name: Mitti
+vendor: Imimot
+category: video-playback
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- macos
+summary: 'Single-screen video cue player for macOS, built to be dependable and simple: a cue
+  list of clips with go, fade and loop, and OSC control from a show controller.'
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: OSC control in and out, commonly driven from QLab or a console.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: MIDI triggering.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: NDI output and input.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode sync on supported versions.
+  confidence: unverified
+- protocol: mtc
+  direction: in
+  note: MIDI timecode chase.
+  confidence: unverified
+typical_use:
+- A reliable single-screen video playback machine
+- Video cues triggered from QLab over OSC
+- Corporate and conference video playback
+homepage:
+  url: https://imimot.com/mitti/
+  label: Mitti
+gotchas:
+- Deliberately single-screen. Multi-output work needs a different tool, and trying to force
+  it is how a show ends up fragile.
+- macOS version and codec support move together. A clip that plays on the programming Mac
+  may not on an older show machine.
+tags:
+- video
+- playback
+- macos
+- osc
+- cue-player
+sources:
+- title: Mitti
+  url: https://imimot.com/mitti/
+  publisher: Imimot
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

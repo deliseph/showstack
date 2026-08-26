@@ -1,0 +1,49 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: go-button
+name: Go Button
+vendor: Figure 53
+category: cue-playback
+license: proprietary
+price_model: freemium
+status: current
+platforms:
+- ios
+summary: 'iOS sound cue playback app from the makers of QLab: a simple, dependable cue list
+  of audio files with fades and hotkeys, for shows that do not need a full QLab rig.'
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: MIDI triggering over a network or interface.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: unverified
+typical_use:
+- Sound cues for a small production from an iPad
+- Backup playback device
+- Rehearsal playback
+homepage:
+  url: https://figure53.com/go-button/
+  label: Go Button
+gotchas:
+- An iPad is a phone-adjacent device. Notifications, auto-lock and incoming calls are show
+  risks unless the device is properly locked down.
+- Not a QLab replacement. There is no video, no complex cue logic and no networked device
+  control.
+tags:
+- cue-playback
+- ios
+- sound
+- figure53
+sources:
+- title: Go Button
+  url: https://figure53.com/go-button/
+  publisher: Figure 53
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

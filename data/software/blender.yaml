@@ -1,0 +1,47 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: blender
+name: Blender
+vendor: Blender Foundation
+category: content-creation
+license: GPL-3.0-or-later
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: Free and open-source 3D creation suite covering modelling, animation, rendering,
+  compositing and video editing. Increasingly used in live events for content, previs and
+  set visualisation.
+typical_use:
+- Rendering content for LED and projection
+- Modelling a set for previs
+- Camera-matched visualisation of a stage design
+homepage:
+  url: https://www.blender.org/
+  label: Blender
+repo:
+  url: https://projects.blender.org/blender/blender
+  label: Blender source
+gotchas:
+- Render output has to match the screen geometry exactly. Content rendered at the wrong aspect
+  or pixel pitch is the single most common reason a wall looks wrong on site.
+- Version changes can alter render results. Pin the Blender version for a project the way
+  you would pin a media server version.
+tags:
+- 3d
+- content
+- open-source
+- rendering
+- previs
+sources:
+- title: Blender
+  url: https://www.blender.org/
+  publisher: Blender Foundation
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

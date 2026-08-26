@@ -1,0 +1,46 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: db-arraycalc
+name: d&b ArrayCalc
+vendor: d&b audiotechnik
+category: previsualisation
+license: proprietary
+price_model: free
+status: current
+platforms:
+- windows
+- macos
+summary: 'System design and simulation software for d&b loudspeaker systems: array geometry,
+  splay angles, predicted coverage, rigging load and the amplifier setup that follows from
+  it.'
+typical_use:
+- Designing a d&b array before it is hung
+- Producing rigging load figures for the venue
+- Exporting amplifier configuration to R1
+homepage:
+  url: https://www.dbaudio.com/
+  label: d&b audiotechnik
+gotchas:
+- The prediction assumes the array is hung where the drawing says. Real trim heights and real
+  venue geometry are what actually determines coverage, so remeasure rather than trusting
+  the plot.
+- The rigging load numbers it produces are for the loudspeaker array only. They are an input
+  to a rigging plan, not a rigging plan.
+- ArrayCalc designs the system; R1 controls it. Both are needed, and the handoff between them
+  is where configurations get lost.
+tags:
+- audio
+- system-design
+- simulation
+- db-audiotechnik
+- rigging
+sources:
+- title: d&b audiotechnik
+  url: https://www.dbaudio.com/
+  publisher: d&b audiotechnik
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

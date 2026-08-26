@@ -1,0 +1,53 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: realizzer-3d
+name: Realizzer 3D
+vendor: Realizzer
+category: previsualisation
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+summary: Real-time lighting visualiser and rendering tool, used to previsualise a rig, produce
+  photorealistic renders for client approval, and rehearse a show off-site.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Art-Net input from a console.
+  confidence: reported
+- protocol: sacn
+  direction: in
+  note: sACN input from a console.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: CITP for media server integration.
+  confidence: unverified
+typical_use:
+- Selling a lighting design with a photoreal render
+- Pre-programming a show before load-in
+- Checking fixture positions and beam coverage
+homepage:
+  url: https://www.realizzer.com/
+  label: Realizzer
+gotchas:
+- Visualiser beam appearance is a rendering choice, not a photometric measurement. Use the
+  beam and photometrics maths for coverage decisions, not the picture.
+- A visualiser only knows the rig you modelled. Fixture positions that differ from the plot
+  make the pre-programmed show wrong in a way that looks right on screen.
+tags:
+- previs
+- visualiser
+- rendering
+- lighting
+sources:
+- title: Realizzer
+  url: https://www.realizzer.com/
+  publisher: Realizzer
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

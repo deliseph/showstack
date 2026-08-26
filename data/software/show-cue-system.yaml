@@ -1,0 +1,65 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: show-cue-system
+name: Show Cue System (SCS)
+vendor: Show Cue Systems
+category: cue-playback
+license: proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+summary: Windows cue playback software for theatre sound, covering audio cues, video, MIDI
+  and DMX triggering. The main Windows counterpart to QLab in community and regional theatre.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: MIDI triggering and output.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC in and out.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: OSC control.
+  confidence: unverified
+- protocol: dmx512
+  direction: out
+  note: DMX output via interface.
+  confidence: unverified
+- protocol: art-net
+  direction: out
+  note: Art-Net output on supported versions.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode chase.
+  confidence: unverified
+typical_use:
+- Theatre sound cue playback on Windows
+- Triggering lighting cues from the sound operator position
+- Community and educational theatre
+homepage:
+  url: https://www.showcuesystems.com/
+  label: Show Cue Systems
+gotchas:
+- The Windows alternative to QLab, and cue lists do not transfer between them. A production
+  moving platforms is a re-programming job.
+- Audio device selection is a Windows problem more than an SCS one. Lock the interface and
+  disable device switching before the show.
+tags:
+- cue-playback
+- theatre
+- windows
+- sound
+sources:
+- title: Show Cue Systems
+  url: https://www.showcuesystems.com/
+  publisher: Show Cue Systems
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

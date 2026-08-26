@@ -1,0 +1,51 @@
+# showstack entry - software
+# Schema: ../../schema/software.schema.json
+
+id: dante-domain-manager
+name: Dante Domain Manager
+vendor: Audinate
+category: networking-utility
+license: proprietary
+price_model: subscription
+status: current
+platforms:
+- linux
+- web
+summary: 'Management layer for large Dante deployments: user roles, audit logging, and the
+  ability to run several Dante domains across subnets rather than one flat network.'
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Manages Dante devices, domains and routing policy.
+  confidence: reported
+- protocol: ptp-1588
+  direction: bidirectional
+  note: Clock management across domains.
+  confidence: unverified
+typical_use:
+- A campus or stadium with several independent Dante systems
+- Restricting who can re-route audio
+- Auditing what changed and when after an incident
+homepage:
+  url: https://www.audinate.com/products/software/dante-domain-manager
+  label: Dante Domain Manager
+gotchas:
+- Enrolling a device into a domain changes how it behaves outside that domain. A device borrowed
+  from a DDM-managed system into a touring rack may not simply work.
+- It solves an organisational problem more than a technical one. If nobody is going to administer
+  the roles, it adds a dependency without adding safety.
+tags:
+- audio
+- dante
+- management
+- enterprise
+- install
+sources:
+- title: Dante Domain Manager
+  url: https://www.audinate.com/products/software/dante-domain-manager
+  publisher: Audinate
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'
