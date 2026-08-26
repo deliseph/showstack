@@ -3,6 +3,7 @@
 
 id: daisy-chain
 en: Daisy chain
+zh_hant: 串接
 domain: networking
 definition_en: >-
   Wiring devices in a straight line, in and out, rather than back to a
@@ -11,6 +12,8 @@ definition_en: >-
   Splitting one line out to several fixtures from a single point — a
   passive Y-split, a hub-and-spoke run — is not a daisy chain, and is
   where most unexplained DMX flicker actually comes from.
+definition_zh_hant: >-
+  設備一進一出串成一條線，而不是各自回到中央設備。DMX 與部分音訊、網路設備常用；一台故障即中斷後段。
 false_friends:
 - >-
   A climbing "daisy chain" is a sewn webbing sling aid climbers clip into

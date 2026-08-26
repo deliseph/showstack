@@ -1,0 +1,34 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: barn-door
+en: Barn door
+zh_hant: 遮光板
+domain: lighting
+definition_en: The hinged metal flaps that clip into the front of a fresnel or PAR to cut
+  the edge of the beam off scenery, a portal or the front row. Four leaves, rotatable in
+  the accessory slot.
+definition_zh_hant: 夾在菲涅爾燈或 PAR 燈前方的鉸鏈金屬葉片，用來把光邊切離景片、台口或前排觀眾。通常四片，可在配件槽內旋轉。
+regional_variants:
+- region: UK / US
+  term: Barn door
+- region: HK / TW
+  term: 遮光板 / 四葉片
+false_friends:
+- Barn doors soften a cut; shutters in a profile/ellipsoidal make a hard one. Asking for
+  a "sharp cut" on a fresnel gets you the softest edge in the rig.
+see_also:
+- gel
+- focus
+tags:
+- lighting
+- accessory
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

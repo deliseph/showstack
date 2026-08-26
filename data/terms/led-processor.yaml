@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: led-processor
+en: LED processor / sending card
+zh_hant: LED 處理器
+domain: video
+definition_en: The box between a video source and an LED wall that takes a standard video
+  signal, scales and maps it onto the physical panel layout, and drives the receiving cards
+  in the panels. It owns the colour, the gamma, the brightness and the frame rate the wall
+  actually shows.
+definition_zh_hant: 介於影像訊號源與 LED 顯示屏之間的設備，接收標準影像訊號，縮放並對應到實際的箱體排列，再驅動箱體內的接收卡。屏幕最終呈現的色彩、gamma、亮度與更新率都由它決定。
+regional_variants:
+- region: UK / US
+  term: Processor / sender
+- region: HK / TW
+  term: LED 處理器 / 發送卡
+false_friends:
+- The processor, not the panel, usually causes camera flicker. Refresh rate and scan mode
+  are processor settings, so "the wall strobes on camera" is nearly always a processor conversation.
+see_also:
+- pixel-pitch
+- scaler
+tags:
+- video
+- led
+- processing
+sources:
+- title: IEEE 1789 recommended practice on LED flicker
+  url: https://standards.ieee.org/ieee/1789/4479/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

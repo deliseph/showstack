@@ -1,0 +1,41 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: latency
+en: Latency
+zh_hant: 延遲
+domain: general
+definition_en: The time between something happening and the system showing or sounding it.
+  Every conversion, network hop, scaler, processor and wireless link adds some, and it accumulates
+  down a chain until a video wall no longer matches the PA and a performer no longer trusts
+  their monitor.
+definition_zh_hant: 事件發生到系統呈現出來之間的時間差。每一次轉換、網路跳躍、縮放、處理與無線傳輸都會增加延遲，沿著訊號鏈累積，直到影像牆與 PA 不再同步、表演者不再信任自己的監聽。
+regional_variants:
+- region: UK / US
+  term: Latency / delay
+- region: HK / TW
+  term: 延遲
+false_friends:
+- Audio and video latency are budgeted separately and then have to be reconciled. Fixing
+  lip sync by delaying the audio can push the performer monitor feed past what they can
+  play to.
+see_also:
+- time-alignment
+- skew
+related_protocols:
+- dante
+- ndi
+- smpte-st-2110
+tags:
+- general
+- timing
+- av
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: scrim
+en: Scrim / sharkstooth gauze
+zh_hant: 紗幕
+domain: scenic
+definition_en: 'An open-weave cloth that reads as solid when lit from the front and becomes
+  transparent when the light behind it comes up. The classic reveal: light the gauze, then
+  cross-fade to what is behind it.'
+definition_zh_hant: 織紋開放的布幕，前方打光時看似實面，後方燈光亮起時即變為透明。最經典的用法就是「顯影」：先打亮紗幕，再交叉淡入其後的景。
+regional_variants:
+- region: UK
+  term: Gauze / sharkstooth gauze
+- region: US
+  term: Scrim / sharkstooth scrim
+- region: HK / TW
+  term: 紗幕
+false_friends:
+- In US usage "scrim" is also a wire mesh accessory that knocks a stop or two out of a lighting
+  fixture. Same word, completely different object, and both turn up on the same rig.
+see_also:
+- legs
+- cyclorama
+tags:
+- scenic
+- drape
+- reveal
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

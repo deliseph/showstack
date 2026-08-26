@@ -1,0 +1,42 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: beam-angle
+en: Beam angle / field angle
+zh_hant: 光束角／場角
+domain: lighting
+definition_en: Two different measurements of how wide a light source spreads. Beam angle
+  is where intensity has fallen to 50 percent of centre; field angle is where it has fallen
+  to 10 percent. A fixture quoted at one number and compared against the other will look
+  wrong on paper and on stage.
+definition_zh_hant: 描述光源擴散寬度的兩種不同量測。光束角是強度衰減至中心 50% 之處，場角則是衰減至 10% 之處。以其中一個數字標示的燈具，若拿去和另一個定義比較，紙上與台上都會對不起來。
+regional_variants:
+- region: UK / US
+  term: Beam angle / field angle
+- region: HK / TW
+  term: 光束角 / 場角
+false_friends:
+- Field angle is always the larger number. A data sheet quoting a single "beam" figure is
+  usually quoting the 50 percent one, which makes the fixture look tighter than it looks
+  in a room.
+see_also:
+- moving-head
+- focus
+tags:
+- lighting
+- optics
+- beam
+sources:
+- title: ANSI E1.9 reporting photometric performance data
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -3,6 +3,7 @@
 
 id: flat
 en: Flat
+zh_hant: 景片
 domain: scenic
 definition_en: >-
   A rectangular scenic unit — a lightweight frame covered in muslin or
@@ -10,6 +11,8 @@ definition_en: >-
   upright at the edge of the stage with a stage weight or brace. The
   basic unit most built scenery still reduces to, long before anyone says
   "unit set" or "modular."
+definition_zh_hant: >-
+  木框或鋁框繃布或釘板的平面景，是硬景的基本單位。
 false_friends:
 - >-
   Lighting crews use "flat" for shadowless, low-contrast light — the

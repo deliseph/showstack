@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: di-box
+en: DI box
+zh_hant: DI 盒
+domain: audio
+definition_en: A box that converts a high-impedance, unbalanced instrument output into a
+  low-impedance balanced mic-level signal that can run down a long multicore without picking
+  up noise. Passive types use a transformer; active types need phantom or a battery.
+definition_zh_hant: 把高阻抗、非平衡的樂器輸出轉換成低阻抗平衡麥克風位準訊號的設備，使訊號能走長距離多芯線而不拾取雜訊。被動式使用變壓器，主動式則需幻象電源或電池。
+regional_variants:
+- region: UK
+  term: DI box
+- region: US
+  term: DI / direct box
+- region: HK / TW
+  term: DI 盒 / 直入盒
+false_friends:
+- A ground-lift switch on a DI lifts the shield at the box end only. It fixes hum from a
+  ground loop; it does not fix hum from a bad mains supply, and it never makes an unsafe
+  rig safe.
+see_also:
+- phantom-power
+- line-check
+tags:
+- audio
+- stage
+- impedance
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

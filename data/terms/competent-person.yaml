@@ -3,6 +3,7 @@
 
 id: competent-person
 en: Competent person
+zh_hant: 適任人員
 domain: safety
 definition_en: >-
   Whoever is legally allowed to sign off that a task, a rig or a piece of
@@ -10,6 +11,8 @@ definition_en: >-
   country's regulation you are standing under — it is not a synonym for
   "someone who is good at their job," and it is not one qualification you
   can carry between jurisdictions.
+definition_zh_hant: >-
+  法規上有資格簽署某項作業、吊掛系統或設備可安全使用的人。重點在「經指定且能舉證」，不是「做過很多次」。
 false_friends:
 - >-
   US OSHA (29 CFR 1926.32(f)): able to identify hazards AND has authority

@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: iem
+en: IEM (in-ear monitor)
+zh_hant: 入耳式監聽
+domain: audio
+definition_en: A personal monitor mix sent to a performer over a body-pack receiver and
+  moulded or universal earpieces, instead of a wedge on the deck. Each mix needs its own
+  RF channel, so a band on IEMs plus radio mics is a frequency coordination job before it
+  is an audio one.
+definition_zh_hant: 以腰包接收機與訂製或通用耳機送給表演者的個人監聽混音，取代放在台面的地板監聽。每一路混音需要一組獨立的無線頻率，因此樂團同時使用 IEM
+  與無線麥克風時，先是頻率協調問題，其次才是混音問題。
+regional_variants:
+- region: UK / US
+  term: IEMs / in-ears
+- region: HK / TW
+  term: 入耳式監聽 / IEM / 耳機監聽
+false_friends:
+- IEM transmitters and radio mic receivers occupy the same spectrum from opposite directions.
+  Plan them as one frequency plan, not two, or the transmitters will sit on top of the mics.
+see_also:
+- monitor-wedge
+- line-check
+tags:
+- audio
+- monitors
+- rf
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

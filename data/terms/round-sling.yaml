@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: round-sling
+en: Round sling / span set
+zh_hant: 圓形吊帶
+domain: rigging
+definition_en: A continuous loop of load-bearing yarn inside a protective sleeve, used to
+  wrap a beam or a truss and take a hoist. Colour codes the capacity in most European ranges,
+  though the colour convention is not universal, so read the label rather than the colour.
+definition_zh_hant: 保護套內為連續承力紗束的環形吊帶，用來繞過鋼樑或桁架承接葫蘆。歐系產品多以顏色標示載重，但顏色慣例並非全球一致，應以標籤為準而非顏色。
+regional_variants:
+- region: UK
+  term: Span set / round sling
+- region: US
+  term: Round sling
+- region: HK / TW
+  term: 圓形吊帶 / 吊帶
+false_friends:
+- Capacity depends on the hitch. The same sling has one rating in a straight pull, a different
+  one in a choke, and a different one again in a basket. A single number on the label is
+  not the whole story.
+see_also:
+- shackle
+- safe-working-load
+safety_critical: true
+tags:
+- rigging
+- sling
+- load
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

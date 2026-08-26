@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: running-order
+en: Running order
+zh_hant: 流程表
+domain: production-management
+definition_en: 'The list of what happens in what sequence on the day: acts, speeches, video
+  packages, changeovers, with times. The document every department times its work against,
+  and the one that changes most often.'
+definition_zh_hant: 當天各項內容的先後順序清單：節目、致詞、影片、換場，並附時間。所有部門據以安排工作的文件，也是改動最頻繁的一份。
+regional_variants:
+- region: UK
+  term: Running order
+- region: US
+  term: Rundown / run of show
+- region: HK / TW
+  term: 流程表 / Rundown
+false_friends:
+- A running order is not a cue sheet. It says what happens; the cue sheet says who does
+  what to make it happen, and one can change without the other.
+see_also:
+- cue
+- plot
+tags:
+- production
+- schedule
+- paperwork
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: phantom-power
+en: Phantom power
+zh_hant: 幻象電源
+domain: audio
+definition_en: 48 volts DC sent up the same balanced pair that carries the microphone signal,
+  to power a condenser capsule or an active DI. Equal on both legs, so a balanced input
+  rejects it and a dynamic microphone ignores it.
+definition_zh_hant: 沿著傳送麥克風訊號的同一組平衡線，送上 48V 直流電，用來供電給電容式麥克風或主動式 DI。兩腳電位相同，因此平衡輸入會將其抵消，動圈麥克風也不受影響。
+regional_variants:
+- region: UK / US
+  term: Phantom power / 48V
+- region: HK / TW
+  term: 幻象電源 / 48V
+false_friends:
+- Phantom is not the same as T-power (A-B powering) and it is not the same as bias for an
+  electret lavalier. Patching a ribbon mic into a live 48V leg can destroy it.
+see_also:
+- di-box
+- line-check
+tags:
+- audio
+- microphone
+- power
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

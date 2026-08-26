@@ -1,0 +1,32 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dead-hang
+en: Dead hang
+zh_hant: 直吊
+domain: rigging
+definition_en: 'A load hung straight down from a single point, with no bridle and no angle.
+  The simplest case: the tension in the steel equals the weight of the load, and nothing
+  multiplies.'
+definition_zh_hant: 負載自單一吊點垂直吊下，不做分力、沒有角度。最單純的情形：鋼索張力等於負載重量，沒有任何倍數效應。
+regional_variants:
+- region: UK / US
+  term: Dead hang
+- region: HK / TW
+  term: 直吊
+see_also:
+- bridle
+- rigging-point
+safety_critical: false
+tags:
+- rigging
+- load
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

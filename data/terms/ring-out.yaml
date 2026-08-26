@@ -3,6 +3,7 @@
 
 id: ring-out
 en: Ring out / ringing out
+zh_hant: 掃頻抑制回授
 domain: audio
 definition_en: >-
   Deliberately pushing each speaker zone toward feedback before doors, then
@@ -10,6 +11,8 @@ definition_en: >-
   graphic EQ. Normally done on monitor wedges first, then FOH, well before
   soundcheck proper — not a live-mixing move, and not the same thing as
   EQing for tone.
+definition_zh_hant: >-
+  開場前刻意把每一個音區推到接近回授，再把鳴叫的頻率壓下去，藉此換取更高的回授前增益。
 see_also:
 - monitor-wedge
 - gain-before-feedback

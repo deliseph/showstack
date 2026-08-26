@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: ppe
+en: PPE (personal protective equipment)
+zh_hant: 個人防護裝備
+domain: safety
+definition_en: 'The equipment worn to reduce harm when the hazard cannot be designed out:
+  helmet, harness, gloves, eye protection, hearing protection, high-visibility clothing,
+  safety footwear. Last in the hierarchy of control, not first.'
+definition_zh_hant: 在無法從源頭消除危害時，用來降低傷害的個人穿戴裝備：安全帽、安全帶、手套、護目裝備、聽力防護、反光衣、安全鞋。在控制層級中排在最後，而非最先。
+regional_variants:
+- region: UK / US
+  term: PPE
+- region: HK / TW
+  term: 個人防護裝備 / PPE
+false_friends:
+- Handing out PPE does not discharge the duty to remove the hazard. A rig that needs everyone
+  in a helmet all day is a rig with an unsolved overhead-work problem.
+see_also:
+- competent-person
+- exclusion-zone
+safety_critical: true
+tags:
+- safety
+- ppe
+confidence: reported
+sources:
+- title: ISO 12100 risk assessment and risk reduction
+  url: https://www.iso.org/standard/51528.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

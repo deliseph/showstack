@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: bridle
+en: Bridle
+zh_hant: 分力吊索
+domain: rigging
+definition_en: 'Two or more legs of steel taken from separate structural points down to
+  a single hanging position, used when the load needs to hang somewhere the structure has
+  no point. The geometry decides everything: as the angle between the legs opens up, the
+  tension in each leg climbs above the weight being carried, and at wide angles it climbs
+  fast.'
+definition_zh_hant: 由兩個以上的結構吊點分別拉鋼索，匯集到同一個懸掛位置，用於負載必須落在結構沒有吊點的地方。幾何決定一切：兩腿之間的夾角越大，每一腿的張力越高於實際負載，角度很大時上升極快。
+regional_variants:
+- region: UK / US
+  term: Bridle
+- region: HK / TW
+  term: 分力吊索 / 分力鋼索
+false_friends:
+- A bridle is not extra capacity. It moves a load sideways between existing points and puts
+  MORE tension in each leg than a dead hang. Two 500 kg points are not a 1000 kg bridle.
+see_also:
+- rigging-point
+- safe-working-load
+safety_critical: true
+tags:
+- rigging
+- bridle
+- load
+- geometry
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

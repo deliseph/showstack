@@ -1,0 +1,34 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: scaler
+en: Scaler
+zh_hant: 影像縮放器
+domain: video
+definition_en: A device that converts an incoming video signal to a different resolution,
+  frame rate or format so a display can take it. Every scale costs a frame or more of latency
+  and some image quality, which is why a well-planned system scales once.
+definition_zh_hant: 把輸入影像轉換成另一種解析度、更新率或格式，使顯示設備能夠接收的設備。每一次縮放都要付出至少一個影格的延遲與部分畫質，因此規劃良好的系統只縮放一次。
+regional_variants:
+- region: UK / US
+  term: Scaler
+- region: HK / TW
+  term: 縮放器 / Scaler
+false_friends:
+- A switcher with "seamless" outputs is scaling on every input. That is where the latency
+  in a presentation system comes from, not from the cable length.
+see_also:
+- led-processor
+tags:
+- video
+- processing
+- latency
+sources:
+- title: SMPTE ST 292-1 HD-SDI
+  url: https://pub.smpte.org/doc/st292-1/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

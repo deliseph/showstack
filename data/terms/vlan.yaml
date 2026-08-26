@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: vlan
+en: VLAN
+zh_hant: 虛擬區域網路
+domain: networking
+definition_en: A logical network carved out of one physical switch fabric, so lighting,
+  audio, video and corporate traffic can share copper without seeing each other. Ports are
+  either access (one VLAN, untagged) or trunk (several VLANs, tagged).
+definition_zh_hant: 在同一套實體交換器架構上切分出的邏輯網路，讓燈光、音訊、影像與辦公流量共用線路而互不可見。連接埠分為 access（單一 VLAN、不加標籤）與
+  trunk（多 VLAN、加標籤）兩種。
+regional_variants:
+- region: UK / US
+  term: VLAN
+- region: HK / TW
+  term: VLAN / 虛擬區域網路
+false_friends:
+- A VLAN is not a firewall. Traffic between VLANs is blocked only until someone adds a route;
+  and multicast still floods within a VLAN unless IGMP snooping is on.
+see_also:
+- multicast
+- qos
+related_protocols:
+- sacn
+- dante
+- aes67
+tags:
+- networking
+- vlan
+- switching
+sources:
+- title: IEEE 802.1Q bridges and bridged networks
+  url: https://standards.ieee.org/ieee/802.1Q/10323/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

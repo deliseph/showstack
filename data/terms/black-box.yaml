@@ -3,6 +3,7 @@
 
 id: black-box
 en: Black box
+zh_hant: 黑盒劇場
 domain: general
 definition_en: >-
   A square or rectangular room with black walls and a black floor, built
@@ -10,6 +11,8 @@ definition_en: >-
   the production needs. When someone says "we're in a black box," they
   mean the venue type — not the other thing this exact phrase means on
   the same crew.
+definition_zh_hant: >-
+  四面牆與地板皆為黑色的方形或長方形空間，座位與演區可自由配置。中文亦作「小劇場」，但小劇場指規模，黑盒指形式，兩者不必然相同。
 false_friends:
 - >-
   Elsewhere on the same show, "black box" means a system judged only by

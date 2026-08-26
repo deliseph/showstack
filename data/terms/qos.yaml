@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: qos
+en: QoS (quality of service)
+zh_hant: 服務品質
+domain: networking
+definition_en: Marking packets so a switch knows which ones to send first when a link is
+  congested. On a media network the clock is marked highest, the media next, and everything
+  else takes what is left.
+definition_zh_hant: 為封包標記優先權，讓交換器在鏈路壅塞時知道該先送哪些。在媒體網路上，時脈封包優先權最高，媒體次之，其餘流量分配剩餘頻寬。
+regional_variants:
+- region: UK / US
+  term: QoS
+- region: HK / TW
+  term: QoS / 服務品質
+false_friends:
+- DSCP is layer 3, PCP is layer 2 inside the VLAN tag. An untagged access port has no PCP,
+  so half the QoS a vendor guide describes silently does not exist on that port.
+see_also:
+- vlan
+- multicast
+related_protocols:
+- dante
+- aes67
+- smpte-st-2110
+- ptp-1588
+tags:
+- networking
+- qos
+- dscp
+sources:
+- title: IEEE 802.1Q priority code point
+  url: https://standards.ieee.org/ieee/802.1Q/10323/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

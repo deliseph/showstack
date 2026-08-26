@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: frame-rate
+en: Frame rate
+zh_hant: 影格率
+domain: video
+definition_en: 'How many complete images a video signal carries per second. On a show it
+  is a system-wide decision, not a per-device one: content, playback, switcher, processor,
+  LED wall and camera all have to agree, or something judders.'
+definition_zh_hant: 影像訊號每秒傳送的完整畫面數。在演出中這是全系統的決定而非單機設定：內容、播放、切換台、處理器、LED 屏與攝影機必須一致，否則某處會出現跳動。
+regional_variants:
+- region: UK / US
+  term: Frame rate / fps
+- region: HK
+  term: 幀率
+- region: TW
+  term: 影格率
+false_friends:
+- 29.97 and 30 are not the same, and 23.976 is not 24. The 1000/1001 pull-down is where
+  drifting timecode and rejected content files come from.
+see_also:
+- pixel-pitch
+related_protocols:
+- ltc
+- genlock
+tags:
+- video
+- timing
+- timecode
+sources:
+- title: SMPTE ST 12-1 time and control code
+  url: https://pub.smpte.org/doc/st12-1/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

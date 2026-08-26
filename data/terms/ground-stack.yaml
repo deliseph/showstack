@@ -3,6 +3,7 @@
 
 id: ground-stack
 en: Ground stack
+zh_hant: 落地疊放
 domain: audio
 definition_en: >-
   A PA array built on the deck rather than flown from a rigging point —
@@ -10,6 +11,8 @@ definition_en: >-
   to build and needs no rigging sign-off, but it eats sightlines, covers a
   smaller area evenly than a flown array of the same box count, and puts
   the entire weight of the hang on the floor instead of overhead.
+definition_zh_hant: >-
+  音箱直接疊在舞台面或台架上，而非吊掛。多用於無吊點或載重不足的場地。
 see_also:
 - front-fill
 - fly

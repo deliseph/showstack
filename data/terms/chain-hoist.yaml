@@ -3,6 +3,7 @@
 
 id: chain-hoist
 en: Chain hoist / chain motor
+zh_hant: 電動葫蘆
 domain: automation
 definition_en: >-
   A powered or hand-chain hoist built to raise and lower a suspended load,
@@ -12,6 +13,8 @@ definition_en: >-
   makes it a hoist under the entertainment standard is not the chain — it
   is a locking brake built to hold a suspended load. A winch is a
   different class of machine.
+definition_zh_hant: >-
+  以鏈條升降吊掛負載的葫蘆，可為電動或手拉。台灣多稱「電動吊車」或「電動葫蘆」，香港常直接說 motor 或「摩打」。
 false_friends:
 - >-
   ANSI E1.6-1's own annex draws the line: a hoist lifts with a locking

@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: risk-assessment
+en: Risk assessment
+zh_hant: 風險評估
+domain: production-management
+definition_en: The written identification of what could hurt someone on this production,
+  how likely and how badly, and what is being done about it. In much of the world it is
+  a legal requirement rather than paperwork, and it is the document a venue, an insurer
+  or an inspector asks for first.
+definition_zh_hant: 以書面指認本製作中可能造成傷害的事項、其可能性與嚴重度，以及所採取的控制措施。在許多國家這是法定義務而非例行文書，也是場館、保險公司或稽查人員最先索取的文件。
+regional_variants:
+- region: UK
+  term: Risk assessment / RAMS
+- region: US
+  term: Job hazard analysis / JHA
+- region: HK / TW
+  term: 風險評估
+false_friends:
+- 'RAMS is risk assessment AND method statement. A venue asking for RAMS wants both: what
+  could go wrong, and the step-by-step of how you intend to do the work.'
+see_also:
+- competent-person
+- exclusion-zone
+safety_critical: false
+tags:
+- safety
+- production
+- paperwork
+confidence: reported
+sources:
+- title: ISO 12100 risk assessment and risk reduction
+  url: https://www.iso.org/standard/51528.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: talkback
+en: Talkback / comms
+zh_hant: 通話系統
+domain: stage-management
+definition_en: The intercom that lets the stage manager, operators, followspots, deck crew
+  and automation talk to each other during a show. Wired partyline, digital matrix or wireless,
+  usually split into channels so a lighting call does not land in the flyman ear.
+definition_zh_hant: 讓舞台監督、各操作員、追蹤燈、台面人員與自動化在演出中互相溝通的內部通話系統。可為有線環路、數位矩陣或無線，通常分頻道，以免燈光的指令跑進吊桿人員的耳朵。
+regional_variants:
+- region: UK
+  term: Cans / comms / talkback
+- region: US
+  term: Headsets / comms / intercom
+- region: HK / TW
+  term: 通話 / Comm / 對講
+false_friends:
+- '"Talkback" in a recording or broadcast context means the engineer talking to the studio
+  floor, which is a different signal path from a partyline comms system.'
+see_also:
+- call
+- prompt-corner
+tags:
+- stage-management
+- comms
+- headset
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

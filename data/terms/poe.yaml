@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: poe
+en: PoE (Power over Ethernet)
+zh_hant: 乙太網路供電
+domain: networking
+definition_en: 'Powering a device over the same Cat cable that carries its data. Graded
+  by type: Type 1 up to 15.4 W at the switch, Type 2 up to 30 W, Type 3 up to 60 W and Type
+  4 up to 90 W.'
+definition_zh_hant: 透過傳輸資料的同一條網路線為設備供電。依類型分級：Type 1 交換器端最高 15.4 W、Type 2 最高 30 W、Type 3
+  最高 60 W、Type 4 最高 90 W。
+regional_variants:
+- region: UK / US
+  term: PoE / PoE+ / PoE++
+- region: HK / TW
+  term: PoE / 網路供電
+false_friends:
+- '"PoE++", "UPoE" and "Hi-PoE" are vendor names, not ratings. The standard words are Type
+  1 to Type 4, and a Type 4 device on a Type 2 port simply will not boot.'
+see_also:
+- vlan
+tags:
+- networking
+- power
+- poe
+sources:
+- title: IEEE 802.3bt four-pair PoE
+  url: https://standards.ieee.org/ieee/802.3bt/6749/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

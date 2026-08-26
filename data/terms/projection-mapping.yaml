@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: projection-mapping
+en: Projection mapping
+zh_hant: 光雕投影
+domain: video
+definition_en: 'Warping projected content to fit a non-flat, non-rectangular surface: a
+  building facade, a set piece, a car. The content is authored against a model of the object,
+  and the projector is aligned to that model on site.'
+definition_zh_hant: 把投影內容變形以貼合非平面、非矩形的表面：建築外牆、景片、車輛等。內容依物件模型製作，現場再把投影機對位到該模型。
+regional_variants:
+- region: UK / US
+  term: Projection mapping / video mapping
+- region: HK
+  term: 投影映射 / Mapping
+- region: TW
+  term: 光雕投影
+false_friends:
+- Mapping is not keystone correction. Keystone squares a trapezoid; mapping deforms content
+  onto arbitrary geometry, and needs the object measured or scanned first.
+see_also:
+- edge-blend
+tags:
+- video
+- projection
+- content
+sources:
+- title: Projection mapping overview
+  url: https://en.wikipedia.org/wiki/Projection_mapping
+  publisher: Wikipedia
+  accessed: '2026-08-26'
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

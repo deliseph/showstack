@@ -1,0 +1,31 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dresser
+en: Dresser
+zh_hant: 服裝助理
+domain: wardrobe
+definition_en: The wardrobe crew member assigned to get a performer in and out of costume
+  on time, including the quick changes that happen in the wings with seconds to spare. Works
+  to a plot of who is where, in what, at which cue.
+definition_zh_hant: 負責讓演員準時穿脫服裝的服裝組人員，包括在側台只有數秒時間完成的快換。依據一份標明「誰、在哪裡、穿什麼、在哪個 cue」的表工作。
+regional_variants:
+- region: UK / US
+  term: Dresser
+- region: HK / TW
+  term: 服裝助理 / 跟裝
+see_also:
+- quick-change
+- plot
+tags:
+- wardrobe
+- crew
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

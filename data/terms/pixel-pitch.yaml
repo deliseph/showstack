@@ -3,6 +3,7 @@
 
 id: pixel-pitch
 en: Pixel pitch
+zh_hant: 點間距
 domain: video
 definition_en: >-
   The centre-to-centre distance between LED pixels on a video wall panel,
@@ -11,6 +12,8 @@ definition_en: >-
   distance, at a real cost in price, weight and power draw. The right
   pitch is set by minimum viewing distance, not by "smaller is always
   better."
+definition_zh_hant: >-
+  LED 顯示屏相鄰像素中心到中心的距離，單位為毫米。數字越小、解析度越高，最短可視距離也越近。
 safety_critical: false
 confidence: reported
 tags:

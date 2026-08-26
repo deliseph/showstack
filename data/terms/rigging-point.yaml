@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: rigging-point
+en: Point / rigging point
+zh_hant: 吊點
+domain: rigging
+definition_en: 'A single place in the roof structure from which a load is hung, and the
+  whole assembly that gets it there: the steel, the shackle, the hoist and the beam or beam
+  clamp it lands on. A tour asks a venue for a point count and a weight per point; the venue
+  answers with what its structure can actually take, which is rarely the same number.'
+definition_zh_hant: 屋頂結構上用來吊掛負載的單一位置，以及到達該位置的整組配件：鋼索、卸扣、電動葫蘆與所承接的鋼樑或樑夾。巡演會向場館提出吊點數量與每點載重，場館回覆結構實際能承受的數字，兩者往往不同。
+regional_variants:
+- region: UK
+  term: Point / rigging point
+- region: US
+  term: Point / hang point
+- region: HK / TW
+  term: 吊點
+false_friends:
+- '"Point" can also mean a spot line or point hoist - a moveable single line, not a fixed
+  structural attachment. Ask which a venue means before planning a load.'
+see_also:
+- chain-hoist
+- safe-working-load
+safety_critical: true
+tags:
+- rigging
+- load
+- venue
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

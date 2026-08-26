@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: moving-head
+en: Moving head
+zh_hant: 搖頭燈
+domain: lighting
+definition_en: 'A fixture whose whole optical head pans and tilts on motorised yokes, as
+  opposed to a fixed fixture or a mirror-scanner. The category everything else in a modern
+  rig is described against: wash, spot, beam, hybrid, profile.'
+definition_zh_hant: 整個燈頭透過馬達在支架上做水平與垂直轉動的燈具，相對於固定燈具或反射鏡掃描燈。現代燈光系統的其他分類都以此為基準描述：染色、成像、光束、混合型。
+regional_variants:
+- region: UK / US
+  term: Moving head / mover
+- region: HK
+  term: 搖頭燈 / Mover
+- region: TW
+  term: 搖頭燈
+false_friends:
+- Wash, spot and beam are marketing categories, not defined terms. A "beam" from one brand
+  and another can have very different field angles and zoom ranges.
+see_also:
+- focus
+- patch
+tags:
+- lighting
+- fixture
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

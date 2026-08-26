@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: house-lights
+en: House lights
+zh_hant: 觀眾席燈
+domain: lighting
+definition_en: The lighting over the audience seating. Controlled from the console during
+  a show and from a panel at front of house otherwise, and the one lighting circuit that
+  has to work when everything else has failed.
+definition_zh_hant: 觀眾席上方的照明。演出中由控台控制，其餘時間由前廳的面板控制。這是所有燈光迴路中，在其他系統全部失效時仍必須能運作的一路。
+regional_variants:
+- region: UK
+  term: House lights / houselights
+- region: US
+  term: House lights
+- region: HK / TW
+  term: 觀眾席燈 / 大燈
+false_friends:
+- House lights are not the same as working lights. Work lights are for the crew and usually
+  stay up during a changeover; house lights are part of the show and part of the egress
+  plan.
+see_also:
+- house
+- blackout
+tags:
+- lighting
+- venue
+- front-of-house
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'

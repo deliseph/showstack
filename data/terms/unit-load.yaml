@@ -3,6 +3,7 @@
 
 id: unit-load
 en: Unit load
+zh_hant: 單位負載
 domain: networking
 definition_en: >-
   The standard reference load an RS-485 bus segment is rated against —
@@ -12,6 +13,8 @@ definition_en: >-
   (1/8 UL is common), so a real line can carry well over 32 physical
   fixtures before it needs an opto-splitter. Check the fixture manual for
   its actual unit-load figure rather than counting boxes.
+definition_zh_hant: >-
+  RS-485 匯流排的標準參考負載。DMX512 一段最多 32 個單位負載，但現代收發器多為 1/4 或 1/8 單位負載，實際可掛的設備數因此不同。
 see_also:
 - daisy-chain
 related_protocols:

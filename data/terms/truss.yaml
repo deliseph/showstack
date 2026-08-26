@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: truss
+en: Truss
+zh_hant: 桁架
+domain: rigging
+definition_en: The aluminium lattice beam that carries lighting, audio and video over a
+  stage. Sold by cross-section and chord count, and rated by a span-and-load table from
+  the manufacturer rather than by a single number.
+definition_zh_hant: 承載燈光、音響與影像設備的鋁製格構樑。以斷面尺寸與主管數量分類，其載重由製造商提供的跨距對載重表決定，而非單一數字。
+regional_variants:
+- region: UK / US
+  term: Truss
+- region: HK
+  term: 桁架 / Truss
+- region: TW
+  term: 桁架
+false_friends:
+- Truss brands are not interchangeable even when the section looks identical. Mixing manufacturers
+  in one span voids the load table, and connector hardware often differs.
+see_also:
+- rigging-point
+- safe-working-load
+safety_critical: true
+tags:
+- rigging
+- truss
+- structure
+confidence: reported
+sources:
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

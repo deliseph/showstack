@@ -1,0 +1,33 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: edge-blend
+en: Edge blend
+zh_hant: 邊緣融合
+domain: video
+definition_en: Overlapping two or more projectors and ramping the brightness down across
+  the overlap so the join disappears. The maths is easy; matching black level, colour and
+  lamp age across the blend is what actually takes the day.
+definition_zh_hant: 讓兩台以上投影機的畫面重疊，並在重疊區將亮度漸變下降，使接縫消失。計算本身不難，真正耗時的是讓融合區兩側的黑階、色彩與燈泡老化程度一致。
+regional_variants:
+- region: UK / US
+  term: Edge blend / soft edge
+- region: HK / TW
+  term: 邊緣融合
+false_friends:
+- Blending cannot fix black level. In a blended overlap two projectors both put up their
+  black floor, so the overlap is visibly lighter in dark content no matter how good the
+  ramp is.
+see_also:
+- keying
+tags:
+- video
+- projection
+sources:
+- title: Projection blending fundamentals
+  url: https://en.wikipedia.org/wiki/Multiple-projector_display
+  publisher: Wikipedia
+  accessed: '2026-08-26'
+confidence: reported
+contributed_by: []
+updated: '2026-08-26'
