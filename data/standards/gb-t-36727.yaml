@@ -1,0 +1,35 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: gb-t-36727
+designation: GB/T 36727-2018
+title: Stage machinery - Acceptance and testing specification (舞台机械 验收检测规范)
+body: SAMR / SAC
+domain: machinery
+year: 2018
+scope: 'The national recommended standard for accepting stage machinery on handover: what
+  is tested, to what tolerances, and how the results are recorded.'
+status: current
+free_to_read: false
+access_url:
+  url: https://std.samr.gov.cn/gb/search/gbDetailed?id=7643B2F2502C267CE05397BE0A0AAF6A
+  label: 全国标准信息公共服务平台 (search GB/T 36727)
+jurisdiction:
+- CN
+notes: GB/T is recommended rather than mandatory, but it is what a Chinese venue commissioning
+  contract will name for handover testing. The older industry document WH/T 27-2007 covers
+  the same ground from the Ministry of Culture side.
+confidence: reported
+tags:
+- gb
+- china
+- stage-machinery
+- commissioning
+sources:
+- title: 全国标准信息公共服务平台 (national standards portal)
+  url: https://std.samr.gov.cn/gb/search/gbDetailed?id=7643B2F2502C267CE05397BE0A0AAF6A
+  publisher: SAMR
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

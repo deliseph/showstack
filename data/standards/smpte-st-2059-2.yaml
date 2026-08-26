@@ -1,0 +1,40 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: smpte-st-2059-2
+designation: SMPTE ST 2059-2:2021
+title: SMPTE Profile for Use of IEEE-1588 Precision Time Protocol in Professional Broadcast
+  Applications
+body: SMPTE
+domain: video
+year: 2021
+scope: 'The broadcast PTP profile: the message rates, domain numbers and default parameters
+  a media network uses so that video, audio and timecode all derive from one grandmaster.'
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/doc/st2059-2/
+  label: SMPTE public access
+jurisdiction:
+- International
+notes: 'ST 2059-1 defines how a signal relates to the epoch; -2 is the PTP profile itself.
+  This is the profile that has to match on every device: a Dante card on the AES67 media profile
+  and a camera on ST 2059-2 in different PTP domains will each be happily locked, to different
+  clocks.'
+confidence: reported
+tags:
+- smpte
+- ptp
+- sync
+- broadcast
+related_protocols:
+- ptp-1588
+- smpte-st-2110
+sources:
+- title: SMPTE ST 2059-2 (public access)
+  url: https://pub.smpte.org/doc/st2059-2/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

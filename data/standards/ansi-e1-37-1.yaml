@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ansi-e1-37-1
+designation: ANSI E1.37-1-2012 (R2022)
+title: Additional Message Sets for ANSI E1.20 (RDM) - Part 1, Dimmer Message Sets
+body: ESTA
+domain: control-data
+year: 2012
+scope: 'Extra RDM parameter messages for dimmers: curve selection, minimum and maximum levels,
+  output response time and related settings, beyond the base parameters in E1.20.'
+status: current
+free_to_read: true
+access_url:
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  label: ESTA TSP published documents (free)
+jurisdiction:
+- US
+- International
+notes: RDM support is a spectrum, not a yes/no. A device can be fully E1.20 compliant and
+  implement none of these, which is why a console can discover a dimmer rack and still not
+  be able to set its curve remotely.
+confidence: reported
+tags:
+- esta
+- ansi
+- rdm
+- dimming
+related_protocols:
+- rdm
+- dmx512
+sources:
+- title: ESTA TSP published documents index
+  url: https://tsp.esta.org/tsp/documents/published_docs.php
+  publisher: ESTA TSP
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: din-15905-5
+designation: DIN 15905-5:2022-07
+title: 'Entertainment technology - Sound engineering - Part 5: Measures to prevent the risk
+  of hearing loss of the audience by high sound exposure of electroacoustic sound systems'
+body: DIN
+domain: audio
+year: 2022
+scope: 'How to measure and evaluate the sound level an audience is exposed to from a PA system,
+  and the measures that follow: measurement position, averaging, logging and the responsible-person
+  role.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.dinmedia.de/en/standard/din-15905-5/352773526
+  label: DIN Media (purchase)
+jurisdiction:
+- DE
+notes: This is why German shows have a logging SPL meter at a defined measurement point and
+  a named person watching it. It governs exposure of the AUDIENCE; crew exposure is a separate
+  occupational question under the EU noise directive. The 2022 edition replaced the 2007 version
+  and its 2013 corrigendum.
+confidence: reported
+tags:
+- din
+- spl
+- noise
+- audience
+- audio
+sources:
+- title: DIN 15905-5:2022-07 catalogue entry
+  url: https://www.dinmedia.de/en/standard/din-15905-5/352773526
+  publisher: DIN Media
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

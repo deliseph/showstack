@@ -1,0 +1,35 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: wh-t-36
+designation: WH/T 36-2009
+title: Stage machinery - Safety requirements for below-stage equipment (舞台机械 台下设备安全要求)
+body: 文化和旅游部 (MCT)
+domain: machinery
+year: 2009
+scope: 'Safety requirements for below-stage machinery: stage lifts, orchestra pit elevators,
+  revolves, wagons and the drive and control systems that move them.'
+status: current
+free_to_read: true
+access_url:
+  url: https://zwgk.mct.gov.cn/zfxxgkml/hybz/202012/t20201206_916703.html
+  label: 文化和旅游部 政府信息公开 (free)
+jurisdiction:
+- CN
+notes: The below-stage half of the pair with WH/T 28-2007. Between them they are the reference
+  a Chinese venue's automation maintenance regime is written against.
+confidence: reported
+tags:
+- wht
+- china
+- stage-machinery
+- lift
+- safety
+sources:
+- title: WH/T 36-2009 舞台机械 台下设备安全要求
+  url: https://zwgk.mct.gov.cn/zfxxgkml/hybz/202012/t20201206_916703.html
+  publisher: 文化和旅游部
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

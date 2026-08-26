@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-1789
+designation: IEEE 1789-2015
+title: IEEE Recommended Practice for Modulating Current in High-Brightness LEDs for Mitigating
+  Health Risks to Viewers
+body: IEEE
+domain: video
+year: 2015
+scope: How much flicker an LED light source may carry at a given modulation frequency before
+  it becomes a health risk, expressed as low-risk and no-effect boundaries against percent
+  modulation.
+status: current
+free_to_read: false
+access_url:
+  url: https://standards.ieee.org/ieee/1789/4479/
+  label: IEEE (purchase)
+jurisdiction:
+- International
+notes: This is the document behind "why does that LED fixture strobe on camera at 1/1000th".
+  PWM dimming below a few kilohertz is visible to a rolling shutter long before it is visible
+  to a person, which is why broadcast specs quote flicker limits that stage rigs never had
+  to meet.
+confidence: reported
+tags:
+- ieee
+- led
+- flicker
+- broadcast
+sources:
+- title: IEEE 1789-2015 standard page
+  url: https://standards.ieee.org/ieee/1789/4479/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

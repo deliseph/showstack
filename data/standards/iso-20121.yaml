@@ -1,0 +1,35 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-20121
+designation: ISO 20121:2024
+title: Event sustainability management systems - Requirements with guidance for use
+body: ISO
+domain: sustainability
+year: 2024
+scope: 'A management-system standard for events: how an organiser identifies the sustainability
+  issues of an event, sets objectives, involves the supply chain, and demonstrates improvement.
+  Certifiable, and increasingly written into tenders for festivals, arenas and touring.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/86389.html
+  label: ISO Store (purchase)
+jurisdiction:
+- International
+notes: 'Written for London 2012 and revised in 2024. It certifies a management system, not
+  an event: "ISO 20121 certified" means the organisation has the process, not that a given
+  show hit a carbon number. Useful to know which is being claimed when it appears in a rider.'
+confidence: reported
+tags:
+- iso
+- sustainability
+- event-management
+sources:
+- title: ISO 20121:2024 catalogue page
+  url: https://www.iso.org/standard/86389.html
+  publisher: ISO
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

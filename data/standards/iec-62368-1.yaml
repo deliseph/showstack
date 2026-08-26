@@ -1,0 +1,35 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-62368-1
+designation: IEC 62368-1:2023
+title: 'Audio/video, information and communication technology equipment - Part 1: Safety requirements'
+body: IEC
+domain: electrical
+year: 2023
+scope: The hazard-based safety standard that replaced IEC 60065 (audio/video) and IEC 60950-1
+  (IT equipment). Classifies energy sources rather than listing constructions, so it applies
+  to consoles, media servers, amplifiers, network gear and anything else in a rack.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/78700
+  label: IEC Webstore (purchase)
+jurisdiction:
+- International
+notes: 'The transition from 60065/60950-1 is done: equipment placed on the market now is certified
+  to 62368-1. If you are reading a compliance sheet on an amp or a server and it still cites
+  60065, you are looking at an old certificate.'
+confidence: reported
+tags:
+- iec
+- equipment-safety
+- av
+sources:
+- title: IEC 62368-1 publication page
+  url: https://webstore.iec.ch/en/publication/78700
+  publisher: IEC
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

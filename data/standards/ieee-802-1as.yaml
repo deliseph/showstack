@@ -1,0 +1,40 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-802-1as
+designation: IEEE 802.1AS-2020
+title: IEEE Standard for Local and Metropolitan Area Networks - Timing and Synchronization
+  for Time-Sensitive Applications
+body: IEEE
+domain: networking
+year: 2020
+scope: gPTP, the tightly constrained PTP profile used by AVB and TSN. Every bridge on the
+  path must participate, which is what makes AVB switches a shopping list rather than a setting.
+status: current
+free_to_read: true
+access_url:
+  url: https://standards.ieee.org/ieee/802.1AS/7121/
+  label: IEEE (free via the GET Program)
+jurisdiction:
+- International
+notes: 'The reason an AVB/Milan network needs AVB-capable switches end to end while a Dante
+  network does not: gPTP requires every hop to be a time-aware bridge, where the AES67 and
+  ST 2059 profiles tolerate ordinary switches with good QoS.'
+confidence: verified
+tags:
+- ieee
+- gptp
+- avb
+- tsn
+- sync
+related_protocols:
+- avb-milan
+- ptp-1588
+sources:
+- title: IEEE 802.1AS-2020 standard page
+  url: https://standards.ieee.org/ieee/802.1AS/7121/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

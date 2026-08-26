@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-60529
+designation: IEC 60529:1989+AMD2:2013
+title: Degrees of protection provided by enclosures (IP Code)
+body: IEC
+domain: electrical
+year: 2013
+scope: 'Defines the two-digit IP rating: the first digit for solid objects and dust, the second
+  for water, plus the optional supplementary letters. IP65, IP54 and IP20 on a fixture data
+  sheet all come from here.'
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/2452
+  label: IEC Webstore (purchase)
+jurisdiction:
+- International
+notes: An outdoor festival spec that says "IP65" is asking for dust-tight plus low-pressure
+  water jets from any direction. It is not a submersion rating, it is not a rating against
+  pressure washing, and it says nothing about UV or temperature. Two fixtures at the same
+  IP number can behave very differently in a rain event depending on how the connectors are
+  sealed.
+confidence: verified
+tags:
+- iec
+- ip-rating
+- weather
+- outdoor
+sources:
+- title: IEC 60529:1989+AMD1:1999+AMD2:2013 publication page
+  url: https://webstore.iec.ch/en/publication/2452
+  publisher: IEC
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

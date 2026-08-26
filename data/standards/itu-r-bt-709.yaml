@@ -1,0 +1,36 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: itu-r-bt-709
+designation: ITU-R BT.709-6
+title: Parameter values for the HDTV standards for production and international programme
+  exchange
+body: ITU-R
+domain: video
+year: 2015
+scope: 'The HD colour space: primaries, white point, transfer characteristic and the RGB-to-YCbCr
+  matrix that essentially all 1080-line production has used since the 1990s.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.itu.int/rec/R-REC-BT.709/en
+  label: ITU (free download)
+jurisdiction:
+- International
+notes: ITU-R Recommendations are free. Rec. 709 is the default assumption of nearly every
+  projector, LED processor and media server, which is why content graded in P3 or 2020 goes
+  flat and desaturated when nobody sets the conversion.
+confidence: verified
+tags:
+- itu
+- colour
+- hdtv
+- rec709
+sources:
+- title: Recommendation ITU-R BT.709
+  url: https://www.itu.int/rec/R-REC-BT.709/en
+  publisher: ITU
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

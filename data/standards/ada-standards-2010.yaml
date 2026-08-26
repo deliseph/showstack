@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ada-standards-2010
+designation: 2010 ADA Standards for Accessible Design
+title: 2010 ADA Standards for Accessible Design
+body: US Department of Justice
+domain: accessibility
+year: 2010
+scope: 'The enforceable US design standard under the Americans with Disabilities Act. For
+  venues: accessible routes, wheelchair spaces and companion seats in assembly areas, dispersion
+  and line-of-sight requirements, accessible performance areas, and assistive listening system
+  provision and receiver counts.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.ada.gov/law-and-regs/design-standards/2010-stds/
+  label: ADA.gov (free)
+jurisdiction:
+- US
+notes: Section 221 (assembly areas) and section 219 (assistive listening) are the ones that
+  decide house seating layouts and how many hearing-loop or IR receivers a venue must hold.
+  Free to read in full. Scenic and FOH positions that eat an accessible route or block a sightline
+  from a wheelchair space are a compliance problem, not just a courtesy one.
+confidence: reported
+tags:
+- ada
+- accessibility
+- venue
+- assistive-listening
+- us
+sources:
+- title: 2010 ADA Standards for Accessible Design
+  url: https://www.ada.gov/law-and-regs/design-standards/2010-stds/
+  publisher: US DOJ
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

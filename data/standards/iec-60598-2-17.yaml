@@ -1,0 +1,43 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-60598-2-17
+designation: IEC 60598-2-17:2017
+title: 'Luminaires - Part 2-17: Particular requirements - Luminaires for stage lighting, television
+  and film studios (outdoor and indoor)'
+body: IEC
+domain: electrical
+year: 2017
+scope: The safety requirements specific to stage, television, film and photographic studio
+  luminaires, including spot and floodlight projectors, on supplies up to 1000 V. Covers the
+  hanger as part of the luminaire; tripods, booms and other supports are explicitly out of
+  scope.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/en/publication/34497
+  label: IEC Webstore (purchase)
+jurisdiction:
+- International
+notes: Edition 2.0 replaced the 1984 first edition and widened the scope from lamp types to
+  "electric light source", which is how LED fixtures with non-replaceable sources came inside
+  it. Adopted in Europe as EN IEC 60598-2-17 and in the UK as BS EN IEC 60598-2-17:2018. If
+  a fixture is CE marked for stage use, this is one of the documents behind the mark.
+confidence: verified
+tags:
+- iec
+- luminaire
+- stage-lighting
+- safety
+sources:
+- title: IEC 60598-2-17:2017 publication page
+  url: https://webstore.iec.ch/en/publication/34497
+  publisher: IEC
+  accessed: '2026-08-26'
+  primary: true
+- title: BS EN IEC 60598-2-17:2018
+  url: https://knowledge.bsigroup.com/products/luminaires-particular-requirements-luminaires-for-stage-lighting-television-and-film-studios-outdoor-and-indoor
+  publisher: BSI
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

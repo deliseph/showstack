@@ -1,0 +1,41 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-802-1q
+designation: IEEE 802.1Q-2022
+title: IEEE Standard for Local and Metropolitan Area Networks - Bridges and Bridged Networks
+body: IEEE
+domain: networking
+year: 2022
+scope: VLAN tagging, priority code points and the bridging behaviour every managed switch
+  implements. The document behind "put lighting on VLAN 10, audio on VLAN 20" and behind the
+  QoS priority values that keep Dante and ST 2110 ahead of file copies.
+status: current
+free_to_read: true
+access_url:
+  url: https://standards.ieee.org/ieee/802.1Q/10323/
+  label: IEEE (free via the GET Program)
+jurisdiction:
+- International
+notes: The 3-bit PCP field in the VLAN tag is what audio-over-IP vendors mean by "priority
+  5 for media, 7 for clock". Without a tag there is no PCP, which is why untagged access ports
+  quietly lose the QoS you thought you configured.
+confidence: verified
+tags:
+- ieee
+- vlan
+- qos
+- networking
+related_protocols:
+- dante
+- aes67
+- smpte-st-2110
+- avb-milan
+sources:
+- title: IEEE 802.1Q-2022 standard page
+  url: https://standards.ieee.org/ieee/802.1Q/10323/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

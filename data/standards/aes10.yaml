@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: aes10
+designation: AES10-2008 (r2019)
+title: AES Recommended Practice for Digital Audio Engineering - Serial Multichannel Audio
+  Digital Interface (MADI)
+body: AES
+domain: audio
+year: 2008
+scope: 'MADI: 64 channels of linear PCM at 48 kHz down one coax or one multimode fibre, unidirectional,
+  point to point.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.aes.org/publications/standards/search.cfm?docID=17
+  label: AES Standards Store
+jurisdiction:
+- International
+notes: 'Still the workhorse of stage-box-to-console links because it is dumb, deterministic
+  and has no network to misconfigure. 64 channels is at 48 kHz: at 96 kHz you get 32, which
+  is the trap in a festival patch that switches sample rate between acts.'
+confidence: reported
+tags:
+- aes
+- madi
+- multichannel-audio
+related_protocols:
+- madi
+sources:
+- title: AES10 standard listing
+  url: https://www.aes.org/publications/standards/search.cfm?docID=17
+  publisher: AES
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

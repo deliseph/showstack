@@ -1,0 +1,38 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: en-13814-1
+designation: EN 13814-1:2019
+title: 'Safety of amusement rides and amusement devices - Part 1: Design and manufacture'
+body: CEN
+domain: rigging-structural
+year: 2019
+scope: Structural and mechanical design requirements for amusement rides and devices, including
+  the temporary and demountable structures that sit alongside them at events.
+status: current
+free_to_read: false
+access_url:
+  url: https://standards.cencenelec.eu/dyn/www/f?p=205:110:0::::FSP_PROJECT:60483
+  label: CEN (via national member bodies, paid)
+jurisdiction:
+- EU
+- EEA
+- UK
+notes: Relevant to live events because the boundary between "stage structure" and "amusement
+  device" is thinner than it looks once an audience is carried, lifted or moved. Replaced
+  the single-part EN 13814:2004 with a three-part series (design, operation, inspection).
+confidence: reported
+tags:
+- cen
+- en
+- structures
+- amusement
+- safety
+sources:
+- title: 'CEN standards catalogue: EN 13814 series'
+  url: https://standards.cencenelec.eu/dyn/www/f?p=205:110:0::::FSP_PROJECT:60483
+  publisher: CEN
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

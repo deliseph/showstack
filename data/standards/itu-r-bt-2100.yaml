@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: itu-r-bt-2100
+designation: ITU-R BT.2100-2
+title: Image parameter values for high dynamic range television for use in production and
+  international programme exchange
+body: ITU-R
+domain: video
+year: 2018
+scope: 'The HDR television parameters: both transfer functions - PQ (ST 2084) and HLG - alongside
+  the Rec. 2020 primaries, at HD, 4K and 8K rasters.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.itu.int/rec/R-REC-BT.2100/en
+  label: ITU (free download)
+jurisdiction:
+- International
+notes: PQ is absolute (a code value means a nit figure) and HLG is relative (it scales to
+  the display). Feeding PQ content to an HLG chain, or either to an SDR LED processor, produces
+  the "why is it grey" call. Ask which curve before the content is delivered, not on site.
+confidence: verified
+tags:
+- itu
+- hdr
+- colour
+- pq
+- hlg
+sources:
+- title: Recommendation ITU-R BT.2100
+  url: https://www.itu.int/rec/R-REC-BT.2100/en
+  publisher: ITU
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,41 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: wh-t-35
+designation: WH/T 35-2022
+title: Stage machinery - Terminology (舞台机械 术语)
+body: 文化和旅游部 (MCT)
+domain: machinery
+year: 2022
+scope: 'The controlled vocabulary for stage machinery in Chinese: the defined term for each
+  piece of equipment, motion and control concept.'
+status: current
+free_to_read: true
+access_url:
+  url: https://www.mct.gov.cn/whzx/zxgz/wlbzhgz/201907/t20190703_844796.htm
+  label: 文化和旅游部 (WH/T 35 series)
+jurisdiction:
+- CN
+notes: 'Directly useful to this index: it is the official Chinese term list for the same objects
+  our glossary carries in English and 繁中. Published 2022-12-27, effective 2023-03-27, replacing
+  WH/T 35-2009 演出场馆设备技术术语 舞台机械. Note that mainland 简体 terminology and HK/TW 繁中 crew slang
+  are not always the same word.'
+confidence: reported
+tags:
+- wht
+- china
+- terminology
+- stage-machinery
+- vocabulary
+sources:
+- title: WH/T 35-2009 演出场馆设备技术术语 舞台机械
+  url: https://www.mct.gov.cn/whzx/zxgz/wlbzhgz/201907/t20190703_844796.htm
+  publisher: 文化和旅游部
+  accessed: '2026-08-26'
+  primary: true
+- title: WH/T 35-2022《舞台机械 术语》颁布实施
+  url: https://casti.org.cn/casti/kydt/202302/c2a6eb1bd4b346c79529b294b33d76e1.shtml
+  publisher: 中国演艺设备技术协会
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ieee-802-3bt
+designation: IEEE 802.3bt-2018
+title: 'IEEE Standard for Ethernet Amendment 2: Physical Layer and Management Parameters for
+  DTE Power via MDI over 4-Pair (PoE Type 3 and Type 4)'
+body: IEEE
+domain: electrical
+year: 2018
+scope: 'The four-pair Power over Ethernet amendment: Type 3 up to 60 W and Type 4 up to 90
+  W at the source, against 30 W for the older 802.3at. This is the clause that lets a single
+  Cat6 run power a moving light, a PTZ camera or a powered speaker.'
+status: superseded
+superseded_by: ieee-802-3
+free_to_read: true
+access_url:
+  url: https://standards.ieee.org/ieee/802.3bt/6749/
+  label: IEEE (free via the GET Program)
+jurisdiction:
+- International
+notes: 'Rolled into IEEE 802.3-2022, so quote the base standard for compliance and this number
+  for the feature. Vendor labels do not all mean the same thing: "PoE++", "UPoE" and "Hi-PoE"
+  are marketing, Type 3 and Type 4 are the standard, and a Type 4 load on a Type 2 switch
+  simply will not come up.'
+confidence: verified
+tags:
+- ieee
+- poe
+- power
+- ethernet
+sources:
+- title: IEEE 802.3bt-2018 standard page
+  url: https://standards.ieee.org/ieee/802.3bt/6749/
+  publisher: IEEE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

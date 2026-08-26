@@ -1,0 +1,37 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: smpte-st-12-2
+designation: SMPTE ST 12-2:2014
+title: Transmission of Time Code in the Ancillary Data Space
+body: SMPTE
+domain: video
+year: 2014
+scope: How SMPTE timecode rides inside an SDI signal as ancillary data (ATC), rather than
+  as an audio-band LTC signal on its own cable.
+status: current
+free_to_read: true
+access_url:
+  url: https://pub.smpte.org/doc/st12-2/
+  label: SMPTE public access
+jurisdiction:
+- International
+notes: 'Companion to ST 12-1, which defines the timecode itself. Worth knowing which one a
+  device means by "timecode input": an ATC-only camera will not read the LTC feed you sent
+  it down an XLR.'
+confidence: reported
+tags:
+- smpte
+- timecode
+- sdi
+related_protocols:
+- ltc
+- sdi
+sources:
+- title: SMPTE ST 12-2 (public access)
+  url: https://pub.smpte.org/doc/st12-2/
+  publisher: SMPTE
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

@@ -1,0 +1,36 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: wh-t-28
+designation: WH/T 28-2007
+title: Stage machinery - Safety of above-stage equipment (舞台机械 台上设备安全)
+body: 文化和旅游部 (MCT)
+domain: machinery
+year: 2007
+scope: 'Safety requirements for above-stage machinery: fly bar hoists, point hoists, front
+  curtain machines and the rest of the equipment that moves loads over the stage floor.'
+status: current
+free_to_read: true
+access_url:
+  url: https://zwgk.mct.gov.cn/zfxxgkml/hybz/202012/t20201206_916686.html
+  label: 文化和旅游部 政府信息公开 (free)
+jurisdiction:
+- CN
+notes: WH/T is the Ministry of Culture and Tourism industry standard series - the Chinese
+  equivalent in role to DIN 56950 or EN 17206, and published free on the ministry's own disclosure
+  site. Pairs with WH/T 36-2009 for below-stage equipment.
+confidence: reported
+tags:
+- wht
+- china
+- stage-machinery
+- rigging
+- safety
+sources:
+- title: WH/T 28-2007 舞台机械 台上设备安全
+  url: https://zwgk.mct.gov.cn/zfxxgkml/hybz/202012/t20201206_916686.html
+  publisher: 文化和旅游部
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

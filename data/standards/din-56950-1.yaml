@@ -1,0 +1,44 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: din-56950-1
+designation: DIN 56950-1:2020-09
+title: 'Entertainment technology - Machinery installations - Part 1: Safety requirements and
+  inspections'
+body: DIN
+domain: machinery
+year: 2020
+scope: 'Safety requirements for machinery in places of assembly and production facilities:
+  fly bar hoists, point hoists, lighting towers, revolves, orchestra pit lifts, movable plateaus
+  and projection screens, including the case where loads move over people.'
+status: current
+free_to_read: false
+access_url:
+  url: https://www.dinmedia.de/en/standard/din-56950-1/329525891
+  label: DIN Media (purchase)
+jurisdiction:
+- DE
+- International practice
+notes: The German reference that much of the touring automation world is built to, and the
+  ancestor of the pan-European EN 17206. Its scope explicitly includes theatres, multi-purpose
+  halls, film and TV studios, concert halls, open-air stages, clubs and exhibition spaces
+  - not only proscenium theatres.
+confidence: reported
+tags:
+- din
+- machinery
+- stage-automation
+- hoist
+- safety
+sources:
+- title: DIN 56950-1 catalogue entry
+  url: https://www.dinmedia.de/en/standard/din-56950-1/329525891
+  publisher: DIN Media
+  accessed: '2026-08-26'
+  primary: true
+- title: DIN 56950-1 scope summary
+  url: https://www.sis.se/en/produkter/domestic-and-commercial-equipment-entertainment-sports/equipment-for-entertainment/theatre-stage-and-studio-equipment/din5695012/
+  publisher: SIS
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

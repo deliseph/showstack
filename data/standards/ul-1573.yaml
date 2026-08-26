@@ -1,0 +1,39 @@
+# showstack entry - standard
+# Schema: ../../schema/standard.schema.json
+
+id: ul-1573
+designation: UL 1573
+title: Standard for Safety - Stage and Studio Luminaires and Connector Strips
+body: UL Standards & Engagement
+domain: electrical
+year: 2023
+scope: 'Safety requirements for stage and studio luminaires rated 600 V or less for theatres
+  and studios, plus connector strips and drop boxes: borderlights, spotlights, floodlights,
+  footlights and portable strips, in line with NEC Articles 520 and 530.'
+status: current
+free_to_read: false
+access_url:
+  url: https://standardscatalog.ul.com/standards/en/standard_1573_4
+  label: UL Standards Catalog
+jurisdiction:
+- US
+- CA
+notes: The listing mark a US venue or AHJ looks for on a stage fixture. Carbon arc lamps,
+  amateur movie lights and residential lighting are explicitly outside its scope. A fixture
+  built to IEC 60598-2-17 for the European market is not automatically acceptable to a US
+  inspector, and vice versa.
+confidence: reported
+tags:
+- ul
+- luminaire
+- stage-lighting
+- us
+- listing
+sources:
+- title: UL 1573 catalogue entry
+  url: https://standardscatalog.ul.com/standards/en/standard_1573_4
+  publisher: UL Standards & Engagement
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'
