@@ -1,0 +1,36 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: soundgrid
+name: SoundGrid
+category: audio-transport
+openness: proprietary-closed
+status: current
+summary: Waves' networked audio and processing protocol, carrying audio between interfaces,
+  consoles and a dedicated DSP server over standard gigabit Ethernet at low latency.
+transport:
+- ethernet-l2
+typical_use:
+- Running plug-in racks on a live console
+- Multitrack recording and virtual soundcheck
+- Offloading processing from a mixing surface
+gotchas:
+- SoundGrid wants its own dedicated network interface and its own switch. Sharing the NIC
+  with a show network or the internet is the standard cause of dropouts.
+- 'It is a layer 2 protocol on ordinary gigabit hardware, which makes the switch choice matter
+  more than people expect: energy-saving features and cheap switches both cause problems.'
+confidence: reported
+tags:
+- audio
+- waves
+- soundgrid
+- plugins
+- network-audio
+sources:
+- title: Waves SoundGrid
+  url: https://www.waves.com/
+  publisher: Waves Audio
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

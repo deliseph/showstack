@@ -34,6 +34,11 @@ speaks:
     direction: bidirectional
     note: AVB licence available on M4250, making it one of the few mainstream switches that can carry Milan.
     confidence: reported
+  - protocol: snmp
+    direction: bidirectional
+    note: SNMP monitoring.
+    confidence: unverified
+
 physical_ports:
   - Model-dependent GbE/PoE+ copper plus SFP/SFP+ uplinks
 form_factor: 19-inch rack mount, 1U

@@ -1,0 +1,50 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rtmp
+name: RTMP
+aka:
+- Real-Time Messaging Protocol
+category: video-transport
+openness: open-published
+first_published: 2009
+status: current
+summary: Adobe-originated streaming protocol that survives as the ingest format nearly every
+  streaming platform still accepts. Largely replaced downstream by HLS and DASH, but the encoder-to-platform
+  hop is still overwhelmingly RTMP.
+transport:
+- tcp
+default_ports:
+- number: 1935
+  transport: tcp
+  role: RTMP ingest
+  iana_registered: true
+spec_url:
+  url: https://rtmp.veriskope.com/docs/spec/
+  label: RTMP specification
+steward: Adobe (specification published), maintained in practice by platform vendors
+typical_use:
+- Pushing a stream from OBS or a hardware encoder to a platform
+- Ingest into a CDN for onward HLS delivery
+- Simple venue-to-cloud streaming
+gotchas:
+- RTMP is TCP. On a lossy link it stalls and buffers rather than degrading gracefully, which
+  is why SRT exists for contribution over unmanaged networks.
+- Codec support is frozen in practice at H.264 and AAC. Anything newer needs RTMP extensions
+  the platform may not accept, or a different protocol entirely.
+- The stream key is a credential. It is routinely pasted into chat and left in show files,
+  and it lets anyone broadcast to that channel.
+confidence: reported
+tags:
+- rtmp
+- streaming
+- ingest
+- obs
+sources:
+- title: RTMP specification
+  url: https://rtmp.veriskope.com/docs/spec/
+  publisher: Veriskope
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

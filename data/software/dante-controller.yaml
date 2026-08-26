@@ -27,6 +27,10 @@ speaks:
   direction: bidirectional
   note: Displays PTP clock status, master election and offsets.
   confidence: reported
+- protocol: mdns-dns-sd
+  direction: bidirectional
+  note: Dante discovery is mDNS, which is why devices vanish across a routed boundary.
+  confidence: reported
 typical_use:
 - Patching a Dante network
 - Diagnosing clock and latency problems

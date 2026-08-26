@@ -1,0 +1,38 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ethersound
+name: EtherSound
+category: audio-transport
+openness: proprietary-documented
+first_published: 2001
+status: deprecated
+summary: Early low-latency audio-over-Ethernet system from Digigram, carrying 64 channels
+  in a daisy-chained ring at fixed very low latency. Largely displaced by Dante and AVB but
+  still found in installs from the 2000s.
+transport:
+- ethernet-l2
+typical_use:
+- Legacy installed systems from the 2000s
+- Auvitran and Digigram based infrastructure
+- Fixed low-latency distribution in older venues
+gotchas:
+- 'EtherSound is layer 2 and topology-sensitive: it expects a daisy chain or ring, not an
+  arbitrary switched network. Patching it through a general show switch does not work.'
+- Encountering it now usually means an installed system nearing end of life. Plan the replacement
+  path before a card fails, because spares are getting scarce.
+confidence: reported
+tags:
+- audio
+- ethersound
+- legacy
+- digigram
+- install
+sources:
+- title: Digigram
+  url: https://www.digigram.com/
+  publisher: Digigram
+  accessed: '2026-08-26'
+  primary: true
+contributed_by: []
+updated: '2026-08-26'

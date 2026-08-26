@@ -1,0 +1,63 @@
+# showstack entry - protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: srt
+name: SRT (Secure Reliable Transport)
+category: video-transport
+openness: open-published
+first_published: 2017
+status: current
+summary: Open-source low-latency video transport designed to carry contribution-quality streams
+  over unmanaged networks, recovering lost packets with ARQ inside a configurable latency
+  budget. The standard way a live feed leaves a venue over the public internet.
+transport:
+- udp
+default_ports:
+- number: 9000
+  transport: udp
+  role: 'Common default, but SRT has no fixed port: it is set per stream'
+  iana_registered: false
+  note: Deployment chooses the port; 9000 and 1935 are conventions, not assignments.
+spec_url:
+  url: https://www.srtalliance.org/
+  label: SRT Alliance
+steward: SRT Alliance / Haivision
+typical_use:
+- Sending a show feed to a remote broadcaster or streaming platform
+- Site-to-site contribution over the public internet
+- Remote production where a dedicated circuit is not available
+gotchas:
+- Latency is a setting, and it is a trade against packet recovery. A latency budget set too
+  low on a lossy link produces exactly the artefacts SRT is meant to prevent.
+- Caller, listener and rendezvous modes decide who initiates. Two ends both configured as
+  caller will never connect, and it is the most common first-time failure.
+- Encryption is optional and off by default in many implementations. "Secure" is in the name,
+  not necessarily in the configuration.
+implementations:
+- name: srt
+  url: https://github.com/Haivision/srt
+  language: C++
+  license: MPL-2.0
+- name: FFmpeg (SRT protocol support)
+  url: https://ffmpeg.org/
+  language: C
+  license: LGPL-2.1-or-later
+confidence: reported
+tags:
+- srt
+- streaming
+- contribution
+- low-latency
+- open-source
+sources:
+- title: SRT Alliance
+  url: https://www.srtalliance.org/
+  publisher: SRT Alliance
+  accessed: '2026-08-26'
+  primary: true
+- title: Haivision/srt on GitHub
+  url: https://github.com/Haivision/srt
+  publisher: GitHub
+  accessed: '2026-08-26'
+contributed_by: []
+updated: '2026-08-26'

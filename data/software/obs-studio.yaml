@@ -31,6 +31,21 @@ docs:
   label: OBS Knowledge Base
 
 status: current
+
+speaks:
+  - protocol: rtmp
+    direction: out
+    note: RTMP output is the default path to almost every streaming platform.
+    confidence: reported
+  - protocol: srt
+    direction: bidirectional
+    note: SRT output and input, for contribution over an unmanaged network.
+    confidence: reported
+  - protocol: ndi
+    direction: bidirectional
+    note: NDI send and receive via the NDI plugin, not in the base install.
+    confidence: reported
+
 typical_use:
   - Streaming a live event to RTMP, SRT or a platform endpoint
   - Multi-camera switching and recording as an ISO backup

@@ -39,6 +39,19 @@ speaks:
   direction: in
   confidence: verified
   note: Open Sound Control dissector, documented display filter fields since Wireshark 1.12.0.
+- protocol: mdns-dns-sd
+  direction: in
+  note: Decodes mDNS, the fastest way to prove a discovery problem.
+  confidence: reported
+- protocol: snmp
+  direction: in
+  note: Decodes SNMP.
+  confidence: unverified
+- protocol: srt
+  direction: in
+  note: SRT dissector in current builds.
+  confidence: unverified
+
 homepage:
   url: https://www.wireshark.org/
 repo:

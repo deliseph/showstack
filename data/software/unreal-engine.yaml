@@ -39,6 +39,10 @@ speaks:
   direction: in
   note: PosiStageNet via plugin.
   confidence: unverified
+- protocol: freed
+  direction: in
+  note: FreeD camera tracking input via Live Link, the usual path in an LED volume.
+  confidence: reported
 typical_use:
 - LED volume virtual production
 - Real-time generated content for concert screens
