@@ -84,46 +84,28 @@ const jsonForScript = (obj) =>
 
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
-const CSS = RELATED_CSS + `
-:root{color-scheme:dark;
---bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#7a889f;
---accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
---dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;--dom-safety:#ec7f66;--dom-control:#b98cf2;
---glow:rgba(95,212,187,.06);--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
---r-sm:8px;--r-md:12px;--r-lg:16px;
---mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
---sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-:root[data-theme="light"]{color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
---accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
---dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
---glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
---accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
---dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
---glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}}
-*{box-sizing:border-box}html,body{margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
--webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:800px;margin:0 auto;padding:0 20px}
+/**
+ * Header, nav rail and the two header controls. Exported for the same reason
+ * as TOKENS: site/search.html used to carry its own copy, which is how the two
+ * headers drifted to different heights and different touch-target sizes.
+ */
+export const SHELL_CSS = `
 /* The header is sticky, so every pixel it occupies is a pixel of the page the
    reader never gets back. On a 390px phone the old one wrapped the nav onto
    three or four rows and ate half the viewport. Now it is at most two rows:
    an identity bar, and a nav that scrolls sideways instead of wrapping. */
-header{border-bottom:1px solid var(--line);padding:10px 0;position:sticky;top:0;z-index:30;
+header{border-bottom:1px solid var(--line);padding:6px 0;position:sticky;top:0;z-index:30;
 background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
 background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
 header .wrap{max-width:1120px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .hbar{display:flex;align-items:center;gap:10px;flex:0 0 auto}
 header h1{font-family:var(--mono);font-size:17px;margin:0;letter-spacing:-.3px;white-space:nowrap}
+header h1 a{display:inline-flex;align-items:center;min-height:44px}
 header h1 span{color:var(--accent)}
 header nav{margin-left:auto;display:flex;gap:3px;align-items:center;min-width:0;justify-content:flex-start}
-header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:8px 12px;border-radius:999px;
+header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:0 13px;border-radius:999px;
+min-height:44px;min-width:44px;justify-content:center;
 border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;white-space:nowrap;flex:0 0 auto;
 transition:color .15s,background .15s,border-color .15s}
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
@@ -131,11 +113,11 @@ header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accen
 border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
 header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;
 border-left:1px solid var(--line);flex:0 0 auto}
-.ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
-padding:6px 10px;border-radius:999px;white-space:nowrap}
+.ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule-strong);
+padding:0 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
-.themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
-border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
+.themebtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;
+border-radius:999px;border:1px solid var(--rule-strong);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
 flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
 .themebtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);transform:translateY(-1px)}
 .themebtn svg{display:block}
@@ -157,16 +139,159 @@ overscroll-behavior-x:contain;scroll-snap-type:x proximity}
     mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
 }
 @media(max-width:860px){
-  header{padding:8px 0}
+  header{padding:4px 0}
   header .wrap{gap:6px}
   .hbar{width:100%}
   .hbar .themebtn{margin-left:auto}
   header nav{margin-left:0;width:100%;padding-bottom:2px;
     -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
     mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
-  header nav a{padding:7px 11px}
+  header nav a{padding:0 11px}
   header nav .navgroup{padding-left:6px;margin-left:3px}
 }
+`
+
+/**
+ * The token layer, exported so site/search.html can inline the same source
+ * instead of keeping its own drifting copy of the palette.
+ */
+export const TOKENS = `
+/* ---- TOKEN LAYER -------------------------------------------------------
+   Semantic tokens are the source of truth. The older presentational names
+   (--bg, --panel, --line, --accent...) are kept as aliases so the 40 page
+   modules that use them keep working; new work should use the semantic name.
+   Every colour pair below has a measured contrast ratio in the comment.
+   The full rationale lives in design-system/showstack/MASTER.md.
+
+   Light is the base palette and dark is the override, so a browser that
+   expresses no preference lands on light - the real usage context is a phone
+   in a loading dock in daylight. The OS preference is still honoured, and an
+   explicit choice via [data-theme] beats the OS in both directions. */
+:root{
+color-scheme:light;
+/* surfaces */
+--surface:#f6f7f9;--surface-raised:#ffffff;--surface-sunken:#edf0f4;
+/* text - every one of these measured >= 4.5:1 on all three surfaces */
+--ink:#141922;          /* 16.44 / 17.62 / 15.41 */
+--ink-muted:#46536a;    /*  7.24 /  7.76 /  6.79 */
+--ink-faint:#5f6b80;    /*  5.02 /  5.38 /  4.71 - labels only, never body */
+/* boundaries. --rule is decorative and deliberately quiet; --rule-strong is
+   for anything whose boundary a person needs to see to operate it, and is the
+   only one of the two that clears SC 1.4.11's 3:1. */
+--rule:#dbe1ea;         /*  1.23 - decorative only */
+--rule-strong:#7f8288;  /*  3.59 /  3.85 /  3.37 - controls */
+/* the one accent */
+--signal:#0b7561;       /*  5.25 /  5.63 /  4.92 */
+--signal-ink:#ffffff;   /*  5.63 on --signal */
+--focus:#0b7561;        /*  5.25 - clears 3:1 on every surface it lands on */
+/* reserved. Never decorative: green means "this fact is sourced", amber means
+   a real caution, red means a real failure. */
+--verified:#3a7a22;     /*  4.91 */
+--warn:#b6462e;         /*  5.02 */
+--fail:#b6462e;
+/* domain hues, used to identify a domain and nothing else */
+--dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;
+--dom-safety:#b6462e;--dom-control:#7440ab;
+--glow:transparent;
+--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
+/* legacy aliases - do not use in new code */
+--bg:var(--surface);--panel:var(--surface-raised);--panel2:var(--surface-sunken);
+--line:var(--rule);--dim:var(--ink-muted);--dimmer:var(--ink-faint);
+--accent:var(--signal);--accent2:#8f6110;--ok:var(--verified);
+}
+/* --- type scale, 1.2 minor third off a 16px base ------------------------ */
+:root{
+--text-xs:11px;--text-sm:13px;--text-base:16px;--text-md:17px;--text-lg:20px;
+--text-xl:24px;--text-2xl:29px;--text-3xl:35px;--text-display:clamp(30px,5.2vw,50px);
+--leading-tight:1.25;--leading-normal:1.5;--leading-prose:1.65;
+--measure:68ch;
+/* --- 4px spacing scale --- */
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
+/* --- radius --- */
+--r-sm:8px;--r-md:12px;--r-lg:16px;--r-pill:999px;
+/* --- motion. Standard tier: nothing choreographed. --- */
+--dur-fast:150ms;--dur-base:250ms;--dur-slow:400ms;
+--ease-out:cubic-bezier(.22,.61,.36,1);--ease-in-out:cubic-bezier(.65,.05,.36,1);
+/* --- families --- */
+--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--serif:"Newsreader",Georgia,"Times New Roman",serif}
+
+/* Dark. Same token names, re-measured values. Not an inverted light palette:
+   the accent had to be lightened to hold its ratio on a dark ground, and the
+   reserved colours were re-picked rather than flipped. */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+color-scheme:dark;
+--surface:#0b0e14;--surface-raised:#121722;--surface-sunken:#19212f;
+--ink:#e9edf4;          /* 16.45 / 15.27 / 13.76 */
+--ink-muted:#9aa8bc;    /*  8.00 /  7.43 /  6.69 */
+--ink-faint:#7a889f;    /*  5.38 /  4.99 /  4.50 */
+--rule:#242f42;         /*  1.44 - decorative only */
+--rule-strong:#556e9b;  /*  3.76 /  3.49 /  3.15 - controls */
+--signal:#5fd4bb;       /* 10.69 /  9.92 /  8.94 */
+--signal-ink:#0b0e14;   /* 10.69 on --signal */
+--focus:#5fd4bb;
+--verified:#8cc96a;     /*  9.82 */
+--warn:#ec7f66;         /*  7.17 */
+--fail:#ec7f66;
+--dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
+--dom-safety:#ec7f66;--dom-control:#b98cf2;
+--glow:rgba(95,212,187,.06);
+--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+--accent2:#f0b866}}
+:root[data-theme="dark"]{
+color-scheme:dark;
+--surface:#0b0e14;--surface-raised:#121722;--surface-sunken:#19212f;
+--ink:#e9edf4;--ink-muted:#9aa8bc;--ink-faint:#7a889f;
+--rule:#242f42;--rule-strong:#556e9b;
+--signal:#5fd4bb;--signal-ink:#0b0e14;--focus:#5fd4bb;
+--verified:#8cc96a;--warn:#ec7f66;--fail:#ec7f66;
+--dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
+--dom-safety:#ec7f66;--dom-control:#b98cf2;
+--glow:rgba(95,212,187,.06);
+--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+--accent2:#f0b866}
+/* Self-hosted, same origin. Two variable files per family cover 400-700, and
+   unicode-range means latin-ext only downloads on a page that needs it. The
+   CDN version of this was render-blocking and third-party: when that request
+   hung behind a venue firewall, mobile LCP went from 316ms to 12812ms. */
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/plex-sans-latin.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/plex-sans-latin-ext.woff2) format("woff2");
+unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/jetbrains-mono-latin.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/jetbrains-mono-latin-ext.woff2) format("woff2");
+unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+`
+
+const CSS = RELATED_CSS + TOKENS + `
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+/* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
+   at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
+input,select,textarea,button,summary,.tab,[role="tab"]{border-color:var(--rule-strong)}
+input,select,textarea{background:var(--surface-raised);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:var(--r-sm);font-family:var(--mono)}
+/* SC 2.5.8: 44px minimum on anything you tap. */
+input,select,textarea,button{min-height:44px}
+input[type="checkbox"],input[type="radio"]{min-height:0;width:20px;height:20px;
+flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
+/* A checkbox is tapped on its label, so the label carries the target size. */
+label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
+display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:800px;margin:0 auto;padding:0 20px}
+${SHELL_CSS}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -273,7 +398,7 @@ const THEME_JS = `
  * derived from the canonical URL so no page has to declare it and none can
  * forget to.
  */
-function navBar(canonical) {
+export function navBar(canonical) {
   const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
   const link = (href, label) => {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
@@ -304,9 +429,8 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
 <meta name="twitter:card" content="summary">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="preload" href="/assets/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>${THEME_JS}</script>
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
@@ -346,7 +470,12 @@ function relatedLearn(kind, entry) {
 }
 
 function contributeBox(collection, id, gap) {
-  const missing = gap ? `<p>Known gaps on this entry: <code>${esc(gap.missing.join('</code>, <code>'))}</code>. If you can source one of them, that is a ten minute pull request.</p>` : ''
+  // esc() has to run per field name, not over the joined string - joining
+  // first meant the <code> separators were escaped too and the reader saw
+  // literal markup in the middle of the sentence.
+  const missing = gap
+    ? `<p>Known gaps on this entry: ${gap.missing.map((f) => `<code>${esc(f)}</code>`).join(', ')}. If you can source one of them, that is a ten minute pull request.</p>`
+    : ''
   return `<div class="cta">
     <strong>Something wrong, or missing?</strong>
     ${missing || '<p>Every entry here is maintained by people who run shows.</p>'}

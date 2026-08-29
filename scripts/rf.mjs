@@ -26,8 +26,8 @@ export function rfPage({ esc, shell, jsonForScript, SITE, GH }) {
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
-.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
-border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px}
+.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--rule-strong);
+border-radius:7px;font-family:var(--mono);font-size:16px;min-height:44px;font-variant-numeric:tabular-nums}
 .out{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
 border-radius:7px;padding:10px 13px;margin-top:6px;overflow-x:auto}
 .out b{color:var(--accent2)}

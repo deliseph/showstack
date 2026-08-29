@@ -70,9 +70,9 @@ background:var(--warn)}
 .tryit input,.tryit select{padding:8px 10px;background:var(--panel);color:var(--ink);border:1px solid var(--line);
 border-radius:7px;font-family:var(--mono);font-size:14px;min-height:40px;max-width:100%}
 .tryit input[type=range]{accent-color:var(--accent);min-width:150px;padding:0}
-.tryit .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tryit .seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden}
 .tryit .seg button{background:var(--panel);color:var(--dim);border:0;border-right:1px solid var(--line);
-font-family:var(--mono);font-size:12.5px;padding:9px 13px;cursor:pointer;min-height:40px}
+font-family:var(--mono);font-size:12.5px;padding:0 14px;cursor:pointer;min-height:44px}
 .tryit .seg button:last-child{border-right:0}
 .tryit .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:var(--accent)}
 .readout{font-family:var(--mono);font-size:14.5px;color:var(--ink);background:var(--panel);
@@ -117,9 +117,9 @@ padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-ra
 color:var(--dimmer);display:flex;justify-content:space-between;gap:10px}
 .dial label b{color:var(--accent2);font-weight:600;text-transform:none;letter-spacing:0;font-size:12.5px}
 .dial input[type=range]{accent-color:var(--accent);width:100%;min-width:0;height:22px}
-.dial .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-end}
+.dial .seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden;align-self:flex-end}
 .dial .seg button{background:var(--panel2);color:var(--dim);border:0;border-right:1px solid var(--line);
-font-family:var(--mono);font-size:12px;padding:9px 12px;cursor:pointer;min-height:40px}
+font-family:var(--mono);font-size:12px;padding:0 13px;cursor:pointer;min-height:44px}
 .dial .seg button:last-child{border-right:0}
 .dial .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 18%,var(--panel));color:var(--accent)}
 .verdict{font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--panel2);
@@ -139,7 +139,8 @@ scrollbar-width:none;padding-bottom:2px;
 -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
 mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
 .lnav .lrail::-webkit-scrollbar{display:none}
-.lnav a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:7px;
+.lnav a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:0 12px;border-radius:7px;
+display:inline-flex;align-items:center;min-height:44px;
 color:var(--dim);border:1px solid transparent;white-space:nowrap;text-decoration:none}
 .lnav a:hover{color:var(--accent);background:var(--panel);text-decoration:none}
 .lnav a.active{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);

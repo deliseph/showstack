@@ -45,9 +45,10 @@ export function toolsPage({ esc, shell, SITE, GH }) {
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
-.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
-border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:110px}
-.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:7px;font-family:var(--mono);font-size:16px;
+min-height:44px;width:110px;font-variant-numeric:tabular-nums}
+.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .field select{width:auto;max-width:100%}
 /* A long <option> makes a <select> as wide as its longest label, which on a
    390px screen pushes the whole document sideways. Clamp the field, not just
@@ -62,18 +63,22 @@ border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:1
 border-radius:7px;padding:10px 13px;margin-top:6px;overflow-x:auto}
 .out b{color:var(--accent2)}
 .out .err{color:var(--warn)}
-.dips{display:flex;gap:6px;margin:10px 0 4px}
-.dip{width:30px;height:52px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);
-position:relative;cursor:pointer;padding:0}
-.dip:focus-visible{outline:2px solid var(--accent)}
-.dip::after{content:"";position:absolute;left:4px;right:4px;height:20px;border-radius:3px;background:var(--dimmer);
-bottom:4px;transition:all .12s}
-.dip[aria-pressed="true"]::after{top:4px;bottom:auto;background:var(--accent)}
+.dips{display:flex;gap:6px;margin:10px 0 4px;overflow-x:auto;overflow-y:visible;
+scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.dips::-webkit-scrollbar{display:none}
+.dip{width:44px;height:56px;flex:0 0 auto;border:1px solid var(--rule-strong);border-radius:5px;
+background:var(--panel2);position:relative;cursor:pointer;padding:0}
+.dip:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.dip::after{content:"";position:absolute;left:7px;right:7px;height:22px;border-radius:3px;
+background:var(--dimmer);bottom:5px;transition:all .12s}
+.dip[aria-pressed="true"]::after{top:5px;bottom:auto;background:var(--signal)}
 .dip .n{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--dimmer)}
 .dips-wrap{padding-top:18px}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
 .note a{color:var(--accent)}
-label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(--dim);margin-top:8px}
+label.inline{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--dim);
+margin-top:8px;min-height:44px;cursor:pointer}
+label.inline input[type=checkbox]{width:20px;height:20px;flex:0 0 auto;accent-color:var(--signal)}
 /* True masonry, not a uniform-row grid: CSS grid sizes every row to its
    tallest card, so a short calculator next to a tall one leaves dead space
    underneath it. Multi-column flow instead packs each card into whichever

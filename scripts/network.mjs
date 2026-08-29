@@ -21,7 +21,7 @@ export function networkPage({ esc, shell, jsonForScript, SITE, GH }) {
 .tool h3{margin-top:0}
 .protopick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .protopick label{display:inline-flex;gap:7px;align-items:center;font-family:var(--mono);font-size:13px;color:var(--dim);
-background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;cursor:pointer;min-height:40px}
+background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:0 13px;cursor:pointer;min-height:44px;display:inline-flex;align-items:center}
 .protopick label:has(input:checked){color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
 .queue{border:1px solid var(--line);border-radius:9px;margin-bottom:8px;overflow:hidden}
 .queue .qh{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;padding:7px 12px;
@@ -35,8 +35,8 @@ border-radius:9px;padding:12px 15px;margin:10px 0;color:var(--ink);font-size:14.
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
-.field input{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
-border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:96px}
+.field input{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--rule-strong);
+border-radius:7px;font-family:var(--mono);font-size:16px;min-height:44px;width:96px;font-variant-numeric:tabular-nums}
 .out{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
 border-radius:7px;padding:10px 13px;margin-top:6px;overflow-x:auto}
 .out b{color:var(--accent2)}

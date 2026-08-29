@@ -63,6 +63,7 @@ box-shadow:var(--shadow);transition:border-color .16s}
 background:var(--accent);color:var(--bg);border:0;cursor:pointer;font-weight:600;letter-spacing:.2px;
 transition:filter .16s}
 .findbar button:hover{filter:brightness(1.08)}
+@media(max-width:520px){.findbar input{flex:1 1 100%}.findbar button{flex:1 1 100%}}
 .findhint{font-family:var(--mono);font-size:12px;color:var(--dimmer);margin:0 0 38px;line-height:1.7}
 .findhint a{color:var(--dim);border-bottom:1px solid transparent}
 .findhint a:hover{color:var(--accent);border-bottom-color:color-mix(in srgb,var(--accent) 40%,transparent);
@@ -155,8 +156,9 @@ background:var(--panel2)}
 .contrib p{margin:0 0 12px;color:var(--dim);font-size:14.4px;line-height:1.62;max-width:70ch}
 .contrib p:last-child{margin-bottom:0}
 .cbtns{display:flex;gap:9px;flex-wrap:wrap}
-.cbtns a{font-family:var(--mono);font-size:12.5px;padding:10px 15px;border-radius:999px;
-border:1px solid var(--line);background:var(--panel);color:var(--dim);white-space:nowrap}
+.cbtns a{font-family:var(--mono);font-size:12.5px;padding:0 17px;border-radius:999px;
+border:1px solid var(--rule-strong);background:var(--panel);color:var(--dim);white-space:nowrap;
+display:inline-flex;align-items:center;min-height:44px}
 .cbtns a:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
 .cbtns a.primary{background:color-mix(in srgb,var(--accent) 14%,var(--panel));color:var(--accent);
 border-color:color-mix(in srgb,var(--accent) 42%,var(--line))}
