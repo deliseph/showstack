@@ -48,6 +48,10 @@ export function learnAnaloguePage({ esc, shell, SITE, GH }) {
 .part i{display:block;font-style:normal;font-family:var(--mono);font-size:11px;letter-spacing:.4px;
 text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
 .part p{margin:0;color:var(--ink-muted);font-size:14px;line-height:1.55}
+/* A second paragraph in a card is the caveat on the first, so it needs its
+   own space and a step down in weight. .part p is margin:0, so without
+   this the two run together into one block. */
+.part p + p{margin-top:9px;color:var(--ink-faint);font-size:13.4px}
 .atable{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
 .atable th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
 color:var(--ink-faint);padding:0 12px 9px 0;border-bottom:1px solid var(--rule);font-weight:400}
@@ -120,7 +124,7 @@ ${S('The parts', 'Five components, and what each one is actually for',
 
 <div class="parts">
   <div class="part"><i>Resistor</i><b>Turns voltage into current</b>
-    <p>V = IR, and everything else follows. Two in series divide a voltage in proportion; one in the feedback path of an amplifier sets its gain. It also turns the difference into heat, which is why the value and the wattage are two separate specifications.</p></div>
+    <p>V = IR, and everything else follows. Two in series make a <b>voltage divider</b> &mdash; the output is the input times the lower resistance over the total &mdash; and that is the single most reused circuit there is: it is what a fader is, what sets an amplifier&rsquo;s gain from its feedback path, and how almost every sensor is read. It also turns the difference into heat, which is why the value and the wattage are two separate specifications.</p><p>A divider is only accurate while nothing much is drawn from its output. Load it and the lower leg has company, the ratio moves, and a reading drifts for no visible reason.</p></div>
   <div class="part"><i>Capacitor</i><b>Stores charge, blocks DC</b>
     <p>Two plates that cannot pass a steady voltage but happily pass a changing one. That single property makes it a coupling element between stages, a filter with a resistor, and the reservoir that holds a power supply up between mains peaks.</p></div>
   <div class="part"><i>Inductor &amp; transformer</i><b>Stores energy in a field</b>
@@ -146,6 +150,26 @@ ${S('The console', 'How a rig was controlled with no memory and no processor',
    'Memory is where it gets interesting, because there is none. What a two-preset console has instead is <em>two complete banks of faders</em> and a crossfader between them. The operator sets the next state on the inactive bank while the current one is live, then crossfades. The crossfader is a dual-gang potentiometer wired so one half fades up as the other fades down &mdash; the cue stack is physical, the memory is the operator&rsquo;s hands, and the fade is a resistance changing.',
    'Then the cable became the problem, and the answer was multiplexing: send the channels one after another down one pair instead of all at once down many. Analogue multiplexing came first (AMX192, D54), sampling each channel in turn as a voltage. Digital multiplexing followed and won, because once you are sending them in sequence anyway you may as well send numbers, which do not degrade. <a href="/learn/dmx/">DMX512</a> is that idea and nothing more: 512 numbers in a row, over and over, on one pair.'])}
 
+${S('The dimmer', 'Three ways to make a lamp half bright, two of them obsolete',
+  ['The console sent a control voltage. Something had to turn that into less light, and the three answers in order are a good short history of the whole trade, because each one solves the previous one&rsquo;s worst problem and introduces its own.',
+   '<strong>The resistance dimmer</strong> is a variable resistor in series with the lamp. It works, and it is terrible: the power you take away from the lamp does not vanish, it comes out of the dimmer as heat. A 1&nbsp;kW lamp at half brightness means several hundred watts being burned in a box backstage, which is why resistance boards lived in their own room and why the operator worked in the heat. Worse, it is <em>load dependent</em>. A resistance dimmer built for a 1000&nbsp;W lamp given a 500&nbsp;W one will not black out, because the two resistances now divide the voltage differently. You matched the dimmer to the lamp or you did not get a fade. The portable version, a rack of these on a frame with a row of levers along the top, is the <em>piano board</em>, and the name is purely about the shape of the thing you stood at.',
+   '<strong>The autotransformer dimmer</strong> &mdash; a Variac, a tapped winding with a sliding brush &mdash; fixed both faults at once. It transforms rather than burns, so it is efficient and runs cool, and because it varies the voltage rather than dividing it, it is load independent: any lamp within its rating fades properly. What it is instead is <em>enormous</em>. One iron-cored transformer per channel, each the size of a paint tin, which is why a 60-way autotransformer board is a piece of furniture and why they were operated by hand, sometimes with mechanical linkages so one lever could move several.',
+   '<strong>The thyristor dimmer</strong> is what replaced both and what almost every dimmer still is. It does not reduce the voltage at all &mdash; it switches the mains on partway through each half cycle and lets the rest through, so the lamp sees a chopped waveform and averages it. Cheap, small, load independent, and controllable by a tiny signal, which is what made a remote console with hundreds of channels practical.',
+   'And it introduced the problems we still have. Chopping the waveform generates harmonics, the third among them, which is a triplen &mdash; and triplens do not cancel in a three-phase neutral, they <a href="/learn/power/">add up in it</a>. It also makes the filament move: the sudden switch-on each half cycle is a mechanical shock, which is filament sing, and the choke in every dimmer exists to slow that edge down. A dimmer that buzzes has a choke doing its job; a lamp that buzzes has one that is not big enough.'])}
+
+${bites([
+  '<b>A resistance dimmer will not black out an undersized lamp.</b> If it is on a historic rig and it will not go to zero, check the lamp wattage against the dimmer before assuming a fault.',
+  '<b>Thyristor dimmers need a minimum load.</b> Put an LED lamp on a dimmer channel and it may flicker, glow when off, or nothing at all, because there is not enough current to hold the thyristor on.',
+  '<b>Filament sing is the choke, not the lamp.</b> Slower rise time means quieter filament and more harmonics filtered; that is the whole trade a dimmer choke makes.',
+  '<b>Sine-wave dimmers exist</b> and solve the harmonics and the sing by reconstructing a real sine at reduced amplitude. They cost and weigh what you would expect.',
+])}
+
+${S('The VCA', 'A fader that carries no audio at all',
+  ['The audio console has its own version of the same problem: how one hand controls many things without the signal having to go through that hand.',
+   'A <strong>voltage-controlled amplifier</strong> is a gain stage whose gain is set by a control voltage rather than by a knob in the signal path. Once you have that, the fader stops being part of the audio circuit and becomes a source of DC. It is a control surface in the literal sense, decades before that phrase existed.',
+   'That is what a VCA group is, and it is why it is not a subgroup. A <em>subgroup</em> sums the audio of several channels into one bus and gives you a fader on the sum. A <em>VCA group</em> sums nothing: the channels stay on their own paths and the group fader simply adds an offset to each channel&rsquo;s control voltage. Pull a VCA group down and each channel&rsquo;s own fader moves in effect but not in fact, all their sends and inserts scale with them, and the audio never met an extra amplifier.',
+   'The practical difference shows up the moment you use a post-fade send. On a subgroup, a reverb send taken from the channel is unaffected by the group fader, because the audio has already left. On a VCA, it follows, because the channel gain itself moved. Every digital console still models this distinction and still calls them by these names, which is why the vocabulary of a 1975 console is worth knowing on a 2025 one.'])}
+
 ${bites([
   '<b>0&ndash;10&nbsp;V is still out there.</b> Architectural dimming, some house lights and a lot of installed kit still take an analogue control voltage, and a DMX-to-0-10V gateway is a normal thing to need.',
   '<b>A pot is a wear part.</b> Faders get dirty and scratchy because they are a physical wiper on a resistive track. A channel that crackles when moved is mechanical, not electronic.',
@@ -159,6 +183,19 @@ ${S('The amplifier', 'One idea in three sets of clothes',
    '<strong>Class AB</strong> splits the waveform between two devices, one handling the positive half and one the negative, with a small overlap so neither switches off exactly at the crossing point. That overlap is the point: without it you get crossover distortion right where the signal is quietest and the ear is most sensitive. Efficiency around 50 to 60%, and it was the standard for touring amplifiers for decades.',
    '<strong>Class D</strong> is not analogue in the middle at all. The output devices are switched fully on or fully off at a high frequency, with the <em>proportion</em> of on-time following the signal, and a passive filter at the output turns that back into a waveform. A device that is fully on or fully off dissipates very little, so efficiency runs past 90% &mdash; which is why modern amplifiers are a fraction of the weight and why an amp rack no longer needs its own air conditioning.',
    'All three still put a fixed voltage across a load through some output impedance, which is why the <a href="/tools/#spkz">speaker impedance</a> arithmetic is the same whatever the class, and why halving the load impedance still asks the supply for twice the current.'])}
+
+${S('Inside the output stage', 'Push-pull, damping factor, slew rate, and which number on the sheet is lying to you',
+  ['&ldquo;Two devices, one per half of the waveform&rdquo; has a name: a <strong>push-pull</strong> output stage. One device sources current into the load on the positive half, the other sinks it on the negative. They are almost always the complementary pair the components section named &mdash; an NPN and a PNP, or their MOSFET equivalents &mdash; and the bias current through both at the crossing point is the single adjustment that separates a clean amplifier from a harsh one.',
+   'Which device type matters more than the marketing suggests. A <strong>bipolar</strong> output device is driven by current and gets <em>more</em> conductive as it heats, so it will run away and destroy itself unless something watches its temperature and pulls the bias back. That something is a bias servo, usually a transistor bolted to the same heatsink, and it is a real failure point on old amplifiers. A <strong>MOSFET</strong> is driven by voltage and, in the region amplifiers use, gets <em>less</em> conductive as it heats, so it self-limits. That is why MOSFET outputs are more thermally forgiving and why they took over the touring market.',
+   '<strong>Damping factor</strong> is the number most often quoted and most often meaningless. It is just the load impedance divided by the amplifier&rsquo;s output impedance, and it describes how firmly the amplifier can resist the voltage a moving cone generates back into it. A figure of 500 sounds authoritative. Then you put 30&nbsp;m of cable between the two, and the cable&rsquo;s own resistance is in series with the amplifier&rsquo;s, so the damping factor the driver actually experiences is 8 divided by (the output impedance plus the cable), which for a couple of tenths of an ohm collapses 500 to something in the tens. <em>The cable sets the damping factor, not the amplifier.</em> That is the whole argument for short speaker runs and fat conductors, and the <a href="/tools/#vdrop">voltage drop</a> calculator is the same arithmetic.',
+   '<strong>Slew rate</strong> is how many volts the output can move in a microsecond. Too low and a fast transient comes out as a ramp rather than an edge, which is not the same distortion as clipping and sounds like smearing rather than hardness. It is rarely the limit on a modern amplifier and it is worth knowing the word, because it is the one specification that describes a failure in <em>time</em> rather than in level.'])}
+
+${bites([
+  '<b>Bridging halves the load the amplifier sees.</b> Two channels bridged into 8 ohms is each channel working into 4. Bridging into 4 asks each for 2, which most amplifiers will not survive.',
+  '<b>A damping factor over about 50 is a specification, not a benefit.</b> The cable has already decided.',
+  '<b>Class D output filters are tuned for a load.</b> Some designs misbehave into an impedance far from what they expect, which is one reason a long high-impedance line is not just a longer cable.',
+  '<b>Crossover distortion rises as the signal gets quieter.</b> It is a bias fault, it is worst where the ear is most sensitive, and it does not show up in a full-power THD figure at all.',
+])}
 
 <div class="tryit">
   <div class="f"><label for="af-r">Resistance <span id="af-rv">10 kΩ</span></label>
@@ -176,6 +213,20 @@ ${S('Storage', 'Tape, vinyl, and three discs that look identical',
    'Infrared to red to blue-violet takes the wavelength from 780 to 650 to 405&nbsp;nm, and the numerical aperture rose from 0.45 to 0.60 to 0.85. Both help, and together they take the spot from about 2.1&nbsp;&micro;m to 0.58&nbsp;&micro;m. Density goes with the <em>square</em> of that, because a disc is a surface &mdash; about 13&times;. But capacity actually rose about 36&times;, and the missing factor of 2.7 is not physics at all. It is coding: better modulation, better error correction, more of the disc used. The optics gave one factor and the mathematics gave another.'])}
 
 ${fig(discFig, 'Same disc, same spin. The spot is what changed, and area goes with its square.')}
+
+${S('Why an old tape sounds wrong', 'Three faults that are not the recording, and one that is not EQ',
+  ['If you are ever handed a reel and asked to get the show audio off it, four things account for nearly every complaint, and only one of them is the tape being old.',
+   '<strong>Azimuth</strong> is the angle of the head gap relative to the tape&rsquo;s direction of travel, and it should be exactly perpendicular. If the machine that recorded and the machine playing back disagree even slightly, the top of the track is read a fraction of a moment before the bottom, so high frequencies partly cancel across the width of the track. It presents as a dull recording. It is not dull &mdash; it is a phase error, and no amount of top-end EQ fixes it, because you are boosting something that is cancelling itself. Aligning the playback head to the tape recovers it completely, and this is the single most common reason an archive tape sounds worse than it is.',
+   '<strong>Wow and flutter</strong> are the same fault at two speeds: the tape is not moving at a constant rate. Slow variation, below roughly 4&nbsp;Hz, is heard as pitch drifting and is called wow; faster variation is heard as a roughness or warble on sustained notes and is called flutter. Wow is usually a capstan or a slipping pinch roller; flutter is often a bearing or tape dragging on a guide.',
+   '<strong>Bias</strong> is the one that is not a fault at all. Magnetic tape does not respond linearly to a small signal, so recorders add a strong high-frequency tone &mdash; far above hearing, typically 100&nbsp;kHz or so &mdash; to push the signal into the part of the curve that behaves. Bias level is a real alignment setting: too little and the recording is distorted and thin, too much and the top end is gone. A machine biased for one tape formulation and fed another is mis-set by definition.',
+   '<strong>Noise reduction</strong> is where a tape can be actively misread. Dolby A, B, C and SR all work by compressing certain bands on the way in and expanding them by the exact inverse on the way out. Play a Dolby-encoded tape without decoding and it is bright and forward; decode a tape that was never encoded and it is dull and lifeless. Worse, the expansion tracks against a reference level, so if the machine&rsquo;s alignment does not match the one that recorded it, the decode mistracks and the sound pumps. Getting an encoded tape back needs the type <em>and</em> the reference level, and the box is often the only place either was written down.'])}
+
+${bites([
+  '<b>Dull is usually azimuth, not age.</b> Check alignment before reaching for EQ, because EQ cannot undo a cancellation.',
+  '<b>Play the alignment tones first if the reel has them.</b> They exist precisely so a future machine can be matched to the one that recorded.',
+  '<b>Sticky-shed is real and is a one-shot risk.</b> Some 1970s to 1990s stock absorbs moisture and sheds oxide onto the heads, and playing it once without baking can be the last time it plays.',
+  '<b>Note the speed and the track format before threading.</b> A half-track tape on a quarter-track machine plays two things at once, one of them backwards.',
+])}
 
 <div class="tblscroll">
 <table class="atable">
