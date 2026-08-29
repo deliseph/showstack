@@ -2903,3 +2903,282 @@ export function forcedPerspective(realSize, realDistance, targetDistance, opts =
   }
 }
 
+
+/**
+ * DMX512 frame timing, and what RDM costs you.
+ *
+ * DMX is a fixed-rate serial stream and its refresh rate is not a setting —
+ * it falls out of the arithmetic. 250 kbit/s, 8 data bits with one start and
+ * two stop bits, so eleven bits on the wire per slot:
+ *
+ *   slot time  = 11 / 250000 = 44 us
+ *   frame time = break + mark-after-break + (1 + slots) x 44 us
+ *
+ * The extra slot is the start code, which is why a "512 channel" frame is
+ * really 513 slots. A full frame comes to about 22.7 ms, giving the familiar
+ * ~44 Hz ceiling, and the only way to go faster is to send fewer slots.
+ *
+ * RDM shares this wire by taking turns on it. Every transaction — request out,
+ * line released, response back — is time the transmitter is not sending
+ * levels, so heavy discovery or continuous sensor polling really does slow the
+ * rig down. That is not a superstition, it is subtraction, and this is the
+ * subtraction.
+ *
+ * The turnaround figure is an input rather than a constant because it is the
+ * part that varies: E1.20 specifies windows, and real gateways, splitters and
+ * USB dongles sit at different places inside them.
+ */
+export function dmxFrameTime(slots = 512, opts = {}) {
+  const n = Number(slots)
+  if (!Number.isInteger(n) || n < 0 || n > 512) return null
+  const breakUs = Number(opts.breakUs ?? 92)
+  const mabUs = Number(opts.markAfterBreakUs ?? 12)
+  const bitRate = Number(opts.bitRate ?? 250000)
+  if (![breakUs, mabUs, bitRate].every((x) => Number.isFinite(x) && x > 0)) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  // Eleven bits per slot: one start, eight data, two stop.
+  const slotUs = (11 / bitRate) * 1e6
+  // The start code is a slot too, which is why 512 channels is 513 slots.
+  const frameUs = breakUs + mabUs + (n + 1) * slotUs
+
+  return {
+    slots: n,
+    slotUs: r2(slotUs),
+    breakUs,
+    markAfterBreakUs: mabUs,
+    frameUs: r2(frameUs),
+    frameMs: r2(frameUs / 1000),
+    refreshHz: r2(1e6 / frameUs),
+    // The one lever there is: a partial frame is a faster frame.
+    atSlots: (other) => {
+      const o = Number(other)
+      if (!Number.isInteger(o) || o < 0 || o > 512) return null
+      const us = breakUs + mabUs + (o + 1) * slotUs
+      return { slots: o, frameMs: r2(us / 1000), refreshHz: r2(1e6 / us) }
+    },
+  }
+}
+
+/**
+ * The cost of RDM traffic on a DMX line, in refresh rate.
+ *
+ * An RDM packet is 25 bytes of overhead plus its parameter data: start code,
+ * sub-start code, message length, destination and source UIDs at six bytes
+ * each, transaction number, port ID or response type, message count,
+ * sub-device, command class, PID, parameter data length, and a two-byte
+ * checksum. At 44 us a byte that is about 1.1 ms before anything useful is
+ * carried.
+ *
+ * A transaction is a request out and a response back with the line turned
+ * around in between, and all of it displaces level data. The result is the
+ * answer to a question people ask every production: why did the rig get
+ * sluggish when somebody turned sensor polling on.
+ */
+export const RDM_OVERHEAD_BYTES = 25
+
+export function rdmOverhead(transactionsPerSecond, opts = {}) {
+  const tps = Number(transactionsPerSecond)
+  if (!Number.isFinite(tps) || tps < 0) return null
+  const requestPdl = Number(opts.requestPdl ?? 0)
+  const responsePdl = Number(opts.responsePdl ?? 8)
+  const turnaroundUs = Number(opts.turnaroundUs ?? 400)
+  const slots = Number(opts.slots ?? 512)
+  if (![requestPdl, responsePdl, turnaroundUs].every((x) => Number.isFinite(x) && x >= 0)) return null
+  if (requestPdl > 231 || responsePdl > 231) return null
+  const frame = dmxFrameTime(slots, opts)
+  if (!frame) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  const requestUs = (RDM_OVERHEAD_BYTES + requestPdl) * frame.slotUs
+  const responseUs = (RDM_OVERHEAD_BYTES + responsePdl) * frame.slotUs
+  // Two turnarounds: the controller releasing the line, and taking it back.
+  const transactionUs = requestUs + responseUs + turnaroundUs * 2
+
+  const rdmUsPerSecond = transactionUs * tps
+  const leftUsPerSecond = Math.max(0, 1e6 - rdmUsPerSecond)
+  const framesPerSecond = leftUsPerSecond / frame.frameUs
+
+  return {
+    transactionsPerSecond: tps,
+    requestUs: r2(requestUs),
+    responseUs: r2(responseUs),
+    turnaroundUs,
+    transactionMs: r2(transactionUs / 1000),
+    // What share of the wire RDM is holding.
+    wirePercent: r2((rdmUsPerSecond / 1e6) * 100),
+    baseRefreshHz: frame.refreshHz,
+    refreshHz: r2(framesPerSecond),
+    lostHz: r2(frame.refreshHz - framesPerSecond),
+    // Past this the line has no room for level data at all, which is what a
+    // runaway discovery actually looks like from the fixture's end.
+    saturated: rdmUsPerSecond >= 1e6,
+  }
+}
+
+/**
+ * An RDM UID, taken apart.
+ *
+ * Forty-eight bits: a 16-bit ESTA manufacturer ID and a 32-bit device ID,
+ * written mmmm:dddddddd. Devices are addressed by this rather than by DMX
+ * address, which is the point — a fixture can be found and interrogated
+ * before anybody knows what address it is on, or when two fixtures are
+ * sitting on the same one.
+ *
+ * Two ranges are not ordinary UIDs and both matter in the field.
+ * FFFF:FFFFFFFF is the broadcast to everything, and mmmm:FFFFFFFF is the
+ * broadcast to every device from one manufacturer. And manufacturer IDs from
+ * 8000h up are reserved for the dynamic UIDs E1.33 hands out, so a device
+ * showing one of those cannot be identified by manufacturer from its UID at
+ * all.
+ */
+export function rdmUid(input) {
+  if (typeof input !== 'string') return null
+  const cleaned = input.trim().replace(/[\s_]/g, '')
+  const m = /^([0-9a-fA-F]{4})[:-]?([0-9a-fA-F]{8})$/.exec(cleaned)
+  if (!m) return null
+  const manufacturer = parseInt(m[1], 16)
+  const device = parseInt(m[2], 16)
+  const hex4 = manufacturer.toString(16).toUpperCase().padStart(4, '0')
+  const hex8 = device.toString(16).toUpperCase().padStart(8, '0')
+
+  const allDevices = device === 0xffffffff
+  const allManufacturers = manufacturer === 0xffff
+  const dynamic = manufacturer >= 0x8000 && manufacturer !== 0xffff
+
+  return {
+    uid: `${hex4}:${hex8}`,
+    manufacturerId: manufacturer,
+    manufacturerHex: hex4,
+    deviceId: device,
+    deviceHex: hex8,
+    broadcast: allDevices,
+    scope: allManufacturers && allDevices ? 'all devices, all manufacturers'
+      : allDevices ? `all devices from manufacturer ${hex4}`
+        : 'a single device',
+    // 8000h and up belongs to E1.33's dynamic allocation, so the usual
+    // "look the manufacturer up in the ESTA registry" step does not apply.
+    dynamicUid: dynamic,
+    identifiableByManufacturer: !dynamic && !allManufacturers,
+    note: dynamic
+      ? 'Manufacturer IDs 8000h-FFFFh are reserved for E1.33 RDMnet dynamic UIDs. This one names no manufacturer.'
+      : allManufacturers
+        ? 'FFFFh is the broadcast manufacturer, not a real one.'
+        : 'Look the manufacturer ID up in the ESTA registry to name it.',
+  }
+}
+
+/**
+ * Total harmonic distortion, and the conductor it fills up.
+ *
+ * A perfect load draws a sine wave. Nothing on a rig does. Switch-mode
+ * supplies — every LED fixture, every media server, every amplifier — draw
+ * current in short spikes near the voltage peak, and a spiky current is a
+ * sine plus a set of harmonics at multiples of the mains frequency.
+ *
+ * THD is how much of the current is not the fundamental:
+ *
+ *   THD-F = sqrt(sum of harmonic^2) / fundamental      referenced to the fundamental
+ *   THD-R = sqrt(sum of harmonic^2) / total RMS        referenced to the total
+ *
+ * Both are in use and they are not interchangeable, which is why a meter and
+ * a datasheet can disagree while both are right. THD-F is the common one in
+ * power work and is unbounded; THD-R can never exceed 100%.
+ *
+ * The reason this matters on a show rather than in a textbook is the third
+ * harmonic and its odd multiples. On a three-phase supply the fundamentals
+ * are 120 degrees apart and cancel in the neutral, but the triplens — 3rd,
+ * 9th, 15th — arrive in phase on all three legs and ADD there instead. A
+ * perfectly balanced rig full of LED fixtures can put more current down the
+ * neutral than any phase is carrying, and the neutral is the one conductor
+ * with no breaker in it.
+ *
+ * Harmonics are given as amplitudes relative to the fundamental, starting at
+ * the 2nd: [h2, h3, h4, ...]. A value of 0.3 at h3 means the third harmonic
+ * is 30% of the fundamental.
+ */
+export function thd(harmonics, opts = {}) {
+  if (!Array.isArray(harmonics) || harmonics.length === 0) return null
+  const h = harmonics.map(Number)
+  if (!h.every((x) => Number.isFinite(x) && x >= 0)) return null
+  const fundamentalAmps = Number(opts.fundamentalAmps ?? 0)
+  if (!Number.isFinite(fundamentalAmps) || fundamentalAmps < 0) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  // Index 0 is the 2nd harmonic, so order n sits at index n - 2.
+  const orderOf = (i) => i + 2
+  const sumSq = h.reduce((n, x) => n + x * x, 0)
+  const harmonicRms = Math.sqrt(sumSq)
+  const totalRms = Math.sqrt(1 + sumSq)
+
+  const thdF = harmonicRms
+  const thdR = harmonicRms / totalRms
+
+  // Triplens: orders divisible by three. These are the ones that add in the
+  // neutral instead of cancelling.
+  const triplenSumSq = h.reduce((n, x, i) => (orderOf(i) % 3 === 0 ? n + x * x : n), 0)
+  const triplenRms = Math.sqrt(triplenSumSq)
+
+  // Distortion power factor. Even at unity displacement, distortion alone
+  // drags the true power factor down - which is why a rig of LED fixtures can
+  // present a poor power factor with nothing inductive anywhere in it.
+  const distortionPf = 1 / totalRms
+
+  return {
+    thdF: r2(thdF * 100),
+    thdR: r2(thdR * 100),
+    harmonicRms: r2(harmonicRms),
+    totalRmsPerUnitFundamental: r2(totalRms),
+    distortionPowerFactor: Math.round(distortionPf * 1000) / 1000,
+    triplenShare: r2(triplenRms * 100),
+    /**
+     * Neutral current on a balanced three-phase load. The fundamentals
+     * cancel; the triplens arrive in phase and sum to three times the
+     * per-phase triplen current.
+     */
+    neutral: fundamentalAmps > 0
+      ? (() => {
+        const perPhaseTriplen = fundamentalAmps * triplenRms
+        const neutralAmps = 3 * perPhaseTriplen
+        const phaseAmps = fundamentalAmps * totalRms
+        return {
+          phaseAmps: r2(phaseAmps),
+          neutralAmps: r2(neutralAmps),
+          ratio: phaseAmps > 0 ? r2(neutralAmps / phaseAmps) : null,
+          // The condition nobody expects and nothing protects against.
+          exceedsPhase: neutralAmps > phaseAmps,
+        }
+      })()
+      : null,
+    // A short read on where this sits. The 5% figure is the limit commonly
+    // written into supply agreements and equipment specifications; it is a
+    // threshold people cite rather than a law of nature.
+    verdict: thdF <= 0.05 ? 'clean' : thdF <= 0.2 ? 'ordinary for a modern rig' : 'high — check the neutral and the power factor',
+  }
+}
+
+/**
+ * Crest factor: peak divided by RMS.
+ *
+ * A pure sine is 1.414. A switch-mode supply drawing in spikes runs 2 to 3,
+ * and a generator or UPS sized on RMS alone will clip those peaks even though
+ * the average is well inside its rating. It is the same distortion described
+ * from the other side, and it is the number that explains why a genset that
+ * is comfortably big enough still misbehaves.
+ */
+export function crestFactor(peak, rms) {
+  const p = Number(peak), r = Number(rms)
+  if (!Number.isFinite(p) || p < 0 || !Number.isFinite(r) || r <= 0) return null
+  const cf = p / r
+  return {
+    peak: p,
+    rms: r,
+    crestFactor: Math.round(cf * 1000) / 1000,
+    sineReference: 1.414,
+    // Above about 2 the peaks are what sizes the source, not the average.
+    peakLimited: cf > 2,
+    note: cf <= 1.5 ? 'Near-sinusoidal.'
+      : cf <= 2.2 ? 'Typical of a mixed rig with power factor correction.'
+        : 'Spiky. Size the source on the peaks, not the RMS — a supply that is comfortably large on paper will still clip these.',
+  }
+}

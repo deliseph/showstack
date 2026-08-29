@@ -523,3 +523,72 @@ describe('no double-escaped entities anywhere in the built site', () => {
     assert.deepEqual(bad.slice(0, 12), [], `${bad.length} double-escaped entities in the built site`)
   })
 })
+
+/**
+ * The emitted page scripts.
+ *
+ * This site writes JavaScript as strings inside template literals, which
+ * means a quote or a backslash that is fine in the generator can produce a
+ * page script that does not parse — and a page script that does not parse
+ * takes every calculator on the page with it, silently, with the HTML
+ * looking perfect.
+ *
+ * It has happened three times now: a regex literal whose escapes collapsed,
+ * a backslash-escaped quote inside a template literal, and a string opened
+ * with one quote and closed with the other. All three were invisible in
+ * review and total on the page. Nothing was checking, so now something is.
+ */
+describe('every emitted page script parses', () => {
+  const PAGES = ['tools', 'check', join('learn', 'timecode'), join('learn', 'mixing'),
+    join('learn', 'outdoors'), join('learn', 'power'), 'network', 'rf', 'search']
+
+  test('no page ships JavaScript the browser cannot read', async () => {
+    const { readFileSync: read } = await import('node:fs')
+    const vm = await import('node:vm')
+    const broken = []
+    for (const page of PAGES) {
+      const file = join(DIST, page, 'index.html')
+      if (!existsSync(file)) continue
+      const html = read(file, 'utf8')
+      for (const m of html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*type="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g)) {
+        const src = m[1].trim()
+        if (!src) continue
+        try {
+          new vm.Script(src)
+        } catch (err) {
+          broken.push(`/${page}/: ${err.message}`)
+        }
+      }
+    }
+    assert.deepEqual(broken, [], 'emitted page scripts that do not parse')
+  })
+})
+
+/**
+ * Duplicate element IDs.
+ *
+ * The tools page is one document with forty-odd calculators in it, each
+ * reaching for its controls by id. Two tools that pick the same prefix do
+ * not fail loudly — the second one's querySelector quietly returns the
+ * first one's element and both tools misbehave in ways that look unrelated
+ * to each other. Adding a harmonics tool with a `th-` prefix broke the
+ * projector throw tool, which has owned that prefix since long before.
+ */
+describe('no duplicate element ids', () => {
+  test('every id on a page is unique', () => {
+    const pages = ['tools', 'check', 'verify', '', 'network', 'rf',
+      join('learn', 'timecode'), join('learn', 'mixing'), join('learn', 'empathy')]
+    const clashes = []
+    for (const page of pages) {
+      const file = join(DIST, page, 'index.html')
+      if (!existsSync(file)) continue
+      const html = readFileSync(file, 'utf8')
+      const seen = new Map()
+      for (const m of html.matchAll(/\sid="([^"]+)"/g)) {
+        seen.set(m[1], (seen.get(m[1]) ?? 0) + 1)
+      }
+      for (const [id, n] of seen) if (n > 1) clashes.push(`/${page}/: #${id} x${n}`)
+    }
+    assert.deepEqual(clashes, [], 'duplicate ids')
+  })
+})
