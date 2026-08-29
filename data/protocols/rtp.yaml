@@ -1,0 +1,58 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rtp
+name: RTP
+aka:
+  - Real-time Transport Protocol
+  - RTP/RTCP
+category: network-transport
+summary: >-
+  The framing that carries real-time media over UDP — sequence numbers, a
+  timestamp and a payload type on every packet, so a receiver can reorder,
+  detect loss and reconstruct timing. AES67, ST 2110 and most VoIP intercom
+  are RTP underneath.
+
+transport:
+  - udp
+
+openness: open-published
+spec_url:
+  url: https://www.rfc-editor.org/rfc/rfc3550
+  label: RFC 3550 — RTP
+steward: IETF
+status: current
+first_published: 1996
+
+typical_use:
+  - The media layer under AES67 and SMPTE ST 2110
+  - VoIP and IP intercom
+  - Streaming contribution feeds alongside RTSP or SIP signalling
+
+gotchas:
+  - >-
+    RTP carries no reliability of its own. There are no retransmissions, so a
+    lost packet is a lost packet — which is the correct trade for live media
+    and the wrong one for file transfer.
+  - >-
+    The timestamp is a media clock, not a wall clock. Aligning several RTP
+    streams to each other needs a shared reference such as PTP.
+  - >-
+    Port numbers are assigned by the signalling that set the session up, not
+    by RTP itself, which is why a firewall rule for "RTP" is rarely a single
+    port.
+
+confidence: reported
+tags:
+  - network
+  - streaming
+  - realtime
+
+sources:
+  - title: RFC 3550 — RTP, A Transport Protocol for Real-Time Applications
+    url: https://www.rfc-editor.org/rfc/rfc3550
+    publisher: IETF
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

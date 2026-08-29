@@ -1,0 +1,55 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rs-422
+name: RS-422
+aka:
+  - TIA-422
+  - EIA-422
+  - RS422
+category: device-management
+summary: >-
+  Balanced point-to-point serial signalling with one driver and up to ten
+  receivers. It sits between RS-232 and RS-485: the noise immunity of a
+  differential pair, without the multi-drop arbitration, which suits a
+  one-to-many broadcast rather than a bus.
+
+transport:
+  - rs232
+
+openness: published-paid
+spec_url:
+  url: https://tiaonline.org/what-we-do/standards/
+  label: TIA standards catalogue
+steward: TIA (Telecommunications Industry Association)
+status: current
+
+typical_use:
+  - Machine and deck control in broadcast
+  - Some stage-machinery installations
+  - The physical layer under several proprietary show-control links
+
+gotchas:
+  - >-
+    One driver only. RS-422 is not a bus and cannot arbitrate: putting two
+    transmitters on the same pair is an electrical conflict, not a collision
+    that gets retried.
+  - >-
+    Frequently confused with RS-485 because both are differential pairs at
+    similar voltages. A device wired for one will often part-work with the
+    other, which is worse than not working at all.
+
+confidence: reported
+tags:
+  - serial
+  - differential
+  - control
+
+sources:
+  - title: TIA-422-B — Electrical Characteristics of Balanced Voltage Digital Interface Circuits
+    url: https://tiaonline.org/what-we-do/standards/
+    publisher: Telecommunications Industry Association
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

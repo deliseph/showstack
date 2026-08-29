@@ -1,0 +1,60 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: hdmi
+name: HDMI
+aka:
+  - High-Definition Multimedia Interface
+category: video-transport
+summary: >-
+  Uncompressed video and audio plus control and content protection on one
+  connector, and the default video interface on nearly everything that is not
+  purpose-built for broadcast. Version numbers describe bandwidth, and almost
+  every field problem with it is a negotiation problem rather than a bandwidth one.
+
+transport:
+  - other
+
+openness: proprietary-closed
+spec_url:
+  url: https://www.hdmi.org/spec/index
+  label: HDMI Forum specification page
+steward: HDMI Forum
+status: current
+first_published: 2002
+
+typical_use:
+  - Source to display, source to switcher, switcher to projector
+  - The signal HDBaseT extenders carry over structured cable
+  - Consumer and prosumer playback into a professional chain
+
+gotchas:
+  - >-
+    A version number belongs to a device, not to a cable. Cables are certified
+    by bandwidth category — Standard, High Speed, Premium, Ultra High Speed —
+    and a cable cannot be "HDMI 2.1".
+  - >-
+    Locking connectors are not part of the standard. On a show, that matters
+    more than any specification detail on this page.
+  - >-
+    HDCP is negotiated separately and fails as a black screen. So does an EDID
+    mismatch. So does a hot-plug event. Three different faults, one symptom.
+  - >-
+    4K60 at 4:4:4 is roughly four times the data rate of 1080p60. A marginal
+    cable or extender that passes the smaller signal will fail on the larger
+    one, intermittently, once things are warm.
+
+confidence: reported
+tags:
+  - video
+  - display
+  - consumer
+
+sources:
+  - title: HDMI Specification
+    url: https://www.hdmi.org/spec/index
+    publisher: HDMI Forum
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

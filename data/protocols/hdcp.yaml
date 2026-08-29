@@ -1,0 +1,56 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: hdcp
+name: HDCP
+aka:
+  - High-bandwidth Digital Content Protection
+category: video-control
+summary: >-
+  Content protection negotiated between every device in a video path. Each hop
+  authenticates the next, so the chain is only as capable as its weakest link —
+  and when it fails, the symptom is a black screen at the far end rather than an
+  error where the problem is.
+
+transport:
+  - other
+
+openness: proprietary-closed
+spec_url:
+  url: https://www.digital-cp.com/
+  label: Digital Content Protection LLC
+steward: Digital Content Protection LLC
+status: current
+
+typical_use:
+  - Any path carrying commercial content from a consumer source
+  - Negotiated automatically by HDMI, DisplayPort and HDBaseT devices
+
+gotchas:
+  - >-
+    One non-compliant device anywhere in the path breaks the whole chain,
+    and the failure appears at the display rather than at the offending box.
+  - >-
+    Version matters. A source insisting on HDCP 2.2 or 2.3 will not fall back
+    to an older sink in every case, and the result is again a black screen.
+  - >-
+    Repeater counts are limited. Long chains of switchers and splitters can
+    exceed the permitted depth even when every device is compliant.
+  - >-
+    Content that does not need protection can still fail if a source enables
+    HDCP by default. Turning it off at the source is often the fix.
+
+confidence: reported
+tags:
+  - video
+  - drm
+  - display
+
+sources:
+  - title: HDCP Specifications
+    url: https://www.digital-cp.com/
+    publisher: Digital Content Protection LLC
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

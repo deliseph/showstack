@@ -95,9 +95,9 @@ ${learnNav(esc, 'video')}
 <p class="lede">A video chain that is correct on paper and produces nothing on the wall is almost never short of bandwidth. It has failed a negotiation &mdash; and the three negotiations it can fail all report the same symptom.</p>
 
 ${S('Before any pixels', 'The handshake nobody watches',
-  ['Plugging a source into a display does not send a picture. It starts a conversation, and the picture is the last thing that happens in it. The display announces itself electrically. The source reads a block of data out of the display &mdash; the EDID &mdash; that lists the resolutions, refresh rates, colour depths and audio formats it will accept. The source picks a format from that list. If the content is protected, both ends then authenticate over HDCP. Only after all of that does anything appear.',
+  ['Plugging a source into a display does not send a picture. It starts a conversation, and the picture is the last thing that happens in it. The display announces itself electrically. The source reads a block of data out of the display &mdash; the <a href="/protocols/edid/">EDID</a> &mdash; that lists the resolutions, refresh rates, colour depths and audio formats it will accept. The source picks a format from that list. If the content is protected, both ends then authenticate over <a href="/protocols/hdcp/">HDCP</a>. Only after all of that does anything appear.',
    'Every one of those steps can fail, and every one of them fails the same way from where you are standing: a black screen. That is why "check the cable" is such a poor first move. The cable is the one part of the chain that has no opinion.',
-   'The failure mode that wastes the most time is subtler than a black screen. A splitter, a switch, an extender or a scaler in the middle usually presents its <em>own</em> EDID rather than passing the display’s through. So the source picks a format the middle box likes and the actual screen cannot show, and you get a picture that is the wrong resolution, or the wrong refresh, or that works on one output of a splitter and not the other.'])}
+   'The failure mode that wastes the most time is subtler than a black screen. A splitter, a switch, an extender or a scaler in the middle usually presents its <em>own</em> <a href="/protocols/edid/">EDID</a> rather than passing the display’s through. So the source picks a format the middle box likes and the actual screen cannot show, and you get a picture that is the wrong resolution, or the wrong refresh, or that works on one output of a splitter and not the other.'])}
 
 ${fig(handshakeFig, 'Four steps, in order, before a single pixel moves. Three of them are the display and the source agreeing about what is possible and what is permitted.')}
 
@@ -105,14 +105,14 @@ ${rule('The more boxes between source and screen, the more EDIDs there are in th
 
 ${bites([
   'Testing source direct to screen, getting a picture, and concluding the chain is fine. You have just proved the two ends work and removed every device that was actually negotiating.',
-  'One HDCP-incapable device anywhere in the path. HDCP is a chain of trust: it fails at the weakest hop, and the symptom appears at the end.',
-  'A long run that carries 1080p60 and drops 4K60. That one really is bandwidth &mdash; 4K60 4:4:4 is roughly four times the data rate, and a marginal cable passes the smaller one.',
+  'One <a href="/protocols/hdcp/">HDCP</a>-incapable device anywhere in the path. It is a chain of trust: it fails at the weakest hop, and the symptom appears at the end.',
+  'A long <a href="/protocols/hdmi/">HDMI</a> or <a href="/protocols/hdbaset/">HDBaseT</a> run that carries 1080p60 and drops 4K60. That one really is bandwidth &mdash; 4K60 4:4:4 is roughly four times the data rate, and a marginal cable passes the smaller one.',
   'Hot-plugging in the middle of a show, which restarts the whole negotiation from step one on every downstream device.',
 ])}
 
 ${S('Same time, same frame', 'Genlock, and why a seam shows what a screen hides',
   ['Once pictures exist, a second problem starts. Every output is running its own frame clock, and unless something ties them together those clocks drift. On one screen that is invisible &mdash; a frame starting four milliseconds late is still a frame. Across a join between two projectors or two panels of a wall, it is a tear: for a fraction of a second the two halves of the image are showing different moments.',
-   'Genlock fixes the reference. Historically that was a black-burst or tri-level sync signal distributed to every device, which locks their frame starts to a common timing. On a network it is <a href="/protocols/ptp/">PTP</a> doing the same job with timestamps rather than a dedicated cable, which is why an ST 2110 or Dante-adjacent video plant cares so much about a grandmaster clock.',
+   'Genlock fixes the reference. Historically that was a <a href="/protocols/genlock/">black-burst</a> or <a href="/protocols/tri-level-sync/">tri-level sync</a> signal distributed to every device, which locks their frame starts to a common timing. On a network it is <a href="/protocols/ptp/">PTP</a> doing the same job with timestamps rather than a dedicated cable, which is why an <a href="/protocols/st-2110/">ST 2110</a> or Dante-adjacent video plant cares so much about a grandmaster clock.',
    'Genlock is about <em>when a frame starts</em>. It is not the same as frame rate matching, and it is not the same as latency. Two devices can be perfectly genlocked and still be four frames apart if one of them is doing more processing than the other &mdash; which is the difference between a tear and a lip-sync problem.'])}
 
 ${fig(genlockFig, 'Two sources free-running. The offset is invisible on either screen alone and unmistakable across the seam between them.')}

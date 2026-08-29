@@ -1,0 +1,61 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: edid
+name: EDID
+aka:
+  - Extended Display Identification Data
+  - E-EDID
+  - DDC
+category: video-control
+summary: >-
+  The block of data a display hands to a source describing what it can accept —
+  resolutions, refresh rates, colour depths, audio formats. The source picks a
+  format from that list, which makes EDID the thing that decides what your
+  screen is actually being sent.
+
+transport:
+  - other
+
+openness: open-free-registration
+spec_url:
+  url: https://vesa.org/vesa-standards/
+  label: VESA standards
+steward: VESA
+status: current
+
+typical_use:
+  - Negotiating the format between any source and any display
+  - Managed or emulated in switchers and scalers to force a known format
+  - Read by test gear to diagnose why a source chose what it chose
+
+gotchas:
+  - >-
+    A splitter, switcher, extender or scaler usually presents its own EDID
+    rather than passing the display's through. The source then picks a format
+    the middle box likes and the screen may not.
+  - >-
+    Testing source-direct-to-screen removes every device that was doing the
+    negotiating, so a working direct test proves less than it appears to.
+  - >-
+    Managed EDID is a setting. Deciding what it says is part of the design;
+    discovering what it says at 5pm is not.
+  - >-
+    A distribution amplifier feeding several different displays has to pick
+    one EDID to present. The lowest common capability is usually the right
+    answer and rarely the default.
+
+confidence: reported
+tags:
+  - video
+  - display
+  - negotiation
+
+sources:
+  - title: VESA Enhanced EDID Standard
+    url: https://vesa.org/vesa-standards/
+    publisher: VESA
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

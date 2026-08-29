@@ -1,0 +1,65 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: igmp
+name: IGMP
+aka:
+  - Internet Group Management Protocol
+  - IGMP snooping
+  - IGMP querier
+category: network-transport
+summary: >-
+  How a host tells the network it wants a multicast group, and how a switch
+  learns which ports to send that group to. On a show network it is the
+  difference between sACN and Dante behaving, and every port on the switch
+  receiving every universe.
+
+transport:
+  - udp
+
+default_ports: []
+
+openness: open-published
+spec_url:
+  url: https://www.rfc-editor.org/rfc/rfc3376
+  label: RFC 3376 — IGMPv3
+steward: IETF
+status: current
+
+typical_use:
+  - Any network carrying sACN, Dante, AES67, NDI or ST 2110 multicast
+  - Keeping multicast traffic off ports that did not ask for it
+
+gotchas:
+  - >-
+    Snooping without a querier is worse than no snooping. With no querier the
+    switch ages out its group memberships and multicast traffic starts and
+    stops on a timer, which reads as random dropouts.
+  - >-
+    Exactly one querier per VLAN. Two switches both acting as querier is a
+    common cause of intermittent multicast on a network that looks correct.
+  - >-
+    Version mismatch matters: an IGMPv2 device on a v3-only network may never
+    join a group at all.
+  - >-
+    Turning snooping off "to make it work" floods every port. It does often
+    make it work, right up to the point where the link fills.
+
+confidence: reported
+tags:
+  - network
+  - multicast
+  - switching
+
+sources:
+  - title: RFC 3376 — Internet Group Management Protocol, Version 3
+    url: https://www.rfc-editor.org/rfc/rfc3376
+    publisher: IETF
+    primary: true
+  - title: RFC 2236 — Internet Group Management Protocol, Version 2
+    url: https://www.rfc-editor.org/rfc/rfc2236
+    publisher: IETF
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

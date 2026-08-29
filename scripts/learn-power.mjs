@@ -135,7 +135,7 @@ ${fig(phaseFig, 'Three voltages 120&deg; apart. The vector sum is the neutral cu
 ${rule('A three-phase supply is rated <b>per phase</b>. A 63 A three-phase service is 63 A on each of three phases &mdash; not 21 A each, and not 189 A of anything you can put on one leg.')}
 
 ${S('The catch', 'The neutral is not the spare conductor it looks like',
-  ['Everything above assumes the load is linear: current follows voltage, a sine in gives a sine back. Almost nothing on a modern rig does that. An LED fixture, a media server, a switch-mode amplifier and a phase-control dimmer all draw current in bursts rather than smoothly, and a burst is a fundamental plus a stack of harmonics.',
+  ['Everything above assumes the load is linear: current follows voltage, a sine in gives a sine back. Almost nothing on a modern rig does that. An LED fixture, a media server, a <a href="/hardware/">switch-mode amplifier</a> and a phase-control dimmer all draw current in bursts rather than smoothly, and a burst is a fundamental plus a stack of harmonics.',
    'Most harmonics still cancel in the neutral. The third does not, and neither does the ninth or the fifteenth &mdash; the <em>triplen</em> harmonics. At three times the fundamental frequency, the 120&deg; separation between phases becomes 360&deg;, which is no separation at all. All three phases deliver their third harmonic to the neutral in step, and instead of cancelling it adds arithmetically.',
    'The result is the one genuinely counter-intuitive thing about show power: a balanced rig full of LED fixtures can put more current down the neutral than any single phase is carrying. Published figures for LED drivers and electronic ballasts put current THD in the 15&ndash;40% range, which is why installations expecting heavy non-linear load size the neutral at up to 200% of the phase conductor rather than treating it as the small one.'])}
 
@@ -186,7 +186,7 @@ ${S('Down the cable', 'Volt drop is a length problem, not a load problem',
    'What makes it a rigging problem rather than a maths problem is that the load is not constant. A fixture that dips its voltage when the motor moves and the lamp strikes at the same time is drawing peak current exactly when it can least afford the drop.'])}
 
 ${bites([
-  'Sizing the cable for the steady-state draw and forgetting inrush. A rack of switch-mode supplies energising together pulls a large multiple of running current for a few cycles &mdash; enough to trip a Type B breaker that would have held all night.',
+  'Sizing the cable for the steady-state draw and forgetting inrush. A rack of switch-mode supplies &mdash; or a shelf of <a href="/protocols/poe/">PoE</a> switches &mdash; energising together pulls a large multiple of running current for a few cycles &mdash; enough to trip a Type B breaker that would have held all night.',
   'A long run at a small cross-section that measures fine cold and sags once everything is warm and running.',
   'Daisy-chained distro where the drop is cumulative and nobody adds it up.',
 ])}

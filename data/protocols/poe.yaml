@@ -1,0 +1,66 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: poe
+name: Power over Ethernet
+aka:
+  - PoE
+  - PoE+
+  - PoE++
+  - IEEE 802.3af
+  - IEEE 802.3at
+  - IEEE 802.3bt
+category: network-transport
+summary: >-
+  DC power delivered down the same cable as the data, negotiated between the
+  switch and the device before any current flows. It is why a wireless access
+  point, a camera, an intercom panel or a small DMX node needs one cable rather
+  than two.
+
+transport:
+  - ethernet-l2
+
+openness: open-published
+spec_url:
+  url: https://standards.ieee.org/ieee/802.3/
+  label: IEEE 802.3 standards
+steward: IEEE
+status: current
+
+typical_use:
+  - Wireless access points, IP cameras and intercom panels
+  - Small DMX and network nodes at truss height
+  - Anywhere pulling a separate mains feed costs more than the device
+
+gotchas:
+  - >-
+    Budget is per switch as well as per port. A 24-port switch rarely delivers
+    the maximum on all 24 at once, and the shortfall shows up as devices
+    rebooting under load rather than refusing to start.
+  - >-
+    The class negotiation means power is allocated before it is drawn. A device
+    that mis-declares its class can be granted less than it needs.
+  - >-
+    Passive "PoE" injectors that put voltage on the pairs without negotiating
+    are not this standard and can damage equipment that is expecting it.
+  - >-
+    Power is delivered at the switch and consumed at the far end, so the cable
+    loses some along the way. A long run near the class limit is a marginal run.
+
+confidence: reported
+tags:
+  - network
+  - power
+  - ethernet
+
+sources:
+  - title: IEEE 802.3 — Ethernet, including Clauses 33 and 145 (DTE Power via MDI)
+    url: https://standards.ieee.org/ieee/802.3/
+    publisher: IEEE
+    primary: true
+  - title: Power over Ethernet standards and compatibility
+    url: https://kb.netgear.com/12902/Power-over-Ethernet-PoE-standards-and-compatibility
+    publisher: NETGEAR
+
+contributed_by: []
+updated: 2026-08-29

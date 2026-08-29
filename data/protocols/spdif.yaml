@@ -1,0 +1,58 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: spdif
+name: S/PDIF
+aka:
+  - Sony/Philips Digital Interface
+  - IEC 60958 Type II
+  - SPDIF
+category: audio-transport
+summary: >-
+  The consumer form of AES3: the same two-channel data format at a much lower
+  voltage, on 75 Ω coax with an RCA connector or on TOSLINK optical fibre.
+  Same bits, different electrical world.
+
+transport:
+  - other
+
+openness: published-paid
+spec_url:
+  url: https://webstore.iec.ch/
+  label: IEC Webstore
+steward: IEC
+status: current
+
+typical_use:
+  - Consumer and semi-pro playback sources into a system
+  - Optical feeds where galvanic isolation is wanted
+  - Interfacing a laptop or media player to a professional chain
+
+gotchas:
+  - >-
+    Nominal 0.5 V peak-to-peak on 75 Ω, against AES3's several volts on 110 Ω.
+    The data survives a converter; it does not survive a soldered adaptor.
+  - >-
+    Practical coax runs are short — around 10 m is the usual working figure.
+    TOSLINK is shorter still and intolerant of tight bends.
+  - >-
+    Consumer channel-status bits carry copy-protection flags that some
+    professional receivers act on and others ignore.
+
+confidence: reported
+tags:
+  - audio
+  - digital
+  - consumer
+
+sources:
+  - title: IEC 60958-3 — Digital audio interface, Part 3 Consumer applications
+    url: https://webstore.iec.ch/
+    publisher: International Electrotechnical Commission
+    primary: true
+  - title: Interfacing AES3 and S/PDIF (RaneNote 149)
+    url: https://www.ranecommercial.com/legacy/note149.html
+    publisher: Rane Corporation
+
+contributed_by: []
+updated: 2026-08-29

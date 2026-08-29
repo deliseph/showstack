@@ -1,0 +1,57 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: hdbaset
+name: HDBaseT
+aka:
+  - 5Play
+category: video-transport
+summary: >-
+  Uncompressed ultra-HD video and audio, 100 Mbit/s Ethernet, USB, control and
+  up to 100 W of power over a single category cable — the "5Play" set. It is how
+  an HDMI signal gets from a rack to a projector 90 m away without fibre.
+
+transport:
+  - ethernet-l2
+
+openness: proprietary-documented
+spec_url:
+  url: https://hdbaset.org/hdbaset-technology/
+  label: HDBaseT Alliance — technology overview
+steward: HDBaseT Alliance
+status: current
+
+typical_use:
+  - Projector and display feeds over structured cable
+  - Distributing switched video around a venue
+  - Extending control and Ethernet alongside the picture on one cable
+
+gotchas:
+  - >-
+    It uses category cable and RJ45 connectors and is not Ethernet. Putting an
+    HDBaseT link through a network switch does not work, and the cable should
+    be a dedicated point-to-point run.
+  - >-
+    Cat6 is the practical baseline. Cat5e reaches shorter distances, and
+    shielded cable and proper terminations matter far more here than on a data
+    network where retries hide small problems.
+  - >-
+    Distance figures are quoted for specific formats. The 100 m figure is not
+    the distance for every resolution and colour depth.
+  - >-
+    Power over the link is not PoE and is not interoperable with it.
+
+confidence: reported
+tags:
+  - video
+  - extender
+  - structured-cable
+
+sources:
+  - title: HDBaseT Technology
+    url: https://hdbaset.org/hdbaset-technology/
+    publisher: HDBaseT Alliance
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

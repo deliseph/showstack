@@ -1,0 +1,63 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: dhcp
+name: DHCP
+aka:
+  - Dynamic Host Configuration Protocol
+category: network-transport
+summary: >-
+  Automatic IP address assignment. Convenient on an office network and a
+  liability on a show network, where a device that comes back with a different
+  address after a power cycle is a device the console can no longer find.
+
+transport:
+  - udp
+default_ports:
+  - number: 67
+    transport: udp
+    role: DHCP server
+    iana_registered: true
+  - number: 68
+    transport: udp
+    role: DHCP client
+    iana_registered: true
+
+openness: open-published
+spec_url:
+  url: https://www.rfc-editor.org/rfc/rfc2131
+  label: RFC 2131 — DHCP
+steward: IETF
+status: current
+
+typical_use:
+  - Production laptops and phones on a house network
+  - Large fixed installations with reservations rather than a free pool
+  - Anywhere devices outnumber the patience for static addressing
+
+gotchas:
+  - >-
+    Two DHCP servers on one network — often a house router and somebody's
+    travel switch — hand out conflicting addresses and are hard to find.
+  - >-
+    Show-critical devices usually want a static address or a DHCP reservation.
+    A lighting node that moves address between the tech and the show is not
+    a network problem you want to debug during a show.
+  - >-
+    When no server answers, most devices self-assign in 169.254.0.0/16. That
+    looks like a working network and reaches nothing.
+
+confidence: reported
+tags:
+  - network
+  - addressing
+  - infrastructure
+
+sources:
+  - title: RFC 2131 — Dynamic Host Configuration Protocol
+    url: https://www.rfc-editor.org/rfc/rfc2131
+    publisher: IETF
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29
