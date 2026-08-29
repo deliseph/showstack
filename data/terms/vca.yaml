@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: vca
+en: VCA
+zh_hant: 壓控放大器
+domain: audio
+definition_en: >-
+  A voltage-controlled amplifier: a gain stage set by a control voltage rather than by a knob
+  in the signal path. It lets a fader carry DC instead of audio, which is what a VCA group is.
+  Pulling a VCA group down offsets each member channel’s own gain, so their sends and inserts
+  scale with them and no extra amplifier is inserted into the audio.
+definition_zh_hant: >-
+  壓控放大器：增益由控制電壓決定，而非由訊號路徑上的旋鈕決定的增益級。它讓推桿傳送直流控制
+  電壓而非音訊，這正是 VCA 編組的原理。拉下 VCA 編組推桿等於同時偏移各成員聲道自
+  身的增益，因此其送出與插入點都會跟著變化，音訊路徑上也不會多出一級放大器。
+false_friends:
+  - >-
+    A VCA group is not a subgroup. A subgroup sums audio onto a bus; a VCA group sums nothing
+    and only offsets gain. A post-fade send follows one and not the other.
+regional_variants:
+  - region: UK / US
+    term: VCA
+  - region: HK / TW
+    term: VCA
+    note: Said in English. 壓控放大器 appears in writing, almost never on headset.
+tags:
+  - audio
+  - console
+  - mixing
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,48 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: phase-rotation
+en: Phase rotation
+zh_hant: 相序
+domain: safety
+definition_en: >-
+  The order in which the three phases of a supply reach their peaks. Swapping any two
+  conductors reverses it. Single-phase loads, dimmers and heaters are unaffected and give no
+  indication, but a three-phase motor turns in whatever direction the field rotates, so a
+  chain hoist on a reversed supply runs the opposite way to its controls. Checked with a
+  rotation meter at every unfamiliar supply and after every adaptor, before anything is
+  connected.
+definition_zh_hant: >-
+  三相電源各相到達峰值的先後次序。任意對調兩條相線即會反轉。單相負載、調光器與電熱負載完全
+  不受影響，也不會有任何徵兆；但三相馬達的旋轉方向取決於磁場旋轉方向，因此電動吊車接到相序
+  相反的電源時，動作方向會與控制器相反。每逢接觸陌生電源或經過轉接頭後，都必須先用相序表檢
+  查再接入設備。
+false_friends:
+  - >-
+    A rotation meter says nothing about voltage or earth quality. A correct rotation is not
+    evidence of a sound supply, only of a correctly ordered one.
+see_also:
+  - chain-hoist
+safety_critical: true
+regional_variants:
+  - region: UK
+    term: Phase rotation
+  - region: US
+    term: Phase sequence / phase rotation
+  - region: HK / TW
+    term: 相序
+    note: Spoken as 相序; crews often just say "check the rotation" in English.
+tags:
+  - power
+  - electrical
+  - rigging
+  - safety
+sources:
+  - title: IEC 60364 and IEC 60038 low-voltage installation and supply standards
+    url: https://webstore.iec.ch/publication/1880
+    publisher: International Electrotechnical Commission
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

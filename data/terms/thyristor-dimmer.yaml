@@ -1,0 +1,47 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: thyristor-dimmer
+en: Thyristor dimmer
+zh_hant: 可控矽調光器
+domain: lighting
+definition_en: >-
+  A dimmer that switches the mains on partway through each half cycle and passes the
+  remainder, so the lamp averages a chopped waveform. Small, cheap, load independent and
+  controllable from a tiny signal, which is what made remote consoles with hundreds of
+  channels practical. Chopping generates harmonics including the third, a triplen that adds
+  rather than cancels in a three-phase neutral, and the sudden switch-on is what makes
+  filaments sing.
+definition_zh_hant: >-
+  在每個半週期中途才導通、並讓其餘部分通過的調光器，燈具所感受到的是被切斷的波形的平均值。
+  體積小、成本低、與負載無關，且可由極小的訊號控制，這正是數百迴路的遙控燈光控制台得以實現
+  的原因。切波會產生諧波，其中三次諧波屬於三倍頻諧波，在三相中性線上是相加而非相消；而瞬間
+  導通則是燈絲鳴叫的成因。
+false_friends:
+  - >-
+    A thyristor dimmer needs a minimum load to hold conduction. An LED lamp on a dimmer channel
+    may flicker, glow when nominally off, or not light at all.
+see_also:
+  - phase-rotation
+regional_variants:
+  - region: UK
+    term: Thyristor dimmer
+  - region: US
+    term: SCR dimmer
+    note: Same device. SCR is the American name for the thyristor in it.
+  - region: HK / TW
+    term: 可控矽調光器
+tags:
+  - lighting
+  - dimming
+  - power
+  - electrical
+sources:
+  - title: IEC 60364 and IEC 60038 low-voltage installation and supply standards
+    url: https://webstore.iec.ch/publication/1880
+    publisher: International Electrotechnical Commission
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

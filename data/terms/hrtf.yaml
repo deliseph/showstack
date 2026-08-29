@@ -1,0 +1,42 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: hrtf
+en: HRTF
+zh_hant: 頭部相關傳輸函數
+domain: audio
+definition_en: >-
+  Head-related transfer function: the filtering a listener’s head, torso and outer ear impose
+  on a sound before it reaches the eardrum. Interaural time and level differences only ever
+  resolve left and right; it is the notches the pinna carves into the spectrum that carry
+  elevation and front-versus-behind. The filters are individual, so a generic HRTF gives
+  someone else’s localisation and is the usual cause of front-back confusion in binaural
+  rendering.
+definition_zh_hant: >-
+  頭部相關傳輸函數：聲音抵達耳膜之前，受聽者頭部、軀幹與外耳所施加的濾波效果。雙耳時間差與
+  強度差只能判別左右；真正承載仰角與前後訊息的，是耳廓在頻譜上刻出的凹陷。這組濾波器因人而
+  異，因此通用 HRTF 給的是別人的定位能力，也正是雙耳算繪中前後混淆的主因。
+false_friends:
+  - >-
+    Binaural and stereo are not the same thing. Binaural encodes a full sphere through HRTF
+    filtering and assumes headphones; stereo encodes a pair of loudspeaker feeds.
+regional_variants:
+  - region: UK / US
+    term: HRTF
+  - region: HK / TW
+    term: HRTF
+    note: The acronym travels; 頭部相關傳輸函數 is written, not spoken.
+tags:
+  - audio
+  - spatial
+  - binaural
+  - psychoacoustics
+sources:
+  - title: ITU-R BS series recommendations on sound systems and assessment
+    url: https://www.itu.int/rec/R-REC-BS/en
+    publisher: International Telecommunication Union
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

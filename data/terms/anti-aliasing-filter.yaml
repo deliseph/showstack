@@ -1,0 +1,42 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: anti-aliasing-filter
+en: Anti-aliasing filter
+zh_hant: 抗混疊濾波器
+domain: audio
+definition_en: >-
+  The low-pass filter in front of an analogue-to-digital converter, removing everything above
+  half the sample rate before sampling can fold it down into the audible band as a frequency
+  that was never present. Aliasing is unrecoverable once it has happened, which is why the
+  filter is in hardware and ahead of the converter. A steep filter close to the band edge is
+  difficult to build cleanly, which is the real engineering argument for higher sample rates:
+  they let the filter be gentle and start well above hearing.
+definition_zh_hant: >-
+  置於類比數位轉換器之前的低通濾波器，在取樣之前濾除高於取樣率一半的所有成分，以免這些成分
+  被折返到可聽頻段，成為原本並不存在的頻率。混疊一旦發生便無法還原，因此這個濾波器必須是硬
+  體、且位於轉換器之前。緊貼頻帶邊緣的陡峭濾波器難以做得乾淨，這正是提高取樣率的真正工程理
+  由：可讓濾波器和緩，並自遠高於聽覺上限之處開始作用。
+false_friends:
+  - >-
+    A reconstruction filter is the mirror of this at the output of a converter, not the same
+    component. One protects the sampling; the other smooths what the samples are turned back
+    into.
+regional_variants:
+  - region: UK / US
+    term: Anti-aliasing filter / brickwall filter
+  - region: HK / TW
+    term: 抗混疊濾波器
+tags:
+  - audio
+  - digital
+  - conversion
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,41 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: absolute-polarity
+en: Absolute polarity
+zh_hant: 絕對極性
+domain: audio
+definition_en: >-
+  Whether a whole signal chain preserves the sign of the original pressure change, so that a
+  source moving towards the microphone ends with a loudspeaker cone moving towards the
+  audience. Largely inaudible on symmetrical waveforms and sometimes audible on asymmetrical
+  ones such as kick drum, bass, brass and plosives. Worth getting right because it is free to
+  get right, and distinct from relative polarity between two sources, which is not subtle and
+  cancels real output.
+definition_zh_hant: >-
+  整條訊號鏈是否保留原始壓力變化的正負號，亦即聲源朝麥克風移動時，喇叭紙盆最終是否朝觀眾方
+  向移動。對稱波形上大致聽不出來，但在大鼓、貝斯、銅管與爆破音等非對稱波形上有時可聽辨。由
+  於校正的代價為零，值得做對；它與兩個聲源之間的相對極性截然不同，後者並不細微，且會實際抵
+  消輸出。
+false_friends:
+  - >-
+    Absolute polarity is not phase. Polarity is a sign flip, identical at every frequency; phase
+    is a time relationship worth a different number of degrees at every frequency.
+regional_variants:
+  - region: UK / US
+    term: Absolute polarity
+  - region: HK / TW
+    term: 絕對極性
+tags:
+  - audio
+  - polarity
+  - system-tuning
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
