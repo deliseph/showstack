@@ -322,3 +322,84 @@ describe('the built site has no orphans', () => {
     assert.deepEqual(foreign, [], `sitemap lists origins other than ${origin}`)
   })
 })
+
+/**
+ * The vendor verification flow.
+ *
+ * These are cheap tests guarding an expensive property. An index that
+ * manufacturers can correct is worth more than one they cannot, but only for
+ * as long as the corollary holds: they cannot *buy* a correction. That promise
+ * is made in prose, which means it can be edited away by accident in a tidy-up
+ * six months from now, so it is pinned here.
+ *
+ * The URL length check exists because the issue bodies are generated from the
+ * entry - a product that grows to forty protocols would silently produce a
+ * link long enough for a proxy or an old browser to truncate, and a truncated
+ * GitHub issue URL fails by opening a blank issue rather than by erroring.
+ */
+describe('vendor verification', () => {
+  const verify = readFileSync(join(DIST, 'verify', 'index.html'), 'utf8')
+
+  const issueLinks = (html) =>
+    [...html.matchAll(/href="(https:\/\/github\.com\/[^"]*\/issues\/new\?[^"]*)"/g)].map((m) =>
+      m[1].replace(/&amp;/g, '&'))
+
+  test('every prefilled issue URL is well formed and short enough to survive', () => {
+    const pages = ['verify', join('hardware', '7thsense-delta'), join('protocols', 'sacn')]
+    let checked = 0
+    for (const p of pages) {
+      const file = join(DIST, p, 'index.html')
+      if (!existsSync(file)) continue
+      for (const href of issueLinks(readFileSync(file, 'utf8'))) {
+        const u = new URL(href)
+        assert.ok(u.searchParams.get('title'), `no title in ${href.slice(0, 80)}`)
+        assert.ok(u.searchParams.get('body'), `no body in ${href.slice(0, 80)}`)
+        // 6000 is well inside the 8192 that the most restrictive things in the
+        // path actually enforce, and well above the ~1900 the longest entry
+        // currently produces.
+        assert.ok(href.length < 6000, `issue URL is ${href.length} chars: ${href.slice(0, 120)}`)
+        checked++
+      }
+    }
+    assert.ok(checked > 20, `expected many prefilled issue links, found ${checked}`)
+  })
+
+  test('the claim link only appears where somebody could answer it', () => {
+    // A glossary term has no vendor, no steward and no publishing body, so
+    // "work at X?" has nobody to address. Rendering it anyway would be the
+    // kind of small dishonesty that costs a reader's trust in everything else.
+    const term = readdirSync(join(DIST, 'glossary')).find((n) => !n.endsWith('.html'))
+    if (term) {
+      const html = readFileSync(join(DIST, 'glossary', term, 'index.html'), 'utf8')
+      assert.ok(!html.includes('class="claim"'), 'a glossary term is being asked to verify itself')
+    }
+    const hw = readFileSync(join(DIST, 'hardware', '7thsense-delta', 'index.html'), 'utf8')
+    assert.match(hw, /class="claim"/, 'a vendor product has no claim link')
+    assert.match(hw, /Work at 7thSense\?/)
+  })
+
+  test('the no-purchase promise is still on the page', () => {
+    // The entire value of a neutral index rests on this sentence. If a future
+    // edit softens it into "sponsors may be featured", that is a different
+    // website and this test should be the thing that says so.
+    assert.match(verify, /cannot buy an entry/i)
+    assert.match(verify, /[Ss]ponsor(ing|ship) does not (move data|change)/i)
+    assert.match(verify, /cannot delete a true fact/i)
+    // And the same promise has to reach the machines, because an assistant
+    // repeating "showstack listings are sponsored" would do the damage
+    // whether or not the page says otherwise.
+    const llms = readFileSync(join(DIST, 'llms.txt'), 'utf8')
+    assert.match(llms, /[Nn]othing here is a paid\s+placement/)
+  })
+
+  test('the vendor table is generated from the data, not written by hand', () => {
+    const bundle = JSON.parse(readFileSync(bundlePath, 'utf8'))
+    const counts = new Map()
+    for (const e of [...bundle.software, ...bundle.hardware]) {
+      if (e.vendor) counts.set(e.vendor, (counts.get(e.vendor) ?? 0) + 1)
+    }
+    const expected = [...counts.values()].filter((n) => n >= 2).length
+    const rows = (verify.match(/>Check th(em|it)</g) ?? []).length
+    assert.equal(rows, expected, 'vendor table row count has drifted from the dataset')
+  })
+})

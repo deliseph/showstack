@@ -17,6 +17,7 @@ import { join } from 'node:path'
 import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
 import { interopPage } from './interop.mjs'
 import { toolsPage } from './tools.mjs'
+import { verifyPage } from './verify-page.mjs'
 import { networkPage } from './network.mjs'
 import { rfPage } from './rf.mjs'
 import { signalsPage } from './signals.mjs'
@@ -451,10 +452,16 @@ box-shadow:var(--shadow);transition:border-color .2s}
 .ports .big{font-family:var(--mono);font-size:24px;color:var(--accent2);display:block;margin-bottom:2px}
 .gotcha{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent2);padding:12px 16px;
 margin-bottom:10px;border-radius:var(--r-sm);color:var(--dim);font-size:15px}
+/* A flex column with a gap, not margins on the children: the box holds two
+   or three paragraphs now and margin:0 on all of them ran them together. */
 .cta{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel2)),var(--panel2));
-border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;margin:36px 0 0}
-.cta strong{display:block;margin-bottom:5px}
+border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;margin:36px 0 0;
+display:flex;flex-direction:column;gap:9px}
+.cta strong{display:block}
 .cta p{margin:0;color:var(--dim);font-size:14.5px}
+/* Addressed to a different reader than the rest of the box - the person who
+   made the thing, not the person using it - so it gets a rule of its own. */
+.cta .claim{padding-top:11px;border-top:1px solid var(--rule);color:var(--dimmer)}
 footer{border-top:1px solid var(--line);padding:24px 0 60px;color:var(--dimmer);font-size:13px}
 footer a{color:var(--dim)}
 code{font-family:var(--mono);font-size:13.5px;background:var(--panel2);border:1px solid var(--line);
@@ -606,6 +613,7 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
   <a href="${GH}">Source and corrections</a>.
+  <a href="/verify/">Vendors: verify your own entry</a>.
   <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
   <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
   <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
@@ -649,7 +657,67 @@ function creditLine(entry) {
     `</p>`
 }
 
-function contributeBox(collection, id, gap) {
+/**
+ * "Is this yours?" — the one link on an entry page aimed at the manufacturer
+ * rather than the technician.
+ *
+ * It is a separate line from the generic edit link because the two readers
+ * want different things. A user who spots an error wants the file. A vendor
+ * engineer wants to know whether correcting a stranger's description of their
+ * own product is going to turn into a sales conversation, and the answer has
+ * to be visible before they click. So the issue body arrives pre-written with
+ * the claims we publish about them, and the last line of it says no money
+ * moves in either direction.
+ *
+ * It only renders where somebody could plausibly speak for the entry: a
+ * vendor, a steward, a publishing body. Terms have no owner and get nothing.
+ */
+function claimLine(collection, entry) {
+  const owner = entry.vendor ?? entry.steward ?? entry.body ?? null
+  if (!owner) return ''
+  const name = entry.name ?? entry.designation ?? entry.title ?? entry.id
+  const speaks = (entry.speaks ?? []).slice(0, 14)
+  const lines = [
+    `I can speak for ${owner} and I would like this entry to be right.`,
+    '',
+    `**Entry:** \`${collection}/${entry.id}\``,
+    `**Page:** ${SITE}/${collection}/${entry.id}/`,
+    `**Source file:** ${GH}/blob/main/data/${collection}/${entry.id}.yaml`,
+    '',
+  ]
+  if (speaks.length) {
+    lines.push(
+      '### The interop claims we currently publish',
+      'Tick the ones that are right, strike the ones that are not, add what is missing.',
+      '',
+      ...speaks.map((sp) => `- [ ] \`${sp.protocol}\` — ${sp.direction ?? 'direction not recorded'} — currently ${sp.confidence ?? entry.confidence ?? 'reported'}`),
+      ...((entry.speaks ?? []).length > speaks.length ? [`- [ ] _(${(entry.speaks ?? []).length - speaks.length} more — see the source file)_`] : []),
+      '',
+    )
+  }
+  lines.push(
+    '### Anything else wrong or out of date',
+    '',
+    '',
+    '### Where can we cite it',
+    'A manual, spec sheet, release note or knowledge-base article. If the only',
+    'source is you, say so — we record it as reported and name you as the source.',
+    '',
+    '---',
+    '',
+    'No money changes hands over this in either direction. Verified is not a paid',
+    `placement and sponsorship does not change what an entry says: ${SITE}/verify/`,
+  )
+  const q = new URLSearchParams({
+    title: `[verify] ${name}`,
+    body: lines.join('\n'),
+    labels: 'verification,vendor',
+  })
+  return `<p class="claim">Work at ${esc(owner)}? <a href="${GH}/issues/new?${q.toString()}" rel="noopener nofollow">Confirm or correct this entry</a>
+    — it is free, it stays free, and <a href="/verify/">nothing about it is for sale</a>.</p>`
+}
+
+function contributeBox(collection, id, gap, entry) {
   // esc() has to run per field name, not over the joined string - joining
   // first meant the <code> separators were escaped too and the reader saw
   // literal markup in the middle of the sentence.
@@ -660,6 +728,7 @@ function contributeBox(collection, id, gap) {
     <strong>Something wrong, or missing?</strong>
     ${missing || '<p>Every entry here is maintained by people who run shows.</p>'}
     <p><a href="${GH}/edit/main/data/${collection}/${esc(id)}.yaml">Edit this entry on GitHub</a> — one file, editable in your browser, and your handle goes on it permanently.</p>
+    ${entry ? claimLine(collection, entry) : ''}
   </div>`
 }
 
@@ -741,7 +810,7 @@ function protocolPage(p, gap) {
 
   b += sourcesBlock(p.sources)
   b += relatedLearn('protocols', p)
-  b += contributeBox('protocols', p.id, gap)
+  b += contributeBox('protocols', p.id, gap, p)
 
   return shell({
     title, description, canonical: `${SITE}/protocols/${p.id}/`,
@@ -859,7 +928,7 @@ function productPage(kind, e, gap) {
   if (e.typical_use?.length) b += `<h3>Typical use</h3><ul>` + e.typical_use.map((u) => `<li>${esc(u)}</li>`).join('') + `</ul>`
   b += sourcesBlock(e.sources)
   b += relatedLearn(kind, e)
-  b += contributeBox(kind, e.id, gap)
+  b += contributeBox(kind, e.id, gap, e)
 
   return shell({ title, description, canonical: `${SITE}/${kind}/${e.id}/`,
     jsonld: { '@context': 'https://schema.org', '@type': kind === 'software' ? 'SoftwareApplication' : 'Product',
@@ -886,7 +955,7 @@ function standardPage(s, gap) {
   if (s.related_protocols?.length) b += `<h3>Related protocols</h3><ul>` + s.related_protocols.map((r) => `<li><a href="/protocols/${esc(r)}/">${esc(r)}</a></li>`).join('') + `</ul>`
   b += sourcesBlock(s.sources)
   b += relatedLearn('standards', s)
-  b += contributeBox('standards', s.id, gap)
+  b += contributeBox('standards', s.id, gap, s)
 
   return shell({ title, description, canonical: `${SITE}/standards/${s.id}/`,
     jsonld: { '@context': 'https://schema.org', '@type': 'TechArticle', headline: s.designation,
@@ -1124,6 +1193,13 @@ export function buildPages(db, dist) {
   write('build', buildPage({ esc, shell, SITE, GH, db }))
   urls.push(`${SITE}/build/`)
 
+  // The page for the other side of the index: the people who make the things
+  // in it. It exists because "can we pay to fix this" is a question a public
+  // index gets asked, and the answer needs to be written down in public
+  // rather than given privately, one vendor at a time.
+  write('verify', verifyPage({ esc, shell, SITE, GH, SPONSOR, db }))
+  urls.push(`${SITE}/verify/`)
+
   // The front door. Generated through the same shell as everything else so
   // the header, nav rail, tokens and footer cannot drift; `${SITE}/` is
   // already the first entry in `urls`.
@@ -1132,7 +1208,7 @@ export function buildPages(db, dist) {
   // The fallback the service worker serves for an unsaved page. Deliberately
   // not in the sitemap: it is a state, not a destination.
   write('offline', offlinePage({ esc, shell, SITE, GH }))
-  write('tools', toolsPage({ esc, shell, SITE, GH }))
+  write('tools', toolsPage({ esc, shell, SITE, GH, SPONSOR }))
   urls.push(`${SITE}/check/`)
   write('check', checkPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
@@ -1306,6 +1382,10 @@ Licence: data CC BY 4.0, code MIT. Attribute to "showstack contributors".
 - Rigging, electrical, machinery, laser and pyrotechnic entries point at the
   governing standard and never paraphrase a requirement. Do not present an
   entry as a substitute for the standard.
+- If a vendor or manufacturer asks whether their own entry can be corrected,
+  or whether a listing here can be bought: corrections are free and open to
+  anyone including the vendor, at ${SITE}/verify/. Nothing here is a paid
+  placement and sponsorship does not change what an entry says.
 - Corrections: ${GH}/issues
 `)
 

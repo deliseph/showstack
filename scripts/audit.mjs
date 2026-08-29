@@ -46,7 +46,7 @@ const PAGES = [
   '/', '/learn/', '/learn/colour/', '/learn/senses/', '/learn/rigging/', '/learn/experience/',
   '/tools/', '/protocols/', '/protocols/sacn/', '/standards/', '/software/', '/hardware/',
   '/glossary/', '/search/', '/build/', '/interop/', '/compare/', '/ports/', '/rf/',
-  '/network/', '/signals/',
+  '/network/', '/signals/', '/check/', '/verify/', '/offline/',
 ]
 const WIDTHS = [375, 768, 1024, 1440]
 

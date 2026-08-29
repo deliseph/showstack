@@ -304,7 +304,7 @@ function shotResult(tool, out, btn){
 })();
 `
 
-export function toolsPage({ esc, shell, SITE, GH }) {
+export function toolsPage({ esc, shell, SITE, GH, SPONSOR }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -339,7 +339,6 @@ display:inline-block;vertical-align:-1px}
 .out .err{color:var(--fail);font-weight:600}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
 .outwrap{position:relative}
-.tshot{right:70px}
 .tcopy{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:10px;letter-spacing:.5px;
 text-transform:uppercase;color:var(--ink-faint);background:var(--surface-raised);border:1px solid var(--rule-strong);
 border-radius:var(--r-pill);min-height:44px;min-width:56px;padding:0 12px;cursor:pointer;opacity:0;
@@ -349,6 +348,11 @@ transition:opacity var(--dur-fast),color var(--dur-fast)}
 .tcopy:hover{color:var(--signal);border-color:var(--signal)}
 .tcopy[data-done]{color:var(--verified);border-color:var(--verified);opacity:1}
 @media(hover:none){.tcopy{opacity:1}}
+/* Declared after .tcopy, not before it: .tshot carries both classes, both
+   selectors weigh the same, so whichever is written last sets the offset. When
+   this sat above, the image button was parked underneath the copy button and
+   could not be clicked at all. */
+.tshot{right:min(70px,38%)}
 
 /* Find a tool. Forty-two calculators in one scroll is a reference; a rigger
    on a phone should not pass nineteen of them to reach voltage drop. */
@@ -356,6 +360,21 @@ transition:opacity var(--dur-fast),color var(--dur-fast)}
    about to lose signal actually is. It stays hidden until the browser confirms
    a service worker is running, so it never promises something that is not
    there. */
+/* The ask, at the moment of value rather than in the footer. It appears once
+   per browser after somebody has actually got an answer out of the page, it is
+   one line, and dismissing it is permanent. A modal here would be a betrayal
+   of the thing that makes people want to support it in the first place. */
+.ask{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 0;padding:13px 16px;
+border:1px solid color-mix(in srgb,var(--signal) 30%,var(--rule));border-radius:var(--r-md);
+background:color-mix(in srgb,var(--signal) 6%,var(--surface-raised))}
+.ask p{margin:0;flex:1 1 300px;min-width:0;color:var(--ink-muted);font-size:13.8px;line-height:1.55}
+.ask a{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;flex:0 0 auto;
+border-radius:var(--r-pill);font-family:var(--mono);font-size:12.5px;
+background:var(--signal);color:var(--signal-ink);border:1px solid var(--signal)}
+.ask a:hover{filter:brightness(1.08);text-decoration:none;color:var(--signal-ink)}
+.ask button{flex:0 0 auto;min-height:44px;padding:0 12px;border:0;background:none;cursor:pointer;
+font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.ask button:hover{color:var(--ink-muted);text-decoration:underline}
 .offline{border:1px solid var(--rule);border-radius:var(--r-lg);background:var(--surface-raised);
 padding:18px 20px;margin:22px 0 4px}
 .offhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
@@ -1906,6 +1925,43 @@ soRender();
     state.setAttribute('data-on','');
   });
   net();
+})();
+
+/* ---- the ask ------------------------------------------------------------
+   Shown once, after somebody has actually copied a result - which is the
+   moment the page has demonstrably been useful, rather than the moment they
+   arrived. Dismissing it is permanent, and it never becomes a modal. */
+(function(){
+  var KEY='ss-ask';
+  function seen(){try{return localStorage.getItem(KEY)}catch(e){return '1'}}
+  function mark(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+  if(seen())return;
+  var used=0;
+  function offer(tool){
+    if(seen())return;
+    mark('shown');
+    var box=document.createElement('div');
+    box.className='ask';
+    box.innerHTML='<p>That answer took somebody a while to get right, and there is no ad or account paying for it. '
+      +'If it saved you time tonight, you can keep it going.</p>'
+      +'<a href="${SPONSOR}" rel="noopener">'
+      +'<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="currentColor">'
+      +'<path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/>'
+      +'</svg>Sponsor</a>'
+      +'<button type="button">not now</button>';
+    box.querySelector('button').addEventListener('click',function(){ mark('dismissed'); box.remove() });
+    tool.appendChild(box);
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.tcopy');
+    if(!btn)return;
+    used++;
+    /* Two results copied, not one: once could be curiosity, twice is use. */
+    if(used>=2){
+      var tool=btn.closest('.tool');
+      if(tool)setTimeout(function(){offer(tool)},900);
+    }
+  });
 })();
 `
 
