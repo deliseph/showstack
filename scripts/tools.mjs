@@ -17,6 +17,8 @@
  */
 import { LEARN_TOPICS } from './learn-kit.mjs'
 import {
+  CORRECTION_GELS, FIBRE_ATTENUATION,
+  miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -37,7 +39,13 @@ const MATH_SRC = [
   throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
+  miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
 ].map((f) => f.toString()).join('\n\n')
+
+// Two of the new tools need their reference tables in the page as well as the
+// function, so they are serialised beside the source rather than duplicated.
+const MATH_TABLES = `const CORRECTION_GELS = ${JSON.stringify(CORRECTION_GELS)};
+const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};`
 
 /**
  * Everything on this page that is the same for all 42 calculators: the finder,
@@ -672,6 +680,79 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 </div>
 
+<div class="toolgroup">Colour, optics &amp; storage</div>
+<div class="toolgrid">
+<div class="tool wide" id="mired">
+  <h3>Colour temperature correction</h3>
+  <div class="row">
+    <div class="field"><label for="mi-s">Source (K)</label><input id="mi-s" type="number" min="1000" max="20000" step="50" value="3200" inputmode="numeric"></div>
+    <div class="field"><label for="mi-t">Target (K)</label><input id="mi-t" type="number" min="1000" max="20000" step="50" value="5600" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="mi-out" role="status" aria-live="polite"></div>
+  <p class="note">Kelvin is the wrong scale for this arithmetic: the step from 3200 K to 3400 K looks far bigger than the step from 9000 K to 9200 K, so no gel can have a fixed effect stated in kelvin. The mired &mdash; micro reciprocal degree, 10<sup>6</sup>/K &mdash; is the scale on which correction <em>is</em> fixed, which is why every swatch book prints a mired shift. Gel values are the published Lee shifts; Rosco equivalents differ slightly. <a href="/learn/colour/">How a colour becomes a number</a> covers why.</p>
+</div>
+
+<div class="tool wide" id="fibre">
+  <h3>Fibre loss budget</h3>
+  <div class="row">
+    <div class="field"><label for="fi-l">Length (m)</label><input id="fi-l" type="number" min="0" step="10" value="500" inputmode="numeric"></div>
+    <div class="field"><label for="fi-t">Fibre &amp; wavelength</label><select id="fi-t"></select></div>
+    <div class="field"><label for="fi-c">Connector pairs</label><input id="fi-c" type="number" min="0" max="40" step="1" value="2" inputmode="numeric"></div>
+    <div class="field"><label for="fi-s">Splices</label><input id="fi-s" type="number" min="0" max="40" step="1" value="0" inputmode="numeric"></div>
+    <div class="field"><label for="fi-b">Link budget (dB)</label><input id="fi-b" type="number" min="1" max="40" step="0.5" value="8" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="fi-out" role="status" aria-live="polite"></div>
+  <p class="note">Attenuation figures are typical values per TIA-568 and FOA guidance: OM3/OM4 about 3.0&nbsp;dB/km at 850&nbsp;nm and 1.0 at 1300; OS2 about 0.4 at 1310 and 0.3 at 1550. Connector pairs are counted at 0.3&nbsp;dB (TIA allows up to 0.75) and fusion splices at 0.1. The link budget belongs to the optics, not the glass &mdash; take it from the transceiver datasheet rather than this default. A run that passes with under 3&nbsp;dB spare works on the day and fails after one re-terminated connector.</p>
+</div>
+
+<div class="tool" id="heat">
+  <h3>Heat load</h3>
+  <div class="row">
+    <div class="field"><label for="he-w">Equipment (W)</label><input id="he-w" type="number" min="0" step="100" value="20000" inputmode="numeric"></div>
+    <div class="field"><label for="he-p">People</label><input id="he-p" type="number" min="0" step="10" value="0" inputmode="numeric"></div>
+    <div class="field"><label for="he-d">Allowed rise (&deg;C)</label><input id="he-d" type="number" min="1" max="30" step="1" value="10" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="he-out" role="status" aria-live="polite"></div>
+  <p class="note">Near enough every watt a rig draws ends up as heat in the room &mdash; the light and sound that leave are a rounding error against the input. 1&nbsp;W = 3.412&nbsp;BTU/hr; 1 ton of refrigeration = 12&nbsp;000&nbsp;BTU/hr. A seated person adds roughly 100&nbsp;W sensible, more when dancing, which is why a full house feels different from the tech. Airflow assumes air at 1.2&nbsp;kg/m&sup3; and 1005&nbsp;J/kg&middot;K.</p>
+</div>
+
+<div class="tool" id="storage">
+  <h3>Video storage</h3>
+  <div class="row">
+    <div class="field"><label for="st-b">Bitrate (Mbps)</label><input id="st-b" type="number" min="0.1" step="1" value="100" inputmode="decimal"></div>
+    <div class="field"><label for="st-m">Minutes</label><input id="st-m" type="number" min="0" step="5" value="60" inputmode="numeric"></div>
+    <div class="field"><label for="st-n">Streams</label><input id="st-n" type="number" min="1" max="64" step="1" value="1" inputmode="numeric"></div>
+    <div class="field"><label for="st-c">Card / array (GB)</label><input id="st-c" type="number" min="1" step="64" value="1000" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="st-out" role="status" aria-live="polite"></div>
+  <p class="note">The units are the trap. Cards and drives are sold in decimal gigabytes and reported by the operating system in binary gibibytes, so a &ldquo;1&nbsp;TB&rdquo; card holds about 931&nbsp;GiB &mdash; the difference is a whole afternoon of recording. The sustained write figure is the spec that actually decides whether media drops frames, not the capacity.</p>
+</div>
+
+<div class="tool" id="battery">
+  <h3>Battery runtime</h3>
+  <div class="row">
+    <div class="field"><label for="ba-c">Capacity (Wh)</label><input id="ba-c" type="number" min="1" step="1" value="98" inputmode="decimal"></div>
+    <div class="field"><label for="ba-d">Draw (W)</label><input id="ba-d" type="number" min="0.1" step="0.5" value="12" inputmode="decimal"></div>
+    <div class="field"><label for="ba-u">Usable (%)</label><input id="ba-u" type="number" min="10" max="100" step="5" value="80" inputmode="numeric"></div>
+    <div class="field"><label for="ba-n">Need (hours)</label><input id="ba-n" type="number" min="0.5" step="0.5" value="6" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="ba-out" role="status" aria-live="polite"></div>
+  <p class="note">Packs are labelled in mAh more often than Wh: multiply mAh by the nominal voltage and divide by 1000. The derating matters more than the arithmetic &mdash; you lose some capacity to the device's cutoff voltage, some to cold, and a lithium pack that has done three hundred shows is not the pack on the label. 80% is a working default, not a measurement of your stock.</p>
+</div>
+
+<div class="tool wide" id="aspect">
+  <h3>Aspect fit</h3>
+  <div class="row">
+    <div class="field"><label for="as-cw">Content W</label><input id="as-cw" type="number" min="1" step="1" value="1920" inputmode="numeric"></div>
+    <div class="field"><label for="as-ch">Content H</label><input id="as-ch" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
+    <div class="field"><label for="as-sw">Surface W</label><input id="as-sw" type="number" min="1" step="1" value="2560" inputmode="numeric"></div>
+    <div class="field"><label for="as-sh">Surface H</label><input id="as-sh" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="as-out" role="status" aria-live="polite"></div>
+  <p class="note">Fit letterboxes and wastes surface; fill crops and loses content. The bar and crop figures are the numbers a designer needs, because that is the dead area to mask or design around. Scaling past 1:1 is flagged separately &mdash; that is the point where an LED wall starts to look soft, and no amount of processing puts the pixels back.</p>
+</div>
+</div>
+
 <div class="toolgroup">Networking</div>
 <div class="toolgrid">
 <div class="tool wide" id="subnet">
@@ -737,6 +818,7 @@ HORN = GO &amp; (A | B)</textarea></div>
 
   const script = `
 ${TOOLKIT_JS}
+${MATH_TABLES}
 ${MATH_SRC}
 
 const $ = (s) => document.querySelector(s);
@@ -1400,6 +1482,124 @@ vdRender();
 phRender();
 nsRender();
 imRender();
+
+/* ---- colour temperature correction ------------------------------------ */
+function miRender(){
+  const r = miredShift($("#mi-s").value, $("#mi-t").value);
+  if(!r){ $("#mi-out").innerHTML = '<span class="err">Enter two temperatures in kelvin.</span>'; return; }
+  const sign = (n) => (n > 0 ? "+" : "") + n;
+  let html = "<b>" + sign(r.shift) + "</b> mired &middot; " + r.direction
+    + " &middot; " + r.sourceMired + " &rarr; " + r.targetMired + " mired";
+  if (r.gelIsClose) {
+    html += "<br>Nearest gel: <b>" + r.nearestGel.name + "</b> (Lee " + r.nearestGel.id
+      + ", " + sign(r.nearestGel.shift) + ") &mdash; " + r.nearestGel.error + " mired out, lands at "
+      + r.resultOf(r.nearestGel.shift) + " K";
+  } else {
+    html += '<br><span class="err">No single gel is close</span> &mdash; nearest is '
+      + r.nearestGel.name + " at " + r.nearestGel.error + " mired out";
+    if (r.nearestPair) {
+      html += "<br>Stack <b>" + r.nearestPair.a.name + " + " + r.nearestPair.b.name + "</b> ("
+        + sign(r.nearestPair.sum) + ") &mdash; " + r.nearestPair.error + " mired out, lands at "
+        + r.resultOf(r.nearestPair.sum) + " K";
+    }
+  }
+  $("#mi-out").innerHTML = html;
+}
+["#mi-s","#mi-t"].forEach(id => $(id).addEventListener("input", miRender));
+miRender();
+
+/* ---- fibre loss budget ------------------------------------------------- */
+$("#fi-t").innerHTML = Object.entries(FIBRE_ATTENUATION)
+  .map(([k,v]) => '<option value="' + k + '">' + v.label + " (" + v.dbPerKm + " dB/km)</option>").join("");
+function fiRender(){
+  const r = fibreLossBudget($("#fi-l").value, $("#fi-t").value, $("#fi-c").value, $("#fi-s").value,
+    { linkBudgetDb: $("#fi-b").value });
+  if(!r){ $("#fi-out").innerHTML = '<span class="err">Check the length and counts.</span>'; return; }
+  let verdict;
+  if (!r.ok) verdict = '<span class="err">over budget by ' + Math.abs(r.marginDb) + " dB</span>";
+  else if (r.thin) verdict = '<span class="err">only ' + r.marginDb + " dB spare &mdash; too thin to trust</span>";
+  else verdict = '<span class="ok">' + r.marginDb + " dB margin</span>";
+  $("#fi-out").innerHTML = "<b>" + r.totalLossDb + "</b> dB total &middot; " + verdict
+    + "<br>" + r.fibreLossDb + " dB glass &middot; " + r.connectorLossDb + " dB connectors &middot; "
+    + r.spliceLossDb + " dB splices &middot; budget " + r.linkBudgetDb + " dB"
+    + "<br>Same construction reaches <b>" + r.maxLengthM + "</b> m before it runs out";
+}
+["#fi-l","#fi-t","#fi-c","#fi-s","#fi-b"].forEach(id => $(id).addEventListener("input", fiRender));
+fiRender();
+
+/* ---- heat load --------------------------------------------------------- */
+function heRender(){
+  const r = heatLoad($("#he-w").value, { people: $("#he-p").value });
+  if(!r){ $("#he-out").innerHTML = '<span class="err">Enter the equipment load in watts.</span>'; return; }
+  const dt = Number($("#he-d").value);
+  const m3 = r.airflowM3PerHourFor(dt), cfm = r.airflowCfmFor(dt);
+  $("#he-out").innerHTML = "<b>" + r.btuPerHour.toLocaleString() + "</b> BTU/hr &middot; "
+    + r.kwThermal + " kW thermal &middot; <b>" + r.tonsOfCooling + "</b> tons of cooling"
+    + (r.peopleW ? "<br>" + r.equipmentW.toLocaleString() + " W kit + " + r.peopleW.toLocaleString() + " W audience" : "")
+    + (m3 ? "<br>Needs <b>" + m3.toLocaleString() + "</b> m&sup3;/h (" + cfm.toLocaleString()
+      + " cfm) to hold a " + dt + " &deg;C rise" : "");
+}
+["#he-w","#he-p","#he-d"].forEach(id => $(id).addEventListener("input", heRender));
+heRender();
+
+/* ---- video storage ----------------------------------------------------- */
+function stRender(){
+  const r = videoStorage($("#st-b").value, $("#st-m").value, { streams: $("#st-n").value });
+  if(!r){ $("#st-out").innerHTML = '<span class="err">Enter a bitrate and a duration.</span>'; return; }
+  const card = Number($("#st-c").value);
+  const mins = r.minutesForGb(card);
+  $("#st-out").innerHTML = "<b>" + r.gigabytes.toLocaleString() + "</b> GB ("
+    + r.gibibytes.toLocaleString() + " GiB as the OS reports it)"
+    + "<br>Sustained write <b>" + r.writeMBps + "</b> MB/s"
+    + (r.streams > 1 ? " across " + r.streams + " streams at " + r.totalMbps + " Mbps" : "")
+    + (mins ? "<br>A " + card.toLocaleString() + " GB card holds <b>"
+      + Math.floor(mins / 60) + " h " + Math.round(mins % 60) + " min</b>" : "");
+}
+["#st-b","#st-m","#st-n","#st-c"].forEach(id => $(id).addEventListener("input", stRender));
+stRender();
+
+/* ---- battery runtime --------------------------------------------------- */
+function baRender(){
+  const r = batteryRuntime($("#ba-c").value, $("#ba-d").value,
+    { usableFraction: Number($("#ba-u").value) / 100 });
+  if(!r){ $("#ba-out").innerHTML = '<span class="err">Enter a capacity and a draw.</span>'; return; }
+  const need = Number($("#ba-n").value);
+  const covers = r.coversHours(need), packs = r.packsForHours(need);
+  $("#ba-out").innerHTML = "<b>" + Math.floor(r.minutes / 60) + " h " + (r.minutes % 60)
+    + " min</b> usable &middot; " + r.idealHours + " h on the nameplate"
+    + (covers === null ? "" : "<br>" + (covers
+      ? '<span class="ok">covers a ' + need + " h call on one pack</span>"
+      : '<span class="err">does not cover ' + need + " h</span> &mdash; needs <b>" + packs + "</b> packs or a swap"));
+}
+["#ba-c","#ba-d","#ba-u","#ba-n"].forEach(id => $(id).addEventListener("input", baRender));
+baRender();
+
+/* ---- aspect fit -------------------------------------------------------- */
+function asRender(){
+  const r = aspectFit($("#as-cw").value, $("#as-ch").value, $("#as-sw").value, $("#as-sh").value);
+  if(!r){ $("#as-out").innerHTML = '<span class="err">All four dimensions must be above zero.</span>'; return; }
+  if (r.match) {
+    $("#as-out").innerHTML = "<b>Same aspect</b> &mdash; " + r.contentAspect
+      + ":1, no bars and no crop &middot; scale " + r.fit.scale + "&times;"
+      + (r.upscalingFit ? ' <span class="err">upscaling</span>' : "");
+    return;
+  }
+  const bars = r.fit.pillarboxEach
+    ? "<b>" + r.fit.pillarboxEach + "</b> px bars each side"
+    : "<b>" + r.fit.letterboxEach + "</b> px bars top and bottom";
+  const crop = r.fill.cropEachSide
+    ? "<b>" + r.fill.cropEachSide + "</b> px off each side"
+    : "<b>" + r.fill.cropTopBottom + "</b> px off top and bottom";
+  $("#as-out").innerHTML = "Content " + r.contentAspect + ":1 into a surface of " + r.screenAspect + ":1"
+    + "<br><b>Fit</b> &mdash; " + r.fit.width + "&times;" + r.fit.height + " at " + r.fit.scale
+    + "&times;, " + bars + ", " + r.fit.unusedPercent + "% of the surface unused"
+    + (r.upscalingFit ? ' <span class="err">upscaling</span>' : "")
+    + "<br><b>Fill</b> &mdash; " + r.fill.width + "&times;" + r.fill.height + " at " + r.fill.scale
+    + "&times;, " + crop + ", " + r.fill.lostPercent + "% of the content lost"
+    + (r.upscalingFill ? ' <span class="err">upscaling</span>' : "");
+}
+["#as-cw","#as-ch","#as-sw","#as-sh"].forEach(id => $(id).addEventListener("input", asRender));
+asRender();
 `
 
   return shell({

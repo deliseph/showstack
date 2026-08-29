@@ -16,6 +16,7 @@ import {
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, clockDrift, pollingCost, jitterMargin,
   requiredPerformanceLevel, stoppingDistance, safeguardDistance,
   hexToChannels, codeToLight, videoRange, chromaBitrate, rt60Sabine, stereoParallax,
+  miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -1049,4 +1050,249 @@ describe('stereoscopic parallax', () => {
     assert.equal(stereoParallax(6, 0, 10), null)
     assert.equal(stereoParallax(6, 6, 0), null)
   })
+})
+
+// ---------------------------------------------------------------------------
+// Colour temperature correction
+// ---------------------------------------------------------------------------
+
+test('mired is the reciprocal scale, so a gel shift is constant', () => {
+  // The whole point of the unit: the same gel does the same mired shift
+  // wherever you point it. Two different kelvin journeys, same shift.
+  const a = miredShift(3200, 3200 * 2)
+  const b = miredShift(6400, 6400 * 2)
+  // Doubling the kelvin halves the mired, so each shift is minus half the
+  // source mired. Compared with a tolerance because the reported figure is
+  // rounded once at the end rather than per term.
+  assert.ok(Math.abs(a.shift - -(1e6 / 3200 / 2)) < 0.1, `got ${a.shift}`)
+  assert.ok(Math.abs(b.shift - -(1e6 / 6400 / 2)) < 0.1, `got ${b.shift}`)
+  // And the ratio of the two shifts is exactly the ratio of the sources.
+  assert.ok(Math.abs(a.shift / b.shift - 2) < 0.001)
+})
+
+test('tungsten to daylight lands on Full CTB', () => {
+  // 3200 K to 5600 K is the correction Full CTB exists for.
+  const r = miredShift(3200, 5600)
+  assert.equal(r.direction, 'cooler (CTB)')
+  assert.equal(r.nearestGel.name, 'Full CTB')
+  // Lee publishes Full CTB as -137; the exact requirement here is -133.9,
+  // which is why the gel is close but not perfect.
+  assert.equal(r.shift, -133.9)
+  assert.ok(r.nearestGel.error < 4)
+})
+
+test('daylight to tungsten needs more than any one CTO', () => {
+  const r = miredShift(5600, 3200)
+  assert.equal(r.direction, 'warmer (CTO)')
+  assert.equal(r.shift, 133.9)
+  // +133.9 sits almost exactly between Half CTO (+109) and Full CTO (+159) —
+  // 24.9 out either way. Neither is close enough to call an answer, and the
+  // function says so rather than presenting a near-miss as the choice.
+  assert.equal(r.gelIsClose, false)
+  assert.ok(r.nearestGel.error > 20)
+  // A stack does genuinely better here, which is why the pair is offered.
+  assert.ok(r.nearestPair && r.nearestPair.error < r.nearestGel.error)
+})
+
+test('applying a gel gives back a colour temperature', () => {
+  const r = miredShift(3200, 5600)
+  // Lee 201 Full CTB on a 3200 K source.
+  const landed = r.resultOf(-137)
+  assert.ok(landed > 5600 && landed < 6100, `got ${landed}`)
+})
+
+test('a pair is only offered when it beats the single gel', () => {
+  // 3200 -> 4300 is -79.9, and Half CTB at -78 is within 2. No stack improves
+  // on that, so none is suggested: two sheets cost a stop for nothing.
+  const near = miredShift(3200, 4300)
+  assert.equal(near.nearestGel.name, 'Half CTB')
+  assert.equal(near.gelIsClose, true)
+  assert.equal(near.nearestPair, null)
+  // Where a stack does help, it is offered and it is genuinely better.
+  const far = miredShift(5600, 3200)
+  assert.ok(far.nearestPair)
+  assert.ok(far.nearestPair.error < far.nearestGel.error)
+})
+
+test('mired rejects nonsense temperatures', () => {
+  assert.equal(miredShift(0, 5600), null)
+  assert.equal(miredShift(3200, -1), null)
+  assert.equal(miredShift('x', 5600), null)
+})
+
+// ---------------------------------------------------------------------------
+// Fibre loss budget
+// ---------------------------------------------------------------------------
+
+test('fibre loss is length times attenuation plus the terminations', () => {
+  const r = fibreLossBudget(500, 'om3-850', 2, 0)
+  // 0.5 km at 3.0 dB/km = 1.5 dB, plus two connector pairs at 0.3 = 0.6.
+  assert.equal(r.fibreLossDb, 1.5)
+  assert.equal(r.connectorLossDb, 0.6)
+  assert.equal(r.totalLossDb, 2.1)
+  assert.equal(r.ok, true)
+})
+
+test('singlemode goes much further than multimode on the same budget', () => {
+  const mm = fibreLossBudget(1000, 'om3-850', 2, 0)
+  const sm = fibreLossBudget(1000, 'os2-1310', 2, 0)
+  assert.ok(sm.totalLossDb < mm.totalLossDb)
+  assert.ok(sm.maxLengthM > mm.maxLengthM * 5)
+})
+
+test('splices and extra connectors eat the budget', () => {
+  const clean = fibreLossBudget(200, 'os2-1310', 2, 0)
+  const patched = fibreLossBudget(200, 'os2-1310', 6, 4)
+  assert.ok(patched.totalLossDb > clean.totalLossDb)
+  assert.equal(patched.connectorLossDb, 1.8)
+  assert.equal(patched.spliceLossDb, 0.4)
+})
+
+test('a run can pass and still be too thin to trust', () => {
+  // Just inside the budget, but with under 3 dB of margin: it works on the
+  // day and fails after one dirty end face.
+  const r = fibreLossBudget(2200, 'om3-850', 2, 0)
+  assert.equal(r.ok, true)
+  assert.equal(r.thin, true)
+})
+
+test('fibre rejects an unknown fibre type', () => {
+  assert.equal(fibreLossBudget(100, 'not-a-fibre', 2, 0), null)
+  assert.equal(fibreLossBudget(-1, 'os2-1310', 2, 0), null)
+})
+
+// ---------------------------------------------------------------------------
+// Heat load
+// ---------------------------------------------------------------------------
+
+test('watts in equals heat out, in BTU and tons', () => {
+  const r = heatLoad(20000)
+  // 20 kW x 3.412 = 68 240 BTU/hr; / 12 000 = 5.69 tons.
+  assert.equal(r.btuPerHour, 68240)
+  assert.equal(r.tonsOfCooling, 5.69)
+  assert.equal(r.kwThermal, 20)
+})
+
+test('an audience is a heat load', () => {
+  const empty = heatLoad(10000)
+  const full = heatLoad(10000, { people: 500 })
+  assert.equal(full.peopleW, 50000)
+  assert.ok(full.btuPerHour > empty.btuPerHour * 5)
+})
+
+test('airflow follows from the temperature rise you will accept', () => {
+  const r = heatLoad(3000)
+  const tight = r.airflowM3PerHourFor(5)
+  const loose = r.airflowM3PerHourFor(10)
+  // Twice the allowed rise, half the air.
+  assert.ok(Math.abs(tight / loose - 2) < 0.01)
+  assert.ok(r.airflowCfmFor(10) < loose, 'cfm is a smaller number than m3/h')
+})
+
+test('heat load rejects negative power', () => {
+  assert.equal(heatLoad(-1), null)
+  assert.equal(heatLoad('x'), null)
+})
+
+// ---------------------------------------------------------------------------
+// Video storage
+// ---------------------------------------------------------------------------
+
+test('storage is bitrate times time, and the units are the trap', () => {
+  const r = videoStorage(100, 60)
+  // 100 Mbps x 3600 s = 360 000 Mb = 45 000 MB = 45 GB decimal.
+  assert.equal(r.gigabytes, 45)
+  // The same bits reported as gibibytes, which is what the OS will say.
+  assert.equal(r.gibibytes, 43.95)
+  assert.ok(r.gibibytes < r.gigabytes, 'GiB is always the smaller number')
+})
+
+test('storage scales with stream count', () => {
+  const one = videoStorage(50, 30)
+  const four = videoStorage(50, 30, { streams: 4 })
+  assert.equal(four.gigabytes, one.gigabytes * 4)
+  assert.equal(four.writeMBps, one.writeMBps * 4)
+})
+
+test('storage answers the other direction too', () => {
+  const r = videoStorage(100, 60)
+  // A 1 TB card at 100 Mbps.
+  const mins = r.minutesForGb(1000)
+  assert.ok(Math.abs(mins - 1333.33) < 1, `got ${mins}`)
+})
+
+test('storage rejects a zero bitrate', () => {
+  assert.equal(videoStorage(0, 60), null)
+  assert.equal(videoStorage(100, -1), null)
+})
+
+// ---------------------------------------------------------------------------
+// Battery runtime
+// ---------------------------------------------------------------------------
+
+test('runtime derates the nameplate, because the nameplate is not usable', () => {
+  const r = batteryRuntime(98, 12)
+  assert.equal(r.idealHours, 8.17)
+  // 80% usable by default.
+  assert.equal(r.hours, 6.53)
+  assert.ok(r.hours < r.idealHours)
+})
+
+test('runtime answers the question that gets asked at the half', () => {
+  const r = batteryRuntime(98, 12)
+  assert.equal(r.coversHours(6), true)
+  assert.equal(r.coversHours(8), false)
+  assert.equal(r.packsForHours(12), 2)
+})
+
+test('mAh converts to Wh at the nominal voltage', () => {
+  // A 2600 mAh pack at 3.7 V is 9.62 Wh.
+  assert.equal(whFromMah(2600, 3.7), 9.62)
+  assert.equal(whFromMah(0, 3.7), null)
+})
+
+test('runtime rejects a zero draw', () => {
+  assert.equal(batteryRuntime(98, 0), null)
+  assert.equal(batteryRuntime(0, 12), null)
+})
+
+// ---------------------------------------------------------------------------
+// Aspect fitting
+// ---------------------------------------------------------------------------
+
+test('16:9 content in a 21:9 surface pillarboxes', () => {
+  const r = aspectFit(1920, 1080, 2560, 1080)
+  assert.equal(r.match, false)
+  assert.equal(r.fit.pillarboxEach, 320)
+  assert.equal(r.fit.letterboxEach, 0)
+  assert.equal(r.fit.unusedPercent, 25)
+})
+
+test('fill crops exactly what fit would have wasted', () => {
+  const r = aspectFit(1920, 1080, 2560, 1080)
+  // Filling a wider screen means the content is scaled until it spans the
+  // width, and the top and bottom go off the surface.
+  assert.equal(r.fill.cropEachSide, 0)
+  assert.ok(r.fill.cropTopBottom > 0)
+  assert.ok(r.fill.lostPercent > 0)
+})
+
+test('matching aspects need neither bars nor crop', () => {
+  const r = aspectFit(1920, 1080, 3840, 2160)
+  assert.equal(r.match, true)
+  assert.equal(r.fit.pillarboxEach, 0)
+  assert.equal(r.fit.letterboxEach, 0)
+  assert.equal(r.fit.unusedPercent, 0)
+})
+
+test('upscaling is flagged, because that is when a wall looks soft', () => {
+  const up = aspectFit(1280, 720, 3840, 2160)
+  assert.equal(up.upscalingFit, true)
+  const down = aspectFit(3840, 2160, 1920, 1080)
+  assert.equal(down.upscalingFit, false)
+})
+
+test('aspect fit rejects a zero dimension', () => {
+  assert.equal(aspectFit(0, 1080, 1920, 1080), null)
+  assert.equal(aspectFit(1920, 1080, 1920, 0), null)
 })
