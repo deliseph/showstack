@@ -36,6 +36,7 @@ export const TOOL_GROUPS = [
   ['Access', ['flash', 'ada']],
   ['Content & timing', ['frame', 'pyro', 'storage']],
   ['Networking', ['subnet', 'fibre', 'sdi']],
+  ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb']],
   ['RF', ['im', 'rf']],
 ]
 
@@ -50,6 +51,8 @@ import {
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor, RDM_OVERHEAD_BYTES,
+  oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS, artnetDmx, artnetPoll, ARTNET_OPCODES,
+  rdmPacket, RDM_COMMAND_CLASSES, RDM_PIDS, mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, SACN_ACN_ID,
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
@@ -78,6 +81,7 @@ const MATH_SRC = [
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor,
+  oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
 ].map((f) => f.toString()).join('\n\n')
 
@@ -94,7 +98,15 @@ const NOTE_NAMES = ${JSON.stringify(NOTE_NAMES)};
 const MSC_FORMATS = ${JSON.stringify(MSC_FORMATS)};
 const MSC_COMMANDS = ${JSON.stringify(MSC_COMMANDS)};
 const STEREO_LIMIT_M = ${JSON.stringify(STEREO_LIMIT_M)};
-const RDM_OVERHEAD_BYTES = ${JSON.stringify(RDM_OVERHEAD_BYTES)};`
+const RDM_OVERHEAD_BYTES = ${JSON.stringify(RDM_OVERHEAD_BYTES)};
+const PJLINK_COMMANDS = ${JSON.stringify(PJLINK_COMMANDS)};
+const ARTNET_OPCODES = ${JSON.stringify(ARTNET_OPCODES)};
+const RDM_COMMAND_CLASSES = ${JSON.stringify(RDM_COMMAND_CLASSES)};
+const RDM_PIDS = ${JSON.stringify(RDM_PIDS)};
+const MMC_COMMANDS = ${JSON.stringify(MMC_COMMANDS)};
+const SACN_ACN_ID = ${JSON.stringify(SACN_ACN_ID)};
+const enc = new TextEncoder();
+const toHex = (bytes) => [...bytes].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');`
 
 /**
  * Everything on this page that is the same for every calculator: the finder,
@@ -391,6 +403,18 @@ display:inline-block;vertical-align:-1px}
 .sw b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;
 color:var(--ink-faint);padding:8px 10px 2px}
 .sw em{display:block;font-style:normal;font-family:var(--mono);font-size:12.5px;color:var(--ink);padding:0 10px 9px}
+.bytes{font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--ink-muted);
+background:var(--surface-sunken);border:1px solid var(--rule);border-radius:var(--r-sm);
+padding:10px 12px;margin:10px 0 0;overflow-x:auto;word-break:break-all}
+.bytes:empty{display:none}
+.midisend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.midisend select{min-height:44px;padding:0 10px;background:var(--panel2);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:7px;font-family:var(--mono);font-size:13px;max-width:100%}
+.midisend button{min-height:44px;padding:0 18px;border:1px solid var(--signal);border-radius:var(--r-pill);
+background:color-mix(in srgb,var(--signal) 14%,transparent);color:var(--signal);
+font-family:var(--mono);font-size:13px;cursor:pointer}
+.midisend button:hover{background:color-mix(in srgb,var(--signal) 24%,transparent)}
+.midisend span{font-family:var(--mono);font-size:12px;color:var(--ink-faint)}
 .fllist{margin:6px 0 8px;padding-left:18px}
 .fllist li{margin:3px 0;color:var(--ink-muted)}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
@@ -1206,6 +1230,100 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">SDI does not degrade &mdash; it works perfectly and then stops, which is why a run that was fine in the shop fails in the venue ten metres longer. Two facts set the cliff: coax loss rises with the square root of frequency, and the frequency that matters is half the bit rate. Take both cable numbers off the manufacturer&rsquo;s datasheet, at whatever frequency they quoted; every coax maker publishes them. The 20&nbsp;dB equalisation figure is what SMPTE writes down, and real receivers often do better, which is why the same cable gets quoted at different lengths by different people. A run inside 3&nbsp;dB of the budget is flagged: it works today and fails after somebody swaps a barrel in.</p>
 </div>
 </div>
+<div class="toolgroup">Protocol builders</div>
+<div class="toolgrid">
+<div class="tool wide" id="osc">
+  <h3>OSC message</h3>
+  <div class="row">
+    <div class="field"><label for="os-addr">Address pattern</label><input id="os-addr" type="text" value="/eos/cue/1/fire" spellcheck="false" style="width:230px"></div>
+    <div class="field"><label for="os-args">Arguments (comma separated)</label><input id="os-args" type="text" value="" spellcheck="false" placeholder="1, 0.5, go" style="width:200px"></div>
+  </div>
+  <div class="out" id="os-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="os-hex"></div>
+  <p class="note">Four rules and everything follows. Strings are null-terminated then padded with more nulls to a multiple of four. Numbers are big-endian, four bytes. The type tag string starts with a comma and names each argument in order. And the whole message is <b>always</b> a multiple of four bytes &mdash; which is why an OSC dump is full of trailing zeros that mean nothing. Integers are sent as <span class="mono">i</span>, anything with a decimal point as <span class="mono">f</span>, everything else as <span class="mono">s</span>. Note that <span class="mono">T</span>, <span class="mono">F</span>, <span class="mono">N</span> and <span class="mono">I</span> carry a tag and no bytes at all.</p>
+</div>
+<div class="tool wide" id="pjlink">
+  <h3>PJLink projector command</h3>
+  <div class="row">
+    <div class="field"><label for="pj-cmd">Command</label><select id="pj-cmd"></select></div>
+    <div class="field"><label for="pj-param">Parameter</label><input id="pj-param" type="text" value="?" spellcheck="false" style="width:110px"></div>
+    <div class="field"><label for="pj-chal">Challenge from projector</label><input id="pj-chal" type="text" placeholder="498e4a67" spellcheck="false" style="width:150px"></div>
+    <div class="field"><label for="pj-pass">Password</label><input id="pj-pass" type="text" spellcheck="false" autocomplete="off" style="width:150px"></div>
+  </div>
+  <div class="out" id="pj-out" role="status" aria-live="polite"></div>
+  <p class="note">TCP port 4352, one line per command: per cent, class, four upper-case letters, space, parameter, carriage return. On connect the projector greets you with <span class="mono">PJLINK 0</span> (no security) or <span class="mono">PJLINK 1 &lt;8 hex digits&gt;</span> &mdash; paste those digits and your password above and the MD5 digest is prepended to the <em>first</em> command only, with no separator. Nothing typed here leaves your device; the password is used to compute a hash locally and is never sent anywhere or stored.</p>
+</div>
+<div class="tool wide" id="artnet">
+  <h3>Art-Net packet</h3>
+  <div class="row">
+    <div class="field"><label for="an-kind">Packet</label><select id="an-kind">
+      <option value="dmx">ArtDmx &mdash; level data</option>
+      <option value="poll">ArtPoll &mdash; find every node</option>
+    </select></div>
+    <div class="field"><label for="an-net">Net</label><input id="an-net" type="number" min="0" max="127" value="0" inputmode="numeric" style="width:90px"></div>
+    <div class="field"><label for="an-sub">Subnet</label><input id="an-sub" type="number" min="0" max="15" value="0" inputmode="numeric" style="width:90px"></div>
+    <div class="field"><label for="an-uni">Universe</label><input id="an-uni" type="number" min="0" max="15" value="0" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="an-slots">First slots</label><input id="an-slots" type="text" value="255, 128, 0" spellcheck="false" style="width:150px"></div>
+  </div>
+  <div class="out" id="an-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="an-hex"></div>
+  <p class="note">Eighteen header bytes and then the slots. Two things trip people: the opcode is sent <b>low byte first</b> while the data length in the same header is sent <b>high byte first</b>, which is a real inconsistency in the protocol rather than a mistake in your reading. And the sequence number is not a counter of slots &mdash; it is 1 to 255 with 0 meaning sequencing is off, used by a receiver to drop packets that overtook each other. ArtPoll is the broadcast that makes every node reply with ArtPollReply, which is how a controller builds its node list.</p>
+</div>
+<div class="tool wide" id="sacn">
+  <h3>sACN packet</h3>
+  <div class="row">
+    <div class="field"><label for="sa-uni">Universe</label><input id="sa-uni" type="number" min="1" max="63999" value="1" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="sa-pri">Priority</label><input id="sa-pri" type="number" min="0" max="200" value="100" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="sa-name">Source name</label><input id="sa-name" type="text" value="showstack" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="sa-slots">Slots</label><input id="sa-slots" type="number" min="0" max="512" value="512" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out" id="sa-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="sa-hex"></div>
+  <p class="note">Three nested PDUs &mdash; root, framing, DMP &mdash; each opening with a combined flags-and-length field where the top nibble is <span class="mono">0x7</span> and the remaining twelve bits are that PDU&rsquo;s own length. Getting one of the three wrong produces a packet some receivers accept and others silently drop, which is a miserable fault to chase. A full universe is 638 bytes: root 622, framing 600, DMP 523. The <b>CID identifies the source, not the universe</b>, and must not change between packets &mdash; a device generating a fresh one each time looks like unlimited new sources and breaks priority arbitration.</p>
+</div>
+<div class="tool wide" id="rdmpkt">
+  <h3>RDM packet</h3>
+  <div class="row">
+    <div class="field"><label for="rp-dest">Destination UID</label><input id="rp-dest" type="text" value="FFFF:FFFFFFFF" spellcheck="false" style="width:170px"></div>
+    <div class="field"><label for="rp-src">Controller UID</label><input id="rp-src" type="text" value="0001:00000001" spellcheck="false" style="width:170px"></div>
+    <div class="field"><label for="rp-cc">Command</label><select id="rp-cc"></select></div>
+    <div class="field"><label for="rp-pid">Parameter</label><select id="rp-pid"></select></div>
+  </div>
+  <div class="out" id="rp-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="rp-hex"></div>
+  <p class="note">Twenty-four header bytes, then parameter data, then a two-byte additive checksum &mdash; a plain sum of every preceding byte, which catches exactly the single-bit errors a marginal RS-485 line produces. The message length field counts everything <b>up to but not including</b> the checksum, which is the off-by-two everybody hits once. Start code <span class="mono">0xCC</span> is what tells a fixture this is management traffic rather than levels. <a href="/learn/dmx/">How RDM answers back on a one-way wire &rarr;</a></p>
+</div>
+<div class="tool wide" id="mscb">
+  <h3>MIDI Show Control &amp; Machine Control</h3>
+  <div class="row">
+    <div class="field"><label for="mb-kind">Message</label><select id="mb-kind">
+      <option value="msc">MSC &mdash; cue control</option>
+      <option value="mmc">MMC &mdash; transport</option>
+    </select></div>
+    <div class="field"><label for="mb-dev">Device ID</label><input id="mb-dev" type="number" min="0" max="127" value="127" inputmode="numeric" style="width:110px"></div>
+    <div class="field" id="mb-mscf"><label for="mb-fmt">Command format</label><select id="mb-fmt">
+      <option value="1">Lighting (General)</option>
+      <option value="2">Moving Lights</option>
+      <option value="127">All-types</option>
+    </select></div>
+    <div class="field" id="mb-msccmd"><label for="mb-cmd">Command</label><select id="mb-cmd">
+      <option value="1">GO</option><option value="2">STOP</option><option value="3">RESUME</option>
+    </select></div>
+    <div class="field" id="mb-cuef"><label for="mb-cue">Cue</label><input id="mb-cue" type="text" value="1" spellcheck="false" style="width:90px"></div>
+    <div class="field" id="mb-listf"><label for="mb-list">List</label><input id="mb-list" type="text" value="" spellcheck="false" style="width:90px"></div>
+    <div class="field" id="mb-mmcf" hidden><label for="mb-mmc">Transport</label><select id="mb-mmc"></select></div>
+  </div>
+  <div class="out" id="mb-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="mb-hex"></div>
+  <div class="midisend" id="mb-send" hidden>
+    <select id="mb-port" aria-label="MIDI output"></select>
+    <button type="button" id="mb-go">Send it</button>
+    <span id="mb-status"></span>
+  </div>
+  <p class="note">The one thing on this page that can actually leave the machine. Browsers implement Web MIDI, so with a MIDI interface attached these bytes can be transmitted for real &mdash; your browser will ask permission first, including for system exclusive, which both of these are. Everything stays local: no network, nothing recorded. MSC cue data is <b>ASCII digits</b>, so cue 12 is <span class="mono">31 32</span> and not <span class="mono">0C</span>, which is why a cue number can contain a decimal point. A receiver acts only if <em>both</em> its device ID and its command format match, and a format mismatch is the commonest reason MSC appears to do nothing at all.</p>
+</div>
+</div>
+
 <div class="toolgroup">RF</div>
 <div class="toolgrid">
 <div class="tool wide" id="im">
@@ -2435,6 +2553,194 @@ function hdRender(){
 }
 ["#hd-a","#hd-3","#hd-5","#hd-7","#hd-9"].forEach(id => $(id).addEventListener("input", hdRender));
 hdRender();
+
+/* ---- protocol builders --------------------------------------------------
+   These produce the exact octets a protocol puts on the wire. A browser
+   cannot open a raw TCP or UDP socket, so for everything except MIDI the
+   deliverable is the bytes and a command line, not a transmission. Being
+   clear about that is the point: a tool that pretended to send would be
+   worse than one that hands you something you can actually run. */
+const bytesBlock = (hex, extra) =>
+  '<div class="lbl">' + extra + '</div>' + hex;
+
+function osRender(){
+  const raw = $("#os-args").value.trim();
+  const args = raw ? raw.split(",").map(t => {
+    const v = t.trim();
+    if (v === "") return "";
+    /* A bare number is an int if it has no decimal point, a float if it does.
+       Everything else is a string. Doubled escapes because this is inside a
+       template literal: a single backslash-d collapses to a plain d, and the
+       regex then silently matches nothing instead of failing loudly. */
+    return /^-?\\d+$/.test(v) ? parseInt(v, 10) : /^-?\\d*\\.\\d+$/.test(v) ? parseFloat(v) : v;
+  }) : [];
+  const m = oscMessage($("#os-addr").value.trim(), args);
+  if(!m){ $("#os-out").innerHTML = '<span class="err">An OSC address has to start with a slash.</span>'; $("#os-hex").textContent = ""; return; }
+  /* Single quotes around any string that contains an HTML attribute. This is
+     the third time a double-quoted one has killed the page script. */
+  $("#os-out").innerHTML = '<b>' + m.length + '</b> bytes &middot; type tags <span class="mono">' + m.typeTags
+    + '</span> &middot; <span class="dim">' + m.transport + '</span>';
+  $("#os-hex").innerHTML = bytesBlock(m.hex, "the message, on the wire");
+}
+["#os-addr","#os-args"].forEach(id => $(id).addEventListener("input", osRender));
+
+function pjRender(){
+  const p = pjlinkCommand($("#pj-cmd").value, $("#pj-param").value.trim() || "?", {
+    challenge: $("#pj-chal").value.trim() || null,
+    password: $("#pj-pass").value || null,
+  });
+  if(!p){ $("#pj-out").innerHTML = '<span class="err">Check the command, the parameter, and that the challenge is eight hex digits.</span>'; return; }
+  let html = "<b>" + p.label + "</b> " + (p.isQuery ? "query" : "set")
+    /* Doubled escapes: this string is inside a template literal, so a single
+       backslash-r would become a real carriage return in the emitted page and
+       leave the regex literal unterminated. */
+    + ' &middot; <span class="mono">' + p.line.replace(/\\r/g, '\\\\r') + '</span>';
+  if (p.authDigest) html += '<br><span class="dim">digest ' + p.authDigest + " prepended</span>";
+  /* The placeholder is written in angle brackets, which innerHTML eats as a
+     tag. Escape it or the reader gets "nc 4352" with no host. */
+  html += '<br><span class="mono">' + p.netcat.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
+  html += '<br><span class="dim">' + p.note + "</span>";
+  $("#pj-out").innerHTML = html;
+}
+["#pj-cmd","#pj-param","#pj-chal","#pj-pass"].forEach(id => $(id).addEventListener("input", pjRender));
+$("#pj-cmd").addEventListener("change", pjRender);
+
+function anRender(){
+  const kind = $("#an-kind").value;
+  if (kind === "poll") {
+    const p = artnetPoll();
+    $("#an-out").innerHTML = "<b>ArtPoll</b> &middot; " + p.length + " bytes &middot; "
+      + p.transport + '<br><span class="dim">' + p.expects + "</span>";
+    $("#an-hex").innerHTML = bytesBlock(p.hex, "the whole packet");
+    return;
+  }
+  const slots = $("#an-slots").value.split(",").map(t => parseInt(t.trim(), 10)).filter(n => Number.isInteger(n));
+  const a = artnetDmx(Number($("#an-net").value), Number($("#an-sub").value), Number($("#an-uni").value), slots);
+  if(!a){ $("#an-out").innerHTML = '<span class="err">Net 0&ndash;127, subnet and universe 0&ndash;15, slot values 0&ndash;255.</span>'; $("#an-hex").textContent = ""; return; }
+  $("#an-out").innerHTML = "<b>ArtDmx</b> port address <b>" + a.portAddress + "</b> &middot; "
+    + a.slots + " slots sent as " + a.dataLength + " &middot; " + a.length + " bytes &middot; "
+    + a.transport + '<br><span class="dim">' + a.note + "</span>";
+  $("#an-hex").innerHTML = bytesBlock(a.hex, "18-byte header, then the slots");
+}
+["#an-kind","#an-net","#an-sub","#an-uni","#an-slots"].forEach(id => $(id).addEventListener("input", anRender));
+$("#an-kind").addEventListener("change", anRender);
+
+function saRender(){
+  const n = Math.max(0, Math.min(512, Number($("#sa-slots").value) || 0));
+  const p = sacnPacket(Number($("#sa-uni").value), new Array(n).fill(0), {
+    priority: Number($("#sa-pri").value), sourceName: $("#sa-name").value,
+  });
+  if(!p){ $("#sa-out").innerHTML = '<span class="err">Universe 1&ndash;63999, priority 0&ndash;200, source name under 64 bytes.</span>'; $("#sa-hex").textContent = ""; return; }
+  $("#sa-out").innerHTML = "<b>" + p.length + "</b> bytes &middot; root PDU " + p.rootPduLength
+    + ", framing " + p.framingPduLength + ", DMP " + p.dmpPduLength
+    + "<br>" + p.transport + '<br><span class="dim">' + p.note + "</span>";
+  $("#sa-hex").innerHTML = bytesBlock(p.hex, "root layer, framing layer, DMP layer");
+}
+["#sa-uni","#sa-pri","#sa-name","#sa-slots"].forEach(id => $(id).addEventListener("input", saRender));
+
+function rpRender(){
+  const r = rdmPacket({
+    destination: $("#rp-dest").value, source: $("#rp-src").value,
+    commandClass: Number($("#rp-cc").value), pid: Number($("#rp-pid").value),
+  });
+  if(!r){ $("#rp-out").innerHTML = '<span class="err">Both UIDs need to be 48 bits, like 4C55:12345678.</span>'; $("#rp-hex").textContent = ""; return; }
+  $("#rp-out").innerHTML = "<b>" + r.commandClass + "</b> " + r.pid
+    + " &middot; message length " + r.messageLength + ", checksum 0x" + r.checksumHex
+    + " &middot; " + r.length + " bytes total"
+    + '<br><span class="dim">' + r.note + "</span>";
+  $("#rp-hex").innerHTML = bytesBlock(r.hex, "starts 0xCC, ends with an additive checksum");
+}
+["#rp-dest","#rp-src","#rp-cc","#rp-pid"].forEach(id => $(id).addEventListener("input", rpRender));
+["#rp-cc","#rp-pid"].forEach(id => $(id).addEventListener("change", rpRender));
+
+let mbBytes = null;
+function mbRender(){
+  const kind = $("#mb-kind").value;
+  const isMsc = kind === "msc";
+  ["#mb-mscf","#mb-msccmd","#mb-cuef","#mb-listf"].forEach(id => { $(id).hidden = !isMsc });
+  $("#mb-mmcf").hidden = isMsc;
+  const device = Number($("#mb-dev").value);
+  const m = isMsc
+    ? mscCommand({ device, format: Number($("#mb-fmt").value), command: Number($("#mb-cmd").value),
+        cue: $("#mb-cue").value, list: $("#mb-list").value })
+    : mmcCommand(Number($("#mb-mmc").value), { device });
+  if(!m){
+    $("#mb-out").innerHTML = '<span class="err">' + (isMsc
+      ? "A cue number is digits and dots only, and the device ID is 0&ndash;127."
+      : "Check the transport command and the device ID.") + "</span>";
+    $("#mb-hex").textContent = ""; mbBytes = null; return;
+  }
+  mbBytes = m.bytes;
+  $("#mb-out").innerHTML = "<b>" + m.command + "</b>"
+    + (isMsc ? " to " + m.format : "") + " &middot; device " + m.device
+    + " &middot; " + m.length + " bytes"
+    + '<br><span class="dim">' + m.note + "</span>";
+  $("#mb-hex").innerHTML = bytesBlock(m.hex, "system exclusive, F0 to F7");
+}
+["#mb-kind","#mb-dev","#mb-fmt","#mb-cmd","#mb-cue","#mb-list","#mb-mmc"].forEach(id => $(id).addEventListener("input", mbRender));
+["#mb-kind","#mb-fmt","#mb-cmd","#mb-mmc"].forEach(id => $(id).addEventListener("change", mbRender));
+
+/* Populate the selects from the same tables the encoders use, so a name can
+   never drift from the byte it stands for. */
+(function(){
+  const opt = (v, label, sel) => '<option value="' + v + '"' + (sel ? " selected" : "") + ">" + label + "</option>";
+  $("#pj-cmd").innerHTML = Object.keys(PJLINK_COMMANDS)
+    .map(k => opt(k, k + " — " + PJLINK_COMMANDS[k].label, k === "POWR")).join("");
+  $("#rp-cc").innerHTML = Object.keys(RDM_COMMAND_CLASSES)
+    .filter(k => Number(k) === 0x20 || Number(k) === 0x30 || Number(k) === 0x10)
+    .map(k => opt(k, RDM_COMMAND_CLASSES[k], Number(k) === 0x20)).join("");
+  $("#rp-pid").innerHTML = Object.keys(RDM_PIDS)
+    .map(k => opt(k, RDM_PIDS[k], Number(k) === 0x0060)).join("");
+  $("#mb-mmc").innerHTML = Object.keys(MMC_COMMANDS)
+    .map(k => opt(k, MMC_COMMANDS[k], Number(k) === 2)).join("");
+  osRender(); pjRender(); anRender(); saRender(); rpRender(); mbRender();
+})();
+
+/* ---- and the one that can actually leave the machine ---------------------
+   Web MIDI is real output to real hardware, so it asks for permission and it
+   asks specifically for system exclusive, which is what both of these are.
+   The panel stays hidden where the API does not exist rather than offering
+   something that cannot work. */
+(function(){
+  const panel = document.getElementById("mb-send");
+  if (!panel || !navigator.requestMIDIAccess) return;
+  panel.hidden = false;
+  const sel = document.getElementById("mb-port");
+  const status = document.getElementById("mb-status");
+  const go = document.getElementById("mb-go");
+  let access = null;
+
+  function fillPorts(){
+    const outs = [...access.outputs.values()];
+    sel.innerHTML = outs.length
+      ? outs.map(o => '<option value="' + o.id + '">' + (o.name || o.id) + "</option>").join("")
+      : '<option value="">no MIDI outputs found</option>';
+    status.textContent = outs.length ? outs.length + " output" + (outs.length === 1 ? "" : "s") : "connect an interface";
+  }
+
+  go.addEventListener("click", async function(){
+    if (!mbBytes) { status.textContent = "nothing to send"; return; }
+    try {
+      if (!access) {
+        status.textContent = "asking permission…";
+        access = await navigator.requestMIDIAccess({ sysex: true });
+        access.onstatechange = fillPorts;
+        fillPorts();
+        if (![...access.outputs.values()].length) return;
+      }
+      const port = access.outputs.get(sel.value);
+      if (!port) { status.textContent = "pick an output"; return; }
+      port.send(mbBytes);
+      status.textContent = "sent " + mbBytes.length + " bytes to " + (port.name || port.id);
+    } catch (err) {
+      /* Denied permission, an insecure context, or a browser without sysex.
+         Say which rather than failing silently. */
+      status.textContent = String(err && err.name === "SecurityError"
+        ? "permission denied — MIDI needs HTTPS and your consent"
+        : "unavailable here: " + (err && err.message ? err.message : err));
+    }
+  });
+})();
 
 /* ---- offline ------------------------------------------------------------
    The panel only appears once a controller is actually running. Until then
