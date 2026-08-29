@@ -1,0 +1,69 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: aes3
+name: AES3
+aka:
+  - AES/EBU
+  - AES-3
+  - IEC 60958 Type I
+category: audio-transport
+summary: >-
+  Two channels of uncompressed digital audio down one balanced pair, self-clocking,
+  on the XLR connector everything else on the stage already uses. It is the reason
+  a digital feed can travel a mic line, and the reason people plug digital into
+  analogue inputs by mistake.
+
+transport:
+  - other
+
+openness: published-paid
+spec_url:
+  url: https://www.aes.org/publications/standards/
+  label: AES Standards catalogue
+steward: AES (Audio Engineering Society), with the EBU
+status: current
+first_published: 1985
+
+typical_use:
+  - Two-channel digital feeds between consoles, processors and amplifiers
+  - Digital output from playback machines and broadcast equipment
+  - The transport under many older matrix and distribution systems
+
+gotchas:
+  - >-
+    The cable is 110 Ω, not the 45–75 Ω of a normal mic line. A standard XLR
+    cable often works over a short run and then fails as the run gets longer,
+    which makes it one of the more misleading intermittent faults on a stage.
+  - >-
+    It is self-clocking, so the receiver locks to the sender. Two devices that
+    are both trying to be clock master produce dropouts rather than an error.
+  - >-
+    S/PDIF carries the same data format on 75 Ω coax at a much lower voltage.
+    They interconvert, but not by rewiring a connector.
+  - >-
+    Plugging AES3 into an analogue input sends a wideband square wave into a
+    preamp. It is loud, it is unpleasant, and on some systems it is expensive.
+
+confidence: reported
+tags:
+  - audio
+  - digital
+  - aes
+  - xlr
+
+sources:
+  - title: AES3 — Serial transmission format for two-channel linearly represented digital audio data
+    url: https://www.aes.org/publications/standards/
+    publisher: Audio Engineering Society
+    primary: true
+  - title: Interfacing AES3 and S/PDIF (RaneNote 149)
+    url: https://www.ranecommercial.com/legacy/note149.html
+    publisher: Rane Corporation
+  - title: IEC 60958 — Digital audio interface
+    url: https://webstore.iec.ch/
+    publisher: International Electrotechnical Commission
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

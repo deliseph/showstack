@@ -128,7 +128,7 @@ font-family:var(--mono);font-size:13px;color:var(--ink);text-shadow:0 1px 3px rg
 ${learnNav(esc, 'dmx')}
 <div class="lhero">
   <h2>DMX on the wire</h2>
-  <p class="lede">DMX512 is a 250 kbit/s serial signal on an <a href="/signals/media/">RS-485</a> bus, and almost everything that goes wrong with it is electrical rather than logical. Three questions, answered properly.</p>
+  <p class="lede">DMX512 is a 250 kbit/s serial signal on an <a href="/protocols/rs-485/">RS-485</a> bus, and almost everything that goes wrong with it is electrical rather than logical. Three questions, answered properly.</p>
 </div>
 
 ${S('Question one', 'Is one fixture one unit load?', [

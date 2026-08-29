@@ -7,6 +7,9 @@ vendor: Processing Foundation
 category: content-creation
 license: LGPL / GPL
 price_model: open-source
+repo:
+  url: https://github.com/processing/processing4
+  label: Processing 4 source
 status: current
 platforms:
 - windows

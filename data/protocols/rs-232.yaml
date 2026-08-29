@@ -1,0 +1,64 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rs-232
+name: RS-232
+aka:
+  - TIA-232
+  - EIA-232
+  - RS232
+  - Serial
+category: device-management
+summary: >-
+  Single-ended point-to-point serial signalling, and still the control input on
+  a large amount of installed projection, switching and audio gear. One driver,
+  one receiver, one cable, no addressing — which is exactly why it keeps
+  working long after the network around it has been replaced.
+
+transport:
+  - rs232
+
+openness: published-paid
+spec_url:
+  url: https://tiaonline.org/what-we-do/standards/
+  label: TIA standards catalogue
+steward: TIA (Telecommunications Industry Association)
+status: current
+
+typical_use:
+  - Projector and display control
+  - Matrix switchers and older audio processors
+  - Serial passthrough in control systems and HDBaseT extenders
+
+gotchas:
+  - >-
+    Single-ended and unbalanced: the signal is referenced to ground, so it has
+    none of the noise rejection of RS-422 or RS-485 and is limited to short
+    runs. It also means a ground difference between the two ends becomes part
+    of the signal.
+  - >-
+    Straight-through versus null-modem is still the first thing to check.
+    Two devices that both expect to be the DTE need their transmit and
+    receive swapped, and nothing about the connector tells you which is which.
+  - >-
+    Flow control is often the difference between working and not. A device
+    expecting hardware handshaking on a cable that carries only three wires
+    will accept the first command and then go quiet.
+  - >-
+    Baud, data bits, parity and stop bits all have to match at both ends, and
+    a mismatch produces plausible-looking garbage rather than silence.
+
+confidence: reported
+tags:
+  - serial
+  - control
+  - legacy
+
+sources:
+  - title: TIA-232-F — Interface Between Data Terminal Equipment and Data Circuit-Terminating Equipment Employing Serial Binary Data Interchange
+    url: https://tiaonline.org/what-we-do/standards/
+    publisher: Telecommunications Industry Association
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

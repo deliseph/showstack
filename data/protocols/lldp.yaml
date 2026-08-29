@@ -1,0 +1,56 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: lldp
+name: LLDP
+aka:
+  - Link Layer Discovery Protocol
+  - IEEE 802.1AB
+category: device-management
+summary: >-
+  Devices announcing themselves to their directly connected neighbours — name,
+  port, capabilities, and often PoE requirements. On a show network it is what
+  turns "which switch port is this node on" from a cable-tracing job into a
+  question the switch can answer.
+
+transport:
+  - ethernet-l2
+
+openness: open-published
+spec_url:
+  url: https://standards.ieee.org/ieee/802.1AB/
+  label: IEEE 802.1AB
+steward: IEEE
+status: current
+
+typical_use:
+  - Finding which port a device is plugged into without tracing the cable
+  - PoE power negotiation beyond the basic hardware classes
+  - Documenting an installed network from the switches rather than from memory
+
+gotchas:
+  - >-
+    It only sees direct neighbours. An unmanaged switch in the middle of a run
+    makes several devices appear on one port, which is usually the first sign
+    somebody added a switch nobody drew.
+  - >-
+    Not every device sends it, and some send it only when asked. An absent
+    neighbour is not proof of an absent device.
+  - >-
+    CDP is Cisco's equivalent and the two do not interoperate. A network with
+    both needs both enabled to see the whole picture.
+
+confidence: reported
+tags:
+  - network
+  - discovery
+  - switching
+
+sources:
+  - title: IEEE 802.1AB — Station and Media Access Control Connectivity Discovery
+    url: https://standards.ieee.org/ieee/802.1AB/
+    publisher: IEEE
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

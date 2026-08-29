@@ -16,6 +16,9 @@ platforms:
 - macos
 - linux
 - embedded
+repo:
+  url: https://github.com/pure-data/pure-data
+  label: Pure Data source
 status: current
 summary: >-
   The open-source ancestor of the same dataflow idea, by the author of Max. Smaller, plainer and

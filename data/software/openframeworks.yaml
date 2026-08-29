@@ -7,6 +7,9 @@ vendor: openFrameworks community
 category: content-creation
 license: MIT
 price_model: open-source
+repo:
+  url: https://github.com/openframeworks/openFrameworks
+  label: openFrameworks source
 status: current
 platforms:
 - windows

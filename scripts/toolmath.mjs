@@ -1246,3 +1246,334 @@ export function stereoParallax(objectDistanceM, convergenceM, screenWidthM, inte
     withinComfort: percentOfWidth <= 1 && percentOfWidth >= -2,
   }
 }
+
+/**
+ * Colour temperature correction, in mireds.
+ *
+ * Kelvin is the wrong scale to do this arithmetic on: the perceptual step from
+ * 3200 K to 3400 K is much larger than the step from 9000 K to 9200 K, so a
+ * gel cannot have a fixed effect stated in kelvin. The mired — micro reciprocal
+ * degree, 10^6 / K — is the scale on which correction IS fixed, which is why
+ * every gel manufacturer prints a mired shift on the swatch book rather than a
+ * kelvin one.
+ *
+ *   mired = 1e6 / kelvin
+ *   shift = mired(target) - mired(source)
+ *
+ * A positive shift warms (CTO, orange); a negative shift cools (CTB, blue).
+ * The same gel does the same mired shift whatever you point it at, which is
+ * the whole reason the unit exists.
+ *
+ * Gel values are the published Lee mired shifts. Rosco's equivalents differ
+ * slightly and are named separately where they do.
+ */
+export const CORRECTION_GELS = [
+  { id: '201', name: 'Full CTB', shift: -137 },
+  { id: '202', name: 'Half CTB', shift: -78 },
+  { id: '203', name: 'Quarter CTB', shift: -35 },
+  { id: '218', name: 'Eighth CTB', shift: -18 },
+  { id: '223', name: 'Eighth CTO', shift: 26 },
+  { id: '206', name: 'Quarter CTO', shift: 64 },
+  { id: '205', name: 'Half CTO', shift: 109 },
+  { id: '204', name: 'Full CTO', shift: 159 },
+]
+
+export function miredShift(sourceK, targetK) {
+  const s = Number(sourceK), t = Number(targetK)
+  if (!Number.isFinite(s) || s <= 0) return null
+  if (!Number.isFinite(t) || t <= 0) return null
+  const sourceMired = 1e6 / s
+  const targetMired = 1e6 / t
+  const shift = targetMired - sourceMired
+  const r1 = (x) => Math.round(x * 10) / 10
+  // Nearest single gel, and the best pair, because a swatch book is discrete
+  // and the number you calculated almost never lands on one.
+  let best = null
+  for (const g of CORRECTION_GELS) {
+    const err = Math.abs(g.shift - shift)
+    if (!best || err < best.error) best = { ...g, error: r1(err) }
+  }
+  // Only offer a stack if it actually beats the single gel. Two sheets in
+  // front of a lamp costs a stop and a bit of texture, so a pair that is no
+  // better than one gel is not an answer, it is extra work.
+  let pair = null
+  for (const a of CORRECTION_GELS) {
+    for (const b of CORRECTION_GELS) {
+      const err = Math.abs(a.shift + b.shift - shift)
+      if (!pair || err < pair.error) pair = { a, b, sum: a.shift + b.shift, error: r1(err) }
+    }
+  }
+  if (pair && pair.error >= best.error) pair = null
+  return {
+    sourceK: s,
+    targetK: t,
+    sourceMired: r1(sourceMired),
+    targetMired: r1(targetMired),
+    shift: r1(shift),
+    // Which way the correction goes, in the language printed on the gel.
+    direction: shift > 0 ? 'warmer (CTO)' : shift < 0 ? 'cooler (CTB)' : 'no correction',
+    nearestGel: best,
+    nearestPair: pair,
+    // The swatch book is discrete and the number you calculated almost never
+    // lands on one. Past about 15 mired the eye starts to see the residual,
+    // so say so rather than presenting a near-miss as the answer.
+    gelIsClose: best.error <= 15,
+    // Where a given gel actually lands the source, which is the check people
+    // do after pulling one off the shelf.
+    resultOf: (gelShift) => {
+      const g = Number(gelShift)
+      if (!Number.isFinite(g)) return null
+      const m = sourceMired + g
+      return m > 0 ? Math.round(1e6 / m) : null
+    },
+  }
+}
+
+/**
+ * Fibre optic loss budget.
+ *
+ * A fibre run either has enough light left at the far end or it does not, and
+ * the arithmetic is a subtraction: start with the transmitter's launch power
+ * minus the receiver's sensitivity, then spend that budget on the length of
+ * the glass, every connector pair, and every splice.
+ *
+ * Attenuation figures are wavelength-dependent and this is why a run that
+ * works at 1310 nm can fail at 850 nm over the same glass.
+ *
+ * Typical values (TIA-568 / FOA guidance):
+ *   OM3/OM4 multimode  @850nm  ~3.0 dB/km   @1300nm ~1.0 dB/km
+ *   OS2 singlemode     @1310nm ~0.4 dB/km   @1550nm ~0.3 dB/km
+ *   connector pair     0.3 dB typical, 0.75 dB is the TIA maximum
+ *   fusion splice      0.1 dB, mechanical splice 0.3 dB
+ */
+export const FIBRE_ATTENUATION = {
+  'om3-850': { label: 'OM3/OM4 multimode, 850 nm', dbPerKm: 3.0 },
+  'om3-1300': { label: 'OM3/OM4 multimode, 1300 nm', dbPerKm: 1.0 },
+  'os2-1310': { label: 'OS2 singlemode, 1310 nm', dbPerKm: 0.4 },
+  'os2-1550': { label: 'OS2 singlemode, 1550 nm', dbPerKm: 0.3 },
+}
+
+export function fibreLossBudget(lengthM, fibreType, connectorPairs = 2, splices = 0, opts = {}) {
+  const len = Number(lengthM)
+  const f = FIBRE_ATTENUATION[fibreType]
+  const conns = Number(connectorPairs)
+  const spl = Number(splices)
+  if (!Number.isFinite(len) || len < 0) return null
+  if (!f) return null
+  if (!Number.isFinite(conns) || conns < 0) return null
+  if (!Number.isFinite(spl) || spl < 0) return null
+  const connectorLoss = Number(opts.connectorLoss ?? 0.3)
+  const spliceLoss = Number(opts.spliceLoss ?? 0.1)
+  // Link budget: how much loss the optics tolerate. Default is a common
+  // short-reach SFP figure; real budgets come from the module's datasheet.
+  const budget = Number(opts.linkBudgetDb ?? 8)
+  const r2 = (x) => Math.round(x * 100) / 100
+  const fibreLoss = (len / 1000) * f.dbPerKm
+  const connLoss = conns * connectorLoss
+  const splLoss = spl * spliceLoss
+  const total = fibreLoss + connLoss + splLoss
+  return {
+    lengthM: len,
+    fibre: f.label,
+    fibreLossDb: r2(fibreLoss),
+    connectorLossDb: r2(connLoss),
+    spliceLossDb: r2(splLoss),
+    totalLossDb: r2(total),
+    linkBudgetDb: r2(budget),
+    marginDb: r2(budget - total),
+    ok: total <= budget,
+    // A run with almost no margin passes on the day and fails after a
+    // re-terminated connector or a dirty end face, so this is the number
+    // worth looking at rather than the pass/fail.
+    thin: budget - total < 3 && total <= budget,
+    // How far the same construction could go before running out.
+    maxLengthM: f.dbPerKm > 0
+      ? Math.max(0, Math.round(((budget - connLoss - splLoss) / f.dbPerKm) * 1000))
+      : null,
+  }
+}
+
+/**
+ * Heat load from equipment, and what it costs to cool.
+ *
+ * Every watt a lighting rig, an amplifier rack or a media server draws ends up
+ * as heat in the room — near enough all of it, because the light and sound
+ * that leave are a rounding error against the input power. That is why a
+ * lighting designer's rig plot is also an HVAC problem, and why a rehearsal
+ * room with the house lights up gets uncomfortable long before anybody blames
+ * the lights.
+ *
+ *   1 W = 3.412 BTU/hr
+ *   1 ton of refrigeration = 12 000 BTU/hr = 3.517 kW
+ */
+export function heatLoad(watts, opts = {}) {
+  const w = Number(watts)
+  if (!Number.isFinite(w) || w < 0) return null
+  // People are a real load in a full room: roughly 100 W sensible each while
+  // seated, more when they are dancing.
+  const people = Number(opts.people ?? 0)
+  const perPerson = Number(opts.wattsPerPerson ?? 100)
+  const peopleW = Number.isFinite(people) && people > 0 ? people * perPerson : 0
+  const totalW = w + peopleW
+  const btuPerHour = totalW * 3.412
+  const tons = btuPerHour / 12000
+  const r = (x, n = 0) => { const p = 10 ** n; return Math.round(x * p) / p }
+  return {
+    equipmentW: w,
+    peopleW: r(peopleW),
+    totalW: r(totalW),
+    btuPerHour: r(btuPerHour),
+    kwThermal: r(totalW / 1000, 2),
+    tonsOfCooling: r(tons, 2),
+    // Air volume needed for a given temperature rise, which is the question a
+    // production electrician actually asks about a dimmer room or a rack case.
+    // Q = P / (rho * cp * dT); 1.2 kg/m3, 1005 J/kg.K at room conditions.
+    airflowM3PerHourFor: (deltaC) => {
+      const dt = Number(deltaC)
+      if (!Number.isFinite(dt) || dt <= 0) return null
+      return r((totalW / (1.2 * 1005 * dt)) * 3600)
+    },
+    airflowCfmFor: (deltaC) => {
+      const dt = Number(deltaC)
+      if (!Number.isFinite(dt) || dt <= 0) return null
+      return r(((totalW / (1.2 * 1005 * dt)) * 3600) * 0.588578)
+    },
+  }
+}
+
+/**
+ * Video storage and bitrate.
+ *
+ * Two questions, one division. How much disk does this shoot need, and how
+ * long will this card last. The trap is that vendors quote drives in decimal
+ * gigabytes and operating systems report binary gibibytes, so a "1 TB" card
+ * holds 931 GiB and the difference is a whole afternoon of recording.
+ */
+export function videoStorage(bitrateMbps, minutes, opts = {}) {
+  const br = Number(bitrateMbps)
+  const min = Number(minutes)
+  if (!Number.isFinite(br) || br <= 0) return null
+  if (!Number.isFinite(min) || min < 0) return null
+  const streams = Number(opts.streams ?? 1)
+  if (!Number.isFinite(streams) || streams <= 0) return null
+  const totalMbps = br * streams
+  const seconds = min * 60
+  const megabits = totalMbps * seconds
+  const gigabytesDecimal = megabits / 8 / 1000
+  const gibibytes = megabits / 8 / 1024
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    bitrateMbps: br,
+    streams,
+    totalMbps: r2(totalMbps),
+    minutes: min,
+    gigabytes: r2(gigabytesDecimal),
+    gibibytes: r2(gibibytes),
+    terabytes: r2(gigabytesDecimal / 1000),
+    // The other direction: how long a card or array lasts at this rate.
+    minutesForGb: (gb) => {
+      const g = Number(gb)
+      if (!Number.isFinite(g) || g <= 0) return null
+      return r2((g * 1000 * 8) / totalMbps / 60)
+    },
+    // Sustained write the media has to keep up with, which is the spec that
+    // actually decides whether a card drops frames.
+    writeMBps: r2(totalMbps / 8),
+  }
+}
+
+/**
+ * Battery runtime.
+ *
+ * Wireless packs, comms belt packs, and anything on a V-lock. The arithmetic
+ * is trivial; what people get wrong is using the printed capacity as if all of
+ * it were usable. It is not: you lose some to the cutoff voltage, some to
+ * cold, and a lithium pack that has done 300 shows is not the pack on the
+ * label any more.
+ */
+export function batteryRuntime(capacityWh, drawW, opts = {}) {
+  const cap = Number(capacityWh)
+  const draw = Number(drawW)
+  if (!Number.isFinite(cap) || cap <= 0) return null
+  if (!Number.isFinite(draw) || draw <= 0) return null
+  // Fraction of the nameplate you can actually use before the device cuts out.
+  const usable = Number(opts.usableFraction ?? 0.8)
+  const r2 = (x) => Math.round(x * 100) / 100
+  const idealH = cap / draw
+  const realH = (cap * usable) / draw
+  return {
+    capacityWh: cap,
+    drawW: draw,
+    usableFraction: usable,
+    idealHours: r2(idealH),
+    hours: r2(realH),
+    minutes: Math.round(realH * 60),
+    // Show call is the number that matters: does it get through the show plus
+    // the notes session, or do you need a swap at interval?
+    coversHours: (h) => {
+      const n = Number(h)
+      if (!Number.isFinite(n) || n <= 0) return null
+      return realH >= n
+    },
+    packsForHours: (h) => {
+      const n = Number(h)
+      if (!Number.isFinite(n) || n <= 0) return null
+      return Math.ceil(n / realH)
+    },
+  }
+}
+
+/**
+ * mAh at a nominal voltage, since that is how most packs are labelled.
+ */
+export function whFromMah(mah, volts) {
+  const m = Number(mah), v = Number(volts)
+  if (!Number.isFinite(m) || m <= 0) return null
+  if (!Number.isFinite(v) || v <= 0) return null
+  return Math.round(((m / 1000) * v) * 100) / 100
+}
+
+/**
+ * Fitting one aspect ratio inside another.
+ *
+ * Every projector, LED wall and stream has this problem: the content is one
+ * shape and the surface is another. Fit letterboxes it and wastes surface;
+ * fill crops it and loses content. The bar sizes are what a designer needs,
+ * because that is the dead area they have to either mask or design around.
+ */
+export function aspectFit(contentW, contentH, screenW, screenH) {
+  const cw = Number(contentW), ch = Number(contentH)
+  const sw = Number(screenW), sh = Number(screenH)
+  if (![cw, ch, sw, sh].every((n) => Number.isFinite(n) && n > 0)) return null
+  const contentAspect = cw / ch
+  const screenAspect = sw / sh
+  const r2 = (x) => Math.round(x * 100) / 100
+  const scaleFit = Math.min(sw / cw, sh / ch)
+  const scaleFill = Math.max(sw / cw, sh / ch)
+  const fitW = cw * scaleFit, fitH = ch * scaleFit
+  const fillW = cw * scaleFill, fillH = ch * scaleFill
+  return {
+    contentAspect: r2(contentAspect),
+    screenAspect: r2(screenAspect),
+    match: Math.abs(contentAspect - screenAspect) < 0.005,
+    fit: {
+      scale: Math.round(scaleFit * 10000) / 10000,
+      width: Math.round(fitW), height: Math.round(fitH),
+      // Bars are split between the two sides, which is what you mask.
+      pillarboxEach: Math.round((sw - fitW) / 2),
+      letterboxEach: Math.round((sh - fitH) / 2),
+      unusedPercent: r2((1 - (fitW * fitH) / (sw * sh)) * 100),
+    },
+    fill: {
+      scale: Math.round(scaleFill * 10000) / 10000,
+      width: Math.round(fillW), height: Math.round(fillH),
+      cropEachSide: Math.round((fillW - sw) / 2),
+      cropTopBottom: Math.round((fillH - sh) / 2),
+      lostPercent: r2((1 - (sw * sh) / (fillW * fillH)) * 100),
+    },
+    // Scaling up past 1:1 is where a wall starts to look soft, and it is worth
+    // saying so rather than letting the number pass unremarked.
+    upscalingFit: scaleFit > 1.02,
+    upscalingFill: scaleFill > 1.02,
+  }
+}

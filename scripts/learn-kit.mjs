@@ -396,6 +396,14 @@ export const LEARN_TOPICS = [
     questions: ['LoRa or Wi-Fi or BLE?', 'What changed from 4G to 5G?', 'What is GPS really giving me?'],
   },
   {
+    slug: 'video',
+    group: 'signal',
+    tag: 'Video',
+    title: 'Why the picture is black',
+    blurb: 'The three negotiations a video chain has to pass before a single pixel moves, why every one of them fails the same way, and why a frame-timing offset that is invisible on one screen is unmistakable across a seam.',
+    questions: ['Why is the screen black?', 'What is EDID doing?', 'Why does the seam tear?'],
+  },
+  {
     slug: 'comms',
     group: 'signal',
     tag: 'Talkback',
@@ -426,6 +434,14 @@ export const LEARN_TOPICS = [
     title: 'Drawings, models and BIM',
     blurb: 'The difference between a line and an object that knows what it weighs — and why that difference is what makes automatic paperwork, load calculation and a patch that nobody retyped possible.',
     questions: ['Geometry or data?', 'What does Braceworks actually do?', 'What are GDTF and MVR?'],
+  },
+  {
+    slug: 'power',
+    group: 'room',
+    tag: 'Power',
+    title: 'Power, earth and the things that trip',
+    blurb: 'Why three phases cancel and what stops them, why a neutral full of LED fixtures can carry more than any phase, and why the device that protects a cable and the device that protects a person are not the same device.',
+    questions: ['Why is my neutral hot?', 'Breaker or RCD?', 'Why does it brown out?'],
   },
   {
     slug: 'rigging',

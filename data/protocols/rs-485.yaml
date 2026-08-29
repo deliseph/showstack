@@ -1,0 +1,74 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: rs-485
+name: RS-485
+aka:
+  - TIA-485
+  - EIA-485
+  - TIA/EIA-485-A
+  - RS485
+category: device-management
+summary: >-
+  The balanced, multi-drop electrical layer that DMX512, many Modbus
+  installations and most machinery buses actually run on. It defines voltages
+  and drive capability, not data — what the bits mean is always somebody
+  else's standard sitting on top.
+
+transport:
+  - rs485
+
+openness: published-paid
+spec_url:
+  url: https://tiaonline.org/what-we-do/standards/
+  label: TIA standards catalogue
+steward: TIA (Telecommunications Industry Association)
+status: current
+
+typical_use:
+  - Under DMX512 and RDM
+  - Under most Modbus RTU field wiring
+  - Motion and machinery control buses
+
+gotchas:
+  - >-
+    RS-485 says nothing about connectors, pinout, baud rate or protocol. Two
+    devices can both be "RS-485" and share nothing else. That is a feature of
+    the standard and a recurring surprise on site.
+  - >-
+    The load limit is stated in unit loads, not devices. One unit load is a
+    12 kΩ impedance across the pair and a driver must handle 32 of them.
+    A quarter-unit-load receiver puts four devices in one unit load, which
+    is why a modern DMX line can exceed 32 fixtures and an older one cannot.
+  - >-
+    Termination is 120 Ω at each physical end of the bus and nowhere else.
+    Two terminators give 60 Ω across the pair, which is what the driver
+    expects. A terminator part-way along a run, or a missing one, both show
+    up as intermittent errors rather than a clean failure.
+  - >-
+    The common-mode range is −7 V to +12 V. A ground potential difference
+    outside that window between two ends of a long run will corrupt data on a
+    pair that measures fine, which is the case for a proper ground reference
+    rather than just two conductors.
+
+confidence: reported
+tags:
+  - serial
+  - differential
+  - multidrop
+  - dmx
+
+sources:
+  - title: TIA-485-A — Electrical Characteristics of Generators and Receivers for Use in Balanced Digital Multipoint Systems
+    url: https://tiaonline.org/what-we-do/standards/
+    publisher: Telecommunications Industry Association
+    primary: true
+  - title: The RS-485 Design Guide (SLLA272)
+    url: https://www.ti.com/lit/pdf/slla272
+    publisher: Texas Instruments
+  - title: Guidelines for Proper Wiring of an RS-485 (TIA/EIA-485-A) Network
+    url: https://www.analog.com/en/resources/technical-articles/rs485-cable-specification-guide--maxim-integrated.html
+    publisher: Analog Devices
+
+contributed_by: []
+updated: 2026-08-29

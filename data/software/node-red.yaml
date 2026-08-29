@@ -7,6 +7,9 @@ vendor: OpenJS Foundation
 category: show-control
 license: Apache-2.0
 price_model: open-source
+repo:
+  url: https://github.com/node-red/node-red
+  label: Node-RED source
 status: current
 platforms:
 - windows

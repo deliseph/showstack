@@ -1,0 +1,54 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: adat
+name: ADAT Lightpipe
+aka:
+  - ADAT Optical
+  - Lightpipe
+  - ADAT
+category: audio-transport
+summary: >-
+  Eight channels of uncompressed digital audio down one plastic optical fibre,
+  originally for a tape machine and long outliving it. Still the cheapest way
+  to get eight channels between two boxes in a rack.
+
+transport:
+  - fibre
+
+openness: proprietary-documented
+steward: Alesis (originating), now a de facto standard
+status: current
+
+typical_use:
+  - Expanding the input count of an audio interface
+  - Linking a stagebox or preamp to a converter
+  - Eight-channel tie-lines inside a rack
+
+gotchas:
+  - >-
+    The eight-channel count is at 44.1 or 48 kHz. At 88.2/96 kHz S/MUX halves
+    it to four channels, and at 176.4/192 kHz to two. A device set to a high
+    rate silently loses channels rather than reporting a fault.
+  - >-
+    The connector is the same TOSLINK as optical S/PDIF and carries a
+    completely different format. They plug into each other happily.
+  - >-
+    Plastic optical fibre is short-run and bend-sensitive. Runs beyond a few
+    metres want glass or a different transport.
+
+confidence: reported
+tags:
+  - audio
+  - digital
+  - optical
+  - multichannel
+
+sources:
+  - title: ADAT Optical Interface Specification
+    url: https://www.alesis.com/
+    publisher: Alesis
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29

@@ -1,0 +1,59 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: tri-level-sync
+name: Tri-level sync
+aka:
+  - Tri-level
+  - HD genlock reference
+category: timecode-sync
+summary: >-
+  The high-definition genlock reference, replacing black burst for HD and above.
+  A bipolar pulse whose zero crossing marks the frame start, distributed to every
+  device that has to begin its frame at the same instant.
+
+transport:
+  - other
+
+openness: published-paid
+spec_url:
+  url: https://www.smpte.org/standards
+  label: SMPTE standards
+steward: SMPTE
+status: current
+
+typical_use:
+  - Locking cameras, switchers and servers to a common frame start
+  - Any multi-projector or multi-panel surface where a seam is visible
+  - Plants where a shared reference predates or sits alongside PTP
+
+gotchas:
+  - >-
+    Genlock fixes when a frame starts. It does not fix latency: two devices
+    can be perfectly locked and still be several frames apart if one is doing
+    more processing.
+  - >-
+    The reference rate has to suit the format. Feeding a 25 Hz reference to a
+    device running 29.97 does not part-work, it fails.
+  - >-
+    Reference distribution is a chain of its own, with its own terminations
+    and its own single point of failure. It is worth drawing.
+  - >-
+    Black burst is the standard-definition equivalent and is not
+    interchangeable with tri-level for HD formats.
+
+confidence: reported
+tags:
+  - video
+  - sync
+  - genlock
+  - broadcast
+
+sources:
+  - title: SMPTE ST 274 and related HD sync reference standards
+    url: https://www.smpte.org/standards
+    publisher: SMPTE
+    primary: true
+
+contributed_by: []
+updated: 2026-08-29
