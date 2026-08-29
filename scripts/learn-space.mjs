@@ -92,6 +92,11 @@ ${fig(polFig, 'Above: a sign flip, the same at every frequency. Below: a slide i
 
 ${rule('If a button fixes it, it was <b>polarity</b>. If it needs a delay or a tape measure, it was <b>phase</b>, and the amount is different at every frequency.')}
 
+${S('Absolute polarity', 'The third thing, and the one worth the least argument',
+  ['There is a further question hiding under the first one, and it gets more heat than it deserves: not whether two sources agree with each other, but whether the whole chain agrees with the world. If a drum skin moving <em>towards</em> the microphone ends with a loudspeaker cone moving <em>towards</em> the audience, the system has correct absolute polarity. If everything is flipped together, it does not.',
+   'It is largely inaudible on most material, for a good reason: a symmetrical waveform sounds the same either way up, and most sustained musical sound is close to symmetrical. Where it becomes audible is on asymmetrical waveforms &mdash; a kick drum, a bass guitar, brass, the human voice on plosives &mdash; where the pressure excursion is genuinely larger in one direction than the other. There the flip changes which way the loudspeaker moves first, and on a system with real low-frequency authority some people reliably hear the difference on those sources and nothing else.',
+   'The practical position is the honest one. It is worth getting right because it costs nothing to get right, it is worth checking with a polarity popper when a system is commissioned, and it is not worth an argument at eleven at night. What <em>is</em> worth an argument at eleven at night is relative polarity between two boxes in the same array, because that is not subtle, it cancels real output, and it reads as a room problem rather than a wiring one.'])}
+
 ${bites([
   '<b>Reaching for &oslash; on a comb filter.</b> It moves the peaks and nulls; it does not remove them. Sometimes that is an improvement and it is never a fix.',
   '<b>A polarity error on one loudspeaker in an array.</b> The low end largely cancels where the coverage overlaps, and it reads as a room problem rather than a wiring one.',
@@ -120,6 +125,19 @@ ${S('Making one', 'Subtractive, additive, FM, and why one of them won',
    '<strong>FM</strong> uses one oscillator to modulate the frequency of another. The result is a sideband spectrum that is not obvious from the controls at all &mdash; small changes in the modulation index reorganise the harmonic content wholesale, which is why FM is famous for metallic and bell-like sounds and for being difficult to steer. It is enormously efficient, which is why it appeared in hardware when memory and processing were expensive.',
    'All three are still around, and the distinction blurs in software where nothing costs what it used to. What survives is the ergonomic point: subtractive won not because it sounds better but because <em>one knob moves the whole spectrum in a way a person can predict</em>.'])}
 
+${S('The two knobs', 'What an envelope and a filter are actually doing',
+  ['Subtractive synthesis is two ideas wearing a lot of front panel. Everything else is a variation.',
+   'The <strong>envelope</strong> describes how something changes from the moment a key goes down to after it comes up, and the standard four stages are attack, decay, sustain and release &mdash; <strong>ADSR</strong>, which is what the four knobs are labelled on almost every instrument ever made. Three of those are times and one is not: <strong>sustain is a level.</strong> Attack is how long to reach full, decay is how long to fall from full to the sustain level, sustain is the level it holds at while the key is held, and release is how long to fall from wherever it is to silence once the key is let go. Almost every confused synth patch is somebody turning sustain expecting a duration. A plucked sound is a fast attack, a short decay and a sustain of zero &mdash; the note ends while your finger is still down, and it is the sustain level that ends it.',
+   'The <strong>filter</strong> is usually a low-pass with two controls. <em>Cutoff</em> is the frequency above which it starts removing, and it is the single most expressive control on the instrument because moving it changes every harmonic at once in a way the ear reads as a sound opening or closing. <em>Resonance</em> is feedback around the filter that boosts a narrow band right at the cutoff, which makes the sweep audible as a distinct tone travelling through the sound rather than as a dulling. Turn it far enough and the loop sustains itself: the filter oscillates with no input, which is a sine source you get for free and a very effective way to make an unpleasant noise at full level.',
+   'Then the two are joined, and that join is the whole instrument: an envelope routed to the filter cutoff rather than to volume. Now the sound is bright at its start and darkens as it decays, which is what nearly every struck or plucked physical object does, and it is why that patch sounds like something happened rather than like a tone was switched on.'])}
+
+${bites([
+  '<b>Sustain is a level, the other three are times.</b> If a sound will not stop while the key is down, you want sustain at zero and a decay, not a shorter release.',
+  '<b>Resonance at high cutoff plus full level is how monitors get damaged.</b> A self-oscillating filter has no dynamics and no headroom of its own.',
+  '<b>Filter envelope amount can be negative.</b> A sound that opens rather than closes is the same patch with the sign flipped, and it reads as unnatural for exactly that reason.',
+  '<b>Envelope times are not linear on most instruments.</b> They are exponential, which is why the last third of an attack knob does most of the audible work.',
+])}
+
 ${S('Placing it', 'Three ways, and they fail differently',
   ['Putting a sound somewhere in a room is not one problem with three solutions. It is three different bargains.'])}
 
@@ -134,7 +152,7 @@ ${S('Placing it', 'Three ways, and they fail differently',
     <p>Stores direction as spherical harmonics rather than as speaker feeds, so the same file decodes to any layout &mdash; a dome, a cube, or a pair of headphones. Higher orders carry more directional detail.</p>
     <p class="fail">Fails by order. First order is a smear; useful sharpness needs third order or above, and the channel count grows as (n+1)&sup2; &mdash; 16 channels for third order, 36 for fifth.</p></div>
   <div class="spcard"><i>Binaural</i><b>Rendering to two ears</b>
-    <p>Applies the filtering a real head and ear would have imposed, so headphones can carry a full sphere. It is the only method that needs no speakers at all.</p>
+    <p>Applies the <b>head-related transfer function</b> (HRTF) &mdash; the filtering a real head, torso and outer ear impose on a sound before it reaches the eardrum. Timing and level differences only ever say left or right; it is the notches the pinna carves into the spectrum that say <em>up</em>, <em>down</em> and <em>behind</em>, which is why a sphere needs the whole filter and not just a delay.</p>
     <p class="fail">Fails by head. Those filters are individual &mdash; someone else&rsquo;s ears give you their localisation, not yours &mdash; and without head tracking the world turns when you do.</p></div>
 </div>
 

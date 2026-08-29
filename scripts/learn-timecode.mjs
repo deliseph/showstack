@@ -162,6 +162,19 @@ ${rule('Non-drop counts <b>every frame</b> and does not match the clock. Drop fr
 </div>
 <div class="readout" id="df-out" role="status" aria-live="polite"></div>
 
+${S('When the code stops', 'Freewheel, jam sync, and what a device does with silence',
+  ['Timecode arrives as a continuous stream, and on a real show it will be interrupted &mdash; a cable pulled, a deck stopped, a player reaching the end of a file. What happens next is a setting, and it is the setting people discover by having the show do the wrong thing.',
+   '<strong>Freewheel</strong> is how many frames a reader will keep counting after the incoming code disappears, using its own clock, before it declares the code lost. A short freewheel means a momentary dropout stops the show; a long one means the show carries on for a second or two into a genuine failure. The right value is a judgement about which mistake is cheaper on that particular job, and the default is almost never it.',
+   '<strong>Jam sync</strong> is the same idea taken further. A device jams to incoming code &mdash; matches its internal generator to what it is receiving &mdash; and then keeps generating, in step, indefinitely, whether the incoming code continues or not. There are two flavours and confusing them is the classic fault. <em>Continuous jam</em> keeps correcting to the incoming code as long as it is there, so it tracks and it stays honest. <em>One-time jam</em> takes the value once, at the moment it is armed, and then free-runs on its own crystal for the rest of the day. One-time is what you want on a camera that must keep sensible code after it is unplugged from the master; it is emphatically not what you want on a device you assumed was following the master, because from the moment it jammed it has been drifting.',
+   'Which is why the useful discipline is to know, for every device in the chain, whether it is <em>reading</em>, <em>freewheeling</em>, or <em>generating</em>. Two devices generating look identical to two devices reading, right up until they disagree, and a rig with an accidental second master drifts apart at a rate nobody notices in rehearsal and everybody notices on the third night.'])}
+
+${bites([
+  '<b>Every generator in the building drifts.</b> Crystals differ by parts per million, which is frames per hour. Jammed at lunch is not still in sync at curtain.',
+  '<b>One-time jam is silent about having stopped listening.</b> The display still shows plausible timecode, which is the whole problem.',
+  '<b>Freewheel hides a real fault for exactly as long as it is set to.</b> If code failures need to be visible, set it short and let it fail loudly.',
+  '<b>Jamming to a stopped deck captures a stopped number.</b> Arm the jam while the master is actually running, not while it is parked at the top.',
+])}
+
 ${S('MIDI in hex', 'One bit does all the framing',
   ['A MIDI stream has no packet header, no length field and no checksum. It has one rule instead, and it is enough: <strong>a status byte has its top bit set</strong> &mdash; 0x80 to 0xFF &mdash; and a data byte does not, 0x00 to 0x7F. Everything else falls out of that. A receiver that joins a stream mid-message throws bytes away until it sees one with the high bit set, and it is back in sync.',
    'For channel messages the byte splits in two: the high nibble is the command, the low nibble is the channel. The channel is zero-based on the wire and displayed one-based by nearly every piece of software, which is the off-by-one every MIDI person meets exactly once. So <span class="mono">90</span> is Note On on channel 1, <span class="mono">9F</span> is Note On on channel 16, and <span class="mono">B0 07 64</span> is controller 7 &mdash; volume &mdash; set to 100 on channel 1.',

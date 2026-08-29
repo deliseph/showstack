@@ -218,6 +218,18 @@ ${bites([
   '<b>Old fixtures that do not check start codes.</b> They act on 0xCC as if it were level data. If enabling RDM introduces flicker, that is what happened, and the fix is upstream of the fixture.',
 ])}
 
+${S('One box, many devices', 'Sub-devices and proxies, and why a rack answers for things that cannot speak',
+  ['Two parts of RDM exist because the world is not made of identical fixtures on one wire, and both turn up the first time you point a controller at real installed kit.',
+   'A <strong>sub-device</strong> is a logical device inside a physical one. A twelve-way dimmer rack is a single box with a single UID, but it is twelve dimmers, and each of them has its own address, its own curve, its own lamp hours. RDM handles that by letting a message be directed at a sub-device number instead of at the root: root device zero is the box itself and carries the things that belong to the box &mdash; the fan, the mains, the firmware &mdash; while sub-devices 1 to 12 each carry the things that belong to one channel. Ask the root for a DMX start address and you get the rack&rsquo;s; ask sub-device 7 and you get that dimmer&rsquo;s. Multi-cell LED battens work the same way, which is why one fixture can report twelve independent addresses without twelve UIDs.',
+   'A <strong>proxy</strong> is a device that answers on behalf of others. It has its own UID, it declares itself a proxy, and it holds a list of the UIDs behind it &mdash; typically a gateway onto a segment that does not speak RDM, or a system with its own internal bus. A controller discovering the line finds the proxy, asks it what it is fronting for, and gets a list rather than having to run the binary search through it. The devices behind it appear in the patch as real devices, because as far as the controller is concerned they are.',
+   'The consequence worth carrying: a UID appearing on your line does not mean that thing is physically on your line. It may be behind a proxy on another bus entirely, which is excellent for getting a whole installed system into one patch and confusing the first time you go looking for a fixture with a torch.'])}
+
+${bites([
+  '<b>Sub-device zero is the box, not the first channel.</b> Setting a start address on the root of a multi-cell fixture and expecting cell one to move is a normal half hour lost.',
+  '<b>Not every device implements sub-devices even when it obviously has them.</b> Some racks present twelve separate UIDs instead. Both are legal and they patch quite differently.',
+  '<b>A proxy has to keep its list current.</b> Something added behind it after discovery may not appear until the proxy is asked again, which is not the same as rediscovering your own line.',
+])}
+
 ${S('And then', 'RDMnet is a different animal',
   ['E1.33, RDMnet, carries the same RDM message set over IP instead of over the DMX pair. That removes the turnaround timing problem entirely &mdash; a network is already bidirectional &mdash; and replaces it with a broker, a discovery mechanism built on DNS-SD, and all the ordinary questions of a show network.',
    'It is genuinely a different thing rather than a faster version of the same thing, and the two coexist: RDMnet to a gateway, plain RDM from the gateway down the DMX line to the fixtures. Which means the splitter problem is still yours, it has just moved further from the console.'])}
