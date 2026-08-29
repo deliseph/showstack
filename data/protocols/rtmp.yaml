@@ -23,6 +23,14 @@ spec_url:
   url: https://rtmp.veriskope.com/docs/spec/
   label: RTMP specification
 steward: Adobe (specification published), maintained in practice by platform vendors
+media:
+  video:
+    compression: H.264 video with AAC audio, frozen there in practice
+    note: >-
+      RTMP fixes no resolution or frame rate; the encoder decides both and the
+      platform sets what it will accept. What is effectively fixed is the codec
+      pair, so newer codecs need extensions that not every platform takes.
+
 typical_use:
 - Pushing a stream from OBS or a hardware encoder to a platform
 - Ingest into a CDN for onward HLS delivery
