@@ -456,6 +456,14 @@ export const LEARN_TOPICS = [
     questions: ['Why is my ghost see-through?', 'Why does it fail up close?', 'Where will they look?'],
   },
   {
+    slug: 'proto',
+    group: 'build',
+    tag: 'Fabrication',
+    title: 'Making the part that does not exist',
+    blurb: 'FDM, SLA and SLS fail in different directions, and a printed part is dramatically weaker across its layers than along them — so orientation on the bed is a structural decision somebody made by pressing slice. Plus scanning, photogrammetry, and the load-path boundary that does not move.',
+    questions: ['Which process?', 'Why did it snap?', 'Can I print a bracket for that?'],
+  },
+  {
     slug: 'drawings',
     group: 'room',
     tag: 'CAD & BIM',

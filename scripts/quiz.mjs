@@ -41,6 +41,35 @@
  * is caught rather than discovered by a reader.
  */
 const BANK = {
+  proto: [
+    {
+      q: 'Two identical printed hooks from the same file and the same spool. One holds fine, the other snaps under half the load. What is the most likely difference?',
+      options: [
+        { text: 'One had a higher infill percentage', why: 'Infill mostly buys stiffness; perimeters carry the load. It would not usually produce a difference this large.' },
+        { text: 'They were printed in different orientations on the bed', correct: true, why: 'Right. A printed part is far weaker between the layers than along them, because the layer bond is a partial re-melt rather than continuous material. Turn the part ninety degrees and the load that ran along the layers now pulls them apart. Orientation on the bed is a structural decision, and nothing in the file records which one you got.' },
+        { text: 'One spool had absorbed moisture', why: 'Wet filament genuinely degrades a print, but it would show as poor surface quality throughout rather than as one part being dramatically weaker in one direction.' },
+        { text: 'A different nozzle temperature', why: 'It affects layer adhesion somewhat, and far less than which way the load runs relative to the layers.' },
+      ],
+    },
+    {
+      q: 'A rigger asks for a printed shackle "just for tonight, it is only a light fixture". What is the answer?',
+      options: [
+        { text: 'Yes if it is printed solid in nylon', why: 'Material and infill are not the issue. The issue is that a rated component is rated through a known process with traceability and a test certificate, and a print has none of those.' },
+        { text: 'No — nothing printed goes into a load path with a person under it, temporarily or otherwise', correct: true, why: 'Right, and the reason is not strength. It might well be stronger than the metal one. It has no traceability, no test certificate and no known process behind it, which is what "rated" actually means. "Just for tonight" is where this rule gets broken and it is exactly the case it exists for.' },
+        { text: 'Yes if somebody signs it off', why: 'Nobody competent will, because there is nothing to sign off against. There is no specification the part was made to.' },
+        { text: 'Only if it is proof-tested first', why: 'A single proof test on one printed part says nothing about the next one, because the process is not repeatable in the way a rated component&rsquo;s is.' },
+      ],
+    },
+    {
+      q: 'You need to model a mounting plate that bolts to somebody else’s equipment. What should you reach for first?',
+      options: [
+        { text: 'A structured-light scanner, for accuracy', why: 'It is accurate and it gives you a mesh of approximately where the surface was. For a plate with flat faces and round holes, that is a slow route to numbers you can read directly.' },
+        { text: 'A caliper and twenty minutes', correct: true, why: 'Right. A measurement gives you the number the original was made to, which is almost always round in some unit; a scan gives you an approximation of the surface. Recognising that a hole is 8 mm rather than 7.94 is the whole skill, and it beats a scan for anything with flat faces and right angles.' },
+        { text: 'Photogrammetry from a phone', why: 'Free and excellent for organic and textured shapes. Poor on shiny, featureless machined surfaces, and it gives you no scale unless you photographed a ruler.' },
+        { text: 'The manufacturer’s CAD file', why: 'Ideal when it exists, and it usually does not. Worth one email before you start measuring.' },
+      ],
+    },
+  ],
   space: [
     {
       q: 'Two microphones on one guitar cabinet sound thin and hollow together. Somebody reaches for the polarity button. Will it fix it?',

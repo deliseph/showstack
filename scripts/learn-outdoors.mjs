@@ -193,6 +193,36 @@ ${S('Heat and sun', 'A black case in direct sun is a different machine',
   </tbody>
 </table>
 
+${S('Measuring it', 'What an anemometer is telling you, and what it is not',
+  ['A wind action plan with trigger speeds in it needs somebody measuring wind, and the measurement is less straightforward than the instrument suggests.',
+   'A <strong>cup or vane anemometer</strong> is mechanical and averages by nature &mdash; it has inertia, so it under-reads a short gust by design. An <strong>ultrasonic</strong> unit measures the time of flight between transducers, has no moving parts to seize or wear, responds fast enough to actually catch gusts, and reports direction as well. For anything the plan depends on, ultrasonic is worth the money precisely because gusts are what take structures over and a cup will smooth them away.',
+   'Where it sits matters more than what it is. Wind speed rises with height and is disturbed by everything nearby, so a reading taken at head height beside a truck is not the wind hitting the top of your structure &mdash; it can easily be half of it. The meteorological convention is 10&nbsp;m in open ground, and a site anemometer should be as high and as clear as it can practically be, with its actual position written into the plan so a reading means something.',
+   'And the averaging window is the number people forget to ask about. An instrument reporting a 10-minute mean and one reporting 3-second gusts will disagree by 40% or more on the same afternoon, and a trigger value copied from a structure&rsquo;s documentation refers to a specific one of those. A plan that says &ldquo;stop at 18 m/s&rdquo; without saying <em>which</em> 18 m/s is not a plan, and the two readings can be a whole Beaufort force apart.'])}
+
+${rule('A trigger speed is meaningless without <b>the averaging window and the measurement height</b> it refers to. Mean and gust at the same moment can differ by 40%.')}
+
+${S('Rain, and the thing rain actually does', 'Which is rarely getting into the box',
+  ['Rain gets measured in millimetres per hour, and outdoor events usually care about three thresholds that have nothing to do with the number itself.',
+   'The first is <strong>standing water</strong>, which is about drainage rather than rainfall. Any flat surface on a stage &mdash; a deck, a dimmer rack lid, a case lying down &mdash; becomes a pond, and an <a href="#">IP rating</a> that covers falling rain says nothing about immersion. Most water ingress on shows arrives from underneath or from a surface the equipment was standing in, not from the sky.',
+   'The second is <strong>wind-driven rain</strong>, which arrives horizontally and reaches things a vertical test never contemplated. The IP water tests spray from defined angles; a 20&nbsp;m/s crosswind is not one of them, and a fixture rated for rain falling on it can be getting rain fired into its underside.',
+   'The third is <strong>weight</strong>. Rain collecting in a banner, a roof pocket or a sagging cover is a load nobody put in the calculation, it accumulates quietly, and it is heaviest exactly when the wind is worst. A pocket holding 100 litres is 100&nbsp;kg hanging somewhere the design did not expect, and it is the classic cause of a structure failing on a night that was not especially windy.',
+   'Which is why the practical answers are about geometry rather than about ratings: get things off the deck, give every surface a fall, make sure water has somewhere to go that is not into a connector, and check for pockets that can fill before the weather rather than during it.'])}
+
+${S('Control in the weather', 'What outdoor control gear actually needs',
+  ['Putting a node, a splitter or a control panel outside is not just a matter of buying the rated version, and four things decide whether it survives the run.',
+   '<strong>The enclosure has to breathe without leaking.</strong> A sealed box cannot convect, so it cooks in the sun and then, as it cools at night, draws in humid air through whatever gap it has &mdash; and that air condenses inside. A breather vent, a membrane gland that passes air and not water, is the standard answer, and a sealed box without one accumulates water over a week of ordinary weather with no leak anywhere.',
+   '<strong>Cable entries are where ratings die.</strong> A gland done up on the wrong cable diameter, an unused entry with no blank, or a cable entering from above so water runs down it into the box, each throws away the rating of everything behind it. Enter from below where you can, and where you cannot, leave a drip loop so the water leaves the cable before the cable reaches the gland.',
+   '<strong>Connectors are rated mated.</strong> An unmated weatherproof connector is a funnel, and the caps that come with them exist for exactly that. A run that will sit unmated overnight needs capping as part of the get-out, not as an afterthought.',
+   'And <strong>heat and IP fight each other</strong>, which is the trade sitting under all of it. The higher the ingress rating the less the box can ventilate, so an IP66 enclosure in direct sun may need shade or active cooling that an IP54 one in the same place does not. Shading the enclosure is nearly always cheaper than cooling it, and it does not compromise the seal.'])}
+
+${bites([
+  '<b>An anemometer at head height.</b> It is not measuring the wind at the top of the structure, and the difference can be a factor of two.',
+  '<b>A trigger value with no averaging window.</b> Mean or gust? They are a Beaufort force apart on a normal afternoon.',
+  '<b>A sealed enclosure with no breather.</b> It will fill with water over a week without a single leak, by breathing humid air in as it cools.',
+  '<b>Water pockets nobody checked.</b> A hundred litres in a banner is a hundred kilos, and it arrives on the windiest night.',
+  '<b>Cable entering from the top.</b> Water runs down a cable. Enter from below, or leave a drip loop so it falls off before the gland.',
+])}
+
 ${S('Stopping', 'The decision is a document, not a judgement',
   ['The last thing on this page is the only one that is not physics. Every outdoor event needs an adverse weather plan that names the trigger values, names the person who calls it, and names what happens at each stage &mdash; and it needs to exist before the day, because the day is exactly when nobody wants to be the one who stops a show.',
    'The reason to write it down is not bureaucratic. On site, at the moment the decision matters, the people best placed to see the weather are the people with the strongest reasons not to act on it: a crew that has been building for two days, a promoter with a gate, and an audience already in. A trigger agreed in a quiet room a month earlier removes that conflict from the moment it would otherwise be resolved badly.',

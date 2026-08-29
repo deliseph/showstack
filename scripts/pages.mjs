@@ -56,6 +56,7 @@ import { learnOutdoorsPage } from './learn-outdoors.mjs'
 import { learnMixingPage } from './learn-mixing.mjs'
 import { learnAnaloguePage } from './learn-analogue.mjs'
 import { learnSpacePage } from './learn-space.mjs'
+import { learnProtoPage } from './learn-proto.mjs'
 import { learnEmpathyPage } from './learn-empathy.mjs'
 import { learnIllusionPage } from './learn-illusion.mjs'
 import { learnTimecodePage } from './learn-timecode.mjs'
@@ -1140,6 +1141,7 @@ export function buildPages(db, dist) {
     ['mixing', () => learnMixingPage(learnArgs)],
     ['analogue', () => learnAnaloguePage(learnArgs)],
     ['space', () => learnSpacePage(learnArgs)],
+    ['proto', () => learnProtoPage(learnArgs)],
     ['empathy', () => learnEmpathyPage(learnArgs)],
     ['illusion', () => learnIllusionPage(learnArgs)],
     ['timecode', () => learnTimecodePage(learnArgs)],
