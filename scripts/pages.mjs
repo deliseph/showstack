@@ -804,6 +804,69 @@ border-radius:var(--r-sm);background:var(--panel);transition:border-color .15s,t
 `
 
 // ------------------------------------------------------------------- driver
+/* Fifty ports in one table is a reference, not an answer. A person arrives
+   here having seen a number in a packet capture or a firewall log; the filter
+   is what turns the page into a lookup. Rows are matched on their whole text
+   so "sACN", "udp" and "timecode" work as well as "5568". */
+const PORTS_CSS = `
+.pfilter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.pfilter label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;
+color:var(--ink-faint)}
+.pfilter input{flex:1 1 240px;min-width:0;min-height:44px;padding:0 14px;font-size:16px;
+font-family:var(--mono);background:var(--surface-raised);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:var(--r-sm)}
+.pfilter input:focus{outline:none;border-color:var(--focus);
+box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.pfn{font-family:var(--mono);font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.egs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 18px}
+.egk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.egs button{font-family:var(--mono);font-size:12.5px;padding:0 14px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface-raised);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;white-space:nowrap}
+.egs button:hover{color:var(--signal);border-color:var(--signal)}
+.egs button[aria-pressed="true"]{color:var(--signal);border-color:var(--signal);
+background:color-mix(in srgb,var(--signal) 12%,var(--surface-raised))}
+.pnone{color:var(--ink-muted);font-size:15px;line-height:1.6;margin:18px 0 0}
+`
+
+const PORTS_JS = `
+(function(){
+  var input=document.getElementById('pf'), tab=document.getElementById('ptab');
+  if(!input||!tab)return;
+  var none=document.getElementById('pnone'), count=document.getElementById('pfn');
+  var rows=[].slice.call(tab.rows,1);
+  // A port cell spans its protocol rows, so a row without one belongs to the
+  // last port seen. Filtering has to keep those groups intact or the rowspan
+  // leaves orphaned cells under the wrong number.
+  var groups=[],cur=null;
+  rows.forEach(function(r){
+    if(r.cells[0]&&r.cells[0].rowSpan>=1&&r.cells.length===4){cur={rows:[r],text:r.innerText};groups.push(cur)}
+    else if(cur){cur.rows.push(r);cur.text+=' '+r.innerText}
+  });
+  function apply(q){
+    q=q.trim().toLowerCase();
+    var shown=0;
+    groups.forEach(function(g){
+      var on=!q||g.text.toLowerCase().indexOf(q)>-1;
+      g.rows.forEach(function(r){r.hidden=!on});
+      if(on)shown++;
+    });
+    none.hidden=shown>0;
+    count.textContent=q?(shown+' of '+groups.length+' ports'):'';
+    for(var i=0;i<chips.length;i++)chips[i].setAttribute('aria-pressed',String(chips[i].dataset.q.toLowerCase()===q));
+    var url=new URL(location.href);
+    if(q)url.searchParams.set('q',input.value.trim());else url.searchParams.delete('q');
+    history.replaceState(null,'',url);
+  }
+  var chips=[].slice.call(document.querySelectorAll('.egs button'));
+  chips.forEach(function(b){b.addEventListener('click',function(){input.value=b.dataset.q;apply(b.dataset.q)})});
+  input.addEventListener('input',function(){apply(input.value)});
+  var q0=new URLSearchParams(location.search).get('q');
+  if(q0){input.value=q0}
+  apply(input.value);
+})();
+`
+
 export function buildPages(db, dist) {
   const gapOf = (col, id) => (db.gaps ?? []).find((g) => g.collection === col && g.id === id)
   const urls = [`${SITE}/`]
@@ -993,9 +1056,26 @@ export function buildPages(db, dist) {
     title: 'Port numbers used in live entertainment systems | showstack',
     description: 'Every UDP and TCP port used by lighting, audio, video, tracking and show control protocols, with sources.',
     canonical: `${SITE}/ports/`,
+    extraStyle: PORTS_CSS,
+    extraScript: PORTS_JS,
     body: `<div class="crumb"><a href="/">showstack</a> / ports</div><h2>Ports</h2>
       <p class="lede">Every port number indexed so far, and what listens on it. ${byPort.size} ports across ${db.protocols.length} protocols.</p>
-      <table><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
+      <div class="pfilter">
+        <label for="pf">Filter</label>
+        <input id="pf" type="search" inputmode="numeric" autocomplete="off" spellcheck="false"
+               placeholder="5568, sACN, udp, timecode&hellip;" aria-controls="ptab">
+        <span class="pfn" id="pfn" role="status" aria-live="polite"></span>
+      </div>
+      <div class="egs">
+        <span class="egk">Common</span>
+        <button type="button" data-q="5568">5568</button>
+        <button type="button" data-q="6454">6454</button>
+        <button type="button" data-q="4455">4455</button>
+        <button type="button" data-q="319">PTP</button>
+        <button type="button" data-q="udp">everything on UDP</button>
+      </div>
+      <table id="ptab"><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
+      <p class="pnone" id="pnone" hidden>Nothing here matches that. Ports we could not source are left blank rather than guessed &mdash; if you know one, it is a ten minute pull request.</p>
       <div class="cta"><strong>Missing one?</strong><p>Ports we could not source are deliberately left blank rather than guessed.
       <a href="${GH}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">Open gaps are here.</a></p></div>`,
   }))

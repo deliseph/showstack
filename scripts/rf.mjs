@@ -26,6 +26,14 @@ export function rfPage({ esc, shell, jsonForScript, SITE, GH }) {
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
+.egs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 10px}
+.egk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.egs button{font-family:var(--mono);font-size:12.5px;padding:0 14px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface-raised);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;white-space:nowrap}
+.egs button:hover{color:var(--signal);border-color:var(--signal)}
+.egs button[aria-pressed="true"]{color:var(--signal);border-color:var(--signal);
+background:color-mix(in srgb,var(--signal) 12%,var(--surface-raised))}
 .field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--rule-strong);
 border-radius:7px;font-family:var(--mono);font-size:16px;min-height:44px;font-variant-numeric:tabular-nums}
 .out{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
@@ -81,7 +89,16 @@ border-radius:0 7px 7px 0;color:var(--dim);font-size:14.5px}
     <div class="field"><label for="rg">Country / region</label><select id="rg">${options}</select></div>
     <div class="field"><label for="fq">Check a frequency (MHz)</label><input id="fq" type="number" min="1" step="0.005" placeholder="606.5" inputmode="decimal" style="width:140px"></div>
   </div>
-  <div class="out" id="fq-out" role="status" aria-live="polite">Pick a country; type a frequency to check it.</div>
+  <div class="egs">
+    <span class="egk">Try one</span>
+    <button type="button" data-r="us" data-f="606.5">606.5 in the US</button>
+    <button type="button" data-r="uk" data-f="606.5">606.5 in the UK</button>
+    <button type="button" data-r="uk" data-f="863.5">863.5 in the UK</button>
+    <button type="button" data-r="tw" data-f="520">520 in Taiwan</button>
+    <button type="button" data-r="hk" data-f="37.1">37.1 in Hong Kong</button>
+    <button type="button" data-r="de" data-f="700">700 in Germany</button>
+  </div>
+  <div class="out" id="fq-out" role="status" aria-live="polite"></div>
   <div id="strips"></div>
   <div class="legend">
     <span><i style="background:var(--ok)"></i>licence-exempt</span>
@@ -139,7 +156,7 @@ function drawStrips() {
 
 function checkFq() {
   const v = $('#fq').value;
-  if (v === '') { $('#fq-out').textContent = 'Pick a country; type a frequency to check it.'; return; }
+  if (v === '') { $('#fq-out').textContent = 'Type a frequency in MHz, or pick one of the examples above.'; return; }
   const res = rfCheck(RF, $('#rg').value, v);
   if (!res) { $('#fq-out').innerHTML = '<span class="err">Enter a positive frequency in MHz.</span>'; return; }
   const name = RF.regions[$('#rg').value].name;
@@ -153,8 +170,34 @@ function checkFq() {
   }
 }
 
-$('#rg').addEventListener('input', () => { drawStrips(); checkFq(); });
-$('#fq').addEventListener('input', checkFq);
+$('#rg').addEventListener('input', () => { drawStrips(); checkFq(); sync(); });
+$('#fq').addEventListener('input', () => { checkFq(); sync(); });
+
+// The answer has to be shareable. "Is 606.5 legal here" gets asked in a
+// production group chat, and the reply should be a link that still resolves
+// for the next person rather than a screenshot.
+function sync() {
+  const url = new URL(location.href);
+  url.searchParams.set('r', $('#rg').value);
+  if ($('#fq').value === '') url.searchParams.delete('f');
+  else url.searchParams.set('f', $('#fq').value);
+  history.replaceState(null, '', url);
+  for (const b of document.querySelectorAll('.egs button'))
+    b.setAttribute('aria-pressed', String(b.dataset.r === $('#rg').value && b.dataset.f === $('#fq').value));
+}
+for (const b of document.querySelectorAll('.egs button')) {
+  b.addEventListener('click', () => {
+    $('#rg').value = b.dataset.r; $('#fq').value = b.dataset.f;
+    drawStrips(); checkFq(); sync();
+  });
+}
+// Open on a worked example rather than an empty field and an instruction.
+const q = new URLSearchParams(location.search);
+$('#rg').value = q.get('r') && RF.regions[q.get('r')] ? q.get('r') : 'us';
+$('#fq').value = q.get('f') || '606.5';
+drawStrips();
+checkFq();
+sync();
 drawStrips();
 `
 

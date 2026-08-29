@@ -46,14 +46,26 @@ export function interopPage({ esc, shell, jsonForScript, SITE, GH, products, pro
 <h2>Can these two talk?</h2>
 <p class="lede">Pick two things. This answers whether one can reach the other, over which protocol, in which direction, and how much we trust that claim. Everything comes from the index, and anything nobody could source is reported as unknown rather than guessed.</p>
 
-<div class="picker">
-  <label for="a">From</label>
-  <select id="a" aria-describedby="answer"></select>
-  <label for="b">To</label>
-  <select id="b" aria-describedby="answer"></select>
+<div class="egs">
+  <span class="egk">Common questions</span>
+  <button type="button" data-a="eos-family" data-b="luminex-luminode-12">Console &rarr; DMX node</button>
+  <button type="button" data-a="qlab" data-b="eos-family">QLab &rarr; lighting</button>
+  <button type="button" data-a="grandma3-onpc" data-b="disguise-vx-4">grandMA3 &rarr; disguise</button>
+  <button type="button" data-a="yamaha-cl5" data-b="pro-tools">Console &rarr; Pro Tools</button>
+  <button type="button" data-a="qlab" data-b="watchout">QLab &rarr; WATCHOUT</button>
 </div>
 
 <div id="answer" role="status" aria-live="polite"></div>
+
+<details class="pickwrap">
+  <summary><span>Ask about two other things</span></summary>
+  <div class="picker">
+    <label for="a">From</label>
+    <select id="a" aria-describedby="answer"></select>
+    <label for="b">To</label>
+    <select id="b" aria-describedby="answer"></select>
+  </div>
+</details>
 
 <div class="cta">
   <strong>Answer look wrong?</strong>
@@ -61,11 +73,28 @@ export function interopPage({ esc, shell, jsonForScript, SITE, GH, products, pro
 </div>`
 
   const style = `
+.egs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 20px}
+.egk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.egs button{font-family:var(--mono);font-size:12.5px;padding:0 14px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface-raised);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;transition:color var(--dur-fast),border-color var(--dur-fast)}
+.egs button:hover{color:var(--signal);border-color:var(--signal)}
+.egs button[aria-pressed="true"]{color:var(--signal);border-color:var(--signal);
+background:color-mix(in srgb,var(--signal) 12%,var(--surface-raised))}
+.pickwrap{margin:22px 0 26px;border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-raised)}
+.pickwrap > summary{cursor:pointer;list-style:none;padding:0 16px;min-height:44px;display:flex;align-items:center;
+gap:9px;font-family:var(--mono);font-size:12.5px;color:var(--ink-muted);border-radius:var(--r-md)}
+.pickwrap > summary::-webkit-details-marker{display:none}
+.pickwrap > summary::before{content:"+";font-size:15px;color:var(--signal)}
+.pickwrap[open] > summary::before{content:"\\2212"}
+.pickwrap > summary:hover{color:var(--ink)}
+.pickwrap[open] > summary{border-bottom:1px solid var(--rule)}
+.pickwrap .picker{padding:16px;margin:0}
 .picker{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:10px;align-items:center;margin:0 0 26px}
 .picker label{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--dimmer)}
-.picker select{width:100%;padding:10px 12px;background:var(--panel);color:var(--ink);border:1px solid var(--line);
+.picker select{width:100%;padding:10px 12px;background:var(--panel);color:var(--ink);border:1px solid var(--rule-strong);
 border-radius:8px;font-family:var(--sans);font-size:15px;min-height:44px}
-.picker select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.picker select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 @media(max-width:620px){.picker{grid-template-columns:1fr;gap:6px}.picker label{margin-top:8px}}
 .verdict{border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px;background:var(--panel)}
 .verdict .big{font-size:20px;font-weight:600;display:block;margin-bottom:4px}
@@ -172,12 +201,42 @@ function render(){
   history.replaceState(null, "", url);
 }
 
+// The page used to open on the first two products alphabetically, which
+// answered a question nobody has. It now opens on the one that comes up most:
+// a lighting console into a DMX node. A page that arrives already answering
+// something real is the difference between a tool and a form.
+const EXAMPLE_A = "eos-family", EXAMPLE_B = "luminex-luminode-12";
+const has = (id) => DB.products.some((p) => p.i === id);
 const params = new URLSearchParams(location.search);
-options($("#a"), params.get("a") || DB.products[0]?.i);
-options($("#b"), params.get("b") || DB.products[1]?.i);
+const startA = params.get("a") || (has(EXAMPLE_A) ? EXAMPLE_A : DB.products[0]?.i);
+const startB = params.get("b") || (has(EXAMPLE_B) ? EXAMPLE_B : DB.products[1]?.i);
+options($("#a"), startA);
+options($("#b"), startB);
 $("#a").addEventListener("change", render);
 $("#b").addEventListener("change", render);
-render();`
+
+// One tap moves both selects and re-answers. Anything the index does not have
+// is dropped rather than left as a chip that answers nothing.
+for (const btn of document.querySelectorAll(".egs button")) {
+  if (!has(btn.dataset.a) || !has(btn.dataset.b)) { btn.remove(); continue; }
+  btn.addEventListener("click", () => {
+    $("#a").value = btn.dataset.a;
+    $("#b").value = btn.dataset.b;
+    render();
+    document.getElementById("answer").scrollIntoView({ block: "nearest" });
+  });
+}
+function markChips() {
+  const a = $("#a").value, b = $("#b").value;
+  for (const btn of document.querySelectorAll(".egs button"))
+    btn.setAttribute("aria-pressed", String(btn.dataset.a === a && btn.dataset.b === b));
+}
+$("#a").addEventListener("change", markChips);
+$("#b").addEventListener("change", markChips);
+document.querySelector(".egs").addEventListener("click", markChips);
+
+render();
+markChips();`
 
   return shell({
     title: 'Can these two talk? Interoperability checker | showstack',
