@@ -432,6 +432,14 @@ export const LEARN_TOPICS = [
     questions: ['How do I measure a system?', 'How do I time a delay tower?', 'Point source or array?'],
   },
   {
+    slug: 'space',
+    group: 'room',
+    tag: 'Spatial audio',
+    title: 'Putting a sound somewhere',
+    blurb: 'Polarity is a sign flip and phase is a time relationship that differs at every frequency, so a button fixes one and not the other. What a square, saw and triangle are actually made of. And four ways of placing a sound in a room that fail differently — by moving, by frequency, by order, and by whose head it was measured on.',
+    questions: ['Polarity or phase?', 'What is a square wave made of?', 'VBAP, WFS or ambisonics?'],
+  },
+  {
     slug: 'light',
     group: 'room',
     tag: 'Light & video',
