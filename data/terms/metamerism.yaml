@@ -1,0 +1,36 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: metamerism
+en: Metamerism
+zh_hant: 同色異譜
+domain: lighting
+definition_en: Two different spectra that look identical to a human observer. The eye has
+  three cone types, so it collapses a whole spectrum into three numbers, and many different
+  spectra collapse to the same three. A camera's three sensitivity curves are not the eye's,
+  so a pair that matches by eye can visibly clash on a broadcast feed.
+definition_zh_hant: 兩種不同的光譜在人眼看來完全相同。人眼只有三種錐狀細胞，會把整段光譜壓縮成三個數值，而許多不同光譜會壓縮成同一組數值。攝影機的三條感光曲線與人眼不同，因此肉眼看來相配的兩者，在轉播訊號上可能明顯不搭。
+regional_variants:
+- region: UK / US
+  term: Metamerism / metameric match
+- region: HK / TW
+  term: 同色異譜 / 條件等色
+false_friends:
+- A metameric match holds under one spectrum only. Two fabrics that match in the workroom
+  can separate under a narrowband LED wash, so samples must be approved under the rig.
+see_also:
+- additive-mixing
+- colour-temperature
+tags:
+- lighting
+- colour
+- video
+sources:
+- title: CIE colorimetry and colour mixing fundamentals
+  url: https://cie.co.at/e-ilv
+  publisher: International Commission on Illumination
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

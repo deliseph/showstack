@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: additive-mixing
+en: Additive colour mixing
+zh_hant: 加色混合
+domain: lighting
+definition_en: Mixing by adding light. Each emitter contributes its own spectrum and the
+  surface receives the sum, so you start at black and every source you bring up adds. Red
+  plus green is yellow. This is what multi-emitter LED fixtures do, and what any two lamps
+  pointed at the same wall do.
+definition_zh_hant: 以疊加光線來混色。每個發光體貢獻自己的光譜，表面接收到的是總和，因此起點是黑，每加一盞燈就加一分光。紅加綠得黃。多晶片
+  LED 燈具即以此方式混色，兩盞燈打在同一面牆上亦然。
+regional_variants:
+- region: UK / US
+  term: Additive mixing
+- region: HK / TW
+  term: 加色混合 / 加法混色
+false_friends:
+- The primaries differ from paint's. Additive primaries are red, green and blue; subtractive
+  are cyan, magenta and yellow. Anyone taught colour with paint expects red and green to
+  make brown.
+see_also:
+- subtractive-mixing
+- metamerism
+tags:
+- lighting
+- colour
+sources:
+- title: CIE colorimetry and colour mixing fundamentals
+  url: https://cie.co.at/e-ilv
+  publisher: International Commission on Illumination
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

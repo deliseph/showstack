@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: cri
+en: CRI (Colour Rendering Index)
+zh_hant: 顯色指數
+domain: lighting
+definition_en: A single number summarising how faithfully a source renders a set of test
+  colours against a reference illuminant. The general figure, Ra, averages eight pale test
+  samples. R9 — the deep red sample — is not in that average, which is why a source can post
+  a high CRI and still render skin and reds badly.
+definition_zh_hant: 以單一數值概括光源相對於參考光源、還原一組測試顏色的忠實度。一般公布的
+  Ra 值是八個淺色測試樣本的平均。深紅色樣本 R9 並不在這個平均之內，因此一支光源可以標示很高的顯色指數，卻仍然把膚色與紅色還原得很差。
+regional_variants:
+- region: UK / US
+  term: CRI / Ra
+- region: HK / TW
+  term: 顯色指數 / 演色性
+false_friends:
+- CRI 95 says nothing on its own about R9. Ask for R9 stated separately, and for TM-30's Rf
+  and Rg, which use 99 samples and report fidelity and gamut as two different things.
+see_also:
+- colour-temperature
+- metamerism
+tags:
+- lighting
+- colour
+- measurement
+sources:
+- title: CIE 13.3 Method of measuring and specifying colour rendering properties of light sources
+  url: https://cie.co.at/publications/method-measuring-and-specifying-colour-rendering-properties-light-sources
+  publisher: International Commission on Illumination
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

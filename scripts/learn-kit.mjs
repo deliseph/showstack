@@ -448,6 +448,14 @@ export const LEARN_TOPICS = [
     questions: ['Why is my neutral hot?', 'Breaker or RCD?', 'Why does it brown out?'],
   },
   {
+    slug: 'mixing',
+    group: 'room',
+    tag: 'Colour',
+    title: 'Why the shadow is blue',
+    blurb: 'Emitters add spectra and filters multiply transmissions, and every surprise in stage colour follows from that: why a deep colour on a CMY fixture is a dim one, why a red costume goes black under green, why two sources cast two coloured shadows, and why the camera disagrees with your eye.',
+    questions: ['Why is that shadow blue?', 'Why did the costume go black?', 'CMY or LED?'],
+  },
+  {
     slug: 'outdoors',
     group: 'room',
     tag: 'Outdoors',
@@ -470,6 +478,14 @@ export const LEARN_TOPICS = [
     title: 'How it all runs together',
     blurb: 'One familiar system pulled apart — Google Maps — then four show systems built the same way: tracked followspots, an LED volume, AR and XR, and the timecode spine that holds a stadium together.',
     questions: ['What makes things synchronised?', 'How does an LED volume work?', 'AR, VR or XR?'],
+  },
+  {
+    slug: 'timecode',
+    group: 'system',
+    tag: 'Sync',
+    title: 'What is actually in a timecode frame',
+    blurb: 'An LTC frame is 80 bits and only 26 of them are the time, stored as BCD behind a sync word that cannot occur anywhere else. MTC sends the same value four bits at a time and is always two frames behind. Drop frame drops numbers, not frames. And MIDI framing is one bit.',
+    questions: ['What is in an LTC frame?', 'Why is MTC two frames late?', 'How do I read MIDI hex?'],
   },
   {
     slug: 'aerial',

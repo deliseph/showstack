@@ -2220,3 +2220,553 @@ export function coaxReach(attenuationDbPer100m, atFrequencyMhz, opts = {}) {
     },
   }
 }
+
+/**
+ * sRGB transfer function, both directions.
+ *
+ * Every colour mixing mistake in lighting has this at the bottom of it. A
+ * fixture at 50% is not half the light, and two fixtures at 50% are not one
+ * at 100% — not because the fixtures lie, but because the numbers people type
+ * are gamma-encoded and the photons add linearly. Mixing has to happen in
+ * linear light and be encoded back afterwards, and skipping that step is why
+ * a naive average of two colours comes out too dark.
+ */
+export function srgbToLinear(c) {
+  const v = Number(c) / 255
+  if (!Number.isFinite(v)) return null
+  const x = Math.min(1, Math.max(0, v))
+  return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+}
+
+export function linearToSrgb(l) {
+  const v = Number(l)
+  if (!Number.isFinite(v)) return null
+  const x = Math.min(1, Math.max(0, v))
+  const e = x <= 0.0031308 ? 12.92 * x : 1.055 * x ** (1 / 2.4) - 0.055
+  return Math.round(e * 255)
+}
+
+/**
+ * Colour mixing, and the colour of the shadows it casts.
+ *
+ * Two operations share the word "mixing" and they are opposites.
+ *
+ * ADDITIVE is what a multi-emitter LED fixture does, and what two lamps
+ * pointed at the same wall do. Each source contributes its own spectrum and
+ * they sum. You start at black and add. Red plus green is yellow, which is
+ * the fact that makes no sense with paint and perfect sense with light.
+ *
+ * SUBTRACTIVE is what a CMY fixture does, and what a gel does, and what a
+ * costume does. One white source passes through things that each REMOVE part
+ * of the spectrum, and removal is multiplication, not addition. You start at
+ * white and take away. Stack enough and you get black, which is why a deep
+ * colour on a subtractive fixture is also a dim one.
+ *
+ * An object's reflectance behaves exactly like a filter's transmission — it
+ * multiplies — which is why the same function answers "what does this gel
+ * do" and "why has that red costume gone black".
+ *
+ * Then the shadows. This is the part people ask about and it has a completely
+ * mechanical answer: a shadow is not an absence of light, it is the light
+ * that still arrives. Block one of two sources and the shadow is lit by
+ * everything else, so it takes the colour of the OTHER source. Two coloured
+ * sources from two angles give two coloured shadows, each in the opposite
+ * source's colour, and neither of them is grey.
+ *
+ * (There is a second, perceptual reason shadows read coloured — the visual
+ * system adapts to the dominant illuminant, so a neutral shadow under a warm
+ * key looks blue. That one is not arithmetic and is not modelled here.)
+ */
+export function colourMix(sources, mode = 'additive') {
+  if (!Array.isArray(sources) || sources.length === 0) return null
+  const lit = []
+  for (const s of sources) {
+    const r = srgbToLinear(s.r), g = srgbToLinear(s.g), b = srgbToLinear(s.b)
+    if (r === null || g === null || b === null) return null
+    const level = s.level === undefined ? 1 : Number(s.level)
+    if (!Number.isFinite(level) || level < 0 || level > 1) return null
+    lit.push({ name: s.name ?? null, level, lin: [r * level, g * level, b * level], raw: [r, g, b] })
+  }
+
+  const clamp01 = (x) => Math.min(1, Math.max(0, x))
+  const encode = (v) => v.map(linearToSrgb)
+  const hex = (v) => '#' + encode(v).map((n) => n.toString(16).padStart(2, '0')).join('')
+  // Rec. 709 luminance weights: green carries most of the brightness, which
+  // is why swapping a green emitter for an amber costs so much output.
+  const luma = (v) => 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]
+  const r3 = (x) => Math.round(x * 1000) / 1000
+
+  const sum = (list) => {
+    const t = [0, 0, 0]
+    for (const s of list) for (let i = 0; i < 3; i++) t[i] += s.lin[i]
+    return t
+  }
+
+  let mixedRaw
+  if (mode === 'additive') {
+    mixedRaw = sum(lit)
+  } else if (mode === 'subtractive') {
+    // Start at white and multiply by each transmission. Level dials the
+    // filter in and out: at level 0 the filter is out of the beam entirely.
+    mixedRaw = [1, 1, 1]
+    for (const s of lit) {
+      for (let i = 0; i < 3; i++) {
+        mixedRaw[i] *= 1 - s.level * (1 - s.raw[i])
+      }
+    }
+  } else {
+    return null
+  }
+
+  const over = mixedRaw.some((v) => v > 1.0001)
+  const mixed = mixedRaw.map(clamp01)
+
+  return {
+    mode,
+    linear: mixed.map(r3),
+    rgb: encode(mixed),
+    hex: hex(mixed),
+    luminance: r3(luma(mixed)),
+    // Clipping is a real fixture condition, not a rounding note: it means a
+    // channel has run out of headroom and the hue is now shifting as you
+    // push, rather than the fixture getting brighter.
+    clipped: over,
+    headroom: r3(1 - Math.max(...mixed)),
+    /**
+     * The colour of the shadow cast by an object that blocks source `index`.
+     * Additive only — a shadow is about which sources reach the surface, and
+     * a subtractive stack is one source with things in front of it.
+     */
+    shadowOf: (index) => {
+      if (mode !== 'additive') return null
+      const i = Number(index)
+      if (!Number.isInteger(i) || i < 0 || i >= lit.length) return null
+      const rest = sum(lit.filter((_, k) => k !== i)).map(clamp01)
+      return {
+        blocked: lit[i].name,
+        linear: rest.map(r3),
+        rgb: encode(rest),
+        hex: hex(rest),
+        luminance: r3(luma(rest)),
+        // A shadow with nothing else reaching it really is black. With
+        // anything else reaching it, it is that colour, not a dark grey.
+        black: rest.every((v) => v < 0.002),
+      }
+    },
+  }
+}
+
+/**
+ * Mixing two or more white sources of different colour temperature.
+ *
+ * Colour temperature does not average in kelvin, it averages in mireds —
+ * reciprocal megakelvin — because that is the scale on which equal steps look
+ * equal, and it is the scale gel manufacturers print their shift values on.
+ * Half of 3200 K and half of 6500 K is not 4850 K; it is about 4290 K, and
+ * the difference is visible.
+ *
+ *   mired = 1e6 / kelvin
+ *   result = 1e6 / (weighted mean of the mireds)
+ *
+ * The warning this returns matters more than the number. Two sources on the
+ * Planckian locus mix to a point OFF it, toward green, because the locus is a
+ * curve and mixing walks the straight line between two points on it. That is
+ * why mixing a tungsten wash with a daylight LED gives a result that reads
+ * slightly green on camera even when both sources are individually clean, and
+ * why the fix is a minus-green correction rather than a colour temperature
+ * change.
+ */
+export function mixWhites(sources) {
+  if (!Array.isArray(sources) || sources.length < 1) return null
+  let miredSum = 0
+  let weightSum = 0
+  const parts = []
+  for (const s of sources) {
+    const k = Number(s.cct)
+    const level = s.level === undefined ? 1 : Number(s.level)
+    if (!Number.isFinite(k) || k < 1000 || k > 20000) return null
+    if (!Number.isFinite(level) || level < 0 || level > 1) return null
+    const mired = 1e6 / k
+    miredSum += mired * level
+    weightSum += level
+    parts.push({ cct: k, mired: Math.round(mired), level })
+  }
+  if (weightSum <= 0) return null
+  const meanMired = miredSum / weightSum
+  const result = Math.round(1e6 / meanMired)
+  const kelvinAverage = Math.round(parts.reduce((n, p) => n + p.cct * p.level, 0) / weightSum)
+
+  // How far apart the sources are, in mireds. The threshold is 30 rather than
+  // some rounder number because 1/8 CTB is about 20 mireds and is the
+  // smallest correction anybody stocks: a flag that fires below the smallest
+  // available fix is a flag that only ever means "ignore me".
+  const mireds = parts.filter((p) => p.level > 0).map((p) => p.mired)
+  const spread = mireds.length > 1 ? Math.max(...mireds) - Math.min(...mireds) : 0
+
+  return {
+    parts,
+    resultK: result,
+    resultMired: Math.round(meanMired),
+    // The number people expect, and the size of their mistake.
+    naiveKelvinAverage: kelvinAverage,
+    kelvinErrorIfAveraged: kelvinAverage - result,
+    miredSpread: spread,
+    // Mixing walks a straight line between two points on a curve, and the
+    // curve bulges away from that line.
+    greenShift: spread > 30,
+    advice: spread > 100
+      ? 'Far apart: expect a visible green cast off the Planckian locus. Correct with minus-green, not with colour temperature.'
+      : spread > 30
+        ? 'Mildly off the locus. Usually invisible by eye, sometimes visible on camera.'
+        : 'Close enough that the mix stays on the locus.',
+  }
+}
+
+/**
+ * What is actually inside one LTC frame.
+ *
+ * Linear timecode is 80 bits per frame, sent as an audio signal, and only 26
+ * of those bits are the time. The rest is 32 user bits, a handful of flags,
+ * and a 16-bit sync word.
+ *
+ * The time is stored as BCD — binary-coded decimal — with each digit in its
+ * own little field, LSB first. That is why you can read the digits straight
+ * out of a bit dump without dividing anything, and it is why the tens fields
+ * are the odd widths they are: frame tens only has to count to 2, so it gets
+ * two bits, and seconds tens only has to reach 5, so it gets three.
+ *
+ * The sync word is bits 64-79 and it is 0011111111111101. Twelve consecutive
+ * ones cannot occur anywhere else in the frame, because biphase mark encoding
+ * guarantees a transition at every bit boundary and the data fields are
+ * broken up by flags. So a reader finds the frame boundary by looking for
+ * that run — and because the word is not a palindrome, whether it arrives
+ * forwards or backwards also tells the reader which way the tape is moving.
+ * That is why LTC can be read while shuttling in reverse.
+ *
+ * Bits 27, 43, 58 and 59 carry binary group flags and a polarity correction
+ * bit whose assignment differs between 25 fps and 30 fps systems and between
+ * revisions of SMPTE 12M. They are returned as named flag bits rather than
+ * given a specific meaning here.
+ */
+export const LTC_SYNC_WORD = '0011111111111101'
+
+export function ltcFrame(h, m, s, f, opts = {}) {
+  const H = Number(h), M = Number(m), S = Number(s), F = Number(f)
+  if (![H, M, S, F].every(Number.isInteger)) return null
+  if (H < 0 || H > 23 || M < 0 || M > 59 || S < 0 || S > 59 || F < 0 || F > 29) return null
+
+  const bits = new Array(80).fill(0)
+  // Each field is written LSB first, starting at its own bit position.
+  const put = (start, width, value) => {
+    for (let i = 0; i < width; i++) bits[start + i] = (value >> i) & 1
+  }
+  const fields = [
+    { name: 'frame units', start: 0, width: 4, value: F % 10 },
+    { name: 'user bits 1', start: 4, width: 4, value: 0, user: true },
+    { name: 'frame tens', start: 8, width: 2, value: Math.floor(F / 10) },
+    { name: 'drop frame flag', start: 10, width: 1, value: opts.dropFrame ? 1 : 0, flag: true },
+    { name: 'colour frame flag', start: 11, width: 1, value: opts.colourFrame ? 1 : 0, flag: true },
+    { name: 'user bits 2', start: 12, width: 4, value: 0, user: true },
+    { name: 'second units', start: 16, width: 4, value: S % 10 },
+    { name: 'user bits 3', start: 20, width: 4, value: 0, user: true },
+    { name: 'second tens', start: 24, width: 3, value: Math.floor(S / 10) },
+    { name: 'flag bit', start: 27, width: 1, value: 0, flag: true },
+    { name: 'user bits 4', start: 28, width: 4, value: 0, user: true },
+    { name: 'minute units', start: 32, width: 4, value: M % 10 },
+    { name: 'user bits 5', start: 36, width: 4, value: 0, user: true },
+    { name: 'minute tens', start: 40, width: 3, value: Math.floor(M / 10) },
+    { name: 'flag bit', start: 43, width: 1, value: 0, flag: true },
+    { name: 'user bits 6', start: 44, width: 4, value: 0, user: true },
+    { name: 'hour units', start: 48, width: 4, value: H % 10 },
+    { name: 'user bits 7', start: 52, width: 4, value: 0, user: true },
+    { name: 'hour tens', start: 56, width: 2, value: Math.floor(H / 10) },
+    { name: 'flag bit', start: 58, width: 1, value: 0, flag: true },
+    { name: 'flag bit', start: 59, width: 1, value: 0, flag: true },
+    { name: 'user bits 8', start: 60, width: 4, value: 0, user: true },
+  ]
+  for (const fl of fields) put(fl.start, fl.width, fl.value)
+  // The sync word is a fixed pattern, not a computed value.
+  for (let i = 0; i < 16; i++) bits[64 + i] = Number(LTC_SYNC_WORD[i])
+
+  const timeBits = fields.filter((x) => !x.user && !x.flag).reduce((n, x) => n + x.width, 0)
+  return {
+    bits,
+    string: bits.join(''),
+    fields: [...fields, { name: 'sync word', start: 64, width: 16, value: null, sync: true }],
+    timeBits,
+    userBits: 32,
+    totalBits: 80,
+    syncWord: LTC_SYNC_WORD,
+    // 80 bits every frame, and the bit rate is what makes LTC an audio signal
+    // rather than a data one: at 30 fps it is 2400 bit/s, squarely inside
+    // what an analogue audio track can carry.
+    bitRateAt: (fps) => {
+      const r = Number(fps)
+      return Number.isFinite(r) && r > 0 ? Math.round(r * 80) : null
+    },
+  }
+}
+
+/**
+ * MIDI timecode: the same time, dribbled out over a 31 250 baud wire.
+ *
+ * MIDI is slow, so MTC does not send a whole timecode value per frame. It
+ * sends a quarter-frame message eight times, each carrying four bits, and
+ * eight quarter-frames at four per frame takes TWO frames to complete.
+ *
+ * That is the fact everybody trips over: a running MTC reader is always two
+ * frames behind the transmitter, and a receiver that does not add the offset
+ * back is quietly two frames out on every cue. It is also why MTC has a
+ * separate full-frame message for locating, used when transport is stopped:
+ * there is nothing to be two frames behind of.
+ *
+ *   F1 0nnndddd    nnn = which of the 8 pieces, dddd = the 4 data bits
+ *
+ * Piece 7 carries the top hours bit AND the frame rate, which is why the rate
+ * is only known once the whole sequence has arrived.
+ */
+export const MTC_RATES = { '24': 0, '25': 1, '29.97df': 2, '30': 3 }
+
+export function mtcQuarterFrames(h, m, s, f, rate = '25') {
+  const H = Number(h), M = Number(m), S = Number(s), F = Number(f)
+  if (![H, M, S, F].every(Number.isInteger)) return null
+  if (H < 0 || H > 23 || M < 0 || M > 59 || S < 0 || S > 59 || F < 0 || F > 29) return null
+  const rateCode = MTC_RATES[rate]
+  if (rateCode === undefined) return null
+
+  const nibbles = [
+    { piece: 0, label: 'frame low', value: F & 0x0f },
+    { piece: 1, label: 'frame high', value: (F >> 4) & 0x0f },
+    { piece: 2, label: 'second low', value: S & 0x0f },
+    { piece: 3, label: 'second high', value: (S >> 4) & 0x0f },
+    { piece: 4, label: 'minute low', value: M & 0x0f },
+    { piece: 5, label: 'minute high', value: (M >> 4) & 0x0f },
+    { piece: 6, label: 'hour low', value: H & 0x0f },
+    { piece: 7, label: 'hour high + rate', value: ((rateCode << 1) | ((H >> 4) & 0x01)) & 0x0f },
+  ]
+  const hex = (n) => n.toString(16).toUpperCase().padStart(2, '0')
+  const messages = nibbles.map((n) => ({
+    ...n,
+    data: (n.piece << 4) | n.value,
+    hex: `F1 ${hex((n.piece << 4) | n.value)}`,
+  }))
+
+  // Full frame, for locating while stopped: hours carries the rate in bits 5-6.
+  const fullFrame = ['F0', '7F', '7F', '01', '01', hex((rateCode << 5) | H), hex(M), hex(S), hex(F), 'F7']
+
+  return {
+    rate,
+    rateCode,
+    messages,
+    // Eight pieces at four per frame. This is the two-frame lag, stated as
+    // arithmetic rather than as folklore.
+    piecesPerFrame: 4,
+    framesToComplete: 2,
+    fullFrame: fullFrame.join(' '),
+    // What the wire actually costs: 2 bytes per quarter frame, 4 per frame.
+    bytesPerSecondAt: (fps) => {
+      const r = Number(fps)
+      return Number.isFinite(r) && r > 0 ? Math.round(r * 4 * 2) : null
+    },
+  }
+}
+
+/**
+ * Reading MIDI as hex bytes.
+ *
+ * One rule does all the parsing: a status byte has its top bit set (0x80 to
+ * 0xFF) and a data byte does not (0x00 to 0x7F). That is the whole framing
+ * mechanism — there is no packet header, no length field and no checksum, so
+ * a receiver that joins a stream mid-message resynchronises on the next byte
+ * with the high bit set.
+ *
+ * For channel messages the high nibble is the command and the low nibble is
+ * the channel, zero-based on the wire and displayed one-based by nearly every
+ * piece of software, which is the off-by-one everybody meets once.
+ *
+ * Running status is the compression: if the status byte would be the same as
+ * the last one, it can be left out and only the data bytes sent. It is why a
+ * dump of a busy MIDI stream has long runs with no status byte in sight, and
+ * why "note on with velocity 0" exists as a note off — it lets a whole
+ * passage of notes on and off share one 0x9n status byte.
+ */
+export const MIDI_CHANNEL = {
+  0x8: { name: 'Note Off', data: 2, fields: ['note', 'velocity'] },
+  0x9: { name: 'Note On', data: 2, fields: ['note', 'velocity'] },
+  0xa: { name: 'Poly Aftertouch', data: 2, fields: ['note', 'pressure'] },
+  0xb: { name: 'Control Change', data: 2, fields: ['controller', 'value'] },
+  0xc: { name: 'Program Change', data: 1, fields: ['program'] },
+  0xd: { name: 'Channel Aftertouch', data: 1, fields: ['pressure'] },
+  0xe: { name: 'Pitch Bend', data: 2, fields: ['LSB', 'MSB'] },
+}
+
+export const MIDI_SYSTEM = {
+  0xf1: { name: 'MTC Quarter Frame', data: 1 },
+  0xf2: { name: 'Song Position Pointer', data: 2 },
+  0xf3: { name: 'Song Select', data: 1 },
+  0xf6: { name: 'Tune Request', data: 0 },
+  0xf8: { name: 'Timing Clock', data: 0 },
+  0xfa: { name: 'Start', data: 0 },
+  0xfb: { name: 'Continue', data: 0 },
+  0xfc: { name: 'Stop', data: 0 },
+  0xfe: { name: 'Active Sensing', data: 0 },
+  0xff: { name: 'System Reset', data: 0 },
+}
+
+export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+/** Note number to name. Middle C = 60 = C3 in the Yamaha convention used here. */
+export function midiNoteName(n) {
+  const v = Number(n)
+  if (!Number.isInteger(v) || v < 0 || v > 127) return null
+  return `${NOTE_NAMES[v % 12]}${Math.floor(v / 12) - 2}`
+}
+
+export function midiDecode(input) {
+  if (typeof input !== 'string') return null
+  const bytes = []
+  for (const tok of input.replace(/0x/gi, ' ').split(/[\s,;:]+/)) {
+    if (!tok) continue
+    if (!/^[0-9a-fA-F]{1,2}$/.test(tok)) return { error: `"${tok}" is not a hex byte`, messages: [] }
+    bytes.push(parseInt(tok, 16))
+  }
+  if (!bytes.length) return { error: null, messages: [], bytes: 0 }
+
+  const hex = (n) => n.toString(16).toUpperCase().padStart(2, '0')
+  const messages = []
+  let running = null
+  let i = 0
+
+  while (i < bytes.length) {
+    let status = bytes[i]
+    let usedRunning = false
+    if (status < 0x80) {
+      // No status byte here: running status, or junk before the first one.
+      if (running === null) {
+        messages.push({ raw: [hex(status)], name: 'orphan data byte', detail: 'No status byte has been seen yet, so this cannot be interpreted. A receiver would discard it.', error: true })
+        i++
+        continue
+      }
+      status = running
+      usedRunning = true
+    } else {
+      i++
+      // Only channel messages set running status; system messages clear it,
+      // except realtime bytes, which may appear inside another message and
+      // must not disturb it.
+      if (status < 0xf0) running = status
+      else if (status < 0xf8) running = null
+    }
+
+    if (status === 0xf0) {
+      const start = i
+      while (i < bytes.length && bytes[i] !== 0xf7) i++
+      const body = bytes.slice(start, i)
+      const terminated = bytes[i] === 0xf7
+      if (terminated) i++
+      messages.push({
+        raw: ['F0', ...body.map(hex), ...(terminated ? ['F7'] : [])],
+        name: 'System Exclusive',
+        detail: sysexDetail(body),
+        error: !terminated,
+        ...(terminated ? {} : { note: 'unterminated: no F7' }),
+      })
+      continue
+    }
+
+    const high = status >> 4
+    const spec = MIDI_CHANNEL[high] ?? MIDI_SYSTEM[status]
+    if (!spec) {
+      messages.push({ raw: [hex(status)], name: `undefined status ${hex(status)}`, detail: 'Not a defined MIDI message.', error: true })
+      continue
+    }
+
+    const data = []
+    for (let k = 0; k < spec.data; k++) {
+      if (i >= bytes.length || bytes[i] >= 0x80) break
+      data.push(bytes[i]); i++
+    }
+    const short = data.length < spec.data
+    const raw = [...(usedRunning ? [] : [hex(status)]), ...data.map(hex)]
+
+    messages.push({
+      raw,
+      status: hex(status),
+      name: spec.name,
+      channel: high >= 0x8 && high <= 0xe ? (status & 0x0f) + 1 : null,
+      data,
+      runningStatus: usedRunning,
+      error: short,
+      detail: short ? `Truncated: expected ${spec.data} data byte${spec.data === 1 ? '' : 's'}, got ${data.length}.`
+        : channelDetail(high, status, data),
+    })
+  }
+
+  return { error: null, bytes: bytes.length, messages }
+}
+
+export function channelDetail(high, status, d) {
+  const ch = (status & 0x0f) + 1
+  if (high === 0x9 && d[1] === 0) {
+    return `Note ${midiNoteName(d[0])} (${d[0]}) off on channel ${ch} — a Note On at velocity 0 is a Note Off, which is what lets a whole passage share one status byte under running status.`
+  }
+  if (high === 0x8 || high === 0x9) {
+    return `Note ${midiNoteName(d[0])} (${d[0]}) ${high === 0x9 ? 'on' : 'off'}, channel ${ch}, velocity ${d[1]}.`
+  }
+  if (high === 0xb) return `Controller ${d[0]} set to ${d[1]} on channel ${ch}.`
+  if (high === 0xc) return `Program ${d[0]} (often shown as ${d[0] + 1}) on channel ${ch}.`
+  if (high === 0xa) return `Pressure ${d[1]} on note ${midiNoteName(d[0])} (${d[0]}), channel ${ch}.`
+  if (high === 0xd) return `Channel pressure ${d[0]} on channel ${ch}.`
+  if (high === 0xe) {
+    const v = (d[1] << 7) | d[0]
+    return `Pitch bend ${v} of 16383, centre 8192 — 14 bits sent LSB first, so the value is (MSB << 7) | LSB.`
+  }
+  if (status === 0xf1) {
+    const piece = (d[0] >> 4) & 0x07
+    const nibble = d[0] & 0x0f
+    const labels = ['frame low', 'frame high', 'second low', 'second high', 'minute low', 'minute high', 'hour low', 'hour high + rate']
+    return `MTC piece ${piece} of 8 — ${labels[piece]}, value ${nibble}. Eight of these make one timecode value and take two frames to arrive.`
+  }
+  if (status === 0xf2) {
+    const v = (d[1] << 7) | d[0]
+    return `Song position ${v} sixteenth notes from the start — 14 bits, LSB first.`
+  }
+  return null
+}
+
+/**
+ * MIDI Show Control command formats and commands.
+ *
+ * Only the values this repository already carries a source for, on the
+ * `midi-show-control` protocol entry. Everything else decodes as its raw
+ * number rather than being guessed at — a show-control decoder that
+ * confidently mislabels a command is worse than one that says "0x14".
+ */
+export const MSC_FORMATS = { 0x01: 'Lighting (General)', 0x02: 'Moving Lights', 0x7f: 'All-types' }
+export const MSC_COMMANDS = { 0x01: 'GO', 0x02: 'STOP', 0x03: 'RESUME' }
+
+export function sysexDetail(body) {
+  if (body[0] === 0x7f && body[2] === 0x02) {
+    const fmt = MSC_FORMATS[body[3]] ?? `format 0x${(body[3] ?? 0).toString(16).toUpperCase()}`
+    const cmd = MSC_COMMANDS[body[4]] ?? `command 0x${(body[4] ?? 0).toString(16).toUpperCase()}`
+    // Cue data is ASCII digits with 0x00 between cue number, list and path.
+    const parts = []
+    let cur = ''
+    for (const byte of body.slice(5)) {
+      if (byte === 0x00) { parts.push(cur); cur = '' } else cur += String.fromCharCode(byte)
+    }
+    if (cur) parts.push(cur)
+    const [number, list, path] = parts
+    const cue = number
+      ? ` Cue ${number}${list ? ` in list ${list}` : ''}${path ? `, path ${path}` : ''}.`
+      : ''
+    const device = body[1] === 0x7f ? 'all-call (127)' : body[1]
+    return `MIDI Show Control: ${cmd} to ${fmt}, device ${device}.${cue}`
+      + (body[1] === 0x7f ? ' All-call means every receiver acts on this, whatever its device ID.' : '')
+  }
+  if (body[0] === 0x7f && body[2] === 0x01 && body[3] === 0x01) {
+    return 'Universal realtime, MTC full frame — the locate message used when transport is stopped, carrying a whole timecode value at once.'
+  }
+  if (body[0] === 0x7e) return 'Universal non-realtime.'
+  return `Manufacturer ${body[0] === undefined ? '?' : '0x' + body[0].toString(16).toUpperCase()}, ${Math.max(0, body.length - 1)} data bytes.`
+}

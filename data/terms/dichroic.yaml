@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dichroic
+en: Dichroic filter
+zh_hant: 二向色濾片
+domain: lighting
+definition_en: A filter that reflects the wavelengths it does not pass, rather than absorbing
+  them. Made from thin interference coatings on glass. Because the rejected light leaves
+  rather than turning into heat in the filter, a dichroic survives sitting in a beam that
+  would burn a gel to ash in seconds — which is why colour-mixing flags in moving lights are
+  dichroic and not gel.
+definition_zh_hant: 把不通過的波長反射掉、而非吸收掉的濾片，以玻璃上的薄膜干涉鍍層製成。被擋下的光是離開而非在濾片內轉為熱，所以二向色濾片能長時間待在會把色紙瞬間燒穿的光束裡
+  —— 這正是搖頭燈的混色葉片用二向色而非色紙的原因。
+regional_variants:
+- region: UK / US
+  term: Dichroic / dichro
+- region: HK / TW
+  term: 二向色濾片 / 分光鏡片
+false_friends:
+- A dichroic works by interference, so its colour shifts with the angle light strikes it. The
+  edge of a beam reads differently from the centre; that is physics, not a faulty filter.
+see_also:
+- gel
+- subtractive-mixing
+tags:
+- lighting
+- colour
+- optics
+sources:
+- title: CIE colorimetry and colour mixing fundamentals
+  url: https://cie.co.at/e-ilv
+  publisher: International Commission on Illumination
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

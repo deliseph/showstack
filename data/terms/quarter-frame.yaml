@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: quarter-frame
+en: Quarter frame message
+zh_hant: 四分之一幀訊息
+domain: video
+definition_en: The MIDI Timecode message that carries four bits of a timecode value. Eight of
+  them make one complete value, sent four per frame, so a value takes two frames to arrive.
+  That is why a running MTC receiver is always two frames behind the transmitter and needs an
+  offset applied. Locating while stopped uses the full-frame message instead.
+definition_zh_hant: MIDI 時碼中攜帶四個位元時碼資料的訊息。八個組成一個完整的時碼值，每幀送四個，因此一個值需要兩幀才傳完。這就是為什麼運行中的
+  MTC 接收端永遠落後傳送端兩幀，必須補上偏移量。停止狀態下的定位改用 full frame 訊息。
+regional_variants:
+- region: UK / US
+  term: Quarter frame / QF
+- region: HK / TW
+  term: 四分之一幀訊息
+false_friends:
+- The frame rate rides in piece 7, the last one, so a receiver does not know what rate it is
+  being sent until a whole sequence has arrived.
+see_also:
+- drop-frame
+- running-status
+- frame-rate
+tags:
+- control
+- midi
+- timecode
+- sync
+sources:
+- title: MIDI 1.0 Detailed Specification
+  url: https://midi.org/midi-1-0-core-specifications
+  publisher: MIDI Association
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

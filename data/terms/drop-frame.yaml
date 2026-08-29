@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: drop-frame
+en: Drop frame
+zh_hant: 丟幀時碼
+domain: video
+definition_en: A timecode counting scheme that skips frame numbers 00 and 01 at the start of
+  every minute except every tenth minute, so the count stays in step with the wall clock at
+  29.97 fps. It drops numbers, not frames — no picture is lost. 108 labels an hour, which is
+  very close to the 107.89 frames a 30 fps counter gains over real 29.97 time.
+definition_zh_hant: 一種時碼計數方式：每分鐘開頭跳過 00 與 01 兩個幀號，但每第十分鐘不跳，使計數在 29.97 fps
+  下與牆上的時鐘同步。它丟的是編號而不是畫格，沒有任何影像遺失。每小時跳過 108 個編號，與 30 fps 計數器相對真實 29.97 時間所多算的
+  107.89 格非常接近。
+regional_variants:
+- region: UK / US
+  term: Drop frame / DF, against non-drop / NDF
+- region: HK / TW
+  term: 丟幀 / 掉幀時碼
+false_friends:
+- The name is the problem; no picture is dropped. And 00:01:00:00 is not a valid drop-frame
+  time at all, so a system that accepts it is not validating.
+see_also:
+- frame-rate
+- biphase-mark
+- quarter-frame
+tags:
+- video
+- timecode
+- sync
+sources:
+- title: SMPTE ST 12-1 Time and Control Code
+  url: https://www.smpte.org/standards
+  publisher: SMPTE
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

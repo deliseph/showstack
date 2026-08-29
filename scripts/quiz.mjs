@@ -33,6 +33,91 @@
  * not always last.
  */
 const BANK = {
+  mixing: [
+    {
+      q: 'Two fixtures, one warm and one blue, from opposite sides. An object casts two shadows. Why is neither of them grey?',
+      options: [
+        { text: 'The eye adapts to the dominant colour, so a neutral shadow looks tinted', why: 'This effect is real and it compounds with the physical one, but it is not the main answer here. Something measurable is going on before perception gets involved.' },
+        { text: 'Each shadow is lit by the source it does not block, so it is that source&rsquo;s colour', correct: true, why: 'Right. A shadow is not an absence of light, it is the light that still arrives. Block the warm source and the patch is lit by the blue one and nothing else, so it is exactly blue.' },
+        { text: 'The two beams interfere where they overlap', why: 'Light at these scales does not interfere in any way you can see on a wall. The sources simply add.' },
+        { text: 'The shadows pick up colour reflected from the surroundings', why: 'Bounce contributes in a real room, but the effect appears just as strongly in a black box where there is nothing to bounce off.' },
+      ],
+    },
+    {
+      q: 'A red costume looks almost black under a saturated green wash. What is the fix?',
+      options: [
+        { text: 'More level on the green wash', why: 'Four times nothing is still nothing. The costume is not dark, it is receiving no light it can return.' },
+        { text: 'A source with energy in the wavelengths the costume reflects', correct: true, why: 'Right. What you see is reflectance multiplied by the source spectrum, wavelength by wavelength. A red dye reflects long wavelengths; a saturated green LED emits almost none. The fix is spectral, which makes it a fixture-selection decision rather than a level one.' },
+        { text: 'A different gel on the same fixture', why: 'A gel only removes. It cannot put back energy the source never emitted.' },
+        { text: 'Re-dyeing the costume', why: 'Sometimes the real-world answer, but not the mechanism. The same costume reads perfectly under a source with red content.' },
+      ],
+    },
+    {
+      q: 'Why does a CMY fixture get dimmer as the colour gets deeper, when an LED fixture does not in the same way?',
+      options: [
+        { text: 'The CMY flags block airflow and the fixture thermally derates', why: 'Not the mechanism. The output falls immediately, not after the fixture warms up.' },
+        { text: 'Subtractive mixing removes spectrum, so saturation and output trade against each other', correct: true, why: 'Right. Each flag multiplies what is left, and a deep colour means a lot has been multiplied away. An additive fixture reaches a deep blue by not using its red and green emitters, which were contributing little to a blue anyway.' },
+        { text: 'Dichroic filters absorb more light at deeper settings', why: 'Dichroics reflect rather than absorb, which is how they survive the beam. The light is still gone from the output either way, but absorption is not the reason.' },
+        { text: 'The lamp dims automatically to protect the flags', why: 'No such mechanism. The source is running at the same output; less of it is getting out.' },
+      ],
+    },
+  ],
+  timecode: [
+    {
+      q: 'An LTC frame is 80 bits. How many of them are the actual time?',
+      options: [
+        { text: 'All 80 &mdash; hours, minutes, seconds and frames packed tightly', why: 'The time takes far less than that. Most of the frame is other things.' },
+        { text: '26, stored as BCD with each digit in its own field', correct: true, why: 'Right. 26 bits of time, 32 user bits, six flag bits and a 16-bit sync word. Storing each decimal digit separately is why the field widths look odd &mdash; frame tens only has to count to 2, so it gets two bits.' },
+        { text: '32, the same as the user bits', why: 'The user bits are 32; the time is smaller than that, because BCD digits that only count to 2 or 5 do not need four bits each.' },
+        { text: '64, with the last 16 as a checksum', why: 'The last 16 bits are the sync word, not a checksum. LTC has no checksum at all.' },
+      ],
+    },
+    {
+      q: 'Why can an editor read LTC while shuttling a tape backwards?',
+      options: [
+        { text: 'The reader buffers a frame and reverses it in software', why: 'No buffering is needed. The encoding itself is direction-tolerant.' },
+        { text: 'Biphase mark is self-clocking and the sync word is not a palindrome', correct: true, why: 'Right. A transition at every bit boundary provides the clock at any speed, and because the sync word reads differently backwards, the reader can tell not only where the frame starts but which direction it is arriving.' },
+        { text: 'LTC is transmitted twice, forwards and backwards', why: 'It is transmitted once. The properties that make it reversible are in the encoding.' },
+        { text: 'The tape machine tells the reader which way it is going', why: 'It may, but LTC does not need to be told &mdash; the sync word answers it.' },
+      ],
+    },
+    {
+      q: 'Your MTC-triggered cues are consistently two frames late. What is happening?',
+      options: [
+        { text: 'The MIDI cable is too long and the bytes are arriving late', why: 'MIDI propagation is microseconds. Two frames is 80 ms at 25 fps &mdash; four orders of magnitude out.' },
+        { text: 'Nothing is broken: eight quarter-frames at four per frame take two frames to arrive', correct: true, why: 'Right, and it is arithmetic rather than a fault. MTC sends four bits at a time, four times per frame, and a complete value only exists two frames after it started. The fix is an offset in the receiver, not a nudge on each cue.' },
+        { text: 'The sender is running at the wrong frame rate', why: 'A rate mismatch gives drift that grows, not a constant two-frame offset.' },
+        { text: 'The receiver is dropping quarter-frame messages', why: 'Dropped messages give erratic behaviour. A consistent two-frame offset is the design working as specified.' },
+      ],
+    },
+    {
+      q: 'Drop-frame timecode. What exactly gets dropped?',
+      options: [
+        { text: 'Two frames of picture at the start of most minutes', why: 'This is the belief the name creates, and it is why people are afraid of drop frame. No picture is lost at any point.' },
+        { text: 'Two frame numbers &mdash; labels that simply never occur', correct: true, why: 'Right. 00 and 01 are skipped at the start of every minute except every tenth. That is 108 numbers an hour, which is very close to the 107.89 frames a 30 fps counter gains over real 29.97 time. Every frame that was shot is still there.' },
+        { text: 'Nothing &mdash; drop frame is only a display setting', why: 'It genuinely changes the count. 00:01:00:00 does not exist in drop frame, and a system that accepts it is not validating.' },
+        { text: 'One frame every second, to make 30 into 29.97', why: 'That would lose 3600 frames an hour, over thirty times too many.' },
+      ],
+    },
+    {
+      q: 'You are reading a MIDI stream and see the bytes 90 3C 7F 3E 7F. How many messages is that?',
+      options: [
+        { text: 'One, with three data bytes', why: 'Note On takes exactly two data bytes. A third would have to belong to something else.' },
+        { text: 'Two &mdash; the second uses running status and omits the repeated 90', correct: true, why: 'Right. 3E and 7F have their top bits clear, so they are data bytes, and with no new status byte they inherit the last one. That is running status, and it is why busy MIDI dumps have long stretches with no status byte visible.' },
+        { text: 'Two, but the second is malformed because it has no status byte', why: 'It is not malformed &mdash; omitting a repeated status byte is the specified behaviour, not an error.' },
+        { text: 'It cannot be determined without knowing the device', why: 'It can. The high bit of each byte says everything needed to parse it, which is the whole framing mechanism.' },
+      ],
+    },
+    {
+      q: 'Pitch bend centre arrives as E0 00 40. Why is the small byte first?',
+      options: [
+        { text: 'MIDI is little-endian throughout', why: 'MIDI is not consistently one endianness; this is a specific convention for multi-byte values, and status and data bytes have no endianness at all.' },
+        { text: '14-bit values are sent as two 7-bit bytes, LSB first: value = (MSB &lt;&lt; 7) | LSB', correct: true, why: 'Right. Seven bits per data byte gives 128 steps, which is useless for a bend, so the value is split across two bytes least significant first. 00 then 40 reassembles to 8192, which is centre.' },
+        { text: 'The first byte is a controller number and the second is the value', why: 'That is the shape of a control change. Pitch bend has its own status byte and both data bytes are parts of one number.' },
+        { text: 'It is a manufacturer quirk that varies by device', why: 'It is specified, and it is the same on every compliant device.' },
+      ],
+    },
+  ],
   outdoors: [
     {
       q: 'A 3 &times; 6 m banner is fine in this morning&rsquo;s 8 m/s breeze. By afternoon the wind has doubled to 16 m/s. What has happened to the load on the structure?',
