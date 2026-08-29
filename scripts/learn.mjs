@@ -73,6 +73,7 @@ gap:6px 18px;font-size:12.5px;color:var(--dimmer);font-family:var(--mono)}
       <span class="ltag">${esc(t.tag)}</span>
       ${mins ? `<span class="lmin">${mins} min read</span>` : ''}
       <span class="ldone" hidden>read</span>
+      <span class="lchecked" hidden></span>
     </div>
     ${rest.length ? `<div class="lq">${rest.map((q) => `<span>${esc(q)}</span>`).join('')}</div>` : ''}
   </a>`
@@ -168,6 +169,9 @@ const PROGRESS_JS = `
 (function(){
   var KEY='ss-read';
   function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+  /* The check-yourself answers live under their own key; the hub reads both so
+     a card can say "read" and "3 checked" independently. */
+  function quiz(){try{return JSON.parse(localStorage.getItem('ss-quiz')||'{}')}catch(e){return {}}}
   function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
   var cards=[].slice.call(document.querySelectorAll('.lcard[data-slug]'));
   var box=document.getElementById('lprog');
@@ -178,13 +182,18 @@ const PROGRESS_JS = `
       var on=read.indexOf(c.dataset.slug)>-1;
       if(on){c.setAttribute('data-read','');n++}else{c.removeAttribute('data-read')}
       var d=c.querySelector('.ldone'); if(d)d.hidden=!on;
+      var chk=c.querySelector('.lchecked');
+      if(chk){var q=(quiz()[c.dataset.slug]||[]).length; chk.hidden=q===0;
+        if(q)chk.textContent=q+' checked';}
     });
     box.hidden=n===0;
     document.getElementById('lnum').textContent=n+' of '+cards.length+' read';
     document.getElementById('lbari').style.width=Math.round(n/cards.length*100)+'%';
   }
   document.getElementById('lreset').addEventListener('click',function(){
-    save([]); paint();
+    save([]);
+    try{localStorage.removeItem('ss-quiz')}catch(e){}
+    paint();
   });
   paint();
 })();

@@ -194,9 +194,13 @@ color:var(--ink);font-weight:600}
 .lcard .ltag{display:inline-block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
 letter-spacing:.6px;padding:3px 9px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-faint)}
 .lcard .lmin{font-family:var(--mono);font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.lcard .lchecked{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.7px;
+color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 45%,transparent);
+border-radius:999px;padding:3px 9px}
 .lcard .ldone{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.7px;
 color:var(--verified);border:1px solid color-mix(in srgb,var(--verified) 45%,transparent);
 border-radius:999px;padding:3px 9px;margin-left:auto}
+.lcard .ldone + .lchecked{margin-left:0}
 .lcard[data-read] .lqlead{color:var(--ink-muted)}
 .lcard[data-read]{border-color:color-mix(in srgb,var(--verified) 26%,var(--rule))}
 .lcard .lq{margin-top:13px;padding-top:12px;border-top:1px solid var(--rule);font-size:12.5px;
