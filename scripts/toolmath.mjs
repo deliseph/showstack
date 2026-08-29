@@ -4186,3 +4186,122 @@ export function wfsAliasing(spacingM, opts = {}) {
         : 'Low. Wavefront reconstruction only holds for the bottom of the spectrum here.',
   }
 }
+
+/**
+ * Finding the box that makes two things talk.
+ *
+ * The interop page already answers "can these two talk", and when the answer
+ * is no it says you need a gateway without naming one. That is the useful
+ * half missing, and the dataset can supply it: search every indexed product
+ * for one that can RECEIVE something A sends and SEND something B receives.
+ *
+ * Devices are the compact shape the interop page already builds:
+ *   { i: id, n: name, v: vendor, k: kind, s: [{ p: protocol, d: direction }] }
+ * with direction one of 'in', 'out' or 'bidirectional'.
+ *
+ * Two honest limits, both stated rather than hidden. This finds a path that
+ * EXISTS in the index; it does not know whether the box is in the building,
+ * whether the licence tier includes the protocol, or whether the conversion
+ * preserves what you care about. And an empty result means the index has no
+ * record, which is not the same as no such device existing.
+ */
+const canSend = (dev, proto) => (dev.s ?? []).some((x) => x.p === proto && x.d !== 'in')
+const canReceive = (dev, proto) => (dev.s ?? []).some((x) => x.p === proto && x.d !== 'out')
+
+export function directPaths(from, to) {
+  if (!from || !to || !Array.isArray(from.s) || !Array.isArray(to.s)) return null
+  const out = []
+  for (const s of from.s) {
+    if (s.d === 'in') continue
+    const match = to.s.find((x) => x.p === s.p && x.d !== 'out')
+    if (match) out.push({ protocol: s.p, fromDir: s.d, toDir: match.d })
+  }
+  return out
+}
+
+export function findBridges(from, to, catalogue, opts = {}) {
+  if (!from || !to || !Array.isArray(catalogue)) return null
+  const limit = Number(opts.limit ?? 8)
+  if (!Number.isInteger(limit) || limit < 1) return null
+
+  const direct = directPaths(from, to)
+  if (direct === null) return null
+
+  const bridges = []
+  for (const dev of catalogue) {
+    if (!dev || dev.i === from.i || dev.i === to.i) continue
+    // What this device could take from A, and what it could then hand to B.
+    const takes = (from.s ?? []).filter((s) => s.d !== 'in' && canReceive(dev, s.p)).map((s) => s.p)
+    const gives = (to.s ?? []).filter((s) => s.d !== 'out' && canSend(dev, s.p)).map((s) => s.p)
+    if (!takes.length || !gives.length) continue
+    // A device that only bridges a protocol to itself is not a bridge, it is
+    // a repeater — useful, but not the answer to "these cannot talk".
+    const converts = takes.some((t) => gives.some((g) => g !== t))
+    bridges.push({
+      id: dev.i,
+      name: dev.n,
+      vendor: dev.v ?? null,
+      kind: dev.k ?? null,
+      takes: [...new Set(takes)],
+      gives: [...new Set(gives)],
+      converts,
+      // How much of the device's vocabulary is doing the job. A box that
+      // speaks two things and bridges exactly those two is a purpose-built
+      // converter; one that speaks thirty is a console being used as glue.
+      breadth: (dev.s ?? []).length,
+    })
+  }
+
+  // A real conversion first, then the narrowest device that does the job:
+  // a two-protocol converter is a better answer than a lighting console that
+  // happens to speak both.
+  bridges.sort((a, b) => (b.converts - a.converts) || (a.breadth - b.breadth) || a.name.localeCompare(b.name))
+
+  return {
+    direct,
+    needsBridge: direct.length === 0,
+    bridges: bridges.slice(0, limit),
+    bridgeCount: bridges.length,
+    note: direct.length
+      ? 'These already share a protocol, so a bridge is a choice rather than a requirement.'
+      : bridges.length
+        ? 'A path exists in the index. It says nothing about whether the box is in the building, whether your licence tier includes the protocol, or whether the conversion preserves what you care about.'
+        : 'Nothing indexed bridges these. That is a gap in the index rather than a statement about what exists.',
+  }
+}
+
+/**
+ * A whole chain, checked hop by hop.
+ *
+ * A signal path is only as good as its worst joint, and the failure people
+ * actually have is not "these two cannot talk" but "the third box in the
+ * chain quietly cannot receive what the second one sends". Walking the chain
+ * and reporting every hop separately is the useful shape.
+ */
+export function checkChain(devices, catalogue = []) {
+  if (!Array.isArray(devices) || devices.length < 2) return null
+  const hops = []
+  for (let i = 0; i < devices.length - 1; i++) {
+    const from = devices[i], to = devices[i + 1]
+    if (!from || !to) return null
+    const paths = directPaths(from, to)
+    if (paths === null) return null
+    const suggestion = paths.length ? null : findBridges(from, to, catalogue, { limit: 3 })
+    hops.push({
+      from: from.n,
+      to: to.n,
+      protocols: paths.map((p) => p.protocol),
+      ok: paths.length > 0,
+      bridges: suggestion ? suggestion.bridges : [],
+    })
+  }
+  const broken = hops.filter((h) => !h.ok)
+  return {
+    hops,
+    ok: broken.length === 0,
+    brokenCount: broken.length,
+    // The first break is the one to fix; everything after it is untested in
+    // practice because nothing is reaching it yet.
+    firstBreak: broken.length ? hops.indexOf(broken[0]) : null,
+  }
+}

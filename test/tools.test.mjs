@@ -29,6 +29,7 @@ import {
   mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, sacnMulticast as sacnGroup,
   opticalSpot, OPTICAL_FORMATS, rcFilter, transformer,
   waveHarmonics, WAVE_SHAPES, vbapStereo, dbapGains, wfsAliasing,
+  directPaths, findBridges, checkChain,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3005,5 +3006,94 @@ describe('wave field synthesis', () => {
     assert.equal(wfsAliasing(-1), null)
     assert.equal(wfsAliasing(0.25, { speedOfSound: 0 }), null)
     assert.equal(wfsAliasing(0.25).spacingForHz(0), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Making two things talk
+// ---------------------------------------------------------------------------
+
+describe('interop paths and bridges', () => {
+  // A small fixture in the compact shape the interop page builds.
+  const console_ = { i: 'desk', n: 'Lighting desk', k: 'hardware', s: [{ p: 'sacn', d: 'out' }, { p: 'artnet', d: 'out' }] }
+  const fixture = { i: 'fix', n: 'Moving head', k: 'hardware', s: [{ p: 'dmx512', d: 'in' }] }
+  const gateway = { i: 'gw', n: 'Two-port gateway', k: 'hardware', s: [{ p: 'sacn', d: 'in' }, { p: 'dmx512', d: 'out' }] }
+  const bigDesk = { i: 'big', n: 'Very large console', k: 'hardware',
+    s: [{ p: 'sacn', d: 'bidirectional' }, { p: 'dmx512', d: 'out' }, { p: 'osc', d: 'bidirectional' },
+      { p: 'midi', d: 'in' }, { p: 'artnet', d: 'out' }, { p: 'ltc', d: 'in' }] }
+  const repeater = { i: 'rep', n: 'sACN repeater', k: 'hardware', s: [{ p: 'sacn', d: 'bidirectional' }] }
+  const catalogue = [console_, fixture, gateway, bigDesk, repeater]
+
+  test('a direct path needs a shared protocol pointing the right way', () => {
+    assert.deepEqual(directPaths(console_, fixture), [])
+    const p = directPaths(console_, gateway)
+    assert.equal(p.length, 1)
+    assert.equal(p[0].protocol, 'sacn')
+    // Direction matters: the fixture receives, so it cannot send back.
+    assert.deepEqual(directPaths(fixture, console_), [])
+  })
+
+  test('bidirectional counts as both, which is the point of it', () => {
+    assert.equal(directPaths(bigDesk, repeater).length, 1)
+    assert.equal(directPaths(repeater, bigDesk).length, 1)
+  })
+
+  test('it names the box, which is the part the interop page only hinted at', () => {
+    const r = findBridges(console_, fixture, catalogue)
+    assert.equal(r.needsBridge, true)
+    assert.ok(r.bridges.length >= 1)
+    const names = r.bridges.map((b) => b.id)
+    assert.ok(names.includes('gw'), 'the gateway should be offered')
+    const gw = r.bridges.find((b) => b.id === 'gw')
+    assert.deepEqual(gw.takes, ['sacn'])
+    assert.deepEqual(gw.gives, ['dmx512'])
+    assert.equal(gw.converts, true)
+  })
+
+  test('a purpose-built converter beats a console that happens to speak both', () => {
+    const r = findBridges(console_, fixture, catalogue)
+    // Both the gateway and the big desk can do it; the narrow one ranks first.
+    assert.equal(r.bridges[0].id, 'gw')
+    assert.ok(r.bridges.find((b) => b.id === 'big'), 'the big desk is still offered')
+    assert.ok(r.bridges[0].breadth < r.bridges.find((b) => b.id === 'big').breadth)
+  })
+
+  test('a repeater is not a bridge, and is marked as not converting', () => {
+    const r = findBridges(console_, repeater, catalogue)
+    // These already share sACN, so no bridge is required at all.
+    assert.equal(r.needsBridge, false)
+    assert.match(r.note, /a choice rather than a requirement/)
+  })
+
+  test('an empty result is a gap in the index, and says so', () => {
+    const orphan = { i: 'odd', n: 'Odd box', s: [{ p: 'nothing-else-speaks-this', d: 'in' }] }
+    const r = findBridges(console_, orphan, catalogue)
+    assert.equal(r.bridges.length, 0)
+    assert.match(r.note, /gap in the index rather than a statement/)
+  })
+
+  test('a chain is only as good as its worst joint', () => {
+    const good = checkChain([console_, gateway, fixture], catalogue)
+    assert.equal(good.ok, true)
+    assert.equal(good.hops.length, 2)
+    assert.deepEqual(good.hops[0].protocols, ['sacn'])
+    assert.deepEqual(good.hops[1].protocols, ['dmx512'])
+  })
+
+  test('a broken chain names the first break and suggests a fix for it', () => {
+    const bad = checkChain([console_, fixture, repeater], catalogue)
+    assert.equal(bad.ok, false)
+    assert.equal(bad.firstBreak, 0)
+    assert.equal(bad.brokenCount, 2)
+    assert.ok(bad.hops[0].bridges.length >= 1, 'the broken hop should carry a suggestion')
+    assert.equal(bad.hops[0].bridges[0].id, 'gw')
+  })
+
+  test('chains and bridges reject nonsense', () => {
+    assert.equal(checkChain([console_]), null)
+    assert.equal(checkChain('not an array'), null)
+    assert.equal(findBridges(console_, fixture, 'not an array'), null)
+    assert.equal(findBridges(null, fixture, catalogue), null)
+    assert.equal(directPaths(console_, { i: 'x', n: 'x' }), null)
   })
 })

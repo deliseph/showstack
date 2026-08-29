@@ -1,0 +1,34 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: link-aggregation
+en: Link aggregation (LAG / LACP)
+zh_hant: 鏈路聚合
+domain: networking
+definition_en: Making several physical cables behave as one logical link, for redundancy and
+  for total throughput. The switch picks a physical link per flow by hashing addresses or
+  ports, so every packet of one conversation follows one cable and arrives in order.
+definition_zh_hant: 讓多條實體線路表現成一條邏輯鏈路，用於備援與提升總頻寬。交換器以位址或連接埠雜湊為每個流量選定一條實體線路，因此同一段對話的封包都走同一條線，順序得以維持。
+regional_variants:
+- region: UK / US
+  term: LAG / LACP / port channel / bonding
+- region: HK / TW
+  term: 鏈路聚合 / 埠聚合
+false_friends:
+- Aggregation is resilience always and bandwidth only sometimes. A single 1.4 Gbit/s stream
+  across two 1 Gbit/s links does not work; it picks one link and drops the excess.
+see_also:
+- vlan
+- qos
+tags:
+- networking
+- redundancy
+sources:
+- title: IEEE 802.1AX Link Aggregation
+  url: https://standards.ieee.org/ieee/802.1AX/7479/
+  publisher: IEEE
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

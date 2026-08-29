@@ -17,6 +17,11 @@
  * everything into a green tick.
  */
 
+import { findBridges, checkChain } from './toolmath.mjs'
+
+const BRIDGE_SRC = findBridges.toString()
+const CHAIN_SRC = checkChain.toString()
+
 export function interopPage({ esc, shell, jsonForScript, SITE, GH, products, protocols }) {
   // Only the fields the picker needs. The full bundle is megabytes; this is
   // a few tens of kilobytes, which is the difference between a page that loads
@@ -64,6 +69,8 @@ export function interopPage({ esc, shell, jsonForScript, SITE, GH, products, pro
     <select id="a" aria-describedby="answer"></select>
     <label for="b">To</label>
     <select id="b" aria-describedby="answer"></select>
+    <label for="c">Then to <span class="opt">(optional)</span></label>
+    <select id="c" aria-describedby="answer"><option value="">&mdash; stop here &mdash;</option></select>
   </div>
 </details>
 
@@ -96,6 +103,25 @@ gap:9px;font-family:var(--mono);font-size:12.5px;color:var(--ink-muted);border-r
 border-radius:8px;font-family:var(--sans);font-size:15px;min-height:44px}
 .picker select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 @media(max-width:620px){.picker{grid-template-columns:1fr;gap:6px}.picker label{margin-top:8px}}
+.opt{font-weight:400;color:var(--ink-faint);font-size:11px}
+.chain{margin-top:20px}
+.hop{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:12px 0 12px 14px;
+border-left:3px solid var(--verified);border-bottom:1px solid var(--rule)}
+.hop:last-child{border-bottom:none}
+.hop.broken{border-left-color:var(--fail)}
+.hop.first{background:color-mix(in srgb,var(--fail) 6%,transparent)}
+.hname{font-weight:600;font-size:15px}
+.hproto{font-size:13.5px;color:var(--ink-muted)}
+.hop.broken .hproto{color:var(--fail)}
+.bridges{margin-top:26px;padding-top:22px;border-top:1px solid var(--rule)}
+.bridges h3{margin:0 0 12px}
+.bridge{padding:13px 0;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:5px}
+.bridge:last-of-type{border-bottom:none}
+.bname{font-weight:600;font-size:15.5px}
+.bvendor{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);letter-spacing:.3px}
+.bpath{font-size:13.5px;color:var(--ink-muted);line-height:1.6;word-break:break-word}
+.bnote{font-family:var(--mono);font-size:11.5px;color:var(--warn)}
+.bcaveat{margin:14px 0 0;font-size:13.5px;color:var(--ink-faint);line-height:1.6}
 .verdict{border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:18px;background:var(--panel)}
 .verdict .big{font-size:20px;font-weight:600;display:block;margin-bottom:4px}
 .verdict.yes{border-left:3px solid var(--ok)}.verdict.yes .big{color:var(--ok)}
@@ -110,6 +136,23 @@ border-radius:8px;font-family:var(--sans);font-size:15px;min-height:44px}
   // The picker logic. Written plainly and without dependencies: this file is
   // read by contributors who write YAML, not by front-end engineers.
   const script = `
+/* The bridge finder, embedded from the tested source so the page and the
+   test suite cannot disagree about what counts as a bridge. */
+const canSend = (dev, proto) => (dev.s ?? []).some((x) => x.p === proto && x.d !== 'in');
+const canReceive = (dev, proto) => (dev.s ?? []).some((x) => x.p === proto && x.d !== 'out');
+function directPaths(from, to) {
+  if (!from || !to || !Array.isArray(from.s) || !Array.isArray(to.s)) return null;
+  const out = [];
+  for (const s of from.s) {
+    if (s.d === 'in') continue;
+    const match = to.s.find((x) => x.p === s.p && x.d !== 'out');
+    if (match) out.push({ protocol: s.p, fromDir: s.d, toDir: match.d });
+  }
+  return out;
+}
+${BRIDGE_SRC}
+${CHAIN_SRC}
+
 const DB = ${jsonForScript(compact)};
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -118,6 +161,11 @@ function options(sel, selected){
   sel.innerHTML = DB.products.map(p =>
     '<option value="' + esc(p.i) + '"' + (p.i === selected ? " selected" : "") + '>' +
     esc(p.n) + (p.v ? " — " + esc(p.v) : "") + "</option>").join("");
+  /* The third box keeps its own "stop here" option at the top, because a
+     two-device answer is the common case and should stay the default. */
+  const third = $("#c");
+  third.innerHTML = '<option value="">— stop here —</option>' + DB.products.map(p =>
+    '<option value="' + esc(p.i) + '">' + esc(p.n) + (p.v ? " — " + esc(p.v) : "") + "</option>").join("");
 }
 
 // One direction: what can A send that B can receive.
@@ -153,6 +201,57 @@ function renderPaths(paths, from, to){
       (p.licence ? '<span class="pill port">needs licence</span>' : "") +
       (p.notes.length ? '<span class="note">' + esc(p.notes.join(" · ")) + "</span>" : "") +
       "</div>").join("");
+}
+
+/* When nothing shared exists, name the box rather than saying "you need a
+   gateway" and leaving. This is the question people actually came with. */
+function renderBridges(a, b, direct){
+  if (direct > 0) return "";
+  const r = findBridges(a, b, DB.products, { limit: 6 });
+  if (!r || !r.bridges.length) {
+    return '<div class="bridges"><h3>Nothing indexed bridges these</h3>' +
+      "<p>That is a gap in the index rather than a statement about what exists. If you know a box that does it, " +
+      '<a href="${GH}/issues/new?labels=data">it is one file</a>.</p></div>';
+  }
+  return '<div class="bridges"><h3>What would connect them (' + r.bridgeCount +
+    (r.bridgeCount === 1 ? " candidate" : " candidates") + ")</h3>" +
+    r.bridges.map(function(x){
+      const proto = function(p){ return '<a href="/protocols/' + p + '/">' + esc(DB.protocols[p] || p) + "</a>" };
+      return '<div class="bridge">' +
+        '<a class="bname" href="/' + (x.kind === "software" ? "software" : "hardware") + "/" + x.id + '/">' +
+          esc(x.name) + "</a>" +
+        (x.vendor ? '<span class="bvendor">' + esc(x.vendor) + "</span>" : "") +
+        '<span class="bpath">' + esc(a.n) + " &rarr; " + x.takes.map(proto).join(" / ") +
+          " &rarr; <b>" + esc(x.name) + "</b> &rarr; " + x.gives.map(proto).join(" / ") +
+          " &rarr; " + esc(b.n) + "</span>" +
+        (x.converts ? "" : '<span class="bnote">Passes the same protocol through rather than converting.</span>') +
+        "</div>";
+    }).join("") +
+    '<p class="bcaveat">' + esc(r.note) + "</p></div>";
+}
+
+/* A chain is only as good as its worst joint. */
+function renderChain(devices){
+  const r = checkChain(devices, DB.products);
+  if (!r) return "";
+  const head = '<div class="verdict ' + (r.ok ? "yes" : "no") + '"><span class="big">' +
+    (r.ok ? "The whole chain connects" : r.brokenCount + (r.brokenCount === 1 ? " joint does not connect" : " joints do not connect")) +
+    "</span><p>" +
+    (r.ok
+      ? "Every hop has a protocol pointing the right way. That is what the index knows; it says nothing about licence tiers or what is in the building."
+      : "Fix the first break before worrying about anything after it &mdash; nothing is reaching the later hops yet.") +
+    "</p></div>";
+  const proto = function(p){ return '<a href="/protocols/' + p + '/">' + esc(DB.protocols[p] || p) + "</a>" };
+  return head + '<div class="chain">' + r.hops.map(function(h, i){
+    return '<div class="hop' + (h.ok ? "" : " broken") + (i === r.firstBreak ? " first" : "") + '">' +
+      '<span class="hname">' + esc(h.from) + " &rarr; " + esc(h.to) + "</span>" +
+      (h.ok
+        ? '<span class="hproto">' + h.protocols.map(proto).join(" / ") + "</span>"
+        : '<span class="hproto">nothing shared' +
+            (h.bridges.length ? " &mdash; try " + h.bridges.map(function(x){ return "<b>" + esc(x.name) + "</b>" }).join(", ") : "") +
+          "</span>") +
+      "</div>";
+  }).join("") + "</div>";
 }
 
 function render(){
@@ -191,7 +290,15 @@ function render(){
       "</p></div>";
   }
 
-  $("#answer").innerHTML = verdict + renderPaths(ab, a, b) + renderPaths(ba, b, a);
+  const cSel = $("#c").value;
+  const c = cSel ? DB.products.find(p => p.i === cSel) : null;
+  if (c && c.i !== b.i) {
+    /* Three deep: report every joint, because the failure people actually
+       have is the third box quietly not receiving what the second sends. */
+    $("#answer").innerHTML = renderChain([a, b, c]);
+  } else {
+    $("#answer").innerHTML = verdict + renderPaths(ab, a, b) + renderPaths(ba, b, a) + renderBridges(a, b, total);
+  }
 
   // Keep the URL shareable, so an answer can be pasted into a production
   // channel or a tender document and still resolve for the next person.
@@ -213,6 +320,7 @@ const startB = params.get("b") || (has(EXAMPLE_B) ? EXAMPLE_B : DB.products[1]?.
 options($("#a"), startA);
 options($("#b"), startB);
 $("#a").addEventListener("change", render);
+$("#c").addEventListener("change", render);
 $("#b").addEventListener("change", render);
 
 // One tap moves both selects and re-answers. Anything the index does not have
