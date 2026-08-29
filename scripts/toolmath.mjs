@@ -4305,3 +4305,121 @@ export function checkChain(devices, catalogue = []) {
     firstBreak: broken.length ? hops.indexOf(broken[0]) : null,
   }
 }
+
+/**
+ * Visual acuity, and where every viewing-distance rule of thumb comes from.
+ *
+ * "Twenty-twenty vision" means resolving detail one arcminute across — a
+ * sixtieth of a degree — at the standard test distance. That single number
+ * is the origin of retina displays, LED wall viewing distances, minimum text
+ * sizes and seating plans, and almost nobody who uses those rules knows it.
+ *
+ *   detail resolvable at distance D  =  D * tan(1/60 degree)  ~=  D / 3438
+ *
+ * So the distance at which a pixel pitch stops being resolvable is that
+ * turned round: about 3.44 metres per millimetre of pitch.
+ *
+ * Two honest caveats, because this number gets quoted as though it were a
+ * law. 20/20 is a NORM rather than a maximum — plenty of people resolve
+ * appreciably finer, some to half an arcminute — so designing exactly at the
+ * threshold designs for the average eye and fails the sharp ones. And acuity
+ * collapses away from the fovea, which is about two degrees wide: everything
+ * else in the visual field is far coarser than this figure suggests, which
+ * is why peripheral content can be much lower resolution than anybody
+ * expects.
+ */
+export const ARCMIN_PER_RADIAN = 3437.75
+
+export function visualAcuity(distanceM, opts = {}) {
+  const d = Number(distanceM)
+  if (!Number.isFinite(d) || d <= 0) return null
+  const arcmin = Number(opts.arcminutes ?? 1)
+  if (!Number.isFinite(arcmin) || arcmin <= 0) return null
+  const r3 = (x) => Math.round(x * 1000) / 1000
+
+  const rad = (arcmin / 60) * (Math.PI / 180)
+  const detailMm = d * Math.tan(rad) * 1000
+
+  return {
+    distanceM: d,
+    arcminutes: arcmin,
+    // The smallest thing a standard eye separates at this distance.
+    detailMm: r3(detailMm),
+    // Text has to be several times the acuity limit to be comfortable
+    // rather than merely resolvable; five arcminutes is the usual figure for
+    // a legible character height.
+    legibleTextMm: r3(d * Math.tan((5 / 60) * (Math.PI / 180)) * 1000),
+    /** The distance at which a given pixel pitch stops being resolvable. */
+    retinaDistanceFor: (pitchMm) => {
+      const p = Number(pitchMm)
+      if (!Number.isFinite(p) || p <= 0) return null
+      return r3(p / (Math.tan(rad) * 1000))
+    },
+    /** And the other way: is this pitch visible from here? */
+    pitchVisible: (pitchMm) => {
+      const p = Number(pitchMm)
+      if (!Number.isFinite(p) || p <= 0) return null
+      return p > detailMm
+    },
+    note: 'A norm rather than a maximum. Plenty of eyes resolve finer, and acuity collapses outside the fovea, which is only about two degrees wide.',
+  }
+}
+
+/**
+ * How two ears become a direction.
+ *
+ * A sound off to one side reaches the near ear first. The delay is tiny and
+ * the auditory system is extraordinarily good at it — down to about ten
+ * microseconds, which is finer than one sample at 44.1 kHz.
+ *
+ * Woodworth's spherical-head approximation:
+ *
+ *   ITD = (a / c) * (theta + sin theta)
+ *
+ * with a the head radius, c the speed of sound and theta the angle from
+ * straight ahead. It maxes out around 660 microseconds at 90 degrees, which
+ * is the entire range the mechanism has to work with.
+ *
+ * There is a limit built into the physics. Once half a wavelength is shorter
+ * than the path difference between the ears, the phase difference stops
+ * being unambiguous — the same phase could mean several different angles —
+ * and the system switches to comparing LEVEL instead, which only works at
+ * high frequencies where the head is big enough to cast an acoustic shadow.
+ * That handover is the duplex theory, and the frequency it happens at is
+ * calculable from the size of a head.
+ */
+export function interauralDelay(angleDeg, opts = {}) {
+  const a = Number(angleDeg)
+  if (!Number.isFinite(a) || Math.abs(a) > 180) return null
+  const headRadiusM = Number(opts.headRadiusM ?? 0.0875)
+  const c = Number(opts.speedOfSound ?? 343)
+  if (!Number.isFinite(headRadiusM) || headRadiusM <= 0) return null
+  if (!Number.isFinite(c) || c <= 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+
+  // Woodworth is derived for the front hemisphere; fold the back onto it,
+  // which is exactly why front-back confusions exist in the first place.
+  const folded = Math.abs(a) > 90 ? 180 - Math.abs(a) : Math.abs(a)
+  const theta = (folded * Math.PI) / 180
+  const itdSeconds = (headRadiusM / c) * (theta + Math.sin(theta))
+  const itdUs = itdSeconds * 1e6
+
+  // Above this the phase difference between the ears is ambiguous, because
+  // half a wavelength no longer spans the head.
+  const ambiguityHz = c / (4 * headRadiusM)
+
+  return {
+    angleDeg: a,
+    itdMicroseconds: r1(itdUs),
+    itdSamplesAt48k: Math.round(itdSeconds * 48000 * 10) / 10,
+    maxItdMicroseconds: r1(((headRadiusM / c) * (Math.PI / 2 + 1)) * 1e6),
+    phaseAmbiguityHz: Math.round(ambiguityHz),
+    // Folding the back hemisphere onto the front is not a simplification of
+    // the maths — it is the actual reason people mislocate front and back.
+    frontBackAmbiguous: Math.abs(a) > 90,
+    coneOfConfusion: folded !== Math.abs(a)
+      ? `${r1(180 - Math.abs(a))} degrees in front gives the same delay, which is why front-back confusions happen and why turning your head resolves them.`
+      : null,
+    note: 'The ear resolves this down to about ten microseconds, finer than one sample at 44.1 kHz. Below the ambiguity frequency direction comes from timing; above it, from level.',
+  }
+}

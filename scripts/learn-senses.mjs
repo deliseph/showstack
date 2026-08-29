@@ -16,6 +16,10 @@
  * connection the user asked for and the one worth making explicit.
  */
 import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
+import { visualAcuity, interauralDelay } from './toolmath.mjs'
+
+const MATH_SRC = [visualAcuity, interauralDelay].map((f) => f.toString()).join('\n\n')
+
 
 export function learnSensesPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -233,6 +237,53 @@ ${S('And the newer one', 'Volumetric capture, which is a different thing entirel
   'What it buys, in the terms this site cares about, is <b>plausibility</b>. A stereo recording of a person is a picture that happens to have depth; a volumetric one responds correctly when the viewer moves, which is the sensorimotor contingency <a href="/learn/presence/">place illusion</a> is built from. That difference is worth far more than resolution.',
 ])}
 
+${S('Hearing, part three', 'The machinery, and why the damage is permanent',
+  ['The two sections above treat the ear as something that already produces a direction and a pitch. It is worth saying how, because the mechanism explains both what it is astonishingly good at and what breaks it.',
+   'Sound arrives as a pressure wave in air and has to end up as nerve impulses in fluid, and air and fluid are wildly mismatched: pushed straight at a fluid surface, almost all of the energy reflects and only around a thousandth gets in. That is a loss of about 30&nbsp;dB, and it would make ordinary speech inaudible. The <strong>middle ear</strong> exists to recover it. Three tiny bones &mdash; the ossicles, the smallest in the body &mdash; act as a mechanical transformer, concentrating the force from the large eardrum onto the much smaller oval window and adding a small lever advantage. It is an impedance matching device, doing the same job for sound that <a href="/tools/#xfmr">a transformer</a> does for a circuit, and for exactly the same reason.',
+   'Inside the <strong>cochlea</strong> is the part that ought to be more famous. It is a coiled tube with a membrane running along it that is stiff and narrow at one end and floppy and wide at the other, so different frequencies peak at different places along its length. High frequencies at the entrance, low at the far end. That is a mechanical spectrum analyser, built out of geometry, running with no power and no latency &mdash; the ear does not compute a Fourier transform, it <em>is</em> one. Which is why pitch is called place coding, and why the frequency resolution of hearing is set by how sharply the membrane peaks rather than by anything neural.',
+   'Sitting on that membrane are the <strong>hair cells</strong>, around 16,000 of them, converting movement into nerve signals. There are two things to know about them and both matter on a show. The outer ones actively amplify quiet sounds, which is where the enormous dynamic range of hearing comes from. And humans do not regrow them. Noise damage is mechanical destruction of a finite, non-renewing population, which is why <a href="/tools/#dose">noise exposure</a> is a dose over time rather than a level, and why hearing protection is not a comfort measure.'])}
+
+<div class="tryit">
+  <div class="f"><label for="itd-a">Source angle <span id="itd-av">45&deg;</span></label>
+    <input id="itd-a" type="range" min="-180" max="180" step="5" value="45"></div>
+</div>
+<div class="readout" id="itd-out" role="status" aria-live="polite"></div>
+
+${rule('Two ears resolve a delay down to about <b>ten microseconds</b> &mdash; finer than one sample at 44.1&nbsp;kHz. The entire mechanism works inside a range of about 660&nbsp;&micro;s, which is thirty-odd samples at 48k.')}
+
+${bites([
+  '<b>Treating hearing damage as reversible.</b> It is not. Hair cells do not come back, and the loss is typically at 4 kHz first, where consonants live &mdash; so speech gets muddy before anything gets quiet.',
+  '<b>Assuming the whole audience hears the top end.</b> The nominal 20 kHz is a young ear in a lab. By forty it is commonly nearer 15, and a mix voiced on a young engineer&rsquo;s ears is not the mix the room gets.',
+  '<b>Forgetting the delay range is tiny.</b> A few hundred microseconds of error between two loudspeakers moves an image right across the stage, because that is the same order as the entire natural range.',
+])}
+
+${S('Seeing, part two', 'The eye as an optical instrument, and the two degrees that are sharp',
+  ['Most people picture the lens doing the focusing. It does not do most of it. The <strong>cornea</strong> &mdash; the transparent front surface &mdash; provides roughly two thirds of the eye&rsquo;s refractive power, because that is where the biggest change in refractive index happens, from air into tissue. The lens supplies the rest and, crucially, the <em>adjustable</em> part: it changes shape to focus near or far, and it stiffens with age, which is why reading glasses eventually happen to nearly everybody and has nothing to do with the retina.',
+   'Behind that sit two detector populations doing two different jobs. Around 6 million <strong>cones</strong>, which need reasonable light, give colour and fine detail, and are packed almost entirely into a tiny central pit called the fovea. Around 120 million <strong>rods</strong>, twenty times as many, work down to nearly single photons, give no colour at all, and are spread across the rest of the retina and absent from the middle of it.',
+   'The consequence is the single most under-appreciated fact about vision: <strong>the sharp part of your visual field is about two degrees wide</strong>. That is roughly a thumbnail at arm&rsquo;s length. Everything else is peripheral and dramatically coarser &mdash; the impression of a wide, detailed world is a reconstruction assembled from several fixations a second, and you never see the gaps. It is also why <a href="/learn/perception/">where you point attention</a> decides what is actually seen, and why peripheral content can be far lower resolution than anyone expects to get away with.',
+   'Then there is a hole. Where the optic nerve leaves there are no receptors at all, a blind spot several degrees across in each eye, and nobody perceives it. The visual system fills it from the surroundings without flagging that it did, which is the same machinery <a href="/learn/illusion/">every illusion on this site borrows</a>.'])}
+
+${S('Seeing, part three', 'Dark adaptation, and the shift that changes what colour means',
+  ['Two effects of the rod-and-cone split matter directly on a stage, and both are about low light.',
+   '<strong>Dark adaptation is slow and it happens twice.</strong> Cones adapt within about five minutes and then stop improving. Rods keep going for twenty to thirty minutes and end up vastly more sensitive. The practical figures: after a blackout an audience regains useful vision in a couple of minutes, but full dark adaptation takes half an hour and is destroyed in seconds by one bright cue. Which is why a followspot through a dark scene costs the entire house its adaptation, and why running lights are dim <em>and</em> red &mdash; red light barely stimulates rods, so it preserves the adaptation it lets you work by.',
+   '<strong>The Purkinje shift</strong> is the one that surprises lighting people. Rods peak around 500&nbsp;nm and cones around 555&nbsp;nm, so as light falls and vision hands over from cones to rods, the eye&rsquo;s sensitivity peak moves toward blue. A red and a blue that matched in brightness at full will not match at 5% &mdash; the blue will look markedly brighter. Nothing changed about the fixtures. The receiver changed.',
+   'That gap between what a meter says and what an eye reports is the whole reason photometry has three regimes with different names: <em>photopic</em> at daylight levels where cones dominate, <em>scotopic</em> in near darkness where rods do, and <em>mesopic</em> in between, which is where almost every theatrical low-level cue actually sits and where neither curve is right.'])}
+
+${rule('At low level the eye <b>changes which detector it is using</b>, and its sensitivity peak moves toward blue. A meter reading photopic lux does not know that.')}
+
+${S('Seeing, part four', 'One arcminute, and every viewing distance that follows from it',
+  ['Acuity has a number, and it is the origin of a surprising number of rules that get quoted without it. Standard vision &mdash; 20/20 &mdash; resolves detail about <strong>one arcminute</strong> across: a sixtieth of a degree. At ten metres that is 2.9&nbsp;mm.',
+   'Turn it round and you get the distance at which a pixel pitch stops being resolvable, which is about 3.4 metres per millimetre of pitch. A 3.9&nbsp;mm wall is genuinely pixel-free at around 13&nbsp;m. The familiar rule of thumb &mdash; pitch in millimetres equals minimum viewing distance in metres &mdash; gives 3.9&nbsp;m, and the gap between those two numbers is the difference between <em>invisible</em> and <em>acceptable</em>. Both are legitimate targets; they are not the same target, and quoting one while meaning the other is how walls get specified badly.',
+   'Two caveats worth carrying. 20/20 is a norm rather than a ceiling &mdash; plenty of people resolve half an arcminute &mdash; so designing exactly at the threshold designs for the average eye and fails the sharpest ones in the room. And this figure only describes the fovea. Two degrees off-axis it is already much worse, which is why a wall that resolves badly straight on can be perfectly acceptable in peripheral vision.'])}
+
+<div class="tryit">
+  <div class="f"><label for="acu-d">Viewing distance <span id="acu-dv">10 m</span></label>
+    <input id="acu-d" type="range" min="1" max="60" step="1" value="10"></div>
+  <div class="f"><label for="acu-p">Pixel pitch <span id="acu-pv">3.9 mm</span></label>
+    <input id="acu-p" type="range" min="1" max="20" step="0.1" value="3.9"></div>
+</div>
+<div class="readout" id="acu-out" role="status" aria-live="polite"></div>
+
 ${S('Temperature', 'Receptors that report change, and cannot tell chilli from heat', [
   'There is no thermometer in your skin. There are separate warm and cold receptors, and they respond far more strongly to <b>change and the rate of change</b> than to the absolute level. Walk into a cool room and it feels cold; twenty minutes later it feels normal, and the room has not moved.',
   'The receptors are ion channels, and this is where it gets useful. The main cold channel, TRPM8, is opened by low temperature — and also by <b>menthol</b>. The main heat channel, TRPV1, is opened by high temperature — and also by <b>capsaicin</b>, the compound in chilli. The receptor has no way of distinguishing the two triggers, so the brain receives an identical signal and reports the only thing it can: that is hot, that is cold.',
@@ -256,13 +307,34 @@ ${S('Touch', 'Why bass is felt, and where a tactile transducer lives', [
   ${R('Human hearing, nominal', 'and the top end goes with age', 20, 20000, 'var(--dom-network)')}
 </div>
 
+${S('Touch, part two', 'Four detectors, and what a haptic device is actually addressing',
+  ['The section above named the Pacinian corpuscle. There are four types worth separating, because a haptic effect that ignores which one it is talking to reads as a buzz rather than as a sensation.',
+   '<strong>Merkel cells</strong> respond to sustained pressure and fine spatial detail, and they adapt slowly &mdash; they are how you feel a texture or an edge held still. <strong>Meissner corpuscles</strong> handle low-frequency flutter around 5 to 50&nbsp;Hz and adapt fast, which is how you detect something starting to slip out of your grip. <strong>Ruffini endings</strong> report skin stretch and, with them, the direction of a force. And <strong>Pacinian corpuscles</strong> sit deepest, are the most sensitive of all, and peak around 200 to 300&nbsp;Hz &mdash; which is why they are the ones a tactile transducer is aimed at.',
+   'Two consequences for anybody building haptics. Spatial resolution varies enormously across the body: two points a couple of millimetres apart are distinguishable on a fingertip and need several centimetres on a back. A vest with an array of actuators has far less spatial vocabulary than the number of actuators suggests, and putting them closer together past a point buys nothing.',
+   'And the actuator has to match the receptor. An <em>eccentric rotating mass</em> spins a weight, so it cannot change amplitude and frequency independently and takes tens of milliseconds to spin up &mdash; fine for a phone buzz, useless for anything that has to land on a beat. A <em>linear resonant actuator</em> is faster and cleaner but only really works at its own resonance. A <em>voice coil</em> is a small loudspeaker without a cone, driven by an audio signal, and it is the only one of the three you can send a waveform to. Which is why haptic design on a show is largely an audio engineering problem, complete with a latency budget: touch and sound have to arrive inside roughly the same window as sight and sound, or the effect separates into two events.'])}
+
+${rule('Which mechanoreceptor you are addressing decides the <b>actuator</b>, not just the frequency. Only a voice coil takes a waveform; the other two take a request and give you what they have.')}
+
+${S('Smell', 'The only sense that does not stop at the switchboard',
+  ['Smell is the sense most likely to be dismissed as a novelty and the one with the most direct line to memory and emotion, and there is a structural reason for that rather than a poetic one.',
+   'Humans have roughly <strong>400 different olfactory receptor types</strong>. Nothing like enough for the number of distinguishable odours, so the coding is combinatorial: a molecule activates a pattern across many receptors, and the identity is the pattern. It is the same trick colour vision plays with three cone types, with a far larger alphabet &mdash; which is why smells blend into new smells rather than being heard as chords the way sounds are.',
+   'The structural fact is the routing. Every other sense passes through the thalamus first, which is the brain&rsquo;s relay and, loosely, its switchboard. <strong>Olfaction does not.</strong> It reaches the olfactory bulb and from there goes more or less directly to the amygdala and hippocampus &mdash; emotion and memory. That is not a metaphor about smell being evocative; it is a wiring diagram, and it is the best available explanation for why a smell can return a memory whole in a way a photograph does not.',
+   'Then the part that makes it hard to use. Olfactory adaptation is <em>fast</em> &mdash; a constant odour fades from awareness within a few minutes, sometimes less &mdash; so a scent that fills a room is gone from the audience&rsquo;s experience long before it is gone from the room. And there is no off switch: a scent released into a space stays in the air handling, on the soft furnishings and in the next audience&rsquo;s experience of the first scene. Use once, at a threshold, at the moment it should land, and plan how the room is cleared before you plan the effect.'])}
+
+${bites([
+  '<b>Running a scent continuously.</b> The audience stopped smelling it in minutes. The building did not, and neither will the next house.',
+  '<b>Treating haze smell as neutral.</b> It is not &mdash; glycol has a smell, audiences notice it, and for some it is a trigger. It is a design decision whether or not anybody made it deliberately.',
+  '<b>Scent without consent.</b> Fragrance sensitivity and asthma are common, there is no way to opt out of shared air, and unlike a loud cue somebody cannot cover their nose and stay. It belongs on the door notice with the strobe warning.',
+  '<b>Haptics on a spinning-mass actuator.</b> Tens of milliseconds to spin up and no independent control of level. If it has to land with a hit, it needs a voice coil.',
+])}
+
 ${S('The rest of them', 'Briefly, and they matter more than their airtime', [])}
 
 <div class="sens2">
-  <div><h4>Smell</h4>
-    <p>Around 400 receptor types, combinatorially coded, so an enormous number of odours are distinguished by pattern rather than by dedicated detectors — the same trick as colour, with a much larger alphabet.</p>
-    <p>It has the most direct route to memory and emotion of any sense, and it adapts faster than any of them.</p>
-    <p class="use">unforgettable, and gone from awareness within minutes — use once, at a threshold</p></div>
+  <div><h4>Taste</h4>
+    <p>Only five things are actually tasted &mdash; sweet, salt, sour, bitter, umami &mdash; and that is the entire vocabulary of the tongue. Everything else people call taste is <em>smell</em>, arriving at the nose from the back of the mouth while chewing.</p>
+    <p>Which is why food is nearly flavourless with a blocked nose, and why the two senses are almost impossible to separate in an audience&rsquo;s report of an experience.</p>
+    <p class="use">dining events, immersive work with consumption &mdash; and the reason air handling changes how food tastes</p></div>
   <div><h4>Balance</h4>
     <p>Fluid-filled canals reporting rotation and acceleration. It is the only sense that tells you which way is down, and you never notice it until it disagrees with your eyes.</p>
     <p>That disagreement is not confusing, it is nauseating — a hard limit rather than a quality setting.</p>
@@ -361,6 +433,49 @@ ${xnote('This is the parts list behind every threshold on the <a href="/learn/pe
 </script>
 `
 
+  const script = `
+${MATH_SRC}
+(function(){
+  var a=document.getElementById('itd-a');
+  if(!a)return;
+  function draw(){
+    var ang=Number(a.value);
+    document.getElementById('itd-av').textContent=ang+'°';
+    var r=interauralDelay(ang);
+    if(!r)return;
+    var out=document.getElementById('itd-out');
+    var html='<b>'+r.itdMicroseconds+'</b> µs between the ears &mdash; '
+      +r.itdSamplesAt48k+' samples at 48 kHz, out of a maximum of '+r.maxItdMicroseconds+' µs.';
+    if(r.coneOfConfusion) html+='<br>'+r.coneOfConfusion;
+    else if(ang===0) html+='<br>Dead ahead: no difference at all, which is why a centre image is the one thing two ears cannot argue about.';
+    html+='<br><span class="dim">Below '+r.phaseAmbiguityHz+' Hz direction comes from this timing. Above it, half a wavelength no longer spans a head, so the system compares level instead.</span>';
+    out.innerHTML=html;
+  }
+  a.addEventListener('input',draw); draw();
+})();
+(function(){
+  var d=document.getElementById('acu-d'), p=document.getElementById('acu-p');
+  if(!d||!p)return;
+  function draw(){
+    var dist=Number(d.value), pitch=Number(p.value);
+    document.getElementById('acu-dv').textContent=dist+' m';
+    document.getElementById('acu-pv').textContent=pitch+' mm';
+    var r=visualAcuity(dist);
+    if(!r)return;
+    var retina=r.retinaDistanceFor(pitch);
+    var visible=r.pitchVisible(pitch);
+    document.getElementById('acu-out').innerHTML=
+      'At '+dist+' m a standard eye separates <b>'+r.detailMm+'</b> mm, and legible text wants about <b>'
+      +Math.round(r.legibleTextMm)+'</b> mm.<br>'
+      +'A '+pitch+' mm pitch is '+(visible
+        ? '<b>still resolvable</b> from here &mdash; pixels are visible until <b>'+retina+'</b> m'
+        : '<b>past the eye’s limit</b> from here; it became invisible at '+retina+' m')
+      +'.<br><span class="dim">The old rule of thumb would have said '+pitch+' m, which is where the pixels are acceptable rather than gone.</span>';
+  }
+  d.addEventListener('input',draw); p.addEventListener('input',draw); draw();
+})();
+`
+
   return shell({
     title: 'How each sense tells things apart | showstack',
     description: 'How two ears turn a 700-microsecond delay into a direction, how three overlapping cone responses become a colour that is not in the light, why chilli feels hot to a receptor that cannot tell it from heat, why bass is felt as well as heard, and why masking makes a mix a competition.',
@@ -375,6 +490,7 @@ ${xnote('This is the parts list behind every threshold on the <a href="/learn/pe
       license: 'https://creativecommons.org/licenses/by/4.0/',
     },
     body,
+    extraScript: script,
     extraStyle: style,
   })
 }

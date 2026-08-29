@@ -30,6 +30,7 @@ import {
   opticalSpot, OPTICAL_FORMATS, rcFilter, transformer,
   waveHarmonics, WAVE_SHAPES, vbapStereo, dbapGains, wfsAliasing,
   directPaths, findBridges, checkChain,
+  visualAcuity, ARCMIN_PER_RADIAN, interauralDelay,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3095,5 +3096,97 @@ describe('interop paths and bridges', () => {
     assert.equal(findBridges(console_, fixture, 'not an array'), null)
     assert.equal(findBridges(null, fixture, catalogue), null)
     assert.equal(directPaths(console_, { i: 'x', n: 'x' }), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Vision and hearing, as numbers
+// ---------------------------------------------------------------------------
+
+describe('visual acuity', () => {
+  test('one arcminute is the whole basis of every viewing-distance rule', () => {
+    // At 10 m, one arcminute subtends 2.909 mm.
+    assert.equal(visualAcuity(10).detailMm, 2.909)
+    // And it scales linearly with distance, because it is an angle.
+    assert.equal(visualAcuity(20).detailMm, visualAcuity(10).detailMm * 2)
+    assert.ok(Math.abs(ARCMIN_PER_RADIAN - 3437.75) < 0.01)
+  })
+
+  test('it gives the real retina distance for a pixel pitch', () => {
+    const a = visualAcuity(10)
+    // About 3.44 m per millimetre of pitch.
+    assert.equal(a.retinaDistanceFor(3.9), 13.407)
+    assert.equal(a.retinaDistanceFor(2.6), 8.938)
+    // Which is far further than the "pitch in mm = metres" rule of thumb,
+    // and that gap is the difference between invisible and merely acceptable.
+    assert.ok(a.retinaDistanceFor(3.9) > 3.9 * 3)
+  })
+
+  test('it answers the question from the seat as well as from the wall', () => {
+    const close = visualAcuity(4)
+    assert.equal(close.pitchVisible(3.9), true, 'a 3.9 mm pitch is visible from 4 m')
+    const far = visualAcuity(20)
+    assert.equal(far.pitchVisible(3.9), false, 'and invisible from 20 m')
+  })
+
+  test('legible text is several times the acuity limit, not equal to it', () => {
+    const a = visualAcuity(10)
+    assert.equal(a.legibleTextMm, 14.544)
+    assert.ok(a.legibleTextMm > a.detailMm * 4)
+  })
+
+  test('a sharper eye moves every one of those numbers', () => {
+    const sharp = visualAcuity(10, { arcminutes: 0.5 })
+    assert.ok(sharp.detailMm < visualAcuity(10).detailMm)
+    assert.ok(sharp.retinaDistanceFor(3.9) > visualAcuity(10).retinaDistanceFor(3.9))
+    assert.match(visualAcuity(10).note, /norm rather than a maximum/)
+  })
+
+  test('acuity rejects impossible input', () => {
+    assert.equal(visualAcuity(0), null)
+    assert.equal(visualAcuity(-5), null)
+    assert.equal(visualAcuity(10, { arcminutes: 0 }), null)
+    assert.equal(visualAcuity(10).retinaDistanceFor(0), null)
+  })
+})
+
+describe('interaural time difference', () => {
+  test('straight ahead is zero and ninety degrees is the maximum', () => {
+    assert.equal(interauralDelay(0).itdMicroseconds, 0)
+    // Woodworth gives about 660 microseconds at 90 degrees for a normal head.
+    assert.equal(interauralDelay(90).itdMicroseconds, 655.8)
+    assert.equal(interauralDelay(90).itdMicroseconds, interauralDelay(0).maxItdMicroseconds)
+  })
+
+  test('the whole mechanism lives inside about thirty samples at 48 kHz', () => {
+    assert.equal(interauralDelay(90).itdSamplesAt48k, 31.5)
+    // Which is why a delay error of a fraction of a millisecond moves an image.
+    assert.ok(interauralDelay(15).itdMicroseconds < 150)
+  })
+
+  test('the cone of confusion falls straight out of the geometry', () => {
+    // 135 degrees gives the same delay as 45, which IS the front-back confusion.
+    assert.equal(interauralDelay(135).itdMicroseconds, interauralDelay(45).itdMicroseconds)
+    assert.equal(interauralDelay(135).frontBackAmbiguous, true)
+    assert.equal(interauralDelay(45).frontBackAmbiguous, false)
+    assert.match(interauralDelay(135).coneOfConfusion, /turning your head/)
+    assert.equal(interauralDelay(45).coneOfConfusion, null)
+  })
+
+  test('above the ambiguity frequency the system switches to level', () => {
+    // c / 4a for a normal head is about 980 Hz.
+    assert.equal(interauralDelay(0).phaseAmbiguityHz, 980)
+    // A bigger head pushes it lower, which is the physics and not a metaphor.
+    assert.ok(interauralDelay(0, { headRadiusM: 0.12 }).phaseAmbiguityHz < 980)
+  })
+
+  test('the delay is symmetric left and right', () => {
+    assert.equal(interauralDelay(-45).itdMicroseconds, interauralDelay(45).itdMicroseconds)
+  })
+
+  test('ITD rejects angles that are not angles', () => {
+    assert.equal(interauralDelay(200), null)
+    assert.equal(interauralDelay(0, { headRadiusM: 0 }), null)
+    assert.equal(interauralDelay(0, { speedOfSound: -1 }), null)
   })
 })
