@@ -31,6 +31,7 @@ import {
   waveHarmonics, WAVE_SHAPES, vbapStereo, dbapGains, wfsAliasing,
   directPaths, findBridges, checkChain,
   visualAcuity, ARCMIN_PER_RADIAN, interauralDelay,
+  ipAddressKind, IP_RANGES, NET_COMMANDS,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3188,5 +3189,105 @@ describe('interaural time difference', () => {
     assert.equal(interauralDelay(200), null)
     assert.equal(interauralDelay(0, { headRadiusM: 0 }), null)
     assert.equal(interauralDelay(0, { speedOfSound: -1 }), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Private, public, and the addresses that are a diagnosis
+// ---------------------------------------------------------------------------
+
+describe('what kind of address is this', () => {
+  test('the three RFC 1918 private ranges, which is where show networks live', () => {
+    for (const ip of ['10.0.0.50', '10.255.255.254', '172.16.0.1', '172.31.255.1', '192.168.1.5']) {
+      const r = ipAddressKind(ip)
+      assert.equal(r.kind, 'private', `${ip} should be private`)
+      assert.equal(r.showSafe, true)
+      assert.equal(r.routable, false)
+      assert.equal(r.rfc, 'RFC 1918')
+    }
+  })
+
+  test('the edges of 172.16.0.0/12 are where people get it wrong', () => {
+    // The range is 172.16 to 172.31, not 172.16 to 172.255.
+    assert.equal(ipAddressKind('172.15.0.1').kind, 'public')
+    assert.equal(ipAddressKind('172.16.0.1').kind, 'private')
+    assert.equal(ipAddressKind('172.31.255.255').kind, 'private')
+    assert.equal(ipAddressKind('172.32.0.1').kind, 'public')
+  })
+
+  test('169.254 is a diagnosis rather than a configuration', () => {
+    const r = ipAddressKind('169.254.12.9')
+    assert.equal(r.kind, 'link-local')
+    assert.equal(r.rfc, 'RFC 3927')
+    assert.equal(r.showSafe, false)
+    assert.match(r.meaning, /DHCP failed/)
+  })
+
+  test('a multicast group is not a host, and sACN groups name their universe', () => {
+    const r = ipAddressKind('239.255.0.1')
+    assert.equal(r.kind, 'multicast')
+    assert.equal(r.sacnUniverse, 1)
+    assert.equal(ipAddressKind('239.255.1.0').sacnUniverse, 256)
+    // The rest of multicast is not sACN and does not claim to be.
+    assert.equal(ipAddressKind('224.0.0.1').sacnUniverse, null)
+    assert.equal(ipAddressKind('224.0.0.1').kind, 'multicast')
+  })
+
+  test('loopback, CGNAT and broadcast are each their own answer', () => {
+    assert.equal(ipAddressKind('127.0.0.1').kind, 'loopback')
+    assert.match(ipAddressKind('127.0.0.1').meaning, /never leaves/i)
+    assert.equal(ipAddressKind('100.64.0.1').kind, 'cgnat')
+    assert.equal(ipAddressKind('100.128.0.1').kind, 'public', '100.128 is outside the /10')
+    assert.equal(ipAddressKind('255.255.255.255').kind, 'broadcast')
+  })
+
+  test('anything else is public, and says why that matters', () => {
+    const r = ipAddressKind('8.8.8.8')
+    assert.equal(r.kind, 'public')
+    assert.equal(r.routable, true)
+    assert.equal(r.showSafe, false)
+    assert.match(r.meaning, /belongs to somebody else/)
+  })
+
+  test('it rejects anything that is not a dotted quad', () => {
+    assert.equal(ipAddressKind('999.1.1.1'), null)
+    assert.equal(ipAddressKind('10.0.0'), null)
+    assert.equal(ipAddressKind('10.0.0.1.1'), null)
+    assert.equal(ipAddressKind('nope'), null)
+    assert.equal(ipAddressKind('10.0.0.-1'), null)
+    assert.equal(ipAddressKind(''), null)
+    assert.equal(ipAddressKind(null), null)
+  })
+
+  test('every documented range carries the RFC that reserved it', () => {
+    assert.ok(IP_RANGES.length >= 8)
+    for (const r of IP_RANGES) {
+      assert.match(r.rfc, /^RFC \d+$/, `${r.cidr} has no RFC`)
+      assert.ok(r.meaning.length > 40, `${r.cidr} has no useful meaning`)
+      assert.match(r.cidr, /^\d+\.\d+\.\d+\.\d+\/\d+$/)
+    }
+  })
+})
+
+describe('the network command reference', () => {
+  test('every question has an answer on all three platforms', () => {
+    assert.ok(NET_COMMANDS.length >= 10)
+    for (const c of NET_COMMANDS) {
+      assert.ok(c.q.endsWith('?'), `"${c.q}" is not a question`)
+      for (const os of ['win', 'mac', 'linux']) {
+        assert.ok(c[os] && c[os].length > 2, `${c.q} has no ${os} command`)
+      }
+      // The part usually missing from a cheat sheet: what in the output
+      // actually answers the question.
+      assert.ok(c.look.length > 40, `${c.q} does not say what to look for`)
+    }
+  })
+
+  test('the platform commands genuinely differ where they should', () => {
+    const trace = NET_COMMANDS.find((c) => /traffic actually go/.test(c.q))
+    assert.equal(trace.win, 'tracert 10.0.0.50')
+    assert.equal(trace.linux, 'traceroute 10.0.0.50')
+    const addr = NET_COMMANDS.find((c) => /my address/.test(c.q))
+    assert.notEqual(addr.win, addr.linux)
   })
 })

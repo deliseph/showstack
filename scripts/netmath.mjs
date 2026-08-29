@@ -87,6 +87,64 @@ export const NETDATA = {
       source: 'https://www.smpte.org/standards/st2110',
       note: 'Deployments commonly follow AES67-style marking; broadcast plants normally pin exact values per facility spec.',
     },
+    // --- added: the protocols a converged show network actually also carries
+    'rdmnet': {
+      name: 'RDMnet (E1.33)',
+      classes: [
+        { kind: 'control', label: 'Device management over IP', dscp: 0, dscpName: 'BE' },
+      ],
+      source: 'https://tsp.esta.org/tsp/documents/published_docs.php',
+      note: 'Management traffic, not show data. It is bursty during discovery and can be given a low priority without harm — but do not starve it, or a console appears to lose devices.',
+    },
+    'ptp-1588': {
+      name: 'PTP / gPTP (IEEE 1588, 802.1AS)',
+      classes: [
+        { kind: 'clock', label: 'Sync and announce messages', dscp: 56, dscpName: 'CS7' },
+      ],
+      source: 'https://standards.ieee.org/ieee/1588/6825/',
+      note: 'The clock has to win every argument. A late clock packet is worse than a late media packet, because everything downstream drifts rather than glitching once. Where a media protocol carries its own PTP profile, mark to that profile rather than to this.',
+    },
+    'osc': {
+      name: 'OSC',
+      classes: [
+        { kind: 'control', label: 'Control messages (usually UDP)', dscp: 0, dscpName: 'BE' },
+      ],
+      source: 'https://opensoundcontrol.stanford.edu/spec-1_0.html',
+      note: 'The specification says nothing about marking or even about transport. Classify by port on the switch, and remember that UDP OSC has no delivery guarantee at all — a dropped cue is simply gone.',
+    },
+    'psn': {
+      name: 'PosiStageNet',
+      classes: [
+        { kind: 'control', label: 'Tracking positions (multicast UDP)', dscp: 0, dscpName: 'BE' },
+      ],
+      source: 'https://posistage.net/',
+      note: 'Position data at a high rate. Late positions are visibly worse than dropped ones on a followspot or a projection map, so it wants low latency more than it wants reliability.',
+    },
+    'citp': {
+      name: 'CITP / MSEX',
+      classes: [
+        { kind: 'control', label: 'Fixture and media exchange', dscp: 0, dscpName: 'BE' },
+      ],
+      source: 'http://citp-protocol.org/',
+      note: 'Thumbnails and media library exchange, which means occasional large transfers between a console and a media server. Give it a ceiling rather than a priority, or a library sync will sit on top of show traffic.',
+    },
+    'srt': {
+      name: 'SRT',
+      classes: [
+        { kind: 'media', label: 'Contribution video over unreliable links', dscp: 34, dscpName: 'AF41' },
+      ],
+      source: 'https://www.srtalliance.org/',
+      note: 'Designed for links you do not control, with its own retransmission and a configurable latency buffer. On a LAN that buffer is wasted latency; SRT earns its keep between buildings, not inside one.',
+    },
+    'ravenna': {
+      name: 'Ravenna',
+      classes: [
+        { kind: 'clock', label: 'PTP time-critical', dscp: 56, dscpName: 'CS7' },
+        { kind: 'media', label: 'Audio streams', dscp: 46, dscpName: 'EF' },
+      ],
+      source: 'https://www.ravenna-network.com/',
+      note: 'AES67-compatible in its interoperability mode, and marks the same way. Where a network carries both Ravenna and Dante, they compete for the same EF queue and the queue has to be sized for the sum.',
+    },
   },
 
   bandwidth: {
@@ -98,6 +156,11 @@ export const NETDATA = {
     'ndi-hx-1080p60': { label: 'NDI HX 1080p60 stream', mbps: 20, source: 'https://jemproductions.fi/guides/ndi-bandwidth-explained/', note: 'Vendor and generation dependent; plan 8-30 Mbps.' },
     'qlan-stream': { label: 'Q-LAN audio stream (16ch)', mbps: 33, source: 'https://q-syshelp.qsc.com/q-sys_7.0/content/Appendix/q_dn_qlan_notes.pdf', note: 'Q-LAN sends fixed 16-channel streams at 48 kHz/32-bit.' },
     'st2110-hd': { label: 'ST 2110-20 uncompressed 1080p59.94', mbps: 2600, source: 'https://www.smpte.org/standards/st2110' },
+    'st2110-uhd': { label: 'ST 2110-20 uncompressed UHD (2160p59.94, 10-bit)', mbps: 11900, source: 'https://www.smpte.org/standards' },
+    'ndi-4k60': { label: 'NDI High Bandwidth 2160p60', mbps: 250, source: 'https://ndi.video/tech/' },
+    'srt-1080p': { label: 'SRT / H.264 contribution 1080p', mbps: 8, source: 'https://www.srtalliance.org/' },
+    'psn-tracker': { label: 'PosiStageNet, 20 trackers at 60 Hz', mbps: 1, source: 'https://posistage.net/' },
+    'ravenna-flow': { label: 'Ravenna / AES67 flow (8ch, 48 kHz, 1 ms)', mbps: 10, source: 'https://www.ravenna-network.com/' },
   },
 }
 

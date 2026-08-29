@@ -432,6 +432,14 @@ export const LEARN_TOPICS = [
     questions: ['How do I measure a system?', 'How do I time a delay tower?', 'Point source or array?'],
   },
   {
+    slug: 'space',
+    group: 'room',
+    tag: 'Spatial audio',
+    title: 'Putting a sound somewhere',
+    blurb: 'Polarity is a sign flip and phase is a time relationship that differs at every frequency, so a button fixes one and not the other. What a square, saw and triangle are actually made of. And four ways of placing a sound in a room that fail differently — by moving, by frequency, by order, and by whose head it was measured on.',
+    questions: ['Polarity or phase?', 'What is a square wave made of?', 'VBAP, WFS or ambisonics?'],
+  },
+  {
     slug: 'light',
     group: 'room',
     tag: 'Light & video',
@@ -446,6 +454,14 @@ export const LEARN_TOPICS = [
     title: 'Designing something an audience accepts',
     blurb: 'Perception is a prediction machine rather than a camera, so an illusion is a plausible story the eye is allowed to finish. The contrast ratio that decides whether a Pepper’s ghost reads as solid, why forced perspective collapses for the front row, and what attention actually follows.',
     questions: ['Why is my ghost see-through?', 'Why does it fail up close?', 'Where will they look?'],
+  },
+  {
+    slug: 'proto',
+    group: 'build',
+    tag: 'Fabrication',
+    title: 'Making the part that does not exist',
+    blurb: 'FDM, SLA and SLS fail in different directions, and a printed part is dramatically weaker across its layers than along them — so orientation on the bed is a structural decision somebody made by pressing slice. Plus scanning, photogrammetry, and the load-path boundary that does not move.',
+    questions: ['Which process?', 'Why did it snap?', 'Can I print a bracket for that?'],
   },
   {
     slug: 'drawings',
