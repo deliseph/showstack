@@ -218,8 +218,51 @@ export function learnFooter(esc, { slug, html, db, groups, topics, capstone }) {
       </a>`).join('')}</div>
   </section>`
 
-  return inIndex + onward
+  // Peak-end. The interactive figure is the peak and it stays where it is;
+  // this is the ending, which used to be a licence line and a GitHub link on
+  // all 27 pages. It closes the same gap the card opened - the questions here
+  // are the ones printed on the hub card, so the reader who came in on "why is
+  // there a hum?" is told, in the site's own words, that they can answer it
+  // now. No score, no badge, no "great job": the reward is the competence.
+  const peak = me ? `
+  <section class="peak">
+    <span class="pk">You can now answer</span>
+    <ul>${me.questions.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
+    <button type="button" class="pkdone" data-slug="${esc(slug)}" aria-pressed="false">
+      <span class="pkoff">Mark as read</span><span class="pkon">Read &mdash; undo</span>
+    </button>
+    <span class="pknote">Kept in this browser on this device. Nothing is sent anywhere.</span>
+  </section>` : ''
+
+  return peak + onward + inIndex
 }
+
+/**
+ * Read state on an explainer: the button in the peak-end block, and the "read"
+ * marker in the chain-position line. Same localStorage key the /learn/ hub
+ * reads, so the two agree without either knowing about the other.
+ */
+export const READ_JS = `
+(function(){
+  var KEY='ss-read';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+  var btn=document.querySelector('.pkdone');
+  if(!btn)return;
+  var slug=btn.dataset.slug, mark=document.querySelector('.cpos .cread');
+  function paint(){
+    var on=load().indexOf(slug)>-1;
+    btn.setAttribute('aria-pressed',String(on));
+    if(mark)mark.hidden=!on;
+  }
+  btn.addEventListener('click',function(){
+    var a=load(), i=a.indexOf(slug);
+    if(i>-1)a.splice(i,1);else a.push(slug);
+    save(a); paint();
+  });
+  paint();
+})();
+`
 
 /** Styles for both blocks, injected once into the shared stylesheet. */
 export const RELATED_CSS = `
@@ -232,6 +275,26 @@ text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 border:1px solid var(--line);background:var(--panel);color:var(--dim);text-decoration:none}
 .learnbox a:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));color:var(--accent);
 text-decoration:none}
+.peak{margin:40px 0 0;padding:22px 24px;border-radius:var(--r-lg);
+border:1px solid color-mix(in srgb,var(--verified) 32%,var(--rule));
+background:color-mix(in srgb,var(--verified) 7%,var(--surface-raised))}
+.peak .pk{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;
+color:var(--verified);margin-bottom:12px}
+.peak ul{margin:0;padding-left:0;list-style:none}
+.peak li{color:var(--ink);font-size:16.5px;line-height:1.5;margin:0 0 8px;padding-left:26px;position:relative}
+.peak li::before{content:"";position:absolute;left:2px;top:.55em;width:11px;height:6px;
+border-left:2px solid var(--verified);border-bottom:2px solid var(--verified);transform:rotate(-45deg)}
+.peak li:last-child{margin-bottom:0}
+.peak .pkdone{margin-top:16px;font-family:var(--mono);font-size:12.5px;padding:0 16px;min-height:44px;
+border-radius:var(--r-pill);border:1px solid var(--rule-strong);background:var(--surface);
+color:var(--ink-muted);cursor:pointer;display:inline-flex;align-items:center}
+.peak .pkdone:hover{color:var(--verified);border-color:var(--verified)}
+.peak .pkdone[aria-pressed="true"]{color:var(--verified);border-color:var(--verified);
+background:color-mix(in srgb,var(--verified) 13%,var(--surface))}
+.peak .pkon{display:none}
+.peak .pkdone[aria-pressed="true"] .pkoff{display:none}
+.peak .pkdone[aria-pressed="true"] .pkon{display:inline}
+.peak .pknote{display:block;margin-top:10px;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint)}
 .onward{margin:38px 0 0;padding-top:26px;border-top:1px solid var(--line)}
 .onward h3{font-family:var(--sans);font-size:19px;letter-spacing:-.2px;text-transform:none;color:var(--ink);
 margin:0 0 6px;font-weight:650}

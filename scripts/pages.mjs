@@ -54,8 +54,8 @@ import { learnColourPage } from './learn-colour.mjs'
 import { learnSensesPage } from './learn-senses.mjs'
 import { buildPage } from './build-page.mjs'
 import { homePage } from './home.mjs'
-import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE } from './learn-kit.mjs'
-import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS } from './related.mjs'
+import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
+import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -446,9 +446,9 @@ export function navBar(canonical) {
   // runs is what turns the rail into a model of the site. The labels scroll
   // with the rail, so on a phone you can always see which cluster you are in.
   return `<nav class="rail" aria-label="Site">${home}` +
-    `<span class="navgroup"><span class="ncl">Learn</span>${main}</span>` +
-    `<span class="navgroup"><span class="ncl">Look up</span>${index}</span>` +
-    `<span class="navgroup"><span class="ncl">Work it out</span>${views}</span></nav>`
+    `<span class="navgroup">${main}</span>` +
+    `<span class="navgroup"><span class="ncl">The index</span>${index}</span>` +
+    `<span class="navgroup"><span class="ncl">Answers</span>${views}</span></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -909,7 +909,27 @@ export function buildPages(db, dist) {
     ['experience', () => learnExperiencePage(learnArgs)],
   ]
   const learnHtml = new Map()
-  for (const [slug, render] of LEARN_PAGES) learnHtml.set(slug, render())
+  // The explainers render before the /learn/ index, so the index can report a
+  // real reading time per card instead of an estimate. The hub is rendered
+  // last for the same reason - it needs the numbers the others produce.
+  const hub = LEARN_PAGES.find(([slug]) => slug === '')
+  for (const [slug, render] of LEARN_PAGES) if (slug) learnHtml.set(slug, render())
+  const readingMinutes = new Map()
+  for (const [slug, html] of learnHtml) {
+    const main = html.slice(html.indexOf('<main'), html.lastIndexOf('</main>'))
+    const words = main.replace(/<(script|style|svg)[\s\S]*?<\/\1>/g, ' ')
+      .replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;|&#\d+;/g, ' ')
+      .split(/\s+/).filter((w) => /[a-z0-9]/i.test(w)).length
+    // 200 wpm, and never rounded down to zero. These pages are read slowly -
+    // the figures are the point - so this is deliberately the low estimate.
+    readingMinutes.set(slug, Math.max(1, Math.round(words / 200)))
+  }
+  // Fill the token now that each page's own length is known.
+  for (const [slug, html] of learnHtml) {
+    learnHtml.set(slug, html.replace('__READMIN__', String(readingMinutes.get(slug))))
+  }
+  setLearnReading(readingMinutes)
+  if (hub) learnHtml.set('', hub[1]())
   BACKLINKS = buildBacklinks(new Map([...learnHtml].filter(([k]) => k)))
 
   for (const p of db.protocols) { write(`protocols/${p.id}`, protocolPage(p, gapOf('protocols', p.id))); urls.push(`${SITE}/protocols/${p.id}/`) }
@@ -989,7 +1009,10 @@ export function buildPages(db, dist) {
     const foot = slug
       ? learnFooter(esc, { slug, html, db, groups: LEARN_GROUPS, topics: LEARN_TOPICS, capstone: LEARN_CAPSTONE })
       : ''
-    write(dir, foot ? html.replace('</div></main>', `${foot}</div></main>`) : html)
+    write(dir, foot
+      ? html.replace('</div></main>', `${foot}</div></main>`)
+             .replace('</body>', `<script>${READ_JS}</script></body>`)
+      : html)
     urls.push(`${SITE}/learn/${slug ? slug + '/' : ''}`)
   }
 
