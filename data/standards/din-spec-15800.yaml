@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: din-spec-15800
+designation: DIN SPEC 15800
+title: General Device Type Format (GDTF)
+body: DIN
+domain: control-data
+year: 2022
+scope: >-
+  Specifies GDTF, an open file format describing an entertainment fixture: its DMX modes and channel
+  layout, its geometry and physical properties, and its behaviour — so one definition can serve
+  a console, a visualiser and a CAD package.
+status: current
+free_to_read: true
+access_url:
+  url: https://gdtf-share.com/
+  label: GDTF Share
+notes: >-
+  With MVR, this is what allows a plot to move from CAD to previsualisation to console without anybody
+  retyping a patch. Check that a downloaded file matches the firmware the fixture is actually running.
+tags:
+- gdtf
+- mvr
+- fixtures
+- cad
+- interchange
+sources:
+- title: GDTF — General Device Type Format
+  url: https://gdtf-share.com/
+  publisher: GDTF Group
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

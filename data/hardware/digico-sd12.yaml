@@ -1,0 +1,58 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: digico-sd12
+name: DiGiCo SD12
+vendor: DiGiCo
+category: audio-console
+status: current
+summary: >-
+  Compact SD-range console that has become a rental-stock standard: enough channels for most touring
+  work in a frame two people can carry, on the same show-file ecosystem as the larger desks.
+speaks:
+- protocol: madi
+  direction: bidirectional
+  note: Optical and coaxial MADI.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via optional card.
+  confidence: reported
+- protocol: aes50
+  direction: bidirectional
+  note: Depending on fitted option.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Via the external control protocol.
+  confidence: unverified
+form_factor: Console
+homepage:
+  url: https://digico.biz/
+  label: DiGiCo
+gotchas:
+- I/O capability is a function of the fitted option cards and the racks, not of the surface. Two
+  identical-looking SD12s can be very different systems.
+- Agree the clock master before the first line check. A console and a stage rack disagreeing about
+  clock is the most common cause of intermittent digital noise.
+tags:
+- audio
+- console
+- digico
+sources:
+- title: DiGiCo
+  url: https://digico.biz/
+  publisher: DiGiCo
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

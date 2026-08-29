@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: brompton-tessera-s8
+name: Brompton Tessera S8
+vendor: Brompton Technology
+category: video-processor
+status: current
+summary: >-
+  Brompton's mid-size LED processor, with the same feature set and calibration tools as the larger
+  units at a lower pixel capacity. The tools — Dynamic Calibration, Frame Remapping, Extended Bit
+  Depth — are why panels behave on camera.
+speaks:
+- protocol: genlock
+  direction: in
+  note: Frame reference.
+  confidence: reported
+- protocol: smpte-st-2110
+  direction: in
+  note: IP video with the relevant option.
+  confidence: unverified
+- protocol: art-net
+  direction: in
+  note: Control.
+  confidence: unverified
+form_factor: Rackmount LED processor
+rack_units: 1
+homepage:
+  url: https://www.bromptontech.com/
+  label: Brompton Technology
+gotchas:
+- Calibration data lives with the panels. Moving a wall between processors without carrying the
+  calibration loses the thing you bought the processor for.
+tags:
+- led
+- processor
+- video
+- brompton
+sources:
+- title: Brompton Technology
+  url: https://www.bromptontech.com/
+  publisher: Brompton Technology
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

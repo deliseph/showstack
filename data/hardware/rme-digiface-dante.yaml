@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: rme-digiface-dante
+name: RME Digiface Dante
+vendor: RME
+category: io-interface
+status: current
+summary: >-
+  Bus-powered USB interface that puts a laptop on a Dante network with a large channel count and
+  RME's driver stability. The device that makes a measurement rig, a virtual soundcheck or a playback
+  machine a network participant rather than a cabling problem.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: 64 channels each way at base rates.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: reported
+physical_ports:
+- 2x etherCON or RJ45 Dante
+- USB
+- Word clock
+form_factor: Compact USB interface
+homepage:
+  url: https://www.rme-audio.de/
+  label: RME
+gotchas:
+- A laptop on a show audio network is a laptop on a show audio network. Give it its own port and
+  think about what else that machine does.
+tags:
+- audio
+- interface
+- dante
+- rme
+- measurement
+sources:
+- title: RME
+  url: https://www.rme-audio.de/
+  publisher: RME
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

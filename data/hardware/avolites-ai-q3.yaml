@@ -1,0 +1,59 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: avolites-ai-q3
+name: Avolites Ai Q3
+vendor: Avolites
+category: media-server
+status: current
+summary: >-
+  Avolites media server running Ai, with the Salvation patching engine underneath — which means
+  the machine is programmable in a dataflow environment rather than only configurable, and is unusually
+  comfortable being driven directly from a lighting console.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Control and output.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Control and output.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: Thumbnails.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: Video over IP.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+form_factor: Rackmount media server
+rack_units: 3
+homepage:
+  url: https://www.avolites.com/
+  label: Avolites
+gotchas:
+- Salvation makes deep customisation possible, which also makes an undocumented patch somebody built
+  at 2am a real handover risk.
+tags:
+- media-server
+- video
+- avolites
+- ai
+sources:
+- title: Avolites Ai
+  url: https://www.avolites.com/
+  publisher: Avolites
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

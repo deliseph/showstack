@@ -13,6 +13,7 @@ import {
   ohmsLaw, speakerImpedance, processingDelay,
   dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
+  subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -465,5 +466,196 @@ describe('third-order intermodulation', () => {
     assert.equal(intermod3([500]), null)
     assert.equal(intermod3([]), null)
     assert.equal(intermod3('abc'), null)
+  })
+})
+
+describe('IPv4 subnetting', () => {
+  test('the /24 everyone knows', () => {
+    const r = subnetCidr('192.168.1.50', 24)
+    assert.equal(r.network, '192.168.1.0')
+    assert.equal(r.broadcast, '192.168.1.255')
+    assert.equal(r.mask, '255.255.255.0')
+    assert.equal(r.firstHost, '192.168.1.1')
+    assert.equal(r.lastHost, '192.168.1.254')
+    assert.equal(r.usableHosts, 254)
+  })
+  test('a non-obvious boundary: /20 does not start where the address does', () => {
+    // 172.16.5.9/20 sits in the block starting at 172.16.0.0, not 172.16.5.0.
+    const r = subnetCidr('172.16.5.9', 20)
+    assert.equal(r.network, '172.16.0.0')
+    assert.equal(r.broadcast, '172.16.15.255')
+    assert.equal(r.mask, '255.255.240.0')
+    assert.equal(r.usableHosts, 4094)
+  })
+  test('/8 and /0 do not overflow the 32-bit shift', () => {
+    assert.equal(subnetCidr('10.0.0.1', 8).usableHosts, 16777214)
+    const zero = subnetCidr('0.0.0.0', 0)
+    assert.equal(zero.mask, '0.0.0.0')
+    assert.equal(zero.totalAddresses, 4294967296)
+  })
+  test('/31 is a point-to-point pair, /32 is a single host (RFC 3021)', () => {
+    const p31 = subnetCidr('10.0.0.0', 31)
+    assert.equal(p31.usableHosts, 2)
+    assert.equal(p31.broadcast, null)   // no broadcast address to reserve
+    assert.equal(p31.firstHost, '10.0.0.0')
+    assert.equal(p31.lastHost, '10.0.0.1')
+    assert.equal(subnetCidr('10.0.0.5', 32).usableHosts, 0)
+  })
+  test('RFC 1918 detection', () => {
+    assert.equal(subnetCidr('10.1.2.3', 24).isPrivate, true)
+    assert.equal(subnetCidr('172.16.0.1', 24).isPrivate, true)
+    assert.equal(subnetCidr('172.32.0.1', 24).isPrivate, false)  // just outside the block
+    assert.equal(subnetCidr('192.168.9.1', 24).isPrivate, true)
+    assert.equal(subnetCidr('8.8.8.8', 24).isPrivate, false)
+  })
+  test('rejects malformed addresses and prefixes', () => {
+    assert.equal(subnetCidr('192.168.1', 24), null)
+    assert.equal(subnetCidr('192.168.1.256', 24), null)
+    assert.equal(subnetCidr('192.168.1.1', 33), null)
+    assert.equal(subnetCidr('192.168.1.1', -1), null)
+    assert.equal(subnetCidr('a.b.c.d', 24), null)
+    assert.equal(subnetCidr('192.168.01.1', 24).network, '192.168.1.0') // leading zero tolerated
+  })
+})
+
+describe('DMX line budget in unit loads', () => {
+  test('the rule is 32 unit loads, not 32 fixtures', () => {
+    // 40 fixtures at 1/4 UL each is 10 UL - comfortably legal.
+    const r = dmxLineBudget([{ count: 40, unitLoad: 0.25 }])
+    assert.equal(r.fixtures, 40)
+    assert.equal(r.unitLoads, 10)
+    assert.equal(r.withinLimit, true)
+    assert.equal(r.segmentsNeeded, 1)
+  })
+  test('a rig of full-unit-load fixtures still stops at 32', () => {
+    assert.equal(dmxLineBudget([{ count: 32, unitLoad: 1 }]).withinLimit, true)
+    assert.equal(dmxLineBudget([{ count: 33, unitLoad: 1 }]).withinLimit, false)
+    assert.equal(dmxLineBudget([{ count: 33, unitLoad: 1 }]).segmentsNeeded, 2)
+  })
+  test('mixed rigs add up as they really are', () => {
+    // 20 old fixtures at 1 UL + 40 modern at 1/4 UL = 30 UL, just inside.
+    const r = dmxLineBudget([{ count: 20, unitLoad: 1 }, { count: 40, unitLoad: 0.25 }])
+    assert.equal(r.unitLoads, 30)
+    assert.equal(r.fixtures, 60)
+    assert.equal(r.headroomUnitLoads, 2)
+    assert.equal(r.withinLimit, true)
+  })
+  test('segment count rounds up', () => {
+    assert.equal(dmxLineBudget([{ count: 96, unitLoad: 1 }]).segmentsNeeded, 3)
+    assert.equal(dmxLineBudget([{ count: 97, unitLoad: 1 }]).segmentsNeeded, 4)
+    assert.equal(dmxLineBudget([]).segmentsNeeded, 0)
+  })
+  test('rejects rubbish', () => {
+    assert.equal(dmxLineBudget([{ count: -1, unitLoad: 1 }]), null)
+    assert.equal(dmxLineBudget([{ count: 4, unitLoad: 0 }]), null)
+    assert.equal(dmxLineBudget('nope'), null)
+  })
+})
+
+describe('inverse square law', () => {
+  test('every doubling of distance costs 6 dB', () => {
+    assert.equal(splAtDistance(100, 1, 2).spl, 94)
+    assert.equal(splAtDistance(100, 1, 4).spl, 88)
+    assert.equal(splAtDistance(100, 1, 4).doublings, 2)
+    // "6 dB per doubling" is itself a rounding: 20*log10(8) is 18.06, not 18,
+    // so three doublings lose 18.1 dB rather than a clean 18.
+    assert.equal(splAtDistance(100, 1, 8).spl, 81.9)
+  })
+  test('halving the distance gains 6 dB', () => {
+    assert.equal(splAtDistance(100, 2, 1).spl, 106)
+  })
+  test('no change at the reference distance', () => {
+    assert.equal(splAtDistance(100, 1, 1).spl, 100)
+    assert.equal(splAtDistance(100, 1, 1).dropDb, 0)
+  })
+  test('a worked touring case: 100 dB at 1 m, heard at 30 m', () => {
+    // 20*log10(30) = 29.5 dB of loss.
+    assert.equal(splAtDistance(100, 1, 30).dropDb, 29.5)
+    assert.equal(splAtDistance(100, 1, 30).spl, 70.5)
+  })
+  test('rejects zero and negative distances', () => {
+    assert.equal(splAtDistance(100, 0, 10), null)
+    assert.equal(splAtDistance(100, 1, 0), null)
+    assert.equal(splAtDistance(100, 1, -5), null)
+    assert.equal(splAtDistance('x', 1, 10), null)
+  })
+})
+
+describe('frame budget', () => {
+  test('a 60 fps frame is 16.67 ms', () => {
+    const r = frameBudget(60, [])
+    assert.equal(r.periodMs, 16.67)
+    assert.equal(r.headroomMs, 16.67)
+    assert.equal(r.withinBudget, true)
+  })
+
+  test('sums the stages and reports the headroom left', () => {
+    const r = frameBudget(60, [4, 3.5, 2])
+    assert.equal(r.usedMs, 9.5)
+    assert.equal(r.headroomMs, 7.17)
+    assert.equal(r.withinBudget, true)
+  })
+
+  test('a pipeline that overruns does not run slightly slower, it drops frames', () => {
+    const r = frameBudget(60, [12, 9])
+    assert.equal(r.usedMs, 21)
+    assert.equal(r.withinBudget, false)
+    // 21 ms of work can only hold 47.62 fps, however you label the output.
+    assert.equal(r.achievableFps, 47.62)
+  })
+
+  test('never claims a higher rate than was asked for', () => {
+    assert.equal(frameBudget(30, [2]).achievableFps, 30)
+  })
+
+  test('ignores nonsense stage values rather than producing NaN', () => {
+    const r = frameBudget(50, [5, 'x', null, -3, 2])
+    assert.equal(r.usedMs, 7)
+  })
+
+  test('rejects an impossible frame rate', () => {
+    assert.equal(frameBudget(0, []), null)
+    assert.equal(frameBudget(-30, []), null)
+  })
+})
+
+describe('pyro cue time', () => {
+  test('subtracts lift and prefire from the moment the effect is seen', () => {
+    const r = pyroCueTime(60, 4.2, 0.8)
+    assert.equal(r.totalDelaySeconds, 5)
+    assert.equal(r.fireSeconds, 55)
+  })
+
+  test('two items bursting on the same beat are fired at different times', () => {
+    const shell = pyroCueTime(90, 5.5, 0.5)
+    const mine = pyroCueTime(90, 0, 0.2)
+    assert.equal(shell.fireSeconds, 84)
+    assert.equal(mine.fireSeconds, 89.8)
+    // Same beat, 5.8 seconds apart on the firing script.
+    assert.equal(Math.round((mine.fireSeconds - shell.fireSeconds) * 10) / 10, 5.8)
+  })
+
+  test('reports the frame the firing system chases', () => {
+    const r = pyroCueTime(60, 4.2, 0.8)
+    assert.equal(r.fireTimecode25, '00:00:55:00')
+    assert.equal(r.fireTimecode30, '00:00:55:00')
+  })
+
+  test('flags an item that would have to be fired before the show started', () => {
+    const r = pyroCueTime(2, 4, 0.5)
+    assert.equal(r.beforeShowStart, true)
+    assert.equal(r.fireSeconds, -2.5)
+    // A negative fire time has no timecode, and is not wrapped into a plausible one.
+    assert.equal(r.fireTimecode25, null)
+  })
+
+  test('with no lift or prefire the fire time is the effect time', () => {
+    assert.equal(pyroCueTime(42).fireSeconds, 42)
+  })
+
+  test('rejects negative delays and times', () => {
+    assert.equal(pyroCueTime(-1, 0, 0), null)
+    assert.equal(pyroCueTime(10, -1, 0), null)
+    assert.equal(pyroCueTime(10, 0, -1), null)
   })
 })

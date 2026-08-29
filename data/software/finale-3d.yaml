@@ -1,0 +1,49 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: finale-3d
+name: Finale 3D
+vendor: Finale 3D
+category: previsualisation
+license: Proprietary
+price_model: subscription
+platforms:
+- windows
+- macos
+status: current
+summary: >-
+  Fireworks design and simulation software. A designer programs to the moment an effect is seen,
+  and the software works backwards through each item's lift and delay to produce the fire times
+  the controller actually executes — which is why a shell that bursts on the beat was fired seconds
+  earlier.
+speaks:
+- protocol: ltc
+  direction: out
+  note: Scripts are executed against timecode by the firing system.
+  confidence: unverified
+homepage:
+  url: https://finale3d.com/
+  label: Finale 3D
+typical_use:
+- Pyromusical design and simulation
+- Producing the script a firing system executes
+- Showing a client the show before anything is bought
+gotchas:
+- The simulation is only as honest as the effect data behind it. Times, heights and durations come
+  from the product library and from the manufacturer.
+- Design software does not arm anything. Permission to fire stays in the physical chain, outside
+  every computer.
+tags:
+- pyro
+- fireworks
+- design
+- timecode
+sources:
+- title: Finale 3D
+  url: https://finale3d.com/
+  publisher: Finale 3D
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

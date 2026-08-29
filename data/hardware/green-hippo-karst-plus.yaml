@@ -1,0 +1,59 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: green-hippo-karst-plus
+name: Green Hippo Hippotizer Karst+ MK2
+vendor: Green Hippo
+category: media-server
+status: current
+summary: >-
+  Mid-range Hippotizer: the same software and toolset as the larger machines, sized for shows that
+  need real playback and mapping without a flagship's output count.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Control and pixel output.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Control and pixel output.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: Thumbnails to consoles.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: Video over IP.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+form_factor: Rackmount media server
+rack_units: 2
+runs_software:
+- hippotizer
+homepage:
+  url: https://www.green-hippo.com/
+  label: Green Hippo
+gotchas:
+- Output count and Notch capability are the two things that separate the models. Confirm both against
+  the design rather than the range name.
+tags:
+- media-server
+- video
+- hippotizer
+sources:
+- title: Green Hippo
+  url: https://www.green-hippo.com/
+  publisher: Green Hippo
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

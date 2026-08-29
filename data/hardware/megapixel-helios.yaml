@@ -1,0 +1,57 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: megapixel-helios
+name: Megapixel HELIOS LED Processing Platform
+vendor: Megapixel VR
+category: video-processor
+status: current
+summary: >-
+  LED processor built for camera work: high frame rates, high bit depth and the scan behaviour that
+  decides whether a wall photographs cleanly. On a virtual production stage the processor is a colour
+  and timing device, not a cable adaptor.
+speaks:
+- protocol: smpte-st-2110
+  direction: in
+  note: IP video input.
+  confidence: reported
+- protocol: ndi
+  direction: in
+  note: Video over IP.
+  confidence: unverified
+- protocol: genlock
+  direction: in
+  note: Frame reference — the whole point on a camera stage.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Control.
+  confidence: unverified
+- protocol: sacn
+  direction: in
+  note: Control.
+  confidence: unverified
+form_factor: Rackmount LED processor
+rack_units: 1
+homepage:
+  url: https://megapixelvr.com/
+  label: Megapixel VR
+gotchas:
+- An LED wall does not display a frame all at once; it refreshes in a scan. A camera shutter out
+  of step with that scan photographs banding no grade will remove.
+- Processor capacity is measured in pixels and in frame rate together. A pixel count that fits at
+  30p may not fit at 60p.
+tags:
+- led
+- processor
+- video
+- virtual-production
+sources:
+- title: Megapixel VR
+  url: https://megapixelvr.com/
+  publisher: Megapixel VR
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

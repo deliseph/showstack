@@ -1,0 +1,65 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: evertz-5601msc
+name: Evertz 5601MSC Master Sync and Clock
+vendor: Evertz
+category: timecode-generator
+status: current
+summary: >-
+  Broadcast master sync generator: house video reference, word clock, LTC and PTP from one disciplined
+  source, optionally locked to GNSS. The single box that decides what time it is for an entire facility.
+speaks:
+- protocol: genlock
+  direction: out
+  note: Blackburst and tri-level reference.
+  confidence: reported
+- protocol: ltc
+  direction: bidirectional
+  note: Timecode.
+  confidence: reported
+- protocol: word-clock
+  direction: out
+  note: Audio reference.
+  confidence: reported
+- protocol: ptp-1588
+  direction: out
+  note: PTP grandmaster, depending on option.
+  confidence: reported
+- protocol: nmea-0183
+  direction: in
+  note: GNSS discipline.
+  confidence: unverified
+- protocol: ntp
+  direction: out
+  note: Time of day for the facility.
+  confidence: unverified
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: reported
+form_factor: Rackmount master sync and clock
+rack_units: 1
+homepage:
+  url: https://evertz.com/
+  label: Evertz
+gotchas:
+- One master clock is the point. A second reference added "just for the video rack" recreates the
+  problem the first one solved.
+- Video reference, word clock, LTC, PTP and NTP are five different things that all get called "sync".
+  Be explicit about which one a device needs.
+tags:
+- sync
+- clock
+- ptp
+- ltc
+- broadcast
+sources:
+- title: Evertz
+  url: https://evertz.com/
+  publisher: Evertz
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

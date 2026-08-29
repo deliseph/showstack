@@ -1,0 +1,51 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: godot
+name: Godot Engine
+vendor: Godot Foundation
+category: content-creation
+license: MIT
+price_model: open-source
+platforms:
+- windows
+- macos
+- linux
+status: current
+summary: >-
+  Small, fast-opening, genuinely free real-time engine under a permissive licence with no royalty
+  and no company able to change the terms later. Smaller ecosystem and fewer industry integrations
+  than Unreal or Unity — the right pick for learning, for tools a venue owns, and for anything that
+  must still run in ten years.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Through community add-ons.
+  confidence: unverified
+homepage:
+  url: https://godotengine.org/
+  label: Godot Engine
+repo:
+  url: https://github.com/godotengine/godot
+  label: GitHub
+typical_use:
+- Bespoke interactive tools an organisation needs to own outright
+- Learning how a real-time engine works
+- Small installations and exhibits
+gotchas:
+- You will build more of the show-specific integration yourself than in the commercial engines.
+  That is the trade for owning the result.
+tags:
+- engine
+- open-source
+- real-time
+- godot
+sources:
+- title: Godot Engine
+  url: https://godotengine.org/
+  publisher: Godot Foundation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

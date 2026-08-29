@@ -1,0 +1,54 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: beckhoff-cx5140
+name: Beckhoff CX5140 Embedded PC
+vendor: Beckhoff Automation
+category: motion-control
+status: current
+summary: >-
+  DIN-rail embedded PC running TwinCAT with EtherCAT terminals clipped directly onto it. The physical
+  form the determinism argument takes: a hard real-time control task on reserved cores, with Windows
+  and the rest of the world alongside it rather than in the way.
+speaks:
+- protocol: ethercat
+  direction: bidirectional
+  note: Native fieldbus to drives and I/O.
+  confidence: reported
+- protocol: opc-ua
+  direction: bidirectional
+  note: Exposing state upward to show systems.
+  confidence: reported
+- protocol: modbus-tcp
+  direction: bidirectional
+  note: Supplementary.
+  confidence: reported
+- protocol: profinet
+  direction: bidirectional
+  note: With the relevant supplement.
+  confidence: unverified
+form_factor: DIN-rail embedded PC
+runs_software:
+- twincat
+homepage:
+  url: https://www.beckhoff.com/
+  label: Beckhoff Automation
+gotchas:
+- Functional safety is TwinSAFE — a separate rated channel. It is not where control code goes, and
+  it must remain valid when the control program is wrong.
+- The show network may give an automation system timing. It must never give it permission.
+tags:
+- plc
+- automation
+- ethercat
+- beckhoff
+- machinery
+sources:
+- title: Beckhoff
+  url: https://www.beckhoff.com/
+  publisher: Beckhoff Automation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

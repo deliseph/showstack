@@ -1,0 +1,48 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: tta-stagetracker-ii
+name: TTA StageTracker II
+vendor: TTA — Track The Artist
+category: tracking-system
+status: current
+summary: >-
+  Performer tracking system built around small worn tags and fixed receivers, outputting position
+  for both lighting and object audio. Designed so one measurement feeds several departments rather
+  than each buying its own.
+speaks:
+- protocol: rttrpm
+  direction: out
+  note: Position output.
+  confidence: reported
+- protocol: psn
+  direction: out
+  note: Position output.
+  confidence: unverified
+- protocol: osc
+  direction: bidirectional
+  note: Control and data.
+  confidence: unverified
+form_factor: Tag, receiver and processing system
+homepage:
+  url: https://www.tta.eu/
+  label: TTA
+gotchas:
+- Coverage is a survey problem. Receiver placement decides where tracking works, and a steel venue
+  reflects.
+- Position arrives in a coordinate system somebody has to define. Agree the origin with lighting,
+  audio and video before the survey, not after.
+tags:
+- tracking
+- performer
+- rttrpm
+- psn
+sources:
+- title: TTA
+  url: https://www.tta.eu/
+  publisher: TTA
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

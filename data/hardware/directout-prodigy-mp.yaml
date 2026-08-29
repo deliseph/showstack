@@ -1,0 +1,64 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: directout-prodigy-mp
+name: DirectOut PRODIGY.MP
+vendor: DirectOut
+category: io-interface
+status: current
+summary: >-
+  Modular audio processing and format-conversion platform: the box that sits between networks and
+  formats that do not otherwise talk, with redundancy and monitoring designed in rather than bolted
+  on.
+speaks:
+- protocol: madi
+  direction: bidirectional
+  note: Core format.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via module.
+  confidence: reported
+- protocol: ravenna
+  direction: bidirectional
+  note: Via module.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Via module.
+  confidence: reported
+- protocol: soundgrid
+  direction: bidirectional
+  note: Via module.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: reported
+- protocol: ptp-1588
+  direction: bidirectional
+  note: For AES67 and RAVENNA.
+  confidence: reported
+form_factor: Rackmount modular converter
+rack_units: 1
+homepage:
+  url: https://www.directout.eu/
+  label: DirectOut
+gotchas:
+- A converter in the middle of a system becomes the clock question. Decide what is master before
+  adding it, not after.
+tags:
+- audio
+- conversion
+- madi
+- dante
+- ravenna
+sources:
+- title: DirectOut
+  url: https://www.directout.eu/
+  publisher: DirectOut
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

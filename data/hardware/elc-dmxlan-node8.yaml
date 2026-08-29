@@ -1,0 +1,54 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: elc-dmxlan-node8
+name: ELC dmXLAN node8
+vendor: ELC Lighting
+category: dmx-node
+status: current
+summary: >-
+  Eight-port ethernet-to-DMX node with per-port configuration and merging, long established in touring
+  racks. Configured through ELC's own tooling, which is worth having on the show laptop before load-in
+  rather than after.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Per port.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Per port.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Eight ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Depending on model and firmware.
+  confidence: unverified
+physical_ports:
+- 8x DMX (XLR5)
+- Ethernet
+form_factor: Rackmount node
+rack_units: 1
+homepage:
+  url: https://www.elclighting.com/
+  label: ELC Lighting
+gotchas:
+- Merging behaviour is per port and is exactly the setting that causes a "console has no output"
+  call. Check it before re-patching anything.
+tags:
+- dmx
+- node
+- gateway
+- elc
+sources:
+- title: ELC Lighting
+  url: https://www.elclighting.com/
+  publisher: ELC Lighting
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

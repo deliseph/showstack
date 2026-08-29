@@ -1,0 +1,51 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: alcorn-mcbride-binloop-hd
+name: Alcorn McBride A/V Binloop HD
+vendor: Alcorn McBride
+category: show-controller
+status: current
+summary: >-
+  Multi-channel synchronised video and audio player built for attractions: several outputs that
+  stay frame-locked to each other and to a house clock, in a box designed to be switched on and
+  left alone for years.
+speaks:
+- protocol: ltc
+  direction: bidirectional
+  note: Timecode master or slave.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Frame reference.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Control.
+  confidence: unverified
+- protocol: osc
+  direction: in
+  note: Control, depending on model.
+  confidence: unverified
+form_factor: Rackmount synchronised player
+rack_units: 3
+homepage:
+  url: https://alcorn.com/
+  label: Alcorn McBride
+gotchas:
+- Synchronised playback is the product. Mixing it with a general-purpose player elsewhere in the
+  same show reintroduces exactly the drift it was bought to remove.
+tags:
+- playback
+- sync
+- attraction
+- alcorn-mcbride
+sources:
+- title: Alcorn McBride
+  url: https://alcorn.com/
+  publisher: Alcorn McBride
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

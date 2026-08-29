@@ -1,0 +1,40 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: vioso-anyblend
+name: VIOSO Anyblend
+vendor: VIOSO
+category: content-creation
+license: Proprietary
+price_model: quote-only
+platforms:
+- windows
+status: current
+summary: >-
+  Camera-assisted warping and blending for multi-projector systems. A camera measures what each
+  projector actually puts on the surface, and the software builds the warp and blend from the measurement
+  rather than from an assumption about where the projectors are.
+homepage:
+  url: https://vioso.com/
+  label: VIOSO
+typical_use:
+- Multi-projector blends on curved and irregular surfaces
+- Domes and simulators
+- Automated realignment in permanent installations
+gotchas:
+- Blending equalises brightness in the overlap. It cannot make a projector's black darker, so the
+  black level in an overlap stays lifted no matter how good the alignment is.
+tags:
+- projection
+- blending
+- warping
+- calibration
+sources:
+- title: VIOSO
+  url: https://vioso.com/
+  publisher: VIOSO
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

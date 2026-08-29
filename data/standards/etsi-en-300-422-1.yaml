@@ -1,0 +1,40 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: etsi-en-300-422-1
+designation: ETSI EN 300 422-1
+title: 'Wireless microphones; Audio PMSE up to 3 GHz; Part 1: Class A Receivers'
+body: ETSI
+domain: audio
+year: 2017
+scope: >-
+  The harmonised standard for professional wireless microphone and in-ear equipment in Europe: transmitter
+  masks, receiver performance classes and the spectrum-efficiency requirements. Later revisions
+  add the transmit mask and 20 MHz bandwidth ceiling that make Wireless Multichannel Audio Systems
+  (WMAS) legal.
+status: current
+free_to_read: true
+access_url:
+  url: https://www.etsi.org/standards
+  label: ETSI standards (free download)
+jurisdiction:
+  - EU / EEA
+  - widely referenced elsewhere
+notes: >-
+  ETSI publishes its standards free of charge. This is the document behind WMAS, and the FCC aligned
+  its own rules with the same approach in February 2024.
+tags:
+- rf
+- wireless
+- pmse
+- wmas
+- microphones
+sources:
+- title: ETSI EN 300 422-1
+  url: https://www.etsi.org/standards
+  publisher: European Telecommunications Standards Institute
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

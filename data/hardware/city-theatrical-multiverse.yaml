@@ -1,0 +1,52 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: city-theatrical-multiverse
+name: City Theatrical Multiverse Transmitter
+vendor: City Theatrical
+category: wireless-dmx
+status: current
+summary: >-
+  Wireless DMX transmitter that carries multiple universes on one radio and can operate in the 900
+  MHz band as well as 2.4 GHz — which matters at a festival where 2.4 GHz is already full of everything
+  else.
+speaks:
+- protocol: art-net
+  direction: in
+  note: Network input.
+  confidence: reported
+- protocol: sacn
+  direction: in
+  note: Network input.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Wired input and output.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Wireless RDM.
+  confidence: reported
+form_factor: Wireless DMX transmitter
+homepage:
+  url: https://citytheatrical.com/
+  label: City Theatrical
+gotchas:
+- Band availability is a regulatory question and differs by country. Confirm the 900 MHz band is
+  legal where the show is before specifying it.
+- Wireless DMX systems from different manufacturers do not interoperate. The transmitter and the
+  receivers have to be the same family.
+tags:
+- wireless
+- dmx
+- rdm
+- city-theatrical
+sources:
+- title: City Theatrical
+  url: https://citytheatrical.com/
+  publisher: City Theatrical
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,52 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: nmea-0183
+name: NMEA 0183
+aka:
+- NMEA
+- GPS sentences
+category: tracking-position
+summary: >-
+  The plain-text sentence format a GNSS receiver speaks. Lines of comma-separated ASCII beginning
+  with a dollar sign carry position, fix quality, satellite count, speed and — the field that matters
+  most on a show site — UTC time. It is the reason a GNSS antenna is usually feeding a master clock
+  rather than a map.
+transport:
+- rs232
+- usb
+- udp
+multicast:
+  used: false
+openness: published-paid
+steward: National Marine Electronics Association
+status: current
+typical_use:
+- A GNSS receiver disciplining a master clock or timecode generator, usually alongside a one-pulse-per-second
+  hardware output.
+- Position and heading for tracking, survey and outdoor installation work.
+- Time of day for systems with no network path to an NTP server.
+gotchas:
+- The sentences carry time, but the precise timing comes from the receiver's 1PPS hardware output,
+  not from the serial data. Reading time from the text alone gives you tens of milliseconds of uncertainty
+  at best.
+- GNSS time and UTC differ by a whole number of leap seconds, and receivers report this differently.
+  Check which one a device is giving you before trusting it.
+- It needs sky. Indoors, or hemmed in by structures, a receiver either gets no fix or gets one built
+  from reflections — which is worse, because it looks like a fix.
+- 'NMEA 2000 is a completely different thing: a CAN-based binary bus, not this.'
+tags:
+- gnss
+- gps
+- time
+- position
+- serial
+sources:
+- title: NMEA 0183 Interface Standard
+  url: https://www.nmea.org/nmea-0183.html
+  publisher: National Marine Electronics Association
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

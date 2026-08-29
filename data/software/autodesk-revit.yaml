@@ -1,0 +1,42 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: autodesk-revit
+name: Revit
+vendor: Autodesk
+category: cad-drafting
+license: Proprietary
+price_model: subscription
+platforms:
+- windows
+status: current
+summary: >-
+  Building information modelling: the venue's own world, where every element carries data about
+  what it is and what it can take, and clashes are found by query rather than by eye. For touring
+  work you mostly consume the output; for installed and new-build work you contribute to it.
+speaks: []
+homepage:
+  url: https://www.autodesk.com/products/revit/
+  label: Autodesk Revit
+typical_use:
+- New-build and refurbishment venue coordination
+- Finding where the steel is and what it takes
+- Clash detection between production systems and building services
+gotchas:
+- IFC round trips lose things. Agree what has to survive an exchange before relying on it.
+- A model can be beautifully detailed and out of date. Ask when it was last updated against the
+  building as built.
+tags:
+- bim
+- cad
+- venue
+- ifc
+sources:
+- title: Autodesk Revit
+  url: https://www.autodesk.com/products/revit/
+  publisher: Autodesk
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,49 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: yamaha-dm7
+name: Yamaha DM7
+vendor: Yamaha
+category: audio-console
+status: current
+summary: >-
+  Yamaha's compact digital console aimed at broadcast, installation and corporate work as much as
+  at live music, with a heavy emphasis on Dante-based I/O rather than local connectors.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Primary I/O path.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock in and out.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Through Dante interoperability.
+  confidence: unverified
+form_factor: Console
+homepage:
+  url: https://www.yamaha.com/proaudio/
+  label: Yamaha Professional Audio
+gotchas:
+- A Dante-centric console makes the network a show-critical path. Design the switch, the clock and
+  the redundancy accordingly.
+tags:
+- audio
+- console
+- yamaha
+- dante
+sources:
+- title: Yamaha Professional Audio
+  url: https://www.yamaha.com/proaudio/
+  publisher: Yamaha
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

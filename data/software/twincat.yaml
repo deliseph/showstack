@@ -1,0 +1,64 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: twincat
+name: TwinCAT
+aka:
+- TwinCAT 3
+vendor: Beckhoff Automation
+category: show-control
+license: Proprietary
+price_model: quote-only
+platforms:
+- windows
+status: current
+summary: >-
+  Beckhoff's automation platform, and the reason an ordinary industrial PC can be trusted with a
+  motion loop: a hard real-time kernel runs alongside Windows on reserved CPU cores, so the control
+  task keeps its cycle no matter what Windows is doing. Developed inside Visual Studio, programmed
+  in the IEC 61131-3 languages plus C++ and Simulink modules.
+speaks:
+- protocol: ethercat
+  direction: bidirectional
+  note: The native fieldbus — drives, I/O and sensors on one line, updated every cycle.
+  confidence: reported
+- protocol: opc-ua
+  direction: bidirectional
+  note: The usual way state is exposed upward to other systems.
+  confidence: reported
+- protocol: modbus-tcp
+  direction: bidirectional
+  note: Via supplementary functions.
+  confidence: reported
+- protocol: profinet
+  direction: bidirectional
+  note: Via supplementary functions.
+  confidence: unverified
+homepage:
+  url: https://www.beckhoff.com/twincat/
+  label: Beckhoff TwinCAT
+typical_use:
+- Winches, lifts, revolves, turntables and kinetic scenery
+- Deterministic control where a general-purpose OS cannot give a cycle guarantee
+- Bridging automation state to a show-control system over OPC UA
+gotchas:
+- Functional safety is a separate rated channel — TwinSAFE — and it is not where your control code
+  goes. It has to stay valid when the control program is wrong.
+- The show network may supply timing to an automation system. It must never supply permission.
+- Deterministic behaviour comes from the real-time kernel and reserved cores. A badly configured
+  machine loses the guarantee without any obvious symptom until it matters.
+tags:
+- plc
+- automation
+- machinery
+- ethercat
+- beckhoff
+sources:
+- title: Beckhoff TwinCAT
+  url: https://www.beckhoff.com/twincat/
+  publisher: Beckhoff Automation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

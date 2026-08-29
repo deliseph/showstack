@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>showstack — the open index of live entertainment technology</title>
-<meta name="description" content="An open, machine-readable index of the protocols, standards, software and hardware that live shows actually run on. Free API, no key, community maintained.">
+<title>showstack — show networking &amp; control, documented</title>
+<meta name="description" content="Everything you need to know about show networking and control systems: protocols, standards, software, hardware, a bilingual glossary, animated explainers and offline field calculators. Free API, no key, community maintained.">
 <meta property="og:title" content="showstack">
 <meta property="og:description" content="The open index of live entertainment technology. Protocols, standards, software, hardware, and the bilingual vocabulary crews actually use.">
 <meta property="og:type" content="website">
@@ -169,6 +169,25 @@
   }
 
   main{padding:26px 0 90px;background:radial-gradient(640px 240px at 50% -80px,var(--glow),transparent)}
+  /* Four doors, in the order someone actually needs them: understand the
+     thing, look it up, calculate with it, check a specific case. */
+  .wayfind{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:12px;margin:6px 0 20px}
+  .wf{display:flex;flex-direction:column;gap:5px;padding:17px 18px;border:1px solid var(--line);
+    border-radius:14px;background:var(--panel);box-shadow:var(--shadow);color:inherit;
+    transition:border-color .18s,transform .18s}
+  .wf:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-2px);text-decoration:none}
+  .wf .wfk{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--dimmer)}
+  .wf b{font-size:17px;color:var(--ink);letter-spacing:-.2px}
+  .wf em{font-style:normal;color:var(--dim);font-size:13.2px;line-height:1.5}
+  .wf-links em{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+  .wf-links a{color:var(--dim);font-size:13.2px;text-decoration:none;border-bottom:1px solid transparent;
+    align-self:flex-start}
+  .wf-links a:hover{color:var(--accent);border-bottom-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+  .wf-links:hover{transform:none;border-color:var(--line)}
+  .wf-learn{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));
+    background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--panel))}
+  .wf-learn b{color:var(--accent)}
+  @media(max-width:520px){.wayfind{gap:9px}.wf{padding:14px 15px}}
   .hint{color:var(--dim);font-size:13px;margin:0 0 18px}
   .showall{display:block;width:100%;text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--dim);
     background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:10px;cursor:pointer}
@@ -218,6 +237,23 @@
   footer{border-top:1px solid var(--line);padding:28px 0 60px;color:var(--dimmer);font-size:12.5px}
   footer a{color:var(--dim)}
   .cta{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:20px}
+  /* The spine: the one organising idea, stated on the front page. Numbered
+     because it genuinely is a sequence - the stages happen in this order to
+     every signal in the building - not because numbering looks tidy. */
+  .spine{margin:6px 0 20px}
+  .spinelede{margin:0 0 14px;color:var(--dim);font-size:14px;line-height:1.65;max-width:70ch}
+  .spinerow{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;
+    margin:0;padding:0;list-style:none;counter-reset:none}
+  .spinerow a{display:block;padding:14px 15px;border:1px solid var(--line);border-radius:10px;
+    background:var(--panel);color:inherit;text-decoration:none;height:100%;
+    transition:border-color .18s,transform .18s}
+  .spinerow a:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));
+    transform:translateY(-2px);text-decoration:none}
+  .spinerow span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;
+    color:var(--accent);margin-bottom:7px}
+  .spinerow b{display:block;font-size:14.5px;color:var(--ink);margin-bottom:4px}
+  .spinerow em{display:block;font-style:normal;font-size:12.5px;color:var(--dimmer);line-height:1.5}
+  @media(max-width:520px){.spinerow{gap:8px}.spinerow a{padding:12px 13px}}
   .cta h2{margin:0 0 6px;font-size:15px}
   .cta p{margin:0;color:var(--dim);font-size:13.5px}
 </style>
@@ -227,13 +263,13 @@
   <div class="wrap">
     <div class="hbar">
       <h1>show<span>stack</span></h1>
-      <p class="tagline">the open index of live entertainment technology</p>
+      <p class="tagline">show networking &amp; control, documented</p>
     </div>
     <div class="navwrap">
       <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
       <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
     </div>
-    <nav class="pagenav rail" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
+    <nav class="pagenav rail" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/learn/">Learn</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
     <div class="searchrow">
       <input id="q" placeholder="search: 5568, psn, 吊桿, safety curtain…" autocomplete="off" spellcheck="false">
       <div class="tabs rail" id="tabs" role="tablist"></div>
@@ -251,23 +287,56 @@
       <a href="/tools/#delay">Speaker delay</a>
       <a href="/tools/#tc">Timecode</a>
       <a href="/tools/#power">Power load</a>
-      <a href="/tools/#ohm">Ohm's law</a>
-      <a href="/tools/#spkz">Speaker load</a>
-      <a href="/tools/#latency">Latency</a>
       <a href="/network/">QoS planner</a>
       <a href="/rf/">RF map</a>
-      <a href="/tools/#throw">Throw ratio</a>
-      <a href="/tools/#relay">Relay logic</a>
+      <a href="/tools/#subnet">Subnet</a>
+      <a href="/tools/#dmxload">DMX unit loads</a>
       <a href="/tools/#bridle">Bridle angle</a>
       <a href="/tools/#vdrop">Voltage drop</a>
-      <a href="/tools/#phase">Phase balance</a>
       <a href="/tools/#dose">Noise dose</a>
       <a href="/tools/#im">RF intermod</a>
+      <a href="/tools/#spl">SPL over distance</a>
+      <a href="/tools/#frame">Frame budget</a>
+      <a href="/tools/#pyro">Pyro fire time</a>
       <a class="more" href="/tools/">All tools →</a>
     </div>
+    <section class="wayfind" aria-label="What is here">
+      <a class="wf wf-learn" href="/learn/">
+        <span class="wfk">Understand it</span>
+        <b>Learn</b>
+        <em>Fourteen explainers, arranged as one chain from a signal on a wire to the nervous system that receives it. Every diagram moves, because the thing being explained is usually motion.</em>
+      </a>
+      <a class="wf" href="/protocols/">
+        <span class="wfk">Look it up</span>
+        <b>The index</b>
+        <em>Protocols, standards, software, hardware and a bilingual glossary. A citation on every fact, and an open gap where there isn't one.</em>
+      </a>
+      <a class="wf" href="/tools/">
+        <span class="wfk">Work it out</span>
+        <b>Field tools</b>
+        <em>Subnet, DMX unit loads, bridle angle, voltage drop, speaker delay, noise dose, RF intermod. Offline once loaded.</em>
+      </a>
+      <div class="wf wf-links">
+        <span class="wfk">Check one case</span>
+        <b>Answers</b>
+        <em><a href="/interop/">Can these two talk?</a><a href="/ports/">What's on this port?</a><a href="/rf/">Is this frequency legal?</a><a href="/compare/">A vs B, side by side</a></em>
+      </div>
+    </section>
+
+    <section class="spine" aria-label="How the site is organised">
+      <p class="spinelede">Everything here follows one chain. A signal leaves a console, survives a wire, a network and the air, becomes something in a room, agrees with other systems about time and space, and arrives at a person — which is the only part of it that was ever the point.</p>
+      <ol class="spinerow">
+        <li><a href="/learn/#signal"><span>01</span><b>The signal</b><em>DMX, networks, RF, radios</em></a></li>
+        <li><a href="/learn/#room"><span>02</span><b>The room</b><em>Sound, light, drawings</em></a></li>
+        <li><a href="/learn/#system"><span>03</span><b>The system</b><em>Clocks, tracking, drones, pyro</em></a></li>
+        <li><a href="/learn/#build"><span>04</span><b>What you build with</b><em>APIs, code, engines</em></a></li>
+        <li><a href="/learn/#person"><span>05</span><b>The person</b><em>Perception, neuroscience</em></a></li>
+      </ol>
+    </section>
+
     <div class="cta">
       <h2>Every entry cites its source. Every gap is an open issue.</h2>
-      <p>This index is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/deliseph/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
+      <p>This is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/deliseph/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
     </div>
     <p class="hint" id="hint"></p>
     <div class="grid" id="results"></div>

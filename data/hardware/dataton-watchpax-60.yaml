@@ -1,0 +1,43 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: dataton-watchpax-60
+name: Dataton WATCHPAX 60
+vendor: Dataton
+category: media-server
+status: current
+summary: >-
+  Small, silent, solid-state display server for WATCHOUT. Designed for installations where a machine
+  has to sit in a ceiling void or a plinth and start reliably every morning for years.
+speaks:
+- protocol: ltc
+  direction: in
+  note: Timecode for synchronised playback.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: Control.
+  confidence: unverified
+form_factor: Compact solid-state server
+runs_software:
+- watchout
+homepage:
+  url: https://www.dataton.com/
+  label: Dataton
+gotchas:
+- 'A WATCHOUT system is a cluster: production computer plus display computers on one network. Sizing
+  one box tells you very little about the system you actually need.'
+tags:
+- media-server
+- installation
+- watchout
+- dataton
+sources:
+- title: Dataton
+  url: https://www.dataton.com/
+  publisher: Dataton
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

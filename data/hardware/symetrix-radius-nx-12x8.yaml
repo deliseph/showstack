@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: symetrix-radius-nx-12x8
+name: Symetrix Radius NX 12x8
+vendor: Symetrix
+category: audio-processor
+status: current
+summary: >-
+  Open-architecture DSP for installed audio: the processing is drawn in software rather than chosen
+  from presets, which makes it the box behind conference centres, houses of worship and multi-zone
+  venues.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Networked audio.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: reported
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: unverified
+form_factor: Rackmount DSP
+rack_units: 1
+homepage:
+  url: https://www.symetrix.co/
+  label: Symetrix
+gotchas:
+- 'An open-architecture DSP is a program. Treat the design file like source code: version it, comment
+  it, and hand it over with the system.'
+tags:
+- audio
+- dsp
+- install
+- symetrix
+sources:
+- title: Symetrix
+  url: https://www.symetrix.co/
+  publisher: Symetrix
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -629,3 +629,216 @@ export function intermod3(freqsMhz, guardMhz = 0.3) {
   }).sort((x, y) => x.mhz - y.mhz)
   return { products: unique, clashes: unique.filter((p) => p.clashesWith !== null) }
 }
+
+/**
+ * IPv4 subnet arithmetic from an address and a prefix length.
+ *
+ * The numbers a show network actually needs: which addresses are on this
+ * subnet, where it ends, and how many devices fit. Everything is derived from
+ * the mask rather than from the class-A/B/C convention, because classful
+ * addressing has not decided anything since CIDR arrived in 1993 and a lot of
+ * venue documentation still talks as though it does.
+ *
+ * /31 and /32 are special: a /32 is a single host route and a /31 is a
+ * two-address point-to-point link (RFC 3021) with no network or broadcast
+ * address to reserve, so "usable hosts" is 0 and 2 respectively rather than
+ * the negative numbers the general formula would give.
+ */
+export function subnetCidr(ip, prefix) {
+  const p = Number(prefix)
+  if (!Number.isInteger(p) || p < 0 || p > 32) return null
+  const parts = String(ip ?? '').trim().split('.')
+  if (parts.length !== 4) return null
+  const octets = parts.map((o) => {
+    if (!/^\d{1,3}$/.test(o)) return NaN
+    const n = Number(o)
+    return n >= 0 && n <= 255 ? n : NaN
+  })
+  if (octets.some((n) => Number.isNaN(n))) return null
+
+  const toInt = (o) => ((o[0] << 24) >>> 0) + (o[1] << 16) + (o[2] << 8) + o[3]
+  const toStr = (n) => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.')
+
+  const addr = toInt(octets)
+  // A 32-bit shift is undefined in JS, so build the mask without shifting by 32.
+  const mask = p === 0 ? 0 : (0xffffffff << (32 - p)) >>> 0
+  const network = (addr & mask) >>> 0
+  const broadcast = (network | (~mask >>> 0)) >>> 0
+  const total = Math.pow(2, 32 - p)
+
+  let usable, firstHost, lastHost
+  if (p === 32) {
+    usable = 0; firstHost = null; lastHost = null
+  } else if (p === 31) {
+    // RFC 3021: both addresses are usable on a point-to-point link.
+    usable = 2; firstHost = toStr(network); lastHost = toStr(broadcast)
+  } else {
+    usable = total - 2
+    firstHost = toStr((network + 1) >>> 0)
+    lastHost = toStr((broadcast - 1) >>> 0)
+  }
+
+  return {
+    network: toStr(network),
+    broadcast: p >= 31 ? null : toStr(broadcast),
+    mask: toStr(mask),
+    wildcard: toStr(~mask >>> 0),
+    prefix: p,
+    firstHost,
+    lastHost,
+    totalAddresses: total,
+    usableHosts: usable,
+    cidr: `${toStr(network)}/${p}`,
+    // True for the ranges RFC 1918 reserves for private use, which is what a
+    // show network should be on.
+    isPrivate: octets[0] === 10
+      || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31)
+      || (octets[0] === 192 && octets[1] === 168),
+  }
+}
+
+/**
+ * DMX512 line budget in RS-485 unit loads.
+ *
+ * The rule people remember is "32 devices per line". The rule that is
+ * actually in the standard is 32 UNIT LOADS, where one unit load is the
+ * current a standard reference receiver draws (about 12 kOhm input
+ * impedance). Modern receiver chips are commonly built at 1/2, 1/4 or 1/8 of
+ * a unit load, so a single segment can legitimately carry 64, 128 or even 256
+ * physical fixtures - and a rig of old 1 UL fixtures still stops at 32.
+ *
+ * `groups` is a list of { count, unitLoad } so a mixed rig can be added up as
+ * it really is. Returns the load, whether it fits, and how many segments
+ * (i.e. splitter outputs) the rig needs.
+ */
+export function dmxLineBudget(groups, limit = 32) {
+  const lim = Number(limit)
+  if (!Array.isArray(groups) || !Number.isFinite(lim) || lim <= 0) return null
+  let unitLoads = 0
+  let fixtures = 0
+  for (const g of groups) {
+    const c = Number(g?.count), u = Number(g?.unitLoad)
+    if (!Number.isFinite(c) || c < 0 || !Number.isFinite(u) || u <= 0) return null
+    unitLoads += c * u
+    fixtures += c
+  }
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    fixtures,
+    unitLoads: r2(unitLoads),
+    limit: lim,
+    withinLimit: unitLoads <= lim,
+    percentUsed: r2((unitLoads / lim) * 100),
+    // Segments needed if the load is split evenly across splitter outputs.
+    segmentsNeeded: unitLoads === 0 ? 0 : Math.ceil(unitLoads / lim),
+    headroomUnitLoads: r2(lim - unitLoads),
+  }
+}
+
+/**
+ * Sound pressure level at a distance, from a level quoted at a reference
+ * distance, in a free field.
+ *
+ * L2 = L1 - 20 log10(d2 / d1). That is the inverse square law expressed in
+ * decibels: doubling the distance quarters the intensity, which is -6 dB.
+ *
+ * Free field means no reflections. Indoors, room reflections refill part of
+ * the loss, so the real figure is always somewhere between this and no loss
+ * at all - which makes this the conservative number for clearance and
+ * neighbour-noise work, and an optimistic one for coverage.
+ */
+export function splAtDistance(splRef, refMeters, distMeters) {
+  const l = Number(splRef), d1 = Number(refMeters), d2 = Number(distMeters)
+  if (!Number.isFinite(l) || !Number.isFinite(d1) || d1 <= 0) return null
+  if (!Number.isFinite(d2) || d2 <= 0) return null
+  const drop = 20 * Math.log10(d2 / d1)
+  const r1 = (x) => Math.round(x * 10) / 10
+  return {
+    spl: r1(l - drop),
+    dropDb: r1(drop),
+    doublings: r1(Math.log2(d2 / d1)),
+  }
+}
+
+/**
+ * Frame budget: how long a frame is, and how much of it is left after the
+ * work you already know about.
+ *
+ * At 60 fps a frame is 16.67 ms and every stage of the pipeline spends part
+ * of that same budget - geometry, lighting, effects, post, output. This is
+ * the arithmetic behind "can it produce the next frame in time, every time",
+ * which is the only question that matters for a real-time engine.
+ *
+ * Stages are milliseconds. The result is deliberately blunt about the
+ * overrun case: a pipeline that needs more than the frame period does not
+ * run slightly slower, it drops frames.
+ */
+export function frameBudget(fps, stages = []) {
+  const f = Number(fps)
+  if (!Number.isFinite(f) || f <= 0) return null
+  const period = 1000 / f
+  const used = stages
+    .map((s) => Number(s))
+    .filter((n) => Number.isFinite(n) && n >= 0)
+    .reduce((a, b) => a + b, 0)
+  const r2 = (x) => Math.round(x * 100) / 100
+  const headroom = period - used
+  return {
+    fps: f,
+    periodMs: r2(period),
+    usedMs: r2(used),
+    headroomMs: r2(headroom),
+    percentUsed: r2((used / period) * 100),
+    withinBudget: used <= period,
+    // If it will not fit, the honest answer is the rate it *can* hold.
+    achievableFps: used > 0 ? r2(Math.min(f, 1000 / used)) : f,
+  }
+}
+
+/** hh:mm:ss:ff from the parts framesToTc returns. */
+export function tcString(t) {
+  const p = (n) => String(n).padStart(2, '0')
+  return `${p(t.h)}:${p(t.m)}:${p(t.s)}:${p(t.f)}`
+}
+
+/**
+ * Pyro cue time: when a firing system has to fire an item so the audience
+ * sees it on the beat.
+ *
+ * A designer programs the moment an effect is *seen*. A shell has to get up
+ * there first, and the igniter and fuse take time before that. So the fire
+ * time is the effect time minus the whole delay:
+ *
+ *   fire = effect - (lift + prefire)
+ *
+ * Two shells bursting together on one beat may have been fired seconds
+ * apart, which is also why a pyromusical cannot be nudged live: by the time
+ * you can hear that a cue is early, it was fired several seconds ago.
+ *
+ * All times in seconds from the start of the show. A negative fire time
+ * means the item would have to be fired before the show started - a real
+ * design fault, and it is reported rather than clamped.
+ */
+export function pyroCueTime(effectSeconds, liftSeconds = 0, prefireSeconds = 0) {
+  const e = Number(effectSeconds)
+  const l = Number(liftSeconds)
+  const p = Number(prefireSeconds)
+  if (!Number.isFinite(e) || e < 0) return null
+  if (!Number.isFinite(l) || l < 0 || !Number.isFinite(p) || p < 0) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+  const total = l + p
+  const fire = e - total
+  return {
+    effectSeconds: r2(e),
+    liftSeconds: r2(l),
+    prefireSeconds: r2(p),
+    totalDelaySeconds: r2(total),
+    fireSeconds: r2(fire),
+    // The frame the firing system chases, at the usual show rates. Negative
+    // fire times have no timecode representation, so they are reported as null
+    // rather than wrapped into a plausible-looking one.
+    fireTimecode25: fire < 0 ? null : tcString(framesToTc(Math.round(fire * 25), 25)),
+    fireTimecode30: fire < 0 ? null : tcString(framesToTc(Math.round(fire * 30), 30)),
+    beforeShowStart: fire < 0,
+  }
+}

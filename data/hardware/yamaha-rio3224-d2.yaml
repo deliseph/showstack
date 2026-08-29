@@ -1,0 +1,54 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: yamaha-rio3224-d2
+name: Yamaha Rio3224-D2
+vendor: Yamaha
+category: io-interface
+status: current
+summary: >-
+  Dante stage box with remote-controlled preamps, and the standard I/O behind a great many Yamaha
+  live systems. The head amps are controlled from the console over the same network that carries
+  the audio.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Primary transport, with redundancy.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Through Dante interoperability where enabled.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: reported
+physical_ports:
+- Analogue inputs (XLR)
+- Analogue outputs (XLR)
+- AES/EBU
+- 2x etherCON Dante (primary/secondary)
+form_factor: Rackmount stage box
+rack_units: 3
+homepage:
+  url: https://www.yamaha.com/proaudio/
+  label: Yamaha Professional Audio
+gotchas:
+- 'Gain sharing is the classic multi-console problem: two consoles controlling the same head amp
+  will fight unless one is following the other.'
+- Redundant Dante needs two physically separate networks to mean anything. Two cables into one switch
+  is not redundancy.
+tags:
+- audio
+- stage-box
+- dante
+- yamaha
+sources:
+- title: Yamaha Professional Audio
+  url: https://www.yamaha.com/proaudio/
+  publisher: Yamaha
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

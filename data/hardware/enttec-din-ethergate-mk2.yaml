@@ -1,0 +1,53 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: enttec-din-ethergate-mk2
+name: ENTTEC DIN Ethergate MK2
+vendor: ENTTEC
+category: dmx-node
+status: current
+summary: >-
+  DIN-rail ethernet-to-DMX gateway for installed work, where the node belongs in a distribution
+  board rather than in a rack. Two universes, configured over a web interface.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Both ports.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Both ports.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Two universes.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Depending on firmware.
+  confidence: unverified
+physical_ports:
+- 2x DMX (terminals)
+- Ethernet
+form_factor: DIN rail module
+homepage:
+  url: https://www.enttec.com/
+  label: ENTTEC
+gotchas:
+- DIN-rail devices end up behind locked panels. Record the IP address somewhere that is not only
+  on the device.
+tags:
+- dmx
+- node
+- din-rail
+- install
+- enttec
+sources:
+- title: ENTTEC
+  url: https://www.enttec.com/
+  publisher: ENTTEC
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

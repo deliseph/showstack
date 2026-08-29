@@ -1,0 +1,49 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: ssl-live-l550
+name: SSL Live L550
+vendor: Solid State Logic
+category: audio-console
+status: current
+summary: >-
+  Solid State Logic's large-format live console, with the processing architecture and the stem-based
+  workflow that come from the company's studio history — which is why it turns up on theatre and
+  broadcast-adjacent work as often as on tours.
+speaks:
+- protocol: madi
+  direction: bidirectional
+  note: Primary I/O transport.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Via option card.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Control.
+  confidence: unverified
+form_factor: Console
+homepage:
+  url: https://www.solidstatelogic.com/
+  label: Solid State Logic
+gotchas:
+- The signal-path model is not the same as the channel-strip model most live desks use. Budget familiarisation
+  time for a visiting engineer.
+tags:
+- audio
+- console
+- ssl
+sources:
+- title: Solid State Logic
+  url: https://www.solidstatelogic.com/
+  publisher: Solid State Logic
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

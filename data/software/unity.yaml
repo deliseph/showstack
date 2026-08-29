@@ -1,0 +1,58 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: unity
+name: Unity
+vendor: Unity Technologies
+category: content-creation
+license: Proprietary
+price_model: freemium
+platforms:
+- windows
+- macos
+- linux
+status: current
+summary: >-
+  Real-time engine that dominates XR work. If a project involves headsets, handheld AR or an interactive
+  exhibit on modest hardware, the device SDK you need almost certainly exists for Unity first. Scripted
+  in C#, lighter to start with than Unreal, and less turnkey for camera-tracked broadcast and LED
+  volume work.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Through community packages rather than built in.
+  confidence: unverified
+- protocol: art-net
+  direction: bidirectional
+  note: Through community and vendor packages.
+  confidence: unverified
+- protocol: ndi
+  direction: bidirectional
+  note: Through vendor plug-ins.
+  confidence: reported
+homepage:
+  url: https://unity.com/
+  label: Unity
+typical_use:
+- VR, AR and MR applications
+- Museum and exhibition interactives
+- Interactive content on constrained hardware
+gotchas:
+- Licence tiers and their terms have changed more than once. Confirm what applies to your seat and
+  your revenue before committing a long project.
+- Show-specific plumbing — timecode, Art-Net, tracking — is community-supplied more often than it
+  is first-party. Check maintenance before depending on a package.
+tags:
+- engine
+- xr
+- real-time
+- csharp
+sources:
+- title: Unity
+  url: https://unity.com/
+  publisher: Unity Technologies
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

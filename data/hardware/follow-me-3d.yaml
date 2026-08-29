@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: follow-me-3d
+name: Follow-Me 3D
+vendor: Follow-Me
+category: tracking-system
+status: current
+summary: >-
+  Remote followspot system: an operator tracks a performer on a video image and the system drives
+  moving lights to that point, so one operator can run several fixtures from front of house instead
+  of several operators sitting in trusses.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Fixture control and merge with the console.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Fixture control.
+  confidence: reported
+- protocol: psn
+  direction: bidirectional
+  note: Position exchange.
+  confidence: unverified
+form_factor: Operator console and processing system
+homepage:
+  url: https://www.follow-me.systems/
+  label: Follow-Me
+gotchas:
+- It merges with the lighting console's output. Agree the merge and priority model before the first
+  cue session, or a busk will fight the follow.
+- Fixture positions must be measured accurately. The system can only be as correct as the rig survey
+  it was given.
+tags:
+- tracking
+- followspot
+- lighting
+sources:
+- title: Follow-Me
+  url: https://www.follow-me.systems/
+  publisher: Follow-Me
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
