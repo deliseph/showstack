@@ -19,6 +19,7 @@ import { LEARN_TOPICS } from './learn-kit.mjs'
 import {
   CORRECTION_GELS, FIBRE_ATTENUATION,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
+  roomModes, lineArrayCoverage, stopsOfLight,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -40,6 +41,7 @@ const MATH_SRC = [
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
+  roomModes, lineArrayCoverage, stopsOfLight,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
@@ -751,6 +753,45 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="as-out" role="status" aria-live="polite"></div>
   <p class="note">Fit letterboxes and wastes surface; fill crops and loses content. The bar and crop figures are the numbers a designer needs, because that is the dead area to mask or design around. Scaling past 1:1 is flagged separately &mdash; that is the point where an LED wall starts to look soft, and no amount of processing puts the pixels back.</p>
 </div>
+</div>
+
+<div class="tool wide" id="modes">
+  <h3>Room modes</h3>
+  <div class="row">
+    <div class="field"><label for="rm-l">Length (m)</label><input id="rm-l" type="number" min="1" step="0.1" value="12" inputmode="decimal"></div>
+    <div class="field"><label for="rm-w">Width (m)</label><input id="rm-w" type="number" min="1" step="0.1" value="9" inputmode="decimal"></div>
+    <div class="field"><label for="rm-h">Height (m)</label><input id="rm-h" type="number" min="1" step="0.1" value="4" inputmode="decimal"></div>
+    <div class="field"><label for="rm-rt">RT60 (s)</label><input id="rm-rt" type="number" min="0" step="0.1" value="1.2" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="rm-out" role="status" aria-live="polite"></div>
+  <p class="note">Below the Schroeder frequency a room does not behave statistically &mdash; individual standing waves dominate and the response at a seat is set by the room&rsquo;s dimensions rather than by the system. Absorption on the walls does not fix that; the wavelengths are metres long. Axial modes (two parallel surfaces) are the loud ones. Rooms whose dimensions are simple multiples stack their modes instead of spreading them, which is why a cube sounds bad. <a href="/learn/sound/">Measuring and aligning sound</a> has the RT60 side.</p>
+</div>
+
+<div class="tool wide" id="array">
+  <h3>Line array coverage</h3>
+  <div class="row">
+    <div class="field"><label for="la-len">Array length (m)</label><input id="la-len" type="number" min="0.5" step="0.5" value="4" inputmode="decimal"></div>
+    <div class="field"><label for="la-f">Frequency (Hz)</label><input id="la-f" type="number" min="20" step="100" value="1000" inputmode="numeric"></div>
+    <div class="field"><label for="la-front">Front row (m)</label><input id="la-front" type="number" min="1" step="1" value="5" inputmode="numeric"></div>
+    <div class="field"><label for="la-back">Back row (m)</label><input id="la-back" type="number" min="2" step="1" value="35" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="la-out" role="status" aria-live="polite"></div>
+  <p class="note">A point source loses 6&nbsp;dB per doubling of distance because the energy spreads over a sphere. A line source long compared with the wavelength spreads cylindrically and loses 3&nbsp;dB &mdash; which is the whole reason an array reaches the back without removing the front row&rsquo;s hearing. It does not last: beyond a transition set by array length squared and frequency, the wavefront becomes spherical again. Designing as though the 3&nbsp;dB region reached the back wall is the classic mistake.</p>
+</div>
+
+<div class="tool" id="stops">
+  <h3>Stops of light</h3>
+  <div class="row">
+    <div class="field"><label for="so-mode">Given</label><select id="so-mode">
+      <option value="stops">stops</option>
+      <option value="density">ND density</option>
+      <option value="transmission">transmission (0&ndash;1)</option>
+    </select></div>
+    <div class="field"><label for="so-v">Value</label><input id="so-v" type="number" min="0" step="0.1" value="1" inputmode="decimal"></div>
+    <div class="field"><label for="so-lux">Applied to (lux)</label><input id="so-lux" type="number" min="0" step="100" value="1000" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="so-out" role="status" aria-live="polite"></div>
+  <p class="note">A stop is a factor of two in light, which is the unit the trade counts in because it matches how the eye responds. The confusion is that ND is labelled two incompatible ways: photographic ND is an optical density where 0.3 is one stop, while plenty of stage filter is labelled by the fraction it passes. Stacking filters multiplies transmission, which is adding stops.</p>
 </div>
 
 <div class="toolgroup">Networking</div>
@@ -1600,6 +1641,58 @@ function asRender(){
 }
 ["#as-cw","#as-ch","#as-sw","#as-sh"].forEach(id => $(id).addEventListener("input", asRender));
 asRender();
+
+/* ---- room modes -------------------------------------------------------- */
+function rmRender(){
+  const r = roomModes($("#rm-l").value, $("#rm-w").value, $("#rm-h").value, { rt60: $("#rm-rt").value });
+  if(!r){ $("#rm-out").innerHTML = '<span class="err">All three dimensions must be above zero.</span>'; return; }
+  const list = r.modes.slice(0,5).map(m => "<b>"+m.hz+"</b> Hz <span style='color:var(--dimmer)'>("+m.axis+" "+m.order+")</span>").join(" &middot; ");
+  let html = (r.schroeder ? "<b>"+r.schroeder+"</b> Hz Schroeder &mdash; modal below, diffuse above" : "Enter an RT60 for the Schroeder frequency")
+    + "<br>Lowest axial modes: " + list
+    + "<br>" + r.volume + " m&sup3;";
+  if (r.pileups.length) {
+    const at = [...new Set(r.pileups.map(p=>p.hz))].slice(0,3).join(", ");
+    html += '<br><span class="err">Modes pile up around ' + at + ' Hz</span> &mdash; two axes landing together is worse than either alone.';
+  }
+  if (r.ratioWarning) html += '<br><span class="err">Dimensions are near-simple multiples</span> &mdash; modes stack instead of spreading.';
+  $("#rm-out").innerHTML = html;
+}
+["#rm-l","#rm-w","#rm-h","#rm-rt"].forEach(id => $(id).addEventListener("input", rmRender));
+rmRender();
+
+/* ---- line array coverage ----------------------------------------------- */
+function laRender(){
+  const front = Number($("#la-front").value), back = Number($("#la-back").value);
+  const r = lineArrayCoverage($("#la-len").value, $("#la-f").value, back);
+  if(!r){ $("#la-out").innerHTML = '<span class="err">Check the length, frequency and distance.</span>'; return; }
+  const ftb = r.frontToBackDb(front, back);
+  let html = "<b>" + r.transitionM + "</b> m transition at " + r.frequencyHz + " Hz"
+    + " &middot; the back row at " + back + " m is " + (r.nearField ? "still cylindrical" : "into the spherical region");
+  if (ftb !== null) {
+    html += "<br>Front to back: <b>" + ftb + "</b> dB"
+      + (ftb > 12 ? ' <span class="err">&mdash; the front row is paying for the back row</span>'
+                  : ' <span class="ok">&mdash; workable without heavy shading</span>');
+  }
+  html += "<br>A point source over the same distance would lose <b>" + r.pointSourceLossDb
+    + "</b> dB; this array loses " + r.lossDb + " &mdash; " + r.advantageDb + " dB better.";
+  $("#la-out").innerHTML = html;
+}
+["#la-len","#la-f","#la-front","#la-back"].forEach(id => $(id).addEventListener("input", laRender));
+laRender();
+
+/* ---- stops of light ---------------------------------------------------- */
+function soRender(){
+  const r = stopsOfLight($("#so-v").value, $("#so-mode").value);
+  if(!r){ $("#so-out").innerHTML = '<span class="err">Transmission is 0 to 1; density and stops are positive.</span>'; return; }
+  const lux = Number($("#so-lux").value);
+  const after = r.appliedTo(lux);
+  $("#so-out").innerHTML = "<b>" + r.stops + "</b> stop" + (r.stops === 1 ? "" : "s")
+    + " &middot; " + r.percent + "% transmission &middot; " + r.ndLabel
+    + (after !== null ? "<br>" + lux.toLocaleString() + " lux becomes <b>" + after.toLocaleString() + "</b> lux" : "");
+}
+["#so-v","#so-mode","#so-lux"].forEach(id => $(id).addEventListener("input", soRender));
+$("#so-mode").addEventListener("change", soRender);
+soRender();
 `
 
   return shell({

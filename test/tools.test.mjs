@@ -17,6 +17,7 @@ import {
   requiredPerformanceLevel, stoppingDistance, safeguardDistance,
   hexToChannels, codeToLight, videoRange, chromaBitrate, rt60Sabine, stereoParallax,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
+  roomModes, lineArrayCoverage, stopsOfLight,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -1295,4 +1296,121 @@ test('upscaling is flagged, because that is when a wall looks soft', () => {
 test('aspect fit rejects a zero dimension', () => {
   assert.equal(aspectFit(0, 1080, 1920, 1080), null)
   assert.equal(aspectFit(1920, 1080, 1920, 0), null)
+})
+
+// ---------------------------------------------------------------------------
+// Room modes
+// ---------------------------------------------------------------------------
+
+test('Schroeder frequency matches the published worked example', () => {
+  // 45 m3 at RT60 0.4 s is quoted as about 189 Hz.
+  const r = roomModes(5, 3, 3, { rt60: 0.4 })
+  assert.equal(r.volume, 45)
+  assert.ok(Math.abs(r.schroeder - 189) < 1, `got ${r.schroeder}`)
+})
+
+test('the lowest axial mode is set by the longest dimension', () => {
+  const r = roomModes(12, 9, 4)
+  // 343 / 2 / 12 = 14.29 Hz
+  assert.equal(r.fundamental.axis, 'length')
+  assert.equal(r.fundamental.hz, 14.3)
+})
+
+test('a cube stacks its modes instead of spreading them', () => {
+  const cube = roomModes(5, 5, 5)
+  const spread = roomModes(7.1, 5.2, 3.3)
+  assert.equal(cube.ratioWarning, true)
+  assert.ok(cube.pileups.length > spread.pileups.length)
+})
+
+test('no Schroeder frequency without a reverberation time', () => {
+  // It is a function of RT60; without one there is no honest answer.
+  assert.equal(roomModes(5, 4, 3).schroeder, null)
+})
+
+test('room modes reject a zero dimension', () => {
+  assert.equal(roomModes(0, 4, 3), null)
+  assert.equal(roomModes(5, 4, -1), null)
+})
+
+// ---------------------------------------------------------------------------
+// Line array coverage
+// ---------------------------------------------------------------------------
+
+test('a line array loses 3 dB per doubling in the near field', () => {
+  // Well inside the transition for a long array at high frequency.
+  const a = lineArrayCoverage(6, 4000, 10)
+  const b = lineArrayCoverage(6, 4000, 20)
+  assert.equal(a.nearField, true)
+  assert.equal(b.nearField, true)
+  assert.ok(Math.abs((b.lossDb - a.lossDb) - 3) < 0.1, `got ${b.lossDb - a.lossDb}`)
+})
+
+test('and reverts to 6 dB per doubling beyond the transition', () => {
+  const r = lineArrayCoverage(2, 500, 40)
+  assert.equal(r.nearField, false)
+  const far1 = lineArrayCoverage(2, 500, 40)
+  const far2 = lineArrayCoverage(2, 500, 80)
+  assert.ok(Math.abs((far2.lossDb - far1.lossDb) - 6) < 0.1)
+})
+
+test('the transition moves with array length and frequency', () => {
+  // Longer array, or higher frequency, keeps the cylindrical region going.
+  const shortArray = lineArrayCoverage(2, 1000, 10).transitionM
+  const longArray = lineArrayCoverage(4, 1000, 10).transitionM
+  const highFreq = lineArrayCoverage(2, 4000, 10).transitionM
+  assert.ok(longArray > shortArray * 3, 'length squared')
+  assert.ok(highFreq > shortArray * 3, 'frequency linear')
+})
+
+test('the advantage over a point source is real and finite', () => {
+  const r = lineArrayCoverage(4, 1000, 30)
+  assert.ok(r.advantageDb > 10, `only ${r.advantageDb} dB`)
+  // It stops growing once past the transition, because both are then
+  // losing 6 dB per doubling.
+  const near = lineArrayCoverage(4, 1000, 20).advantageDb
+  const far = lineArrayCoverage(4, 1000, 200).advantageDb
+  assert.ok(Math.abs(far - near) < 3, 'advantage should plateau past transition')
+})
+
+test('front to back gives the number a system tech asks for', () => {
+  const r = lineArrayCoverage(6, 2000, 40)
+  const delta = r.frontToBackDb(5, 40)
+  assert.ok(delta > 0 && delta < 25, `got ${delta}`)
+  assert.equal(r.frontToBackDb(40, 5), null, 'back must be further than front')
+})
+
+// ---------------------------------------------------------------------------
+// Stops of light
+// ---------------------------------------------------------------------------
+
+test('one stop is half the light, by definition', () => {
+  const r = stopsOfLight(1, 'stops')
+  assert.equal(r.transmission, 0.5)
+  assert.equal(r.percent, 50)
+})
+
+test('optical density and stops are the same thing labelled differently', () => {
+  // ND 0.3 is one stop; ND 0.6 is two. This mismatch between photographic
+  // and stage labelling is a permanent source of confusion.
+  assert.ok(Math.abs(stopsOfLight(0.3, 'density').stops - 1) < 0.02)
+  assert.ok(Math.abs(stopsOfLight(0.6, 'density').stops - 2) < 0.02)
+  assert.equal(stopsOfLight(0.6, 'density').percent, 25.12)
+})
+
+test('stacking filters adds stops and multiplies transmission', () => {
+  const two = stopsOfLight(1, 'stops').plus(1)
+  assert.equal(two.stops, 2)
+  assert.equal(two.transmission, 0.25)
+})
+
+test('stops apply to a measured level', () => {
+  assert.equal(stopsOfLight(2, 'stops').appliedTo(1000), 250)
+  assert.equal(stopsOfLight(1, 'stops').appliedTo(-5), null)
+})
+
+test('stops reject impossible transmission', () => {
+  assert.equal(stopsOfLight(0, 'transmission'), null)
+  assert.equal(stopsOfLight(1.5, 'transmission'), null)
+  assert.equal(stopsOfLight(1, 'not-a-mode'), null)
 })

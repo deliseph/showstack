@@ -1577,3 +1577,182 @@ export function aspectFit(contentW, contentH, screenW, screenH) {
     upscalingFill: scaleFill > 1.02,
   }
 }
+
+/**
+ * Room modes and the Schroeder frequency.
+ *
+ * Below a certain frequency a room does not behave statistically. Individual
+ * standing waves dominate, and the response at a given seat is a comb of
+ * peaks and nulls set by the room's dimensions rather than by the system. No
+ * amount of absorption on the walls fixes that — the wavelengths are metres
+ * long and the treatment would have to be too.
+ *
+ *   axial mode  f = (c / 2) * sqrt((nx/Lx)^2 + (ny/Ly)^2 + (nz/Lz)^2)
+ *   Schroeder   f = 2000 * sqrt(RT60 / V)      (metric, V in m^3)
+ *
+ * The Schroeder frequency is the transition: above it, statistical acoustics
+ * apply and RT60 means something; below it, you are counting modes.
+ */
+export function roomModes(lengthM, widthM, heightM, opts = {}) {
+  const L = Number(lengthM), W = Number(widthM), H = Number(heightM)
+  if (![L, W, H].every((n) => Number.isFinite(n) && n > 0)) return null
+  const c = Number(opts.speedOfSound ?? 343)
+  const rt60 = Number(opts.rt60 ?? 0)
+  const volume = L * W * H
+  const r1 = (x) => Math.round(x * 10) / 10
+
+  // Axial modes are the loud ones: two parallel surfaces, one dimension.
+  const axial = (dim, label) => [1, 2, 3].map((n) => ({
+    order: n, axis: label, hz: r1((c / 2) * (n / dim)),
+  }))
+  const modes = [...axial(L, 'length'), ...axial(W, 'width'), ...axial(H, 'height')]
+    .sort((a, b) => a.hz - b.hz)
+
+  const schroeder = rt60 > 0 ? r1(2000 * Math.sqrt(rt60 / volume)) : null
+
+  // Two modes within about 5% of each other pile up at the same frequency,
+  // which is a bigger problem than either alone. Cube-ish rooms do this.
+  const pileups = []
+  for (let i = 0; i < modes.length; i++) {
+    for (let j = i + 1; j < modes.length; j++) {
+      if (modes[i].axis === modes[j].axis) continue
+      const spread = Math.abs(modes[i].hz - modes[j].hz) / modes[i].hz
+      if (spread < 0.05) pileups.push({ hz: modes[i].hz, axes: [modes[i].axis, modes[j].axis] })
+    }
+  }
+
+  return {
+    volume: r1(volume),
+    modes,
+    fundamental: modes[0],
+    schroeder,
+    // Below Schroeder you are in modal territory; above it the room is
+    // statistically diffuse and RT60 is a meaningful description of it.
+    modalBelow: schroeder,
+    pileups,
+    // A room whose dimensions are simple multiples of each other stacks its
+    // modes instead of spreading them, which is why cubes sound bad.
+    ratioWarning: [L / W, L / H, W / H].some((r) => {
+      const near = Math.abs(r - Math.round(r))
+      return Math.round(r) >= 1 && near < 0.06
+    }),
+  }
+}
+
+/**
+ * Line array coverage: near field, far field, and the distance where the
+ * behaviour changes.
+ *
+ * A point source loses 6 dB every time you double the distance, because the
+ * energy spreads over a sphere. A line source that is long compared with the
+ * wavelength spreads cylindrically instead, and loses only 3 dB per doubling.
+ * That is the whole reason a line array reaches the back of a room without
+ * removing the front row's hearing.
+ *
+ * It does not last forever. Beyond a transition distance set by the array's
+ * length and the frequency, the cylindrical wavefront becomes spherical and
+ * the array reverts to 6 dB per doubling. Designing as if the 3 dB region
+ * extended to the back wall is the classic mistake.
+ *
+ *   transition ≈ (arrayLength^2 * frequency) / (2 * speedOfSound)
+ */
+export function lineArrayCoverage(arrayLengthM, frequencyHz, distanceM, opts = {}) {
+  const len = Number(arrayLengthM)
+  const f = Number(frequencyHz)
+  const d = Number(distanceM)
+  if (![len, f, d].every((n) => Number.isFinite(n) && n > 0)) return null
+  const c = Number(opts.speedOfSound ?? 343)
+  const refDistance = Number(opts.refDistance ?? 1)
+  const refSpl = Number(opts.refSpl ?? 100)
+  const r1 = (x) => Math.round(x * 10) / 10
+
+  const transition = (len * len * f) / (2 * c)
+  const nearField = d <= transition
+
+  // Cylindrical to the transition, spherical after it.
+  let loss
+  if (d <= transition) {
+    loss = 3 * Math.log2(d / refDistance)
+  } else {
+    loss = 3 * Math.log2(transition / refDistance) + 6 * Math.log2(d / transition)
+  }
+  const spl = refSpl - loss
+
+  return {
+    arrayLengthM: len,
+    frequencyHz: f,
+    distanceM: d,
+    transitionM: r1(transition),
+    nearField,
+    lossDb: r1(loss),
+    splAtDistance: r1(spl),
+    // The comparison that makes the point: what a point source would have done.
+    pointSourceLossDb: r1(6 * Math.log2(d / refDistance)),
+    advantageDb: r1(6 * Math.log2(d / refDistance) - loss),
+    // Front-to-back consistency is the number a system tech actually cares
+    // about: how much louder the front row is than the back.
+    frontToBackDb: (frontM, backM) => {
+      const a = Number(frontM), b = Number(backM)
+      if (!Number.isFinite(a) || a <= 0 || !Number.isFinite(b) || b <= a) return null
+      const at = (x) => x <= transition
+        ? 3 * Math.log2(x / refDistance)
+        : 3 * Math.log2(transition / refDistance) + 6 * Math.log2(x / transition)
+      return r1(at(b) - at(a))
+    },
+  }
+}
+
+/**
+ * Stops of light: what a filter, a diffusion or an aperture change costs.
+ *
+ * A stop is a factor of two in light. It is the unit the whole trade counts in
+ * because it matches how the eye responds — halving the light is one step
+ * whether you are at full or at a quarter.
+ *
+ *   transmission = 2^(-stops)
+ *   stops = -log2(transmission)
+ *
+ * ND filters are labelled two incompatible ways, which is a permanent source
+ * of confusion: photographic ND is an optical density (ND 0.3 = 1 stop) while
+ * a lot of stage filter is labelled by the fraction it passes (ND 0.6 = 2
+ * stops = 25%).
+ */
+export function stopsOfLight(input, mode = 'stops') {
+  const v = Number(input)
+  if (!Number.isFinite(v)) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+  let stops
+  if (mode === 'stops') {
+    stops = v
+  } else if (mode === 'transmission') {
+    if (v <= 0 || v > 1) return null
+    stops = -Math.log2(v)
+  } else if (mode === 'density') {
+    // Optical density: stops = density / 0.301
+    if (v < 0) return null
+    stops = v / Math.log10(2)
+  } else {
+    return null
+  }
+  const transmission = 2 ** -stops
+  return {
+    stops: r2(stops),
+    transmission: r2(transmission),
+    percent: r2(transmission * 100),
+    opticalDensity: r2(stops * Math.log10(2)),
+    // The two labels side by side, because the mismatch is the actual problem.
+    ndLabel: `ND ${r2(stops * Math.log10(2)).toFixed(1)}`,
+    // Stacking filters multiplies transmission, which is adding stops.
+    plus: (moreStops) => {
+      const m = Number(moreStops)
+      if (!Number.isFinite(m)) return null
+      return stopsOfLight(stops + m, 'stops')
+    },
+    // What it does to a measured level.
+    appliedTo: (lux) => {
+      const l = Number(lux)
+      if (!Number.isFinite(l) || l < 0) return null
+      return Math.round(l * transmission)
+    },
+  }
+}
