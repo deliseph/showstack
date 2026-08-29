@@ -23,19 +23,45 @@ modules that use them keep working; new work uses the semantic name.
 
 | Token | Value | On `--surface` | On `--surface-raised` | On `--surface-sunken` |
 |---|---|---|---|---|
-| `--surface` | `#f6f7f9` | — | — | — |
-| `--surface-raised` | `#ffffff` | — | — | — |
-| `--surface-sunken` | `#edf0f4` | — | — | — |
-| `--ink` | `#141922` | 16.44 | 17.62 | 15.41 |
-| `--ink-muted` | `#46536a` | 7.24 | 7.76 | 6.79 |
-| `--ink-faint` | `#5f6b80` | 5.02 | 5.38 | 4.71 |
-| `--rule` | `#dbe1ea` | 1.23 | 1.31 | 1.15 |
-| `--rule-strong` | `#7f8288` | **3.59** | **3.85** | **3.37** |
-| `--signal` | `#0b7561` | 5.25 | 5.63 | 4.92 |
-| `--signal-ink` | `#ffffff` | 5.63 on `--signal` | | |
-| `--focus` | `#0b7561` | 5.25 | 5.63 | 4.92 |
-| `--verified` | `#3a7a22` | 4.91 | 5.27 | 4.61 |
-| `--warn` / `--fail` | `#b6462e` | 5.02 | 5.38 | 4.71 |
+| `--surface` | `#f4f2ee` | — | — | — |
+| `--surface-raised` | `#fbfaf7` | — | — | — |
+| `--surface-sunken` | `#e9e6e0` | — | — | — |
+| `--ink` | `#282b30` | 12.70 | 13.61 | 11.40 |
+| `--ink-muted` | `#4e5560` | 6.73 | 7.21 | 6.04 |
+| `--ink-faint` | `#5f656f` | 5.25 | 5.62 | 4.71 |
+| `--rule` | `#ddd9d2` | 1.26 | 1.35 | 1.12 |
+| `--rule-strong` | `#7c7973` | **3.88** | **4.16** | **3.48** |
+| `--signal` | `#0a6e5c` | 5.53 | 5.92 | 4.96 |
+| `--signal-ink` | `#ffffff` | 6.18 on `--signal` | | |
+| `--focus` | `#0a6e5c` | 5.53 | 5.92 | 4.96 |
+| `--verified` | `#376f22` | 5.43 | 5.82 | 4.87 |
+| `--warn` | `#8a5608` | 5.50 | 5.89 | 4.94 |
+| `--fail` | `#b13f28` | 5.20 | 5.57 | 4.67 |
+
+**Revised for eye comfort, and why.** The light palette used to put `--ink`
+at 17.62:1 on a pure white card. Both halves of that were a problem and both
+were reported as strain before they were changed.
+
+*No pure white.* `--surface-raised` was `#ffffff`, which is the brightest
+thing most screens can produce, and it was the ground under every card, tool
+and panel on the site. It is `#fbfaf7` now — off-white, and nothing on the
+site renders `#ffffff` as a surface any more.
+
+*Contrast is a floor, not a score.* 17.62:1 is two and a half times what
+WCAG asks for AAA body text, and sustained reading at that level is
+genuinely tiring. `--ink` is 13.61:1 on the raised surface now: still nearly
+double the AAA threshold of 7, and considerably kinder for an hour.
+
+*Warm rather than blue.* The old neutrals were blue-biased (`#f6f7f9` has
+more blue than red). At equal luminance a blue-biased neutral reads as
+glarier. The new ones carry a slight warm bias instead, and the drop shadow
+was warmed to match — a blue-black shadow on a warm ground reads as a smudge
+rather than as depth.
+
+Every accent was re-measured against the new surfaces, and most of them
+*gained* ratio, because the surfaces are slightly darker than they were.
+`--verified` went from 4.61 to 4.87 at its worst, and `--rule-strong` from
+3.37 to 3.48.
 
 ### Dark
 

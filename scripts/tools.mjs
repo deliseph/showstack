@@ -28,7 +28,7 @@ import { LEARN_TOPICS, LEARN_COUNT } from './learn-kit.mjs'
  */
 export const TOOL_GROUPS = [
   ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'dmxrate', 'uid', 'tc', 'midi', 'relay']],
-  ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array']],
+  ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array', 'wave', 'pan', 'wfs']],
   ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mix', 'whites', 'mired', 'stops']],
   ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'thd', 'ohm', 'heat', 'battery']],
   ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
@@ -36,6 +36,7 @@ export const TOOL_GROUPS = [
   ['Access', ['flash', 'ada']],
   ['Content & timing', ['frame', 'pyro', 'storage']],
   ['Networking', ['subnet', 'fibre', 'sdi']],
+  ['Analogue & components', ['optical', 'rc', 'xfmr']],
   ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb']],
   ['RF', ['im', 'rf']],
 ]
@@ -51,6 +52,8 @@ import {
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor, RDM_OVERHEAD_BYTES,
+  opticalSpot, OPTICAL_FORMATS, rcFilter, transformer, waveHarmonics, WAVE_SHAPES,
+  vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS, artnetDmx, artnetPoll, ARTNET_OPCODES,
   rdmPacket, RDM_COMMAND_CLASSES, RDM_PIDS, mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, SACN_ACN_ID,
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
@@ -81,6 +84,7 @@ const MATH_SRC = [
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor,
+  opticalSpot, rcFilter, transformer, waveHarmonics, vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
 ].map((f) => f.toString()).join('\n\n')
@@ -105,6 +109,8 @@ const RDM_COMMAND_CLASSES = ${JSON.stringify(RDM_COMMAND_CLASSES)};
 const RDM_PIDS = ${JSON.stringify(RDM_PIDS)};
 const MMC_COMMANDS = ${JSON.stringify(MMC_COMMANDS)};
 const SACN_ACN_ID = ${JSON.stringify(SACN_ACN_ID)};
+const OPTICAL_FORMATS = ${JSON.stringify(OPTICAL_FORMATS)};
+const WAVE_SHAPES = ${JSON.stringify(WAVE_SHAPES)};
 const enc = new TextEncoder();
 const toHex = (bytes) => [...bytes].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');`
 
@@ -407,6 +413,12 @@ color:var(--ink-faint);padding:8px 10px 2px}
 background:var(--surface-sunken);border:1px solid var(--rule);border-radius:var(--r-sm);
 padding:10px 12px;margin:10px 0 0;overflow-x:auto;word-break:break-all}
 .bytes:empty{display:none}
+.harmbar{display:flex;align-items:flex-end;gap:3px;height:90px;margin:12px 0 0;
+padding:0 0 4px;border-bottom:1px solid var(--rule-strong)}
+.harmbar span{flex:1 1 0;min-width:4px;background:var(--signal);border-radius:2px 2px 0 0;
+transition:height .2s ease;position:relative}
+.harmbar span[data-even="1"]{background:var(--rule-strong)}
+.harmbar:empty{display:none}
 .midisend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 .midisend select{min-height:44px;padding:0 10px;background:var(--panel2);color:var(--ink);
 border:1px solid var(--rule-strong);border-radius:7px;font-family:var(--mono);font-size:13px;max-width:100%}
@@ -839,6 +851,44 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="la-out" role="status" aria-live="polite"></div>
   <p class="note">A point source loses 6&nbsp;dB per doubling of distance because the energy spreads over a sphere. A line source long compared with the wavelength spreads cylindrically and loses 3&nbsp;dB &mdash; which is the whole reason an array reaches the back without removing the front row&rsquo;s hearing. It does not last: beyond a transition set by array length squared and frequency, the wavefront becomes spherical again. Designing as though the 3&nbsp;dB region reached the back wall is the classic mistake.</p>
 </div>
+<div class="tool wide" id="wave">
+  <h3>What a waveform is made of</h3>
+  <div class="row">
+    <div class="field"><label for="wv-shape">Shape</label><select id="wv-shape">
+      <option value="sine">sine</option><option value="square" selected>square</option>
+      <option value="sawtooth">sawtooth</option><option value="triangle">triangle</option>
+    </select></div>
+    <div class="field"><label for="wv-n">Harmonics shown</label><input id="wv-n" type="number" min="1" max="40" step="1" value="12" inputmode="numeric" style="width:150px"></div>
+  </div>
+  <div class="out" id="wv-out" role="status" aria-live="polite"></div>
+  <div class="harmbar" id="wv-bars" aria-hidden="true"></div>
+  <p class="note">Every periodic wave is a sum of sines at multiples of its fundamental, and the four classic shapes have tidy recipes. A <b>sawtooth</b> has every harmonic at 1/n, which is why it is bright. A <b>square</b> has odd harmonics only, so it is missing all the octaves and sounds hollow. A <b>triangle</b> is odd harmonics at 1/n&sup2;, falling so fast that the third is already down at a ninth, which is why it is nearly a sine. The odd-only shapes put a lot on the third harmonic &mdash; which is a triplen, the same one that <a href="/tools/#thd">fills a three-phase neutral</a>. An oscillator making a square wave and a switch-mode supply drawing a spiky current are the same fact pointed at different jobs.</p>
+</div>
+<div class="tool wide" id="pan">
+  <h3>Amplitude panning: VBAP and DBAP</h3>
+  <div class="row">
+    <div class="field"><label for="pn-mode">Method</label><select id="pn-mode">
+      <option value="vbap" selected>VBAP &mdash; stereo pair</option>
+      <option value="dbap">DBAP &mdash; distance based</option>
+    </select></div>
+    <div class="field" id="pn-vf"><label for="pn-ang">Angle <span id="pn-angv">0&deg;</span></label><input id="pn-ang" type="range" min="-30" max="30" value="0" style="width:170px"></div>
+    <div class="field" id="pn-bf"><label for="pn-base">Base angle</label><input id="pn-base" type="number" min="5" max="80" step="5" value="30" inputmode="numeric" style="width:120px"></div>
+    <div class="field" id="pn-xf" hidden><label for="pn-x">Source X <span id="pn-xv">0</span></label><input id="pn-x" type="range" min="-5" max="5" step="0.5" value="0" style="width:150px"></div>
+    <div class="field" id="pn-yf" hidden><label for="pn-y">Source Y <span id="pn-yv">0</span></label><input id="pn-y" type="range" min="-2" max="6" step="0.5" value="0" style="width:150px"></div>
+    <div class="field" id="pn-rf" hidden><label for="pn-roll">Rolloff <span id="pn-rollv">2</span></label><input id="pn-roll" type="range" min="0.5" max="5" step="0.5" value="2" style="width:130px"></div>
+  </div>
+  <div class="out" id="pn-out" role="status" aria-live="polite"></div>
+  <p class="note"><b>VBAP</b> in its two-speaker form is the tangent law, which is what a pan pot has approximated since before anybody wrote it down. Gains are normalised for constant <em>power</em>, not voltage, which is why dead centre is &minus;3&nbsp;dB in each speaker and not &minus;6. <b>DBAP</b> asks a different question: it does not assume where the listener is, only how far each speaker is from the position the source should occupy. The rolloff exponent is a design choice rather than physics &mdash; high localises hard and jumps audibly between speakers, low smears the image across the rig and survives an audience that is not in one seat. That trade is the whole reason to choose one over the other.</p>
+</div>
+<div class="tool" id="wfs">
+  <h3>Wave field synthesis limit</h3>
+  <div class="row">
+    <div class="field"><label for="wf-sp">Speaker spacing (m)</label><input id="wf-sp" type="number" min="0.01" max="2" step="0.01" value="0.25" inputmode="decimal" style="width:170px"></div>
+    <div class="field"><label for="wf-t">Target (Hz)</label><input id="wf-t" type="number" min="100" max="20000" step="100" value="4000" inputmode="numeric" style="width:130px"></div>
+  </div>
+  <div class="out" id="wf-out" role="status" aria-live="polite"></div>
+  <p class="note">WFS does not pan. It reconstructs the wavefront a real source would have made, using an array of loudspeakers as a discrete sampling of a continuous surface &mdash; so it has a Nyquist limit in <b>space</b> exactly as sampling has one in time: <span class="mono">f = c / 2d</span>. Above it the array can no longer represent the wavefront and produces spatial aliasing instead. This one number decides what a WFS system costs, because halving the spacing doubles the limit and doubles the loudspeaker count for the same length of array. Real systems alias somewhere in the low kilohertz and rely on the ear localising less by phase up there.</p>
+</div>
 </div>
 <div class="toolgroup">Lighting &amp; video</div>
 <div class="toolgrid">
@@ -1230,6 +1280,51 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">SDI does not degrade &mdash; it works perfectly and then stops, which is why a run that was fine in the shop fails in the venue ten metres longer. Two facts set the cliff: coax loss rises with the square root of frequency, and the frequency that matters is half the bit rate. Take both cable numbers off the manufacturer&rsquo;s datasheet, at whatever frequency they quoted; every coax maker publishes them. The 20&nbsp;dB equalisation figure is what SMPTE writes down, and real receivers often do better, which is why the same cable gets quoted at different lengths by different people. A run inside 3&nbsp;dB of the budget is flagged: it works today and fails after somebody swaps a barrel in.</p>
 </div>
 </div>
+<div class="toolgroup">Analogue &amp; components</div>
+<div class="toolgrid">
+<div class="tool wide" id="optical">
+  <h3>Why a Blu-ray holds more than a CD</h3>
+  <div class="row">
+    <div class="field"><label for="op-fmt">Format</label><select id="op-fmt">
+      <option value="cd">CD &mdash; 780 nm, NA 0.45</option>
+      <option value="dvd">DVD &mdash; 650 nm, NA 0.60</option>
+      <option value="bluray" selected>Blu-ray &mdash; 405 nm, NA 0.85</option>
+    </select></div>
+    <div class="field"><label for="op-wl">or wavelength (nm)</label><input id="op-wl" type="number" min="100" max="2000" step="5" value="405" inputmode="numeric" style="width:150px"></div>
+    <div class="field"><label for="op-na">NA</label><input id="op-na" type="number" min="0.05" max="1.6" step="0.05" value="0.85" inputmode="decimal" style="width:100px"></div>
+  </div>
+  <div class="out" id="op-out" role="status" aria-live="polite"></div>
+  <p class="note">Same 120&nbsp;mm disc, same spin, same idea &mdash; a spiral of pits read by a laser. What changed is how small a spot the optics can focus, because that sets how small a pit can be and how close two tracks can run. A focused spot cannot beat diffraction: <span class="mono">1.22 &lambda; / NA</span>. Infrared to red to blue-violet, and 0.45 to 0.85, takes the spot from about 2.1&nbsp;&micro;m to 0.58&nbsp;&micro;m &mdash; and density goes with the <b>square</b> of that, because a disc is a surface. Capacity then outruns the area ratio, and that gap is the coding: better modulation and better error correction, on top of what the physics gave.</p>
+</div>
+<div class="tool wide" id="rc">
+  <h3>RC time constant &amp; filter corner</h3>
+  <div class="row">
+    <div class="field"><label for="rc-r">Resistance</label><input id="rc-r" type="number" min="1" step="100" value="10000" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="rc-ru">unit</label><select id="rc-ru">
+      <option value="1" selected>&Omega;</option><option value="1000">k&Omega;</option><option value="1000000">M&Omega;</option>
+    </select></div>
+    <div class="field"><label for="rc-c">Capacitance</label><input id="rc-c" type="number" min="0.001" step="1" value="100" inputmode="decimal" style="width:130px"></div>
+    <div class="field"><label for="rc-cu">unit</label><select id="rc-cu">
+      <option value="0.000001">&micro;F</option><option value="0.000000001" selected>nF</option><option value="0.000000000001">pF</option>
+    </select></div>
+    <div class="field"><label for="rc-f">Response at (Hz)</label><input id="rc-f" type="number" min="1" step="100" value="1000" inputmode="numeric" style="width:140px"></div>
+  </div>
+  <div class="out" id="rc-out" role="status" aria-live="polite"></div>
+  <p class="note">One resistor and one capacitor is the most useful circuit in the trade. It is a filter, a delay, a de-bounce, and the tone control on every analogue console ever built &mdash; and it is two equations that are the same fact: <span class="mono">&tau; = RC</span> and <span class="mono">f = 1 / 2&pi;RC</span>. The corner is where the capacitor&rsquo;s reactance equals the resistance. One pole is 3&nbsp;dB down there and 6&nbsp;dB per octave after, and every extra stage adds another 6. In the time domain the same numbers say 63% of the way in one time constant, 95% in three, 99% in five &mdash; which is how long a mute ramp or a de-bounce actually takes.</p>
+</div>
+<div class="tool" id="xfmr">
+  <h3>Transformer ratios</h3>
+  <div class="row">
+    <div class="field"><label for="xf-p">Primary turns</label><input id="xf-p" type="number" min="1" step="1" value="10" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="xf-s">Secondary turns</label><input id="xf-s" type="number" min="1" step="1" value="1" inputmode="numeric" style="width:140px"></div>
+    <div class="field"><label for="xf-v">Primary volts</label><input id="xf-v" type="number" min="0" step="1" value="10" inputmode="decimal" style="width:130px"></div>
+    <div class="field"><label for="xf-z">Secondary load (&Omega;)</label><input id="xf-z" type="number" min="0" step="1" value="6" inputmode="decimal" style="width:150px"></div>
+  </div>
+  <div class="out" id="xf-out" role="status" aria-live="polite"></div>
+  <p class="note">Voltage follows the turns ratio and impedance follows its <b>square</b>, which is what makes a transformer a matching device rather than only a voltage one. A 10:1 turns 10&nbsp;V into 1&nbsp;V and makes a 6&nbsp;&Omega; load look like 600&nbsp;&Omega; &mdash; the same component matching a microphone to a preamp, a valve amplifier to a speaker, and a balanced line to an unbalanced input. And because there is no electrical connection between the windings at all, it breaks a ground loop, which on a show is very often the actual reason one is fitted.</p>
+</div>
+</div>
+
 <div class="toolgroup">Protocol builders</div>
 <div class="toolgrid">
 <div class="tool wide" id="osc">
@@ -2695,6 +2790,138 @@ function mbRender(){
     .map(k => opt(k, MMC_COMMANDS[k], Number(k) === 2)).join("");
   osRender(); pjRender(); anRender(); saRender(); rpRender(); mbRender();
 })();
+
+/* ---- the analogue layer -------------------------------------------------- */
+function opRender(){
+  const wl = Number($("#op-wl").value), na = Number($("#op-na").value);
+  const r = opticalSpot(wl, na);
+  if(!r){ $("#op-out").innerHTML = '<span class="err">Wavelength above zero, numerical aperture between 0 and 1.6.</span>'; return; }
+  let html = 'Focused spot <b>' + r.spotUm + '</b> &micro;m'
+    + ' <span class="dim">&middot; 1.22 &times; ' + wl + ' nm / ' + na + '</span>';
+  const vsCd = r.compare('cd');
+  if (vsCd && Math.abs(vsCd.linearRatio - 1) > 0.01) {
+    html += '<br>A CD spot is <b>' + vsCd.linearRatio + '&times;</b> wider, so <b>' + vsCd.areaRatio
+      + '&times;</b> the area per bit &mdash; density goes with the square, because a disc is a surface.';
+  }
+  const g = r.codingGain('cd', 'bluray');
+  html += '<br><span class="dim">CD to Blu-ray: the optics gave ' + g.areaRatio
+    + '&times; the density, and capacity actually rose ' + g.capacityRatio
+    + '&times;. The remaining ' + g.beyondOptics + '&times; is coding, not physics.</span>';
+  $("#op-out").innerHTML = html;
+}
+$("#op-fmt").addEventListener("change", function(){
+  const f = OPTICAL_FORMATS[$("#op-fmt").value];
+  if (f) { $("#op-wl").value = f.wavelengthNm; $("#op-na").value = f.na; }
+  opRender();
+});
+["#op-wl","#op-na"].forEach(id => $(id).addEventListener("input", opRender));
+opRender();
+
+function rcRender(){
+  const r = Number($("#rc-r").value) * Number($("#rc-ru").value);
+  const c = Number($("#rc-c").value) * Number($("#rc-cu").value);
+  const f = rcFilter(r, c);
+  if(!f){ $("#rc-out").innerHTML = '<span class="err">Both values have to be above zero.</span>'; return; }
+  const at = Number($("#rc-f").value);
+  const resp = f.responseAt(at);
+  let html = 'Corner <b>' + f.corner + '</b> &middot; time constant <b>' + f.tau + '</b>';
+  html += '<br>63% in ' + f.tau + ', 95% in ' + f.riseTo95 + ', 99% in ' + f.riseTo99;
+  if (resp !== null) {
+    html += '<br>One pole at ' + at.toLocaleString() + ' Hz: <b>' + resp + '</b> dB'
+      + ' <span class="dim">(' + (at > f.cornerHz ? 'above' : 'below') + ' the corner)</span>';
+  }
+  $("#rc-out").innerHTML = html;
+}
+["#rc-r","#rc-ru","#rc-c","#rc-cu","#rc-f"].forEach(id => $(id).addEventListener("input", rcRender));
+["#rc-ru","#rc-cu"].forEach(id => $(id).addEventListener("change", rcRender));
+rcRender();
+
+function xfRender(){
+  const t = transformer($("#xf-p").value, $("#xf-s").value, {
+    primaryVolts: Number($("#xf-v").value), secondaryOhms: Number($("#xf-z").value),
+  });
+  if(!t){ $("#xf-out").innerHTML = '<span class="err">Both winding turns have to be above zero.</span>'; return; }
+  let html = '<b>' + t.ratioLabel + '</b> turns &middot; ' + (t.stepsUp ? 'steps up' : 'steps down');
+  if (t.secondaryVolts !== null) html += '<br>' + $("#xf-v").value + ' V in gives <b>' + t.secondaryVolts + '</b> V out';
+  if (t.reflectedPrimaryOhms !== null) {
+    html += '<br>A ' + $("#xf-z").value + ' &Omega; load looks like <b>' + t.reflectedPrimaryOhms
+      + '</b> &Omega; from the primary <span class="dim">&mdash; the square of the ratio, not the ratio</span>';
+  }
+  html += '<br><span class="dim">' + t.note + '</span>';
+  $("#xf-out").innerHTML = html;
+}
+["#xf-p","#xf-s","#xf-v","#xf-z"].forEach(id => $(id).addEventListener("input", xfRender));
+xfRender();
+
+/* ---- waveforms and space -------------------------------------------------- */
+function wvRender(){
+  const shape = $("#wv-shape").value;
+  const n = Math.max(1, Math.min(40, Number($("#wv-n").value) || 12));
+  const w = waveHarmonics(shape, n);
+  if(!w){ $("#wv-out").innerHTML = '<span class="err">Pick a shape and 1 to 40 harmonics.</span>'; $("#wv-bars").innerHTML = ""; return; }
+  const d = thd(w.relative);
+  $("#wv-out").innerHTML = '<b>' + shape + '</b> &middot; ' + w.rolloff
+    + '<br>' + (w.hasEvenHarmonics ? 'Every harmonic present' : 'Odd harmonics only &mdash; no octaves')
+    + ' &middot; third harmonic at <b>' + Math.round(w.thirdHarmonic * 100) + '%</b>'
+    + (d ? ' &middot; THD-F ' + d.thdF + '%' : '');
+  /* The fundamental first, then each harmonic, so the shape of the rolloff is
+     the thing you actually see. */
+  let bars = '<span style="height:100%" data-even="0" title="fundamental"></span>';
+  w.harmonics.forEach(function(h){
+    bars += '<span style="height:' + Math.max(1, h.amplitude * 100) + '%" data-even="'
+      + (h.odd ? '0' : '1') + '" title="harmonic ' + h.order + '"></span>';
+  });
+  $("#wv-bars").innerHTML = bars;
+}
+["#wv-shape","#wv-n"].forEach(id => $(id).addEventListener("input", wvRender));
+$("#wv-shape").addEventListener("change", wvRender);
+wvRender();
+
+const PAN_RIG = [{ name: "L", x: -3, y: 0 }, { name: "R", x: 3, y: 0 }, { name: "C", x: 0, y: 4 }];
+function pnRender(){
+  const mode = $("#pn-mode").value;
+  const vbap = mode === "vbap";
+  ["#pn-vf","#pn-bf"].forEach(id => { $(id).hidden = !vbap });
+  ["#pn-xf","#pn-yf","#pn-rf"].forEach(id => { $(id).hidden = vbap });
+  if (vbap) {
+    const ang = Number($("#pn-ang").value);
+    $("#pn-angv").textContent = ang + "°";
+    const r = vbapStereo(ang, Number($("#pn-base").value));
+    if(!r){ $("#pn-out").innerHTML = '<span class="err">A source cannot be panned outside the pair.</span>'; return; }
+    $("#pn-out").innerHTML = 'L <b>' + r.left + '</b> (' + r.leftDb + ' dB) &middot; R <b>' + r.right + '</b> ('
+      + r.rightDb + ' dB) &middot; power ' + r.powerSum
+      + '<br><span class="dim">' + r.note + '</span>';
+    return;
+  }
+  const x = Number($("#pn-x").value), y = Number($("#pn-y").value), roll = Number($("#pn-roll").value);
+  $("#pn-xv").textContent = x; $("#pn-yv").textContent = y; $("#pn-rollv").textContent = roll;
+  const d = dbapGains(x, y, PAN_RIG, { rolloff: roll });
+  if(!d){ $("#pn-out").innerHTML = '<span class="err">Check the position and the rolloff.</span>'; return; }
+  $("#pn-out").innerHTML = d.gains.map(g => g.name + ' <b>' + g.gain + '</b> (' + g.distance + ' m)').join(' &middot; ')
+    + ' &middot; power ' + d.powerSum
+    + '<br><span class="dim">' + d.activeSpeakers + ' of 3 doing real work. ' + d.note + '</span>';
+}
+["#pn-mode","#pn-ang","#pn-base","#pn-x","#pn-y","#pn-roll"].forEach(id => $(id).addEventListener("input", pnRender));
+$("#pn-mode").addEventListener("change", pnRender);
+pnRender();
+
+function wfRender(){
+  const w = wfsAliasing($("#wf-sp").value);
+  if(!w){ $("#wf-out").innerHTML = '<span class="err">Spacing has to be above zero.</span>'; return; }
+  const target = Number($("#wf-t").value);
+  const need = w.spacingForHz(target);
+  let html = 'Spatial aliasing above <b>' + w.aliasingHz + '</b> Hz'
+    + ' <span class="dim">&middot; ' + w.speakersPerMetre + ' speakers a metre</span>'
+    + '<br>' + w.verdict;
+  if (need) {
+    html += '<br>Reaching ' + target.toLocaleString() + ' Hz needs <b>' + need + '</b> m spacing &mdash; <b>'
+      + Math.round(1 / need) + '</b> loudspeakers a metre.';
+  }
+  html += '<br><span class="dim">' + w.doublingCosts + '</span>';
+  $("#wf-out").innerHTML = html;
+}
+["#wf-sp","#wf-t"].forEach(id => $(id).addEventListener("input", wfRender));
+wfRender();
 
 /* ---- and the one that can actually leave the machine ---------------------
    Web MIDI is real output to real hardware, so it asks for permission and it

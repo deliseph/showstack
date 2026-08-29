@@ -3811,3 +3811,378 @@ export function sacnPacket(universe, slots = [], opts = {}) {
     note: 'The CID identifies the source and must not change between packets. A device that generates a new one each time looks like an unlimited number of sources and breaks priority arbitration.',
   }
 }
+
+/**
+ * Why a CD, a DVD and a Blu-ray are the same disc and hold wildly different
+ * amounts.
+ *
+ * Same 120 mm polycarbonate, same spin, same idea — a spiral of pits read by
+ * a laser. What changed is how small a spot the optics can focus, because
+ * that sets how small a pit can be and how close two tracks can run.
+ *
+ * A focused spot cannot be smaller than diffraction allows:
+ *
+ *   spot diameter ~= 1.22 * lambda / NA
+ *
+ * Shorter wavelength, or a bigger numerical aperture, gives a smaller spot.
+ * Infrared to red to blue-violet, and 0.45 to 0.60 to 0.85, and the spot goes
+ * from about 2.1 um to 0.58 um. Data density goes with the square of that,
+ * because a disc is a surface.
+ *
+ * Capacity then outruns the area ratio, because each generation also improved
+ * its modulation and error-correction coding. That gap is the interesting
+ * part: the physics gave one factor and the mathematics gave another.
+ */
+export const OPTICAL_FORMATS = {
+  cd: { label: 'CD', wavelengthNm: 780, na: 0.45, trackPitchUm: 1.6, capacityGb: 0.7, colour: 'infrared' },
+  dvd: { label: 'DVD', wavelengthNm: 650, na: 0.60, trackPitchUm: 0.74, capacityGb: 4.7, colour: 'red' },
+  bluray: { label: 'Blu-ray', wavelengthNm: 405, na: 0.85, trackPitchUm: 0.32, capacityGb: 25, colour: 'blue-violet' },
+}
+
+export function opticalSpot(wavelengthNm, numericalAperture, opts = {}) {
+  const lambda = Number(wavelengthNm)
+  const na = Number(numericalAperture)
+  if (!Number.isFinite(lambda) || lambda <= 0) return null
+  if (!Number.isFinite(na) || na <= 0 || na > 1.6) return null
+  const r3 = (x) => Math.round(x * 1000) / 1000
+
+  // Airy disc: the smallest spot diffraction permits.
+  const spotNm = 1.22 * (lambda / na)
+
+  const compare = (formatKey) => {
+    const f = OPTICAL_FORMATS[formatKey]
+    if (!f) return null
+    const other = 1.22 * (f.wavelengthNm / f.na)
+    const linear = other / spotNm
+    return {
+      against: f.label,
+      spotNm: r3(other),
+      linearRatio: r3(linear),
+      // A disc is a surface, so density goes with the square.
+      areaRatio: r3(linear * linear),
+    }
+  }
+
+  return {
+    wavelengthNm: lambda,
+    numericalAperture: na,
+    spotNm: r3(spotNm),
+    spotUm: r3(spotNm / 1000),
+    compare,
+    /**
+     * What the coding added on top of the optics. A capacity ratio bigger
+     * than the area ratio is the part diffraction did not give you.
+     */
+    codingGain: (fromKey, toKey) => {
+      const a = OPTICAL_FORMATS[fromKey], b = OPTICAL_FORMATS[toKey]
+      if (!a || !b) return null
+      const spotA = 1.22 * (a.wavelengthNm / a.na)
+      const spotB = 1.22 * (b.wavelengthNm / b.na)
+      const areaRatio = (spotA / spotB) ** 2
+      const capacityRatio = b.capacityGb / a.capacityGb
+      return {
+        from: a.label,
+        to: b.label,
+        areaRatio: r3(areaRatio),
+        capacityRatio: r3(capacityRatio),
+        // Everything the optics did not account for: modulation efficiency,
+        // error-correction overhead, and a slightly larger recorded area.
+        beyondOptics: r3(capacityRatio / areaRatio),
+      }
+    },
+  }
+}
+
+/**
+ * RC time constant, and the corner frequency that falls out of it.
+ *
+ * One resistor and one capacitor is the most useful circuit in the trade.
+ * It is a filter, it is a delay, it is a de-bounce, it is the tone control on
+ * every analogue console ever built, and it is two equations:
+ *
+ *   tau = R * C            seconds to reach 63% of the way
+ *   f   = 1 / (2*pi*R*C)   the -3 dB corner
+ *
+ * The corner frequency is where the reactance of the capacitor equals the
+ * resistance, which is why the two expressions are the same fact. Below it a
+ * low-pass filter passes; above it the slope is 6 dB per octave, and every
+ * extra stage adds another 6.
+ */
+export function rcFilter(resistanceOhms, capacitanceFarads) {
+  const r = Number(resistanceOhms)
+  const c = Number(capacitanceFarads)
+  if (!Number.isFinite(r) || r <= 0 || !Number.isFinite(c) || c <= 0) return null
+  const tau = r * c
+  const f = 1 / (2 * Math.PI * tau)
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  const eng = (v, unit) => {
+    const steps = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n'], [1e-12, 'p']]
+    for (const [scale, prefix] of steps) {
+      if (Math.abs(v) >= scale) return `${Math.round((v / scale) * 1000) / 1000} ${prefix}${unit}`
+    }
+    return `${v} ${unit}`
+  }
+  return {
+    resistanceOhms: r,
+    capacitanceFarads: c,
+    tauSeconds: tau,
+    tau: eng(tau, 's'),
+    cornerHz: r3(f),
+    corner: eng(f, 'Hz'),
+    // 63% in one time constant, 95% in three, 99% in five. The rule of thumb
+    // that decides how long a de-bounce or a mute ramp actually takes.
+    riseTo95: eng(3 * tau, 's'),
+    riseTo99: eng(5 * tau, 's'),
+    slopeDbPerOctave: 6,
+    /** What the filter does to a given frequency, in dB, for one pole. */
+    responseAt: (hz) => {
+      const x = Number(hz)
+      if (!Number.isFinite(x) || x <= 0) return null
+      // Single-pole low pass: -10 log10(1 + (f/fc)^2)
+      return Math.round(-10 * Math.log10(1 + (x / f) ** 2) * 100) / 100
+    },
+  }
+}
+
+/**
+ * A transformer, in the two ratios that matter.
+ *
+ * Voltage follows the turns ratio and impedance follows its SQUARE, which is
+ * the fact that makes a transformer useful for something other than changing
+ * a voltage. A 10:1 transformer turns 10 volts into 1 and a 600 ohm load into
+ * 6 ohms, and that is why the same component matches a microphone to a
+ * preamp, a valve amplifier to a speaker, and a balanced line to an unbalanced
+ * input.
+ *
+ *   Vs/Vp = Ns/Np        Zp/Zs = (Np/Ns)^2        Ip/Is = Ns/Np
+ *
+ * And because there is no electrical connection between the windings at all,
+ * it also breaks a ground loop — which on a show is often the entire reason
+ * one is fitted.
+ */
+export function transformer(primaryTurns, secondaryTurns, opts = {}) {
+  const np = Number(primaryTurns), ns = Number(secondaryTurns)
+  if (!Number.isFinite(np) || np <= 0 || !Number.isFinite(ns) || ns <= 0) return null
+  const ratio = np / ns
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  const vp = Number(opts.primaryVolts ?? 0)
+  const zs = Number(opts.secondaryOhms ?? 0)
+
+  return {
+    turnsRatio: r3(ratio),
+    ratioLabel: `${r3(ratio)}:1`,
+    secondaryVolts: vp > 0 ? r3(vp / ratio) : null,
+    // Impedance goes with the square of the turns ratio, which is the whole
+    // reason a transformer is a matching device and not just a voltage one.
+    reflectedPrimaryOhms: zs > 0 ? r3(zs * ratio * ratio) : null,
+    currentRatio: r3(1 / ratio),
+    stepsUp: ratio < 1,
+    isolates: true,
+    note: 'No electrical connection between windings, so it also breaks a ground loop — often the real reason one is fitted.',
+  }
+}
+
+/**
+ * What a waveform is made of.
+ *
+ * Every periodic wave is a sum of sines at multiples of its fundamental, and
+ * the four classic shapes have famously tidy recipes:
+ *
+ *   sine      the fundamental, nothing else
+ *   square    ODD harmonics only, amplitude 1/n
+ *   sawtooth  ALL harmonics, amplitude 1/n
+ *   triangle  ODD harmonics only, amplitude 1/n^2, alternating sign
+ *
+ * That is why they sound as they do. A saw is bright because it has every
+ * harmonic; a square is hollow because it is missing all the even ones, which
+ * are the octaves; a triangle is nearly a sine because 1/n^2 falls away so
+ * fast that the third harmonic is already down at a ninth.
+ *
+ * It also connects a synthesiser to a power problem. A square wave IS a
+ * fundamental plus odd harmonics, and the third harmonic is a triplen — the
+ * same one that fills up a neutral conductor. A switch-mode supply drawing a
+ * spiky current and an oscillator making a square wave are the same fact
+ * pointed at different jobs.
+ */
+export const WAVE_SHAPES = ['sine', 'square', 'sawtooth', 'triangle']
+
+export function waveHarmonics(shape, count = 12) {
+  const n = Math.floor(Number(count))
+  if (!WAVE_SHAPES.includes(shape)) return null
+  if (!Number.isInteger(n) || n < 1 || n > 200) return null
+  const r4 = (x) => Math.round(x * 10000) / 10000
+
+  // Index 0 is the 2nd harmonic, matching thd()'s convention so the two
+  // functions compose without anybody having to re-index by hand.
+  const relative = []
+  for (let order = 2; order <= n + 1; order++) {
+    let a = 0
+    if (shape === 'square') a = order % 2 === 1 ? 1 / order : 0
+    else if (shape === 'sawtooth') a = 1 / order
+    else if (shape === 'triangle') a = order % 2 === 1 ? 1 / (order * order) : 0
+    relative.push(r4(a))
+  }
+
+  return {
+    shape,
+    // Amplitudes relative to the fundamental, ready to hand to thd().
+    relative,
+    harmonics: relative.map((a, i) => ({ order: i + 2, amplitude: a, odd: (i + 2) % 2 === 1 })),
+    hasEvenHarmonics: shape === 'sawtooth',
+    rolloff: shape === 'triangle' ? '1/n² — very fast, so it is nearly a sine'
+      : shape === 'sine' ? 'nothing above the fundamental'
+        : '1/n — slow, so it stays bright a long way up',
+    // The odd-only shapes put energy on the third harmonic, which is a
+    // triplen: the same one that adds in a three-phase neutral.
+    thirdHarmonic: relative[1],
+  }
+}
+
+/**
+ * Vector base amplitude panning, in its two-speaker form — which is the
+ * tangent law, and which is what a pan pot has been approximating since
+ * before anybody wrote it down.
+ *
+ *   tan(theta) / tan(theta0) = (g1 - g2) / (g1 + g2)
+ *
+ * with the gains normalised so g1^2 + g2^2 = 1, because power rather than
+ * voltage is what stays constant when two loudspeakers make one image.
+ *
+ * The important limit is not in the arithmetic: it holds for a listener at
+ * the point the geometry was drawn around, and degrades as they move. VBAP
+ * scales that idea to three speakers and to any layout, and it inherits the
+ * same limit — which is why an amplitude-panned image is a sweet spot rather
+ * than a place in the room.
+ */
+export function vbapStereo(angleDeg, baseAngleDeg = 30) {
+  const theta = Number(angleDeg)
+  const base = Number(baseAngleDeg)
+  if (!Number.isFinite(theta) || !Number.isFinite(base) || base <= 0 || base >= 90) return null
+  if (Math.abs(theta) > base) return null
+  const rad = (d) => (d * Math.PI) / 180
+  const r3 = (x) => Math.round(x * 1000) / 1000
+
+  // Solve the tangent law for the gain pair, then normalise for equal power.
+  const t = Math.tan(rad(theta)) / Math.tan(rad(base))
+  // (g1 - g2)/(g1 + g2) = t, so with g1 + g2 = 1 first, then renormalise.
+  let g1 = (1 + t) / 2
+  let g2 = (1 - t) / 2
+  const norm = Math.sqrt(g1 * g1 + g2 * g2)
+  g1 /= norm
+  g2 /= norm
+
+  return {
+    angleDeg: theta,
+    baseAngleDeg: base,
+    left: r3(g2),
+    right: r3(g1),
+    leftDb: g2 > 0 ? r3(20 * Math.log10(g2)) : -Infinity,
+    rightDb: g1 > 0 ? r3(20 * Math.log10(g1)) : -Infinity,
+    // Equal power: the sum of squares is one, whatever the angle.
+    powerSum: r3(g1 * g1 + g2 * g2),
+    note: 'Holds for a listener at the point the geometry was drawn around. Move and the image moves with you, which is why amplitude panning gives a sweet spot rather than a location.',
+  }
+}
+
+/**
+ * Distance-based amplitude panning: gains from distance alone.
+ *
+ * DBAP asks a different question from VBAP. It does not assume where the
+ * listener is; it asks how far each loudspeaker is from the position the
+ * source is supposed to occupy, and shares the energy out accordingly:
+ *
+ *   g_i proportional to 1 / d_i^a       then normalised so sum(g^2) = 1
+ *
+ * The rolloff exponent a is a design choice rather than physics. Higher
+ * values make a tighter, more localised image that jumps between speakers;
+ * lower values smear it across more of the rig and survive a moving audience
+ * better. That trade is the whole reason to use DBAP over VBAP: it degrades
+ * gracefully for people who are not in the seat the designer sat in.
+ */
+export function dbapGains(sourceX, sourceY, speakers, opts = {}) {
+  const sx = Number(sourceX), sy = Number(sourceY)
+  if (!Number.isFinite(sx) || !Number.isFinite(sy)) return null
+  if (!Array.isArray(speakers) || speakers.length < 1) return null
+  const rolloff = Number(opts.rolloff ?? 2)
+  if (!Number.isFinite(rolloff) || rolloff <= 0) return null
+  // A blur radius stops the gain going to infinity when a source sits exactly
+  // on a loudspeaker, which is a real position and not an error.
+  const blur = Number(opts.blur ?? 0.5)
+  if (!Number.isFinite(blur) || blur < 0) return null
+  const r3 = (x) => Math.round(x * 1000) / 1000
+
+  const raw = []
+  for (const sp of speakers) {
+    const x = Number(sp.x), y = Number(sp.y)
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null
+    const d = Math.sqrt((x - sx) ** 2 + (y - sy) ** 2 + blur * blur)
+    raw.push({ name: sp.name ?? null, x, y, distance: r3(Math.sqrt((x - sx) ** 2 + (y - sy) ** 2)), weight: 1 / d ** rolloff })
+  }
+  const norm = Math.sqrt(raw.reduce((n, s) => n + s.weight * s.weight, 0))
+
+  const gains = raw.map((s) => ({
+    name: s.name,
+    distance: s.distance,
+    gain: r3(s.weight / norm),
+    db: r3(20 * Math.log10(Math.max(1e-9, s.weight / norm))),
+  }))
+
+  return {
+    sourceX: sx,
+    sourceY: sy,
+    rolloff,
+    gains,
+    powerSum: r3(gains.reduce((n, g) => n + g.gain * g.gain, 0)),
+    // How many speakers are doing meaningful work. A high rolloff localises;
+    // a low one spreads the image across the rig.
+    activeSpeakers: gains.filter((g) => g.gain > 0.1).length,
+    note: rolloff >= 3
+      ? 'Tight and localised, and it will jump audibly as a source crosses between speakers.'
+      : rolloff <= 1
+        ? 'Very spread. Hard to localise, but it survives an audience that is not in one seat.'
+        : 'A usual compromise between a locatable image and one that holds up off-centre.',
+  }
+}
+
+/**
+ * The frequency at which wave field synthesis stops working.
+ *
+ * WFS does not pan. It reconstructs the wavefront a real source would have
+ * made, using an array of loudspeakers as a discrete sampling of a continuous
+ * surface — so it has a Nyquist limit in SPACE exactly as sampling has one in
+ * time:
+ *
+ *   f_alias = c / (2 * speaker spacing)
+ *
+ * Above that frequency the array can no longer represent the wavefront and
+ * produces spatial aliasing instead. It is the single number that decides
+ * what a WFS system costs, because halving the aliasing frequency means
+ * doubling the number of loudspeakers, and it is why practical systems alias
+ * somewhere in the low kilohertz and rely on the ear caring less about
+ * localisation up there.
+ */
+export function wfsAliasing(spacingM, opts = {}) {
+  const d = Number(spacingM)
+  if (!Number.isFinite(d) || d <= 0) return null
+  const c = Number(opts.speedOfSound ?? 343)
+  if (!Number.isFinite(c) || c <= 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+
+  const alias = c / (2 * d)
+  return {
+    spacingM: d,
+    aliasingHz: r1(alias),
+    speedOfSound: c,
+    // What it would take to push the limit up.
+    spacingForHz: (hz) => {
+      const f = Number(hz)
+      return Number.isFinite(f) && f > 0 ? Math.round((c / (2 * f)) * 1000) / 1000 : null
+    },
+    speakersPerMetre: r1(1 / d),
+    // The cost sentence, stated as arithmetic rather than as a warning.
+    doublingCosts: 'Halving the spacing doubles the aliasing frequency and doubles the loudspeaker count for the same length of array.',
+    verdict: alias >= 4000 ? 'Above most localisation cues — expensive, and close to the ideal.'
+      : alias >= 1500 ? 'Ordinary for a real installation. Aliasing sits where the ear localises less by phase and more by level.'
+        : 'Low. Wavefront reconstruction only holds for the bottom of the spectrum here.',
+  }
+}
