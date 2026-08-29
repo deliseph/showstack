@@ -1,7 +1,7 @@
 # showstack design system
 
 Resolved during the UI/UX refresh. Every ratio here was measured against the
-rendered pages, not estimated. If you change a token, re-run `.audit/final.mjs`
+rendered pages, not estimated. If you change a token, run `npm run audit`
 before you ship it — it checks contrast, focus, target size, motion, CLS,
 horizontal scroll and third-party requests across 21 pages, four widths and
 both themes.
@@ -170,16 +170,39 @@ longer covers it and you have to handle reduced motion yourself.
 
 ## 4. Target size
 
-44px minimum on anything a person taps, enforced in `BASE_CSS` on `input`,
-`select`, `textarea` and `button`. Checkboxes and radios are 20px and their
-*label* carries the 44px, because the label is what you actually tap.
+Two thresholds, because they are two different claims.
 
-Where 44px targets will not fit — the twelve DIP switches on `/tools/` — the
-row scrolls sideways rather than shrinking the thing you have to hit with a
-thumb.
+**24 × 24 — WCAG 2.2 SC 2.5.8, level AA. A hard gate.** `npm run audit` fails
+the build if anything misses it. Every page currently passes, verified with
+the spacing exception implemented rather than assumed: a target under 24px
+still passes if a 24px-diameter circle centred on it does not intersect
+another target's circle, which is what legitimately clears a link sitting
+alone in a table row.
 
-Inline links inside running prose are exempt under SC 2.5.8's inline exception
-and are the only things the audit still reports under 44px.
+**44 × 44 — SC 2.5.5, level AAA, and this project's house standard.**
+Reported by the audit, not fatal. Enforced in `BASE_CSS` on `input`,
+`select`, `textarea` and `button`, and on every nav pill, chip, tab and
+primary control.
+
+Where the two diverge, deliberately:
+
+- **Links inside dense tables and result lists** (`/ports/`, `/compare/`,
+  `/search/`, `/build/`) sit at 30px. They clear AA with room to spare;
+  taking them to 44 would add ~14px per row to tables that are already long,
+  for a link that is rarely the primary action on the page. `td a` and
+  friends get `padding: 4px 0` in `BASE_CSS` to grow the box without growing
+  the type.
+- **The twelve DIP switches on `/tools/`** are 44px and the row scrolls
+  sideways, rather than shrinking the thing you have to hit with a thumb.
+- **Checkboxes and radios** are 20px; their *label* carries the 44px, because
+  the label is what you actually tap.
+- **Inline links inside running prose** are exempt under SC 2.5.8's inline
+  exception. The audit tests this by looking for real text nodes beside the
+  link, not by guessing from the parent's tag name — a footer link sits in a
+  `<div>` and is still prose.
+
+The audit prints the 24–44px band as warnings so what is unsolved stays
+visible instead of being quietly rounded off.
 
 ---
 
@@ -233,13 +256,17 @@ feeling of understanding something you did not understand this morning.
 
 ## 7. Verified state
 
-`node .audit/final.mjs`, across 21 pages at 375 / 768 / 1024 / 1440 in both
-themes:
+`npm run audit`, across 21 pages at 375 / 768 / 1024 / 1440 in both themes.
+It needs Playwright, which is deliberately not a dependency of this package:
+
+    npm i --no-save playwright && npx playwright install chromium
+    npm run build && npm run audit
+
 
 - All 33 text-on-surface pairs ≥ 4.5:1, both themes
 - `--rule-strong` ≥ 3:1 on all three surfaces, both themes
 - Focus ring visible on every interactive element on every page
-- Zero controls under 44px except inline prose links
+- Every target at least 24×24 (SC 2.5.8 AA), spacing exception implemented
 - Zero animation under `prefers-reduced-motion`; zero SMIL; zero rAF/setInterval
 - CLS 0.00 on every page measured on the mobile profile at 4× CPU throttle
 - No horizontal scroll at any of the four widths; zoom not disabled

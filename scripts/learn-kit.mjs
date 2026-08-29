@@ -161,7 +161,8 @@ border-radius:var(--r-md);background:color-mix(in srgb,var(--accent2) 6%,transpa
 color:var(--accent2);margin-bottom:9px}
 .xnote p{margin:0;color:var(--ink);font-size:15.2px;line-height:1.65;max-width:64ch}
 .xnote p b{color:var(--accent2)}
-.xnote .xl{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--accent2)}
+.xnote .xl{display:inline-flex;align-items:center;min-height:44px;margin-top:6px;
+font-family:var(--mono);font-size:12px;color:var(--accent2)}
 
 /* Position in the chain, on every explainer. */
 .cpos{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin:-8px 0 24px;

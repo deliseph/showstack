@@ -92,6 +92,30 @@ const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').t
  * which left that one page with a transparent body and no focus ring.
  */
 export const BASE_CSS = `
+/* A keyboard user should not have to tab through 17 nav items to reach the
+   page. Hidden until focused, then it sits over the sticky header. */
+.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
+font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
+text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.skip:focus{left:0}
+/* "Free, no account, no tracking" was one line of small text at the bottom of
+   two pages. It is a real reason people trust this and it now sits under the
+   header on every page - one line, always there, not a banner and not a badge. */
+.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
+.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
+min-height:44px;padding-top:0;padding-bottom:0;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
+.trust .wrap::-webkit-scrollbar{display:none}
+.trust .wrap > *{flex:0 0 auto}
+.trust b{color:var(--ink-muted);font-weight:500}
+.trust svg{flex:0 0 auto;color:var(--verified)}
+.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px;
+display:inline-flex;align-items:center;min-height:44px}
+.trust a:hover{color:var(--signal)}
+@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
+-webkit-mask-image:none;mask-image:none}}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 /* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
    at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
@@ -106,6 +130,12 @@ flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
 label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
 display:inline-flex;align-items:center;gap:10px;cursor:pointer}
 
+/* SC 2.5.8 again, the case the 44px rule above does not reach: a link that
+   sits alone in a table cell or a list row is not "in a sentence", so it does
+   not get the inline exception, and at an 18px line box it is under the 24px
+   minimum. Growing the box rather than the type keeps the table's density
+   while giving the link a real target. */
+td a,.idxlist a,.detail a,.ep td a,li > a:only-child{display:inline-block;padding:4px 0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
 -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
@@ -305,29 +335,6 @@ const CSS = RELATED_CSS + TOKENS + `
 ${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
-/* A keyboard user should not have to tab through 17 nav items to reach the
-   page. Hidden until focused, then it sits over the sticky header. */
-.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
-font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
-text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
-.skip:focus{left:0}
-/* "Free, no account, no tracking" was one line of small text at the bottom of
-   two pages. It is a real reason people trust this and it now sits under the
-   header on every page - one line, always there, not a banner and not a badge. */
-.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
-.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
-padding-top:6px;padding-bottom:6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
-letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
--webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
-.trust .wrap::-webkit-scrollbar{display:none}
-.trust .wrap > *{flex:0 0 auto}
-.trust b{color:var(--ink-muted);font-weight:500}
-.trust svg{flex:0 0 auto;color:var(--verified)}
-.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px}
-.trust a:hover{color:var(--signal)}
-@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
--webkit-mask-image:none;mask-image:none}}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -831,6 +838,7 @@ border-radius:var(--r-pill);padding:0 11px;min-height:32px;display:inline-flex;a
 .credit-when{color:var(--ink-faint)}
 .idxjump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 30px;padding:0}
 .idxjump a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
+min-height:44px;display:inline-flex;align-items:center;
 background:var(--panel);border-radius:999px;padding:6px 12px}
 .idxjump a:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);text-decoration:none}
 .idxjump a b{color:var(--dimmer);font-weight:500;margin-left:4px}

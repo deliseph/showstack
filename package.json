@@ -12,6 +12,7 @@
     "build": "node scripts/build.mjs",
     "seed:issues": "node scripts/seed-issues.mjs",
     "test:unit": "node --test \"test/**/*.test.mjs\"",
+    "audit": "node scripts/audit.mjs",
     "test": "npm run validate && npm run build && npm run test:unit",
     "types": "node scripts/types.mjs",
     "types:check": "node scripts/types.mjs --check && tsc -p tsconfig.json"
