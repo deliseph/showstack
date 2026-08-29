@@ -292,6 +292,14 @@ export const LEARN_TOPICS = [
     questions: ['What does 24-bit buy me?', 'Why does a mover step?', 'How does reverb work?'],
   },
   {
+    slug: 'colour',
+    group: 'foundation',
+    tag: 'Colour & video',
+    title: 'How a colour becomes a number',
+    blurb: 'What #ffffff actually is and why colours are written in base 16, why 128 is not half the light, what a colour space adds that the numbers cannot, and the round trip from photons to code values and back to photons.',
+    questions: ['What is a hex code?', 'Why is 128 not half brightness?', 'What is 4:2:0 costing me?'],
+  },
+  {
     slug: 'encoding',
     group: 'foundation',
     tag: 'On the wire',
@@ -418,6 +426,14 @@ export const LEARN_TOPICS = [
     title: 'Node graphs and game engines',
     blurb: 'Why a Max or TouchDesigner patch is a patch bay rather than a script, and what a real-time engine is actually for — because a rendered file, however beautiful, cannot answer a camera.',
     questions: ['How do I read a patch?', 'Pre-rendered or real-time?', 'Unreal, Unity or Godot?'],
+  },
+  {
+    slug: 'senses',
+    group: 'person',
+    tag: 'The channels',
+    title: 'How each sense tells things apart',
+    blurb: 'Two ears turning a 700-microsecond delay into a direction. Three overlapping cones making a colour that is not in the light. A receptor that cannot tell chilli from heat. None of it is measurement — all of it is inference from a pattern.',
+    questions: ['How do we hear direction?', 'How do eyes see colour?', 'Why does chilli feel hot?'],
   },
   {
     slug: 'perception',

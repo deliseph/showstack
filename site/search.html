@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>showstack — show technology, from the wire to the audience</title>
-<meta name="description" content="The open index of live entertainment technology, and 25 animated explainers that run from a voltage on a wire to the nervous system it ends up in. Protocols, standards, software, hardware, a bilingual glossary and offline field calculators. Free API, no key, community maintained.">
+<title>Search everything — showstack</title>
+<meta name="description" content="Search every protocol, standard, software tool, piece of hardware and glossary term in showstack at once — by name, by port number, by vendor or in 繁體中文. Instant, offline once loaded, no account.">
 <meta property="og:title" content="showstack">
-<meta property="og:description" content="The open index of live entertainment technology — and the explainers that go with it, from a voltage on a wire to the person it was all aimed at.">
+<meta property="og:description" content="Search every entry in showstack at once — protocols, standards, software, hardware and a bilingual glossary.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -270,6 +270,8 @@
     text-transform:uppercase;color:var(--accent);margin-bottom:8px}
   .spinecap b{display:block;font-size:18px;color:var(--ink);margin-bottom:6px;letter-spacing:-.2px}
   .spinecap em{display:block;font-style:normal;font-size:13.5px;color:var(--dim);line-height:1.6;max-width:70ch}
+  .searchlede{margin:2px 0 16px;color:var(--dim);font-size:15px;line-height:1.65;max-width:70ch}
+  .searchlede a{color:var(--accent)}
   .cta h2{margin:0 0 6px;font-size:15px}
   .cta p{margin:0;color:var(--dim);font-size:13.5px}
 </style>
@@ -278,14 +280,14 @@
 <header>
   <div class="wrap">
     <div class="hbar">
-      <h1>show<span>stack</span></h1>
+      <a href="/" style="text-decoration:none;color:inherit"><h1>show<span>stack</span></h1></a>
       <p class="tagline">show technology, from the wire to the audience</p>
     </div>
     <div class="navwrap">
       <a class="ghlink" id="ghtop" href="https://github.com/deliseph/showstack">GitHub</a>
       <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
     </div>
-    <nav class="pagenav rail" aria-label="Site"><a href="/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/learn/">Learn</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
+    <nav class="pagenav rail" aria-label="Site"><a href="/search/" class="active" aria-current="page">Search</a><span class="navgroup"><a href="/tools/">Tools</a><a href="/network/">Network</a><a href="/rf/">RF</a></span><span class="navgroup"><a href="/learn/">Learn</a><a href="/interop/">Interop</a><a href="/compare/">Compare</a><a href="/ports/">Ports</a><a href="/signals/">Signals</a></span></nav>
     <div class="searchrow">
       <input id="q" placeholder="search: 5568, psn, 吊桿, safety curtain…" autocomplete="off" spellcheck="false">
       <div class="tabs rail" id="tabs" role="tablist"></div>
@@ -295,9 +297,9 @@
 
 <main>
   <div class="wrap">
-    <p class="kicker">An open, citable index of the technology behind live events &mdash; and
-       <a href="/learn/">twenty-five animated explainers</a> that follow one chain from a voltage on a wire
-       to the nervous system it ends up in. Free, no account, no tracking.</p>
+    <p class="searchlede">Every protocol, standard, software tool, piece of hardware and glossary term, searched at once
+       — by name, by port number, by vendor, or in 繁體中文. Runs offline once the page has loaded.
+       <a href="/">What is showstack?</a></p>
     <div class="stats" id="stats"></div>
     <div class="quicktools" aria-label="Field tools">
       <span class="qlabel">Field tools</span>
@@ -319,50 +321,10 @@
       <a href="/tools/#pyro">Pyro fire time</a>
       <a class="more" href="/tools/">All tools →</a>
     </div>
-    <section class="wayfind" aria-label="What is here">
-      <a class="wf wf-learn" href="/learn/">
-        <span class="wfk">Understand it</span>
-        <b>Learn</b>
-        <em>Twenty-five explainers arranged as one chain, from a voltage on a wire to the nervous system that receives it. Every diagram moves, and most of them have a dial, because the thing being explained is usually motion or a number.</em>
-      </a>
-      <a class="wf" href="/protocols/">
-        <span class="wfk">Look it up</span>
-        <b>The index</b>
-        <em>Protocols, standards, software, hardware and a bilingual glossary. A citation on every fact, and an open gap where there isn't one.</em>
-      </a>
-      <a class="wf" href="/tools/">
-        <span class="wfk">Work it out</span>
-        <b>Field tools</b>
-        <em>Subnet, DMX unit loads, bridle angle, voltage drop, speaker delay, noise dose, RF intermod. Offline once loaded.</em>
-      </a>
-      <div class="wf wf-links">
-        <span class="wfk">Check one case</span>
-        <b>Answers</b>
-        <em><a href="/interop/">Can these two talk?</a><a href="/ports/">What's on this port?</a><a href="/rf/">Is this frequency legal?</a><a href="/compare/">A vs B, side by side</a></em>
-      </div>
-    </section>
-
-    <section class="spine" aria-label="How the site is organised">
-      <p class="spinelede">Everything here follows one chain. Something physical becomes a signal, the signal survives a wire, a network and the air, it becomes something in a room, it agrees with other systems about time and space, and it arrives at a person &mdash; which is the only part of it that was ever the point. The last stage is the machines we built to imitate that.</p>
-      <ol class="spinerow">
-        <li><a href="/learn/#foundation"><span>01</span><b>Foundations</b><em>Transducers, bits, line codes, pinouts</em></a></li>
-        <li><a href="/learn/#signal"><span>02</span><b>The signal</b><em>DMX, networks, RF, radios, comms</em></a></li>
-        <li><a href="/learn/#room"><span>03</span><b>The room</b><em>Sound, light, drawings</em></a></li>
-        <li><a href="/learn/#system"><span>04</span><b>The system</b><em>Clocks, tracking, drones, pyro</em></a></li>
-        <li><a href="/learn/#build"><span>05</span><b>What you build with</b><em>APIs, code, engines</em></a></li>
-        <li><a href="/learn/#person"><span>06</span><b>The person</b><em>Perception, neuro, emotion, presence</em></a></li>
-        <li><a href="/learn/#machine"><span>07</span><b>Machines that copy us</b><em>Vision, AI, robots</em></a></li>
-      </ol>
-      <a class="spinecap" href="/learn/experience/">
-        <span class="ct">And what it is all for</span>
-        <b>Experience architecture</b>
-        <em>You cannot design a feeling, only the conditions and the timing. Attention, arousal and expectation as materials &mdash; and why the peak and the ending are the only two moments that survive.</em>
-      </a>
-    </section>
-
     <div class="cta">
       <h2>Every entry cites its source. Every gap is an open issue.</h2>
-      <p>This is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry. <a id="ctalink" href="https://github.com/deliseph/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
+      <p>This is maintained by the people who run shows. If a field is empty or wrong, the fix is one file and one pull request, and your handle goes on the entry.
+        <a id="ctalink" href="https://github.com/deliseph/showstack/blob/main/CONTRIBUTING.md">How to contribute →</a></p>
     </div>
     <p class="hint" id="hint"></p>
     <div class="grid" id="results"></div>

@@ -19,6 +19,17 @@ export function learnSoundPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* the reverberation scale, with the use bands drawn on it */
+.rtscale{position:relative;height:96px;margin-top:14px;border:1px solid var(--line);
+border-radius:var(--r-md);background:var(--panel);overflow:hidden}
+.rtbands{position:absolute;inset:0}
+.rtbands i{position:absolute;top:0;bottom:26px;border-right:1px solid var(--line);
+display:flex;align-items:flex-start;justify-content:center;padding-top:8px;
+font-family:var(--mono);font-size:9.5px;color:var(--dimmer);text-align:center;line-height:1.4}
+.rtmark{position:absolute;top:0;bottom:0;width:2px;background:var(--accent2);transition:left .12s}
+.rtmark::after{content:attr(data-v);position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--accent2);
+background:var(--panel);padding:1px 6px;border-radius:4px;border:1px solid var(--line)}
 /* the two arrivals, so that "they land together" is something you can watch */
 @keyframes arr-main{0%{transform:translateX(0);opacity:0}8%{opacity:.85}
 84%{transform:translateX(492px);opacity:.85}96%,100%{opacity:0}}
@@ -163,6 +174,33 @@ ${bites([
 
 ${xnote('Alignment is not tidiness. An audience under an unaligned delay tower localises the sound to the tower rather than the stage, so a voice arrives from the wrong place — and <b>sound from the wrong place is one of the strongest presence-breaking cues there is</b>. Every millisecond of this work is buying the illusion that the person on stage is making the noise.')}
 
+${S('The room is the biggest processor in the system', 'Reverberation time, and what each use wants', [
+  'Every venue has a decay time, and it is doing more to the sound than any device in the rack. <b>RT60</b> is how long a sound takes to fall by 60 dB after it stops, and it is set by two things only: the volume of the room, and how much absorption is in it.',
+  'Sabine put it as <code>RT60 = 0.161 × V / A</code> — volume in cubic metres, absorption in square metres of equivalent open window. So a big room is a long room, and adding absorption is the only lever. <b>An audience is absorption</b>, which is why an empty venue sounds nothing like a full one and why a soundcheck flatters everything.',
+  'What is <em>good</em> depends entirely on what the room is for, and the requirements genuinely conflict. Speech needs the room to get out of the way. Orchestral music needs the room to be part of the instrument. A room asked to do both will do neither well unless something in it can change.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="rv-v">room volume <b id="rv-vv">3,000 m³</b></label>
+    <input id="rv-v" type="range" min="200" max="30000" step="100" value="3000"></div>
+  <div class="d"><label for="rv-a">total absorption <b id="rv-av">400 sabins</b></label>
+    <input id="rv-a" type="range" min="20" max="4000" step="10" value="400"></div>
+</div>
+<div class="rtscale" aria-hidden="true">
+  <div class="rtbands" id="rv-bands"></div>
+  <div class="rtmark" id="rv-mark"></div>
+</div>
+<div class="verdict" id="rv-out"></div>
+
+${bites([
+  '<b>These are mid-frequency targets and a single number hides a lot.</b> A room can measure 1.2 s at 1 kHz and 2.4 s at 125 Hz, and the second number is what makes it muddy. Ask for the curve, not the figure.',
+  '<b>An audience is absorption, and a variable one.</b> Design for the condition you actually perform in, and expect the empty-room rehearsal to be a different venue.',
+  '<b>You cannot subtract reverberation.</b> A PA can add level and change coverage; it cannot remove what the room does. Directivity that keeps energy off the surfaces is the only real tool, which is a large part of why <a href="/learn/light/">pattern control</a> and array design matter so much.',
+  '<b>Variable acoustics exist for a reason.</b> Retractable banners, rotating panels, coupled chambers and electronic enhancement all exist because one room genuinely cannot serve speech and symphony at the same RT.',
+])}
+
+${rule('Reverberation is the room\'s own transfer function, applied to everything, and it is <b>the largest single processor in the signal chain</b>. Measure it before you argue about anything else.')}
+
 ${S('Which box, and why', 'Point source against line array', [
   'A point source radiates into a sphere: energy spreads in every direction and you get the full 6 dB per doubling. A line array, while it is long compared with the wavelength it is reproducing, radiates more like a cylinder — the energy spreads sideways but much less vertically, so the loss is closer to <b>3 dB per doubling</b> in that region.',
   'Prediction software — <a href="/software/l-acoustics-soundvision/">Soundvision</a>, <a href="/software/ease-focus/">EASE Focus</a>, <a href="/software/db-arraycalc/">ArrayCalc</a> — models this before anything is hung. That is the entire reason arrays exist for long throws: the front row and the back of an arena can be brought within a survivable level range. It is also why arrays are wrong for short rooms — the cylindrical behaviour needs distance to develop, and a short array in a small venue is just an awkward point source.',
@@ -213,6 +251,48 @@ for (const id of ["#dl-d","#dl-t","#dl-set"]) $(id).addEventListener("input", dl
 
 isqRender();
 dlRender();
+
+<script>
+(function(){
+  var V=document.getElementById('rv-v'); if(!V) return;
+  var A=document.getElementById('rv-a'), bands=document.getElementById('rv-bands'),
+      mark=document.getElementById('rv-mark'), out=document.getElementById('rv-out');
+  // Widely published mid-frequency targets, occupied, for a room of ordinary size.
+  // Ranges rather than points, because that is honestly how they are specified.
+  var USE=[
+    ['speech, conference','0.6\u20130.9 s',0.6,0.9],
+    ['drama, studio theatre','0.8\u20131.1 s',0.8,1.1],
+    ['amplified music, dance','1.0\u20131.4 s',1.0,1.4],
+    ['opera, musical theatre','1.3\u20131.8 s',1.3,1.8],
+    ['symphonic concert','1.8\u20132.2 s',1.8,2.2],
+    ['choral, organ, worship','2.2\u20133.0 s',2.2,3.0]
+  ];
+  var MAX=3.6;
+  bands.innerHTML=USE.map(function(u){
+    var l=(u[2]/MAX)*100, w=((u[3]-u[2])/MAX)*100;
+    return '<i style="left:'+l.toFixed(1)+'%;width:'+w.toFixed(1)+'%">'+u[0]+'<br>'+u[1]+'</i>';
+  }).join('');
+  function draw(){
+    var v=Number(V.value), a=Number(A.value);
+    document.getElementById('rv-vv').textContent=v.toLocaleString()+' m\u00b3';
+    document.getElementById('rv-av').textContent=a.toLocaleString()+' sabins';
+    var rt=(0.161*v)/a;
+    mark.style.left=Math.min(99.5,(rt/MAX)*100).toFixed(1)+'%';
+    mark.setAttribute('data-v',rt.toFixed(2)+' s');
+    var fit=USE.filter(function(u){return rt>=u[2]&&rt<=u[3]}).map(function(u){return u[0]});
+    var verdict = rt<0.5 ? '<span class="err">Very dead.</span> Speech will be clear and unsupported, and music will feel like hard work to play in.'
+      : rt>3.2 ? '<span class="err">Very live.</span> Beautiful for sustained music and hopeless for intelligibility without serious directivity.'
+      : fit.length ? '<span class="ok">Suits ' + fit.join(' and ') + '.</span>'
+      : 'Between the usual targets \u2014 workable, and a compromise somebody chose or inherited.';
+    var need08=(0.161*v)/0.9, need20=(0.161*v)/2.0;
+    out.innerHTML='RT60 <b>'+rt.toFixed(2)+' s</b>. '+verdict+
+      ' For a speech room you would want about <b>'+Math.round(need08).toLocaleString()+
+      '</b> sabins in here; for a concert room about <b>'+Math.round(need20).toLocaleString()+'</b>. '+
+      'Sabine over-predicts in very dead rooms \u2014 use it to size the problem, then measure.';
+  }
+  V.addEventListener('input',draw); A.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

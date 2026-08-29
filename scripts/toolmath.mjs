@@ -1032,3 +1032,217 @@ export function safeguardDistance(totalStopSeconds, intrusionMm = 0, approachMmP
   return { totalStopSeconds: T, intrusionMm: C, approachMmPerS: usedK,
            distanceMm: r1(distance), firstPassMm: r1(first), recalculated }
 }
+
+/**
+ * A hex colour, taken apart.
+ *
+ * #ffffff is not a colour name. It is three bytes written in base 16, one per
+ * channel, and each byte is exactly two hex digits - which is the whole
+ * reason hex is used for this rather than decimal. ff is 255 is full.
+ *
+ * The same three numbers are what a console sends to an RGB fixture, so a
+ * hex code and a DMX value are the same kind of object arriving by different
+ * routes. Accepts #fff shorthand, with or without the hash.
+ */
+export function hexToChannels(hex) {
+  let h = String(hex ?? '').trim().replace(/^#/, '').toLowerCase()
+  if (/^[0-9a-f]{3}$/.test(h)) h = h.split('').map((c) => c + c).join('')
+  if (!/^[0-9a-f]{6}$/.test(h)) return null
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  const r1 = (x) => Math.round(x * 10) / 10
+  return {
+    hex: '#' + h,
+    r, g, b,
+    // What a console would send an 8-bit RGB fixture. Identical numbers.
+    dmx: [r, g, b],
+    // The same values as percentages, which is how a desk usually shows them.
+    percent: [r1((r / 255) * 100), r1((g / 255) * 100), r1((b / 255) * 100)],
+    // 16-bit control splits each channel into a coarse and a fine byte.
+    coarseFine: [[r, 0], [g, 0], [b, 0]],
+  }
+}
+
+/**
+ * Code value to relative light, and back.
+ *
+ * Video code values are not linear light. A transfer function is applied
+ * before storage so that the available codes are spread to match human
+ * brightness perception, which is roughly logarithmic - far more steps are
+ * visible in the dark than in the light. Encoding this way is what makes
+ * 8-bit video acceptable at all.
+ *
+ *   light = (code / max) ^ gamma
+ *
+ * The consequence people meet: 128 out of 255 is not half the light. At a
+ * gamma of 2.2 it is about 22% of it, which is why cross-fading or blending
+ * in code values gives the wrong answer.
+ */
+export function codeToLight(code, bits = 8, gamma = 2.2) {
+  const c = Number(code), b = Number(bits), g = Number(gamma)
+  if (!Number.isFinite(c) || c < 0) return null
+  if (!Number.isFinite(b) || b < 1 || b > 16) return null
+  if (!Number.isFinite(g) || g <= 0) return null
+  const max = Math.pow(2, b) - 1
+  if (c > max) return null
+  const norm = c / max
+  const light = Math.pow(norm, g)
+  const r4 = (x) => Math.round(x * 10000) / 10000
+  return {
+    code: c, maxCode: max, bits: b, gamma: g,
+    codeFraction: r4(norm),
+    light: r4(light),
+    lightPercent: Math.round(light * 1000) / 10,
+    // The code you would need for half the light, which is the number that
+    // surprises people.
+    codeForHalfLight: Math.round(Math.pow(0.5, 1 / g) * max),
+  }
+}
+
+/**
+ * Full range against limited range.
+ *
+ * Computer graphics use 0-255 for black to white. Broadcast video uses
+ * 16-235 for luma, leaving headroom and footroom outside the picture. Feed
+ * one into the other and the result is crushed blacks and clipped whites, or
+ * washed-out grey - and it is the single most common video fault on a show.
+ *
+ * Returns where a given code lands under each interpretation.
+ */
+export function videoRange(code, bits = 8) {
+  const c = Number(code), b = Number(bits)
+  if (!Number.isFinite(c) || c < 0) return null
+  if (!Number.isFinite(b) || b < 8 || b > 16) return null
+  const max = Math.pow(2, b) - 1
+  if (c > max) return null
+  const scale = Math.pow(2, b - 8)
+  const black = 16 * scale
+  const white = 235 * scale
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  const asFull = c / max
+  const asLimited = (c - black) / (white - black)
+  return {
+    code: c, bits: b, maxCode: max,
+    limitedBlack: black, limitedWhite: white,
+    asFull: r3(asFull),
+    asLimited: r3(Math.max(0, Math.min(1, asLimited))),
+    // Outside the limited window there is nothing to show, which is what
+    // crushing and clipping actually are.
+    belowBlack: c < black,
+    aboveWhite: c > white,
+  }
+}
+
+/**
+ * Uncompressed bit rate for a video format, and what subsampling saves.
+ *
+ * The eye resolves far more spatial detail in brightness than in colour, so
+ * video converts to luma plus two colour-difference channels and then throws
+ * away colour resolution. 4:4:4 keeps all of it, 4:2:2 halves it
+ * horizontally, 4:2:0 halves it both ways.
+ *
+ * Fine for camera footage. Not fine for text, fine graphics or keying, which
+ * is why a laptop arriving at 4:2:0 has fringed text.
+ */
+export function chromaBitrate(width, height, fps, bits = 8, scheme = '4:4:4') {
+  const w = Number(width), h = Number(height), f = Number(fps), b = Number(bits)
+  if (![w, h, f, b].every((n) => Number.isFinite(n) && n > 0)) return null
+  // Samples carried per pixel, across luma and the two chroma channels.
+  const PER_PIXEL = { '4:4:4': 3, '4:2:2': 2, '4:2:0': 1.5, '4:1:1': 1.5 }
+  const per = PER_PIXEL[scheme]
+  if (per === undefined) return null
+  const bitsPerSecond = w * h * f * b * per
+  const full = w * h * f * b * 3
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    scheme, width: w, height: h, fps: f, bits: b,
+    samplesPerPixel: per,
+    bitsPerSecond,
+    gbps: r2(bitsPerSecond / 1e9),
+    // How much of the 4:4:4 rate this is.
+    fractionOfFull: r2(per / 3),
+    savingPercent: r2((1 - per / 3) * 100),
+  }
+}
+
+/**
+ * Reverberation time, by Sabine.
+ *
+ *   RT60 = 0.161 * V / A     (metric, V in m^3, A in m^2 sabins)
+ *
+ * A is the total absorption: every surface area multiplied by its absorption
+ * coefficient, summed. The constant comes from the speed of sound and the
+ * definition of a 60 dB decay.
+ *
+ * Sabine is accurate for live rooms with modest, evenly spread absorption and
+ * over-predicts in dead ones - Eyring is the usual correction there. It is
+ * here because it is the equation everybody actually uses to get a first
+ * number, and because the shape of the relationship is the useful part: RT is
+ * proportional to volume and inversely proportional to absorption, so a big
+ * room is a long room and adding people is adding absorption.
+ */
+export function rt60Sabine(volumeM3, absorptionSabins) {
+  const V = Number(volumeM3), A = Number(absorptionSabins)
+  if (!Number.isFinite(V) || V <= 0) return null
+  if (!Number.isFinite(A) || A <= 0) return null
+  const rt = (0.161 * V) / A
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    volumeM3: V,
+    absorptionSabins: r2(A),
+    rt60: r2(rt),
+    // Absorption needed to reach a target, which is the question people
+    // actually have.
+    sabinsForTarget: (target) => {
+      const t = Number(target)
+      if (!Number.isFinite(t) || t <= 0) return null
+      return r2((0.161 * V) / t)
+    },
+    // Average absorption coefficient implied, if a surface area is known.
+    alphaFor: (surfaceM2) => {
+      const s = Number(surfaceM2)
+      if (!Number.isFinite(s) || s <= 0) return null
+      return Math.round((A / s) * 1000) / 1000
+    },
+  }
+}
+
+/**
+ * Stereoscopic depth: how much on-screen disparity a given real depth
+ * produces, and whether it is inside a comfortable budget.
+ *
+ * Two eyes about 63 mm apart see slightly different images. The horizontal
+ * difference between where a point lands in each eye is the disparity, and it
+ * is the only cue that gives absolute depth from a flat screen.
+ *
+ *   parallax = interocular * (1 - convergence / distance)
+ *
+ * Positive parallax puts an object behind the screen; negative puts it in
+ * front. The comfort limit is usually stated as a percentage of screen width,
+ * because that is what actually governs how far the eyes must diverge.
+ */
+export function stereoParallax(objectDistanceM, convergenceM, screenWidthM, interocularMm = 63) {
+  const d = Number(objectDistanceM), c = Number(convergenceM)
+  const w = Number(screenWidthM), i = Number(interocularMm)
+  if (!Number.isFinite(d) || d <= 0) return null
+  if (!Number.isFinite(c) || c <= 0) return null
+  if (!Number.isFinite(w) || w <= 0) return null
+  if (!Number.isFinite(i) || i <= 0) return null
+  const parallaxMm = i * (1 - c / d)
+  const percentOfWidth = (parallaxMm / 1000 / w) * 100
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    objectDistanceM: d, convergenceM: c, screenWidthM: w, interocularMm: i,
+    parallaxMm: r2(parallaxMm),
+    percentOfWidth: r2(percentOfWidth),
+    behindScreen: parallaxMm > 0,
+    inFrontOfScreen: parallaxMm < 0,
+    // Positive parallax beyond the eye separation asks the eyes to diverge,
+    // which they cannot comfortably do at all.
+    divergent: parallaxMm > i,
+    // A widely used comfort guide: keep positive parallax within ~1% of
+    // screen width and negative within ~1-2%.
+    withinComfort: percentOfWidth <= 1 && percentOfWidth >= -2,
+  }
+}

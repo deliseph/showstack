@@ -50,6 +50,10 @@ import { learnEmotionPage } from './learn-emotion.mjs'
 import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
 import { learnRiggingPage } from './learn-rigging.mjs'
+import { learnColourPage } from './learn-colour.mjs'
+import { learnSensesPage } from './learn-senses.mjs'
+import { buildPage } from './build-page.mjs'
+import { homePage } from './home.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE } from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS } from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
@@ -275,10 +279,15 @@ function navBar(canonical) {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
   }
-  const search = link('/', 'Search')
-  const tools = ['/tools/', '/network/', '/rf/'].map((h, i) => link(h, ['Tools', 'Network', 'RF'][i])).join('')
-  const views = ['/learn/', '/interop/', '/compare/', '/ports/', '/signals/'].map((h, i) => link(h, ['Learn', 'Interop', 'Compare', 'Ports', 'Signals'][i])).join('')
-  return `<nav class="rail" aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span></nav>`
+  const home = link('/', 'Home')
+  const main = ['/learn/', '/search/', '/tools/', '/build/']
+    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Build'][i])).join('')
+  const index = ['/protocols/', '/standards/', '/software/', '/hardware/', '/glossary/']
+    .map((h, i) => link(h, ['Protocols', 'Standards', 'Software', 'Hardware', 'Glossary'][i])).join('')
+  const views = ['/interop/', '/compare/', '/ports/', '/signals/', '/network/', '/rf/']
+    .map((h, i) => link(h, ['Interop', 'Compare', 'Ports', 'Signals', 'Network', 'RF'][i])).join('')
+  return `<nav class="rail" aria-label="Site">${home}<span class="navgroup">${main}</span>` +
+    `<span class="navgroup">${index}</span><span class="navgroup">${views}</span></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -649,12 +658,14 @@ export function buildPages(db, dist) {
     ['engines', () => learnEnginesPage(learnArgs)],
     ['drawings', () => learnDrawingsPage(learnArgs)],
     ['rigging', () => learnRiggingPage(learnArgs)],
+    ['senses', () => learnSensesPage(learnArgs)],
     ['perception', () => learnPerceptionPage(learnArgs)],
     ['neuro', () => learnNeuroPage(learnArgs)],
     ['comms', () => learnCommsPage(learnArgs)],
     ['connectors', () => learnConnectorsPage(learnArgs)],
     ['transducers', () => learnTransducersPage(learnArgs)],
     ['bits', () => learnBitsPage(learnArgs)],
+    ['colour', () => learnColourPage(learnArgs)],
     ['encoding', () => learnEncodingPage(learnArgs)],
     ['reading', () => learnReadingPage(learnArgs)],
     ['ai', () => learnAiPage(learnArgs)],
@@ -703,6 +714,13 @@ export function buildPages(db, dist) {
 
   // The field-tool calculators. Market-validated daily utilities: DMX/DIP
   // addressing, speaker delay, timecode. Same arithmetic the test suite runs.
+  write('build', buildPage({ esc, shell, SITE, GH, db }))
+  urls.push(`${SITE}/build/`)
+
+  // The front door. Generated through the same shell as everything else so
+  // the header, nav rail, tokens and footer cannot drift; `${SITE}/` is
+  // already the first entry in `urls`.
+  write('', homePage({ esc, shell, SITE, GH, db }))
   write('tools', toolsPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
 
