@@ -22,6 +22,18 @@ export function learnNetworkPage({ esc, shell, SITE, GH }) {
   const style = LEARN_CSS + `
 /* queue animation: a small clock packet stuck behind a big file transfer */
 @keyframes q-march{from{transform:translateX(0)}to{transform:translateX(var(--march))}}
+/* CSS rather than SMIL, deliberately: the site's reduced-motion guarantee is
+   one global rule that kills CSS animation, and SMIL would walk straight
+   past it. */
+@keyframes mc-send{0%{transform:translate(0,0);opacity:0}
+8%{opacity:1}88%{opacity:1}
+100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.mcfig .mcpkt{animation:mc-send 1.6s linear infinite}
+.mcfig.snooped .unwanted{opacity:.12}
+.mcfig.snooped .unwanted .mcpkt{animation:none;opacity:0}
+.mcfig .mcpath,.mcfig .unwanted{transition:opacity .4s ease}
+.maskfig .mbit{transition:fill .25s ease}
+#mask-cut{transition:x1 .25s ease,x2 .25s ease}
 .qlane .train{animation:q-march 3.4s linear infinite}
 .qlane.fast .train{animation-duration:1.5s}
 /* the 32-bit address, split by a movable boundary */
@@ -62,18 +74,43 @@ background:var(--panel2);color:var(--dimmer);transition:background .18s,color .1
   </g>
 </svg>`
 
+  /* The flood is the thing to see, not to be told about. Packets travel down
+     every path until snooping is switched on, and then the unwanted paths go
+     quiet — which is the entire argument for IGMP in one figure. */
   const mcastFig = `
-<svg viewBox="-30 0 400 170" role="img">
+<svg viewBox="-30 0 400 190" role="img" class="mcfig" id="mc-fig">
   <rect x="140" y="12" width="60" height="34" rx="6" fill="var(--panel)" stroke="var(--line)"/>
   <text x="170" y="33" class="lbl" text-anchor="middle">SWITCH</text>
   ${[0, 1, 2, 3, 4].map((i) => {
     const x = 26 + i * 72
     const wanted = i === 1 || i === 3
-    return `<line x1="170" y1="46" x2="${x + 22}" y2="112" stroke="${wanted ? 'var(--ok)' : 'var(--warn)'}" stroke-width="${wanted ? 3 : 2}" ${wanted ? 'class="l-dash"' : 'opacity=".6"'}/>` +
+    return `<g class="mcpath ${wanted ? 'wanted' : 'unwanted'}">` +
+      `<line x1="170" y1="46" x2="${x + 22}" y2="112"
+             stroke="${wanted ? 'var(--ok)' : 'var(--warn)'}" stroke-width="${wanted ? 3 : 2}"
+             opacity="${wanted ? 1 : 0.55}"/>` +
+      `<circle class="mcpkt" r="4" cx="170" cy="46" fill="${wanted ? 'var(--ok)' : 'var(--warn)'}"
+               style="--dx:${x + 22 - 170}px;--dy:66px;animation-delay:${(i * 0.22).toFixed(2)}s"/>` +
+      `</g>` +
       `<rect x="${x}" y="112" width="44" height="30" rx="4" fill="var(--panel)" stroke="var(--line)"/>` +
       `<text x="${x + 22}" y="132" class="lbl" text-anchor="middle" fill="${wanted ? 'var(--ok)' : 'var(--dimmer)'}">${wanted ? 'wants it' : 'does not'}</text>`
   }).join('')}
-  <text x="170" y="163" class="lbl" text-anchor="middle">without IGMP snooping, every port gets every packet</text>
+  <text x="170" y="163" class="lbl" text-anchor="middle" id="mc-cap">without snooping, every port gets every packet</text>
+  <text x="170" y="181" class="lbl" text-anchor="middle" id="mc-load"></text>
+</svg>`
+
+  /* Where you cut the 32 bits. The ruler is the rule, and moving the cut is
+     the only way to feel that every other number is derived from it. */
+  const maskFig = `
+<svg viewBox="0 0 620 150" role="img" class="maskfig" id="mask-fig">
+  ${[...Array(32)].map((_, i) => `<rect class="mbit b${i}" x="${14 + i * 18.5}" y="42" width="15" height="34" rx="2"
+      fill="var(--dom-network)" stroke="var(--line)" stroke-width=".5"/>`).join('')}
+  ${[...Array(4)].map((_, o) => `<text x="${14 + o * 148 + 66}" y="34" class="lbl" text-anchor="middle">octet ${o + 1}</text>`).join('')}
+  ${[...Array(3)].map((_, o) => `<line x1="${14 + (o + 1) * 148 - 4}" y1="38" x2="${14 + (o + 1) * 148 - 4}" y2="80"
+      stroke="var(--line)" stroke-width="1.5"/>`).join('')}
+  <line id="mask-cut" x1="14" y1="34" x2="14" y2="86" stroke="var(--accent2)" stroke-width="3"/>
+  <text id="mask-net" x="14" y="104" class="lbl" text-anchor="middle" fill="var(--dom-network)">network</text>
+  <text id="mask-host" x="500" y="104" class="lbl" text-anchor="middle" fill="var(--accent2)">devices</text>
+  <text x="14" y="132" class="lbl" id="mask-cap"></text>
 </svg>`
 
   const body = `
@@ -110,6 +147,9 @@ ${S('Question two', 'How do I calculate a subnet mask?', [
   'Drag the boundary below and watch it happen. The bits that turn teal are the network; the amber ones are what is left for devices.',
 ])}
 
+${fig(maskFig, 'The mask is one cut through 32 bits. Everything else — the network address, the broadcast, how many devices fit — falls out of where you put it.', 'mask-wrap')}
+
+
 <div class="tryit">
   <div class="f"><label for="sn-ip">Address</label><input id="sn-ip" type="text" value="192.168.1.50" spellcheck="false" style="width:170px"></div>
   <div class="f"><label for="sn-p">Prefix — <span id="sn-plabel">/24</span></label><input id="sn-p" type="range" min="0" max="32" value="24"></div>
@@ -137,7 +177,21 @@ ${S('Question three', 'Why does multicast need the switch’s help?', [
   'On a small rig that is invisible. On a full lighting network it is every universe arriving at every device, including the laptop that just wanted to be on the wifi.',
 ])}
 
-${fig(mcastFig, 'One sender, five ports, two subscribers. Green paths are wanted; red paths are the flood.')}
+${fig(mcastFig, 'One sender, five ports, two subscribers. Watch where the packets actually go, then turn snooping on.', 'mc-wrap')}
+
+<div class="dial">
+  <div class="dialrow">
+    <label for="mc-snoop">IGMP snooping</label>
+    <input id="mc-snoop" type="range" min="0" max="1" step="1" value="0">
+    <output id="mc-snoop-v">off</output>
+  </div>
+  <div class="dialrow">
+    <label for="mc-univ">Universes on the wire</label>
+    <input id="mc-univ" type="range" min="1" max="64" step="1" value="8">
+    <output id="mc-univ-v">8</output>
+  </div>
+  <div class="verdict" id="mc-out"></div>
+</div>
 
 ${rule('Multicast needs <b>IGMP snooping plus a querier</b>. Snooping alone, with nothing prompting devices to report, degrades back to flooding.')}
 
@@ -201,6 +255,62 @@ function snRender(){
 $("#sn-ip").addEventListener("input", snRender);
 $("#sn-p").addEventListener("input", snRender);
 snRender();
+
+/* ---- multicast: watch the flood, then prune it ------------------------- */
+(function(){
+  var snoop=document.getElementById('mc-snoop'), univ=document.getElementById('mc-univ');
+  var figEl=document.getElementById('mc-fig');
+  if(!snoop||!univ||!figEl)return;
+  function draw(){
+    var on=snoop.value==='1', n=Number(univ.value);
+    document.getElementById('mc-snoop-v').textContent=on?'on':'off';
+    document.getElementById('mc-univ-v').textContent=n;
+    figEl.classList.toggle('snooped',on);
+    var cap=document.getElementById('mc-cap');
+    cap.textContent=on?'with snooping, only the two ports that asked receive it'
+                      :'without snooping, every port gets every packet';
+    /* An sACN universe is ~1 packet per DMX frame; at 44 Hz and a full
+       638-byte E1.31 frame that is roughly 0.22 Mbit/s per universe. */
+    var perUniverse=0.22, ports=5, wanted=2;
+    var delivered=(on?wanted:ports)*n*perUniverse;
+    var wasted=on?0:(ports-wanted)*n*perUniverse;
+    document.getElementById('mc-load').textContent=
+      Math.round(delivered*10)/10+' Mbit/s leaving the switch';
+    var v=document.getElementById('mc-out');
+    v.innerHTML= on
+      ? '<b>'+(Math.round(delivered*10)/10)+' Mbit/s</b> delivered, none wasted. Every port that did not ask is quiet.'
+      : '<b>'+(Math.round(delivered*10)/10)+' Mbit/s</b> leaving the switch, of which <b>'
+        +(Math.round(wasted*10)/10)+' Mbit/s</b> goes to ports that never asked for it — and every one of those devices has to receive and discard it.';
+  }
+  snoop.addEventListener('input',draw); univ.addEventListener('input',draw); draw();
+})();
+
+/* ---- the mask, as a cut through 32 bits -------------------------------
+   Driven by the calculator's own prefix control rather than a second slider:
+   the page already asks you to drag a boundary, and two of them is one too
+   many. The ruler is the picture of the number the calculator prints. */
+(function(){
+  var p=document.getElementById('sn-p');
+  if(!p||!document.getElementById('mask-fig'))return;
+  function draw(){
+    var n=Number(p.value);
+    for(var i=0;i<32;i++){
+      var b=document.querySelector('.maskfig .b'+i);
+      if(b)b.setAttribute('fill', i<n ? 'var(--dom-network)' : 'var(--accent2)');
+    }
+    var x=14+n*18.5;
+    var cut=document.getElementById('mask-cut');
+    cut.setAttribute('x1',x-2); cut.setAttribute('x2',x-2);
+    document.getElementById('mask-net').setAttribute('x', Math.max(46, (14+x)/2));
+    document.getElementById('mask-host').setAttribute('x', Math.min(574, (x+606)/2));
+    var r=subnetCidr(($('#sn-ip').value||'10.0.0.1'), n);
+    document.getElementById('mask-cap').textContent=
+      r ? r.mask+'  \u2014  '+r.usableHosts.toLocaleString()+' usable addresses' : '';
+  }
+  p.addEventListener('input',draw);
+  var ip=document.getElementById('sn-ip'); if(ip)ip.addEventListener('input',draw);
+  draw();
+})();
 `
 
   return shell({

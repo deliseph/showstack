@@ -56,6 +56,14 @@ border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
 .gen .gd{color:var(--dim);font-size:13.8px;line-height:1.5}
 @media(max-width:600px){.gen{grid-template-columns:50px 1fr}.gen .yr{grid-column:2}}
 @keyframes sat-ping{0%{r:3;opacity:1}100%{r:46;opacity:0}}
+/* Duty cycle, drawn. The radio is asleep almost all of the time, and the
+   burst is deliberately hard to catch — that is the point being made. */
+@keyframes duty-burst{0%,88%{opacity:.12;transform:scaleY(.12)}
+92%,96%{opacity:1;transform:scaleY(1)}100%{opacity:.12;transform:scaleY(.12)}}
+.dutyfig .burst{transform-origin:center bottom;animation:duty-burst var(--period,4s) linear infinite}
+.dutyfig .wake{animation:duty-wake var(--period,4s) linear infinite}
+@keyframes duty-wake{0%,88%{opacity:.18}92%,96%{opacity:1}100%{opacity:.18}}
+.dutyfig .sleepbar{transition:width .3s ease}
 .gnssfig .ping{animation:sat-ping 2.6s ease-out infinite;fill:none;stroke:var(--accent);stroke-width:1.6}
 .gnssfig .ping.b{animation-delay:.85s}
 .gnssfig .ping.c{animation-delay:1.7s}
@@ -70,6 +78,21 @@ border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
   <rect x="288" y="158" width="44" height="30" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-width="1.5"/>
   <text x="310" y="178" class="lbl" text-anchor="middle">RX</text>
   <text x="310" y="204" class="lbl" text-anchor="middle">four satellites, four unknowns: x, y, z — and the receiver's own clock error</text>
+</svg>`
+
+  /* One frame of a radio's life: mostly asleep, with a burst you have to
+     watch for. The bars are seconds; only the lit one is transmitting. */
+  const dutyFig = `
+<svg viewBox="0 0 620 170" role="img" class="dutyfig" id="duty-fig">
+  <text x="14" y="26" class="lbl">one minute of a battery sensor's life</text>
+  ${[...Array(30)].map((_, i) => `<rect class="${i === 27 ? 'burst' : 'wake'}" x="${14 + i * 20}" y="46" width="13" height="54" rx="2"
+      fill="${i === 27 ? 'var(--accent2)' : 'var(--dom-network)'}" style="--period:4s;animation-delay:${(i * 0.02).toFixed(2)}s"/>`).join('')}
+  <line x1="14" y1="104" x2="606" y2="104" stroke="var(--rule)" stroke-width="1.5"/>
+  <text x="14" y="124" class="lbl">asleep</text>
+  <text x="560" y="124" class="lbl" id="duty-tx">transmitting</text>
+  <rect x="14" y="136" width="592" height="8" rx="4" fill="var(--surface-sunken)"/>
+  <rect class="sleepbar" id="duty-bar" x="14" y="136" width="580" height="8" rx="4" fill="var(--ok)"/>
+  <text x="14" y="162" class="lbl" id="duty-cap"></text>
 </svg>`
 
   const body = `
@@ -89,6 +112,27 @@ ${S('The whole landscape', 'One chart, eight radios', [
 <div class="readout" id="rmap-out" role="status" aria-live="polite"></div>
 
 ${rule('You are always trading <b>range against rate against battery</b>. When a vendor claims all three, the missing variable is usually duty cycle — it does that, briefly, occasionally.')}
+
+${S('The missing variable', 'Duty cycle is why a sensor lasts years and a radio mic lasts a show', [
+  'A wireless microphone transmits continuously. A LoRa sensor transmits for a few hundred milliseconds and then sleeps for the rest of the hour. Both are radios, both have a battery, and the difference between a five-hour life and a five-year one is almost entirely how much of the time the transmitter is switched on.',
+  'That is what makes the range-rate-battery triangle escapable in one specific way: you can have range and battery if you give up being available. What you cannot have is range, rate and availability at once.',
+])}
+
+${fig(dutyFig, 'Thirty seconds of a battery sensor. Watch for the burst — it is deliberately hard to catch, which is the whole point.', 'duty-wrap')}
+
+<div class="dial">
+  <div class="dialrow">
+    <label for="du-int">Report every</label>
+    <input id="du-int" type="range" min="1" max="240" step="1" value="60">
+    <output id="du-int-v">60 min</output>
+  </div>
+  <div class="dialrow">
+    <label for="du-tx">Transmit time each report</label>
+    <input id="du-tx" type="range" min="50" max="2000" step="50" value="300">
+    <output id="du-tx-v">300 ms</output>
+  </div>
+  <div class="verdict" id="du-out"></div>
+</div>
 
 ${bites([
   '<b>LoRa is not a Wi-Fi replacement.</b> It carries a few hundred bytes a few kilometres. Perfect for "is this generator still running", useless for anything streaming.',
@@ -172,6 +216,39 @@ map.addEventListener("click", (e) => {
 });
 draw();
 pick("lora");
+
+/* ---- duty cycle -------------------------------------------------------
+   Deliberately simple arithmetic, because the point is the ratio rather than
+   a precise battery model: a coin cell's life is dominated by how much of the
+   time the transmitter is on, and everything else is a second-order effect. */
+(function(){
+  var iv=document.getElementById('du-int'), tx=document.getElementById('du-tx');
+  var figEl=document.getElementById('duty-fig');
+  if(!iv||!tx||!figEl)return;
+  function draw(){
+    var mins=Number(iv.value), ms=Number(tx.value);
+    document.getElementById('du-int-v').textContent=mins+' min';
+    document.getElementById('du-tx-v').textContent=ms+' ms';
+    var dutyPct=(ms/1000)/(mins*60)*100;
+    /* A CR2032 is about 0.66 Wh. Transmit draw ~100 mW at 3 V, sleep ~15 uW. */
+    var cellWh=0.66, txW=0.10, sleepW=0.000015;
+    var avgW=txW*(dutyPct/100)+sleepW*(1-dutyPct/100);
+    var hours=(cellWh*0.8)/avgW;
+    var years=hours/24/365;
+    figEl.style.setProperty('--period',(Math.max(1.6,Math.min(8,mins/12)))+'s');
+    document.getElementById('duty-bar').setAttribute('width', Math.max(2,592*(1-dutyPct/100)));
+    document.getElementById('duty-cap').textContent=
+      'transmitter on '+(dutyPct<0.01?dutyPct.toFixed(4):dutyPct.toFixed(2))+'% of the time';
+    var life = years>=1 ? years.toFixed(1)+' years'
+             : hours>=48 ? Math.round(hours/24)+' days'
+             : Math.round(hours)+' hours';
+    var v=document.getElementById('du-out');
+    v.innerHTML='Duty cycle <b>'+(dutyPct<0.01?dutyPct.toFixed(4):dutyPct.toFixed(2))+'%</b> — a coin cell lasts about <b>'+life+'</b>.'
+      + (dutyPct>1 ? ' Above about 1% you are no longer in coin-cell territory; that is a rechargeable pack.' : '')
+      + ' A radio mic sits at 100% and gets a show out of a far larger battery.';
+  }
+  iv.addEventListener('input',draw); tx.addEventListener('input',draw); draw();
+})();
 `
 
   return shell({

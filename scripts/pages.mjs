@@ -60,6 +60,7 @@ import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './le
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 import { label as human, labelList } from './labels.mjs'
+import { quizBlock, QUIZ_CSS, QUIZ_JS } from './quiz.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -360,7 +361,7 @@ src:url(/assets/fonts/jetbrains-mono-latin-ext.woff2) format("woff2");
 unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 `
 
-const CSS = RELATED_CSS + TOKENS + `
+const CSS = RELATED_CSS + QUIZ_CSS + TOKENS + `
 ${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
@@ -1100,9 +1101,14 @@ export function buildPages(db, dist) {
     const foot = slug
       ? learnFooter(esc, { slug, html, db, groups: LEARN_GROUPS, topics: LEARN_TOPICS, capstone: LEARN_CAPSTONE })
       : ''
+    // The check sits between the page and its ending: you answer while the
+    // mechanism is still in front of you, then the peak-end block tells you
+    // what you can now answer. Reversing those two makes the ending a
+    // spoiler.
+    const quiz = slug ? quizBlock(esc, slug) : ''
     write(dir, foot
-      ? html.replace('</div></main>', `${foot}</div></main>`)
-             .replace('</body>', `<script>${READ_JS}</script></body>`)
+      ? html.replace('</div></main>', `${quiz}${foot}</div></main>`)
+             .replace('</body>', `<script>${READ_JS}${quiz ? QUIZ_JS : ''}</script></body>`)
       : html)
     urls.push(`${SITE}/learn/${slug ? slug + '/' : ''}`)
   }
