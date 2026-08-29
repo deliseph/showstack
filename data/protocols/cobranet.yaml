@@ -11,6 +11,18 @@ spec_url:
   url: https://www.cirrus.com/products/cobranet/faqs
 steward: Cirrus Logic (formerly Peak Audio)
 status: historical
+media:
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [16, 20, 24]
+    max_channels: 64
+    encoding: Linear PCM in eight-channel bundles
+    note: >-
+      64 channels each direction on 100 Mbit, in bundles of eight, which is
+      the unit you route rather than the individual channel. 96 kHz halves
+      the count. 20-bit is the historical default and still what a lot of
+      installed hardware negotiates.
+
 gotchas:
 - Operates at Ethernet layer 2 using registered EtherType 0x8819 - it is not IP-routable and needs a dedicated
   or carefully VLAN-isolated switched network.

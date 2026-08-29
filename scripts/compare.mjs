@@ -15,6 +15,8 @@
  * that protocol appears on, for free. Nobody has to remember to update them.
  */
 
+import { MEDIA_ROWS, hasMedia, mediaNotes } from './media.mjs'
+
 /**
  * Curated pairs. `ask` is the question a real person types, in their words.
  * It becomes the FAQ answer target, so it should read like a question, not a
@@ -34,6 +36,9 @@ export const PAIRS = [
   ['aes50', 'dante', 'Why can I not plug AES50 into a network switch?'],
   ['midi', 'midi-2', 'Is MIDI 2.0 worth it for show control yet?'],
   ['acn', 'sacn', 'Are ACN and sACN the same thing?'],
+  ['sdi', 'smpte-st-2110', 'Do I still need SDI if the facility is going IP?'],
+  ['madi', 'dante', 'Is MADI still worth running next to a Dante network?'],
+  ['aes3', 'spdif', 'Can I plug an AES3 output into an S/PDIF input?'],
 ]
 
 /** Fields compared, in the order a reader wants them. */
@@ -81,9 +86,35 @@ export function comparisonPage(a, b, ask, { esc, trunc, shell, SITE, GH, product
       `<tr><td><strong>${esc(label)}</strong></td><td>${esc(x ?? '—')}</td><td>${esc(y ?? '—')}</td></tr>`)
     .join('')
 
-  body += `<h3>Side by side</h3><table>
-    <tr><th></th><th><a href="/protocols/${esc(a.id)}/">${esc(a.name)}</a></th><th><a href="/protocols/${esc(b.id)}/">${esc(b.name)}</a></th></tr>
-    ${rows}</table>`
+  const head = `<tr><th></th><th><a href="/protocols/${esc(a.id)}/">${esc(a.name)}</a></th><th><a href="/protocols/${esc(b.id)}/">${esc(b.name)}</a></th></tr>`
+
+  body += `<h3>Side by side</h3><table>${head}${rows}</table>`
+
+  // ---- what each one can actually carry ----
+  // Kept out of the table above rather than appended to it. That table answers
+  // "what is this thing"; this one answers "will it do the job", and somebody
+  // choosing between NDI and ST 2110 is asking the second question. Nineteen
+  // undifferentiated rows would bury it.
+  if (hasMedia(a) || hasMedia(b)) {
+    const mrows = MEDIA_ROWS
+      .map(([label, get]) => [label, get(a), get(b)])
+      .filter(([, x, y]) => x || y)
+      .map(([label, x, y]) =>
+        `<tr><td><strong>${esc(label)}</strong></td><td>${esc(x || '—')}</td><td>${esc(y || '—')}</td></tr>`)
+      .join('')
+    body += `<h3>What each one carries</h3>
+      <p style="color:var(--dim)">Capability defined by the specification, not by any one product. A blank means the specification does not fix it, which is itself the answer on a transport like SRT.</p>
+      <table>${head}${mrows}</table>`
+
+    // The caveats are the half of this that people quote wrongly. 48 kHz on
+    // AES67 without "and that is the mandatory interoperability point" is how
+    // a rig gets specified that does not work on site.
+    const notes = [a, b].flatMap((p) => mediaNotes(p).map(([kind, note]) => [p.name, kind, note]))
+    if (notes.length) {
+      body += notes.map(([name, kind, note]) =>
+        `<p style="color:var(--dim)"><strong>${esc(name)}, ${esc(kind.toLowerCase())}:</strong> ${esc(note)}</p>`).join('')
+    }
+  }
 
   // ---- what speaks which ----
   // This is the part no other page on the internet has, and it is why someone

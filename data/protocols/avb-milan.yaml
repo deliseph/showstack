@@ -39,6 +39,16 @@ typical_use:
   - Deterministic low-latency links between stage and front of house
   - Discovery, connection management and control via AVDECC (IEEE 1722.1)
 
+media:
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [24]
+    encoding: AVTP Audio Format, linear PCM
+    note: >-
+      Milan fixes 48 kHz and 24-bit as the interoperability baseline, which is
+      the point of Milan — AVB itself is more permissive and correspondingly
+      less predictable between vendors.
+
 gotchas:
   - >-
     Every switch in the path has to be AVB capable. One ordinary switch, one

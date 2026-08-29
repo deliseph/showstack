@@ -35,6 +35,26 @@ typical_use:
   - Feeding media servers, recorders and multiviewers
   - Long runs on fibre via SDI to fibre converters (SMPTE ST 297)
 
+media:
+  video:
+    max_resolution: 3840x2160
+    max_frame_rate: 60
+    colour_sampling: ["4:2:2", "4:4:4"]
+    bit_depths: [10, 12]
+    compression: None — uncompressed
+    note: >-
+      3840x2160 needs 12G-SDI on a single link; above that you are on two
+      or four. The rate tiers are SD 270 Mbit/s, HD 1.485, 3G 2.97, 6G 5.94 and 12G
+      11.88. Cable reach falls as the rate rises, because coax loss goes with
+      the square root of frequency and the frequency that matters is half the
+      bit rate.
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [24]
+    max_channels: 16
+    encoding: Embedded AES3 in the ancillary data space
+    note: Sixteen channels in four groups, riding in the horizontal blanking.
+
 gotchas:
   - >-
     The bit rate is fixed by the standard, not by the picture. ST 259 is

@@ -11,6 +11,17 @@ summary: 'Proprietary digital audio distribution for personal monitor mixing: a 
   their own mix locally.'
 transport:
 - ethernet-l2
+media:
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [24]
+    max_channels: 16
+    encoding: Linear PCM over Cat5, layer 1 rather than Ethernet
+    note: >-
+      16 channels is the Pro16 personal-monitor system almost everyone means
+      by A-Net. Pro64 is a separate, incompatible family carrying up to 64 at
+      higher rates; the connectors look identical and the two do not talk.
+
 typical_use:
 - Personal monitor mixing for a band
 - Houses of worship where musicians mix themselves

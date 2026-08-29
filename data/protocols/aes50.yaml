@@ -14,6 +14,17 @@ spec_url:
   url: https://www.aes.org/standards/blog/2011/9/new-revision-of-aes50-2011
 steward: Audio Engineering Society (AES)
 status: current
+media:
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [24]
+    max_channels: 48
+    encoding: Linear PCM over Cat5, layer 1 rather than Ethernet
+    note: >-
+      48 channels each direction per link at 48 kHz, dropping to 24 at 96 kHz.
+      The count is per link and bidirectional, which is why a console and a
+      stagebox need one cable rather than two.
+
 gotchas:
 - Runs over Cat5/Cat5e cable and RJ45s but is not standard routable Ethernet - AES50 ports cannot simply
   be plugged into a network switch.

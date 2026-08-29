@@ -23,6 +23,27 @@ steward: HDMI Forum
 status: current
 first_published: 2002
 
+media:
+  video:
+    max_resolution: 10240x4320
+    max_frame_rate: 120
+    colour_sampling: ["4:4:4", "4:2:2", "4:2:0"]
+    bit_depths: [8, 10, 12, 16]
+    compression: None, or DSC 1.2a visually lossless where the link cannot carry it raw
+    note: >-
+      These are separate ceilings, not one mode: HDMI 2.1's 48 Gbit/s does
+      4K120 or 8K60 uncompressed, and reaches 10K only with DSC. The limit is
+      always the version at both ends and the cable category between them,
+      never the connector.
+  audio:
+    sample_rates_khz: [32, 44.1, 48, 88.2, 96, 176.4, 192]
+    bit_depths: [16, 20, 24]
+    max_channels: 32
+    encoding: Linear PCM, or a compressed bitstream passed through untouched
+    note: >-
+      Passing a bitstream through means the sink decodes it, so a display that
+      cannot decode what the source sent produces silence rather than an error.
+
 typical_use:
   - Source to display, source to switcher, switcher to projector
   - The signal HDBaseT extenders carry over structured cable

@@ -16,6 +16,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
 import { interopPage } from './interop.mjs'
+import { MEDIA_ROWS, hasMedia, mediaNotes } from './media.mjs'
 import { toolsPage, TOOL_COUNT } from './tools.mjs'
 import { verifyPage } from './verify-page.mjs'
 import { networkPage } from './network.mjs'
@@ -474,6 +475,14 @@ details.speaklist td:first-child,details.speaklist th:first-child{padding-left:1
 box-shadow:var(--shadow);transition:border-color .2s}
 .ports:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
 .ports .big{font-family:var(--mono);font-size:24px;color:var(--accent2);display:block;margin-bottom:2px}
+/* What a protocol carries. A definition list rather than a table because a
+   table of two columns and nine rows on a 320px phone is a scroll container
+   for no reason; auto-fit lets it become two columns when there is room. */
+.mediaspec{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1px;
+margin:0 0 16px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.mediarow{background:var(--panel);padding:12px 16px}
+.mediarow dt{font-size:13px;letter-spacing:.3px;text-transform:uppercase;color:var(--dimmer);margin-bottom:3px}
+.mediarow dd{margin:0;color:var(--ink);font-size:15px;line-height:1.5}
 .gotcha{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent2);padding:12px 16px;
 margin-bottom:10px;border-radius:var(--r-sm);color:var(--dim);font-size:15px}
 /* A flex column with a gap, not margins on the children: the box holds two
@@ -796,6 +805,24 @@ function protocolPage(p, gap) {
       + (p.multicast.note ? `<li>${esc(p.multicast.note)}</li>` : '') + `</ul>`
   }
   if (p.universe_model) b += `<h3>Addressing</h3><p style="color:var(--dim)">${esc(p.universe_model)}</p>`
+
+  // What it carries. Sample rates and bit depths for audio, resolution and
+  // frame rate for video — the numbers somebody writes into a specification
+  // and then has to defend. Rendered as a definition list rather than a table
+  // because there is only one column of values here; the comparison pages put
+  // the same fields side by side, from the same formatters, so the two can
+  // never disagree.
+  if (hasMedia(p)) {
+    const cells = MEDIA_ROWS
+      .map(([label, get]) => [label, get(p)])
+      .filter(([, v]) => v)
+      .map(([label, v]) => `<div class="mediarow"><dt>${esc(label)}</dt><dd>${esc(v)}</dd></div>`)
+      .join('')
+    b += `<h3>What it carries</h3><dl class="mediaspec">${cells}</dl>`
+    for (const [kind, note] of mediaNotes(p)) {
+      b += `<p style="color:var(--dim)"><strong>${esc(kind)}:</strong> ${esc(note)}</p>`
+    }
+  }
 
   if (p.gotchas?.length) {
     b += `<h3>What goes wrong</h3>`

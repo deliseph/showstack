@@ -47,7 +47,7 @@ This happens constantly and the answer is not to leave it out.
 - Set `confidence: reported` or `confidence: unverified`.
 - Say plainly what you observed. "On firmware 3.x this node ignores ArtSync" is useful. "ArtSync is unreliable" is not.
 
-**Never guess a port number, a multicast address or a standard designation.** Leaving a field out creates a good first issue for someone else. Filling it in wrongly sends a technician down a two-hour hole at 1am. Omission is the safe failure; invention is not.
+**Never guess a port number, a multicast address, a sample rate or a standard designation.** Leaving a field out creates a good first issue for someone else. Filling it in wrongly sends a technician down a two-hour hole at 1am. Omission is the safe failure; invention is not.
 
 ---
 
@@ -67,6 +67,15 @@ default_ports:
   - number: 5568
     transport: udp
     role: sACN data and synchronisation packets
+media:                         # only where the protocol defines a capability
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [24]
+    max_channels: 64           # what the protocol permits, not what a box ships
+    note: The caveat that makes the numbers above safe to quote.
+  video:
+    max_resolution: 3840x2160  # omit it where the spec fixes no ceiling
+    max_frame_rate: 60
 gotchas:
   - The thing that bites you at 2am, stated concretely.
 confidence: verified           # verified | reported | unverified

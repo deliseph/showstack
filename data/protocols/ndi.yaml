@@ -58,6 +58,23 @@ typical_use:
   - Screen and program feeds between control room machines
   - Monitoring and multiviewer feeds without extra SDI infrastructure
 
+media:
+  video:
+    colour_sampling: ["4:2:2", "4:2:0"]
+    bit_depths: [8, 10]
+    compression: Visually lossless (NDI High Bandwidth) or H.264/H.265 (NDI HX)
+    note: >-
+      NDI caps neither resolution nor frame rate; 3840x2160 is where most
+      hardware decoders stop and software goes past it. The two families are
+      very different things sharing one name: High Bandwidth is lightly
+      compressed at 100 to 250 Mbit/s with low latency, HX is long-GOP at a
+      fraction of that and correspondingly more delay.
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [16, 32]
+    encoding: Floating point or 16-bit PCM, carried with the video
+    note: Audio and video travel together, unlike ST 2110 where they are separate essences.
+
 gotchas:
   - >-
     Discovery is mDNS, which is link-local. NDI sources do not appear across a

@@ -12,6 +12,17 @@ summary: Early low-latency audio-over-Ethernet system from Digigram, carrying 64
   still found in installs from the 2000s.
 transport:
 - ethernet-l2
+media:
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [24]
+    max_channels: 64
+    encoding: Linear PCM
+    note: >-
+      64 channels at 48 kHz on 100 Mbit for ES-100, which is what nearly
+      every installed system in the field is. The later ES-Giga carries more
+      on gigabit, but the two are not the same wire.
+
 typical_use:
 - Legacy installed systems from the 2000s
 - Auvitran and Digigram based infrastructure

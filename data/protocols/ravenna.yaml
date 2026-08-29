@@ -38,6 +38,16 @@ steward: ALC NetworX GmbH, merged into Lawo in January 2024
 first_published: 2010
 status: current
 
+media:
+  audio:
+    sample_rates_khz: [44.1, 48, 88.2, 96, 176.4, 192, 352.8, 384]
+    bit_depths: [16, 24, 32]
+    encoding: Linear PCM, L16 and L24, over RTP
+    note: >-
+      The high rates are the point of RAVENNA and the reason it is not
+      interchangeable with AES67. Anything above 48 kHz, or a packet time
+      other than 1 ms, is outside the subset an AES67-only receiver accepts.
+
 typical_use:
   - Broadcast studio and OB truck audio infrastructure
   - Merging Technologies Pyramix and Horus/Hapi recording systems

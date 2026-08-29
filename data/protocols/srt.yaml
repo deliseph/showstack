@@ -26,6 +26,15 @@ typical_use:
 - Sending a show feed to a remote broadcaster or streaming platform
 - Site-to-site contribution over the public internet
 - Remote production where a dedicated circuit is not available
+media:
+  video:
+    compression: Whatever the payload carries
+    note: >-
+      SRT does not define a video format at all. It carries an MPEG transport
+      stream, so resolution, frame rate and codec are decided by the encoder
+      feeding it. What SRT contributes is retransmission and a configurable
+      latency buffer over a link you do not control.
+
 gotchas:
 - Latency is a setting, and it is a trade against packet recovery. A latency budget set too
   low on a lossy link produces exactly the artefacts SRT is meant to prevent.

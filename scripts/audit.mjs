@@ -46,6 +46,9 @@ const PAGES = [
   '/', '/learn/', '/learn/colour/', '/learn/senses/', '/learn/rigging/', '/learn/experience/',
   '/tools/', '/protocols/', '/protocols/sacn/', '/standards/', '/software/', '/hardware/',
   '/glossary/', '/search/', '/build/', '/interop/', '/compare/', '/ports/', '/rf/',
+  // A protocol page and a comparison page that both carry a media
+  // capability block, so that grid and its contrast get audited too.
+  '/protocols/dante/', '/compare/ndi-vs-smpte-st-2110/',
   '/network/', '/signals/', '/check/', '/verify/', '/offline/',
   '/learn/outdoors/', '/learn/access/', '/learn/power/', '/learn/mixing/', '/learn/timecode/', '/learn/empathy/', '/learn/illusion/', '/learn/analogue/', '/learn/space/', '/learn/proto/',
 ]
@@ -144,7 +147,16 @@ pass.push('nothing animates under prefers-reduced-motion, and no SMIL exists to 
       for (const el of document.querySelectorAll(sel)) {
         const cs = getComputedStyle(el)
         if (cs.display === 'none' || cs.visibility === 'hidden') continue
-        const box = el.getBoundingClientRect()
+        // Document coordinates, not viewport coordinates. el.focus() below
+        // scrolls the element into view, so by the time the next element is
+        // measured the viewport has moved under it. Comparing a rect captured
+        // at scrollY 0 with one captured at scrollY 3000 produced distances
+        // that were pure fiction — it invented crowding between elements
+        // screens apart and hid it between genuine neighbours. Adding the
+        // scroll offset at the moment of measurement makes every rect
+        // comparable no matter where the page happened to be sitting.
+        const r = el.getBoundingClientRect()
+        const box = { left: r.left + scrollX, top: r.top + scrollY, width: r.width, height: r.height }
         if (box.width === 0 && box.height === 0) continue
         const name = el.tagName + (typeof el.className === 'string' && el.className
           ? '.' + el.className.trim().split(/\s+/)[0] : '')
@@ -188,7 +200,10 @@ pass.push('nothing animates under prefers-reduced-motion, and no SMIL exists to 
         x: box.left + box.width / 2, y: box.top + box.height / 2 }))
       const allTargets = [...document.querySelectorAll(
         'a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])')]
-        .map((e) => e.getBoundingClientRect())
+        .map((e) => {
+          const b = e.getBoundingClientRect()
+          return { left: b.left + scrollX, top: b.top + scrollY, width: b.width, height: b.height }
+        })
         .filter((b) => b.width > 0 || b.height > 0)
       undersized.forEach(({ box, label }, i) => {
         const c = centres[i]

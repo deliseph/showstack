@@ -76,6 +76,33 @@ export interface Protocol {
   status: Status
   superseded_by?: Slug
   typical_use?: string[]
+  /** What the protocol can carry, where it defines that. Only fill in what the entry's own sources support: leave a field out rather than guess, because these numbers get quoted into specifications. */
+  media?: {
+    audio?: {
+      /** Sample rates the specification defines, in kHz. */
+      sample_rates_khz?: number[]
+      /** Sample word lengths the specification defines, in bits. */
+      bit_depths?: number[]
+      /** Channels the protocol itself permits at its base rate. Omit where the limit belongs to the device rather than the protocol. */
+      max_channels?: number
+      /** How samples are carried: linear PCM, floating point, a codec family. */
+      encoding?: string
+      note?: string
+    }
+    video?: {
+      /** Highest resolution the specification defines, e.g. 3840x2160. Omit it where the specification fixes none: the page then says so, rather than leaving a reader unable to tell a missing answer from an unbounded one. */
+      max_resolution?: string
+      /** Highest frame rate in Hz. Omit where the specification sets no ceiling, same as max_resolution. */
+      max_frame_rate?: number
+      /** 4:2:2, 4:4:4, and the rest. */
+      colour_sampling?: string[]
+      /** Bits per component. */
+      bit_depths?: number[]
+      /** None, visually lossless, or the codec family. */
+      compression?: string
+      note?: string
+    }
+  }
   /** The things that bite you at 2am. Be specific and cite where you can. */
   gotchas?: string[]
   /** Open source libraries that speak this protocol, so an integrator does not have to start from zero. */

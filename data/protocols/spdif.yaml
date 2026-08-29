@@ -28,6 +28,17 @@ typical_use:
   - Optical feeds where galvanic isolation is wanted
   - Interfacing a laptop or media player to a professional chain
 
+media:
+  audio:
+    sample_rates_khz: [32, 44.1, 48]
+    bit_depths: [24]
+    max_channels: 2
+    encoding: Linear PCM, or a compressed bitstream carried transparently
+    note: >-
+      The consumer form of AES3. It also carries compressed multichannel
+      bitstreams unchanged, which is why a receiver can be handed something it
+      cannot decode and simply produce nothing.
+
 gotchas:
   - >-
     Nominal 0.5 V peak-to-peak on 75 Ω, against AES3's several volts on 110 Ω.
