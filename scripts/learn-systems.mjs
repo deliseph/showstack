@@ -16,7 +16,7 @@
  * static diagram of drift is just two boxes; drift *moving* is immediately
  * obvious, which is the whole point.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnSystemsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -204,6 +204,7 @@ border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / systems</div>
+${learnNav(esc, 'systems')}
 <div class="lhero">
   <h2>How it all runs together</h2>
   <p class="lede">A show is not a lighting system next to an audio system next to a video system. It is those systems agreeing about two facts: <em>what time it is</em>, and <em>where things are</em>. Everything on this page is a variation on that.</p>

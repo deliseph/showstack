@@ -11,12 +11,19 @@
  * mics in a long time, and because "one wide carrier carrying many channels"
  * is exactly the idea the grid above already taught.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnWirelessPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* conventional carriers each hold their own slot; WMAS shares one wide one in time */
+@keyframes narrow-on{0%,100%{opacity:0}18%,74%{opacity:.9}}
+@keyframes slot-on{0%,100%{opacity:.2}12%,26%{opacity:1}}
+.wmasfig .nb{animation:narrow-on 3s ease-in-out infinite}
+${[0,1,2,3,4,5].map((i) => `.wmasfig .n${i}{animation-delay:${(i*0.12).toFixed(2)}s}`).join('')}
+.wmasfig .sl{animation:slot-on 1.5s steps(1,end) infinite}
+${[0,1,2,3,4,5].map((i) => `.wmasfig .s${i}{animation-delay:${(i*0.25).toFixed(2)}s}`).join('')}
 @keyframes dx-a{0%,46%{opacity:1}50%,100%{opacity:.12}}
 @keyframes dx-b{0%,46%{opacity:.12}50%,100%{opacity:1}}
 .dx .a{animation:dx-a 2.6s ease-in-out infinite}
@@ -24,7 +31,14 @@ export function learnWirelessPage({ esc, shell, SITE, GH }) {
 .dx.simplex .b{display:none}
 .dx.full .a,.dx.full .b{animation:none;opacity:1}
 /* the time / frequency grid */
-.grid-ma{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:6px}
+.magrid-wrap{position:relative;margin-top:6px}
+.grid-ma{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+/* A playhead sweeping the time axis. Without it the grid is a still picture of
+   a scheme whose whole point is what happens over time - TDMA in particular is
+   unreadable as a static image. */
+@keyframes sweep-t{0%{left:0}100%{left:100%}}
+.playhead{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.5;
+border-radius:2px;animation:sweep-t 4.8s linear infinite;pointer-events:none}
 .grid-ma i{aspect-ratio:1;border-radius:3px;background:var(--panel);border:1px solid var(--line);
 transition:background .35s ease,border-color .35s ease}
 .grid-ma i.u0{background:color-mix(in srgb,var(--accent) 62%,transparent);border-color:transparent}
@@ -64,7 +78,7 @@ color:var(--dimmer);text-align:center}
   }
 
   const wmasFig = `
-<svg viewBox="0 0 620 140" role="img">
+<svg viewBox="0 0 620 140" role="img" class="wmasfig">
   <line x1="20" y1="104" x2="600" y2="104" stroke="var(--line)" stroke-width="1.5"/>
   <text x="20" y="126" class="lbl">one 6–8 MHz TV channel</text>
   <text x="600" y="126" class="lbl" text-anchor="end">frequency →</text>
@@ -76,11 +90,13 @@ color:var(--dimmer);text-align:center}
   }).join('')}
   <text x="20" y="76" class="lbl">WMAS: one wide carrier, the channels shared inside it</text>
   <rect x="40" y="82" width="546" height="16" rx="3" fill="var(--accent)" opacity=".8"/>
-  ${[...Array(22)].map((_, i) => `<line x1="${48 + i * 25}" y1="82" x2="${48 + i * 25}" y2="98" stroke="var(--bg)" stroke-width="1.4" opacity=".55"/>`).join('')}
+  ${[...Array(22)].map((_, i) => `<line class="sl s${i % 6}" x1="${48 + i * 25}" y1="82" x2="${48 + i * 25}" y2="98" stroke="var(--bg)" stroke-width="1.4" opacity=".55"/>`).join('')}
+  ${[0, 1, 2, 3, 4, 5].map((i) => `<rect class="nb n${i}" x="${40 + i * 92}" y="30" width="15" height="24" rx="2" fill="var(--accent2)" opacity="0"/>`).join('')}
 </svg>`
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / wireless</div>
+${learnNav(esc, 'wireless')}
 <div class="lhero">
   <h2>Sharing the airwaves</h2>
   <p class="lede">Spectrum is finite and everyone wants some. Every wireless system on a show is an answer to one question — how do several signals occupy the same band without destroying each other — and there are only a few answers.</p>
@@ -118,7 +134,7 @@ ${S('Then', 'FDMA, TDMA, CDMA, OFDMA', [
 <div class="fig" aria-hidden="true">
   <div class="gridwrap">
     <div class="ylab">frequency →</div>
-    <div><div class="grid-ma" id="ma-grid"></div><div class="xlab">time →</div></div>
+    <div><div class="magrid-wrap"><div class="grid-ma" id="ma-grid"></div><div class="playhead" aria-hidden="true"></div></div><div class="xlab">time →</div></div>
   </div>
   <div class="malegend">
     <span><i style="background:color-mix(in srgb,var(--accent) 62%,transparent)"></i>user 1</span>

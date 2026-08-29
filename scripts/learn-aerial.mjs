@@ -16,7 +16,7 @@
  * that a steered fleet degrades and a clocked fleet does not, and that a
  * firework is fired earlier than it is seen.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnAerialPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -220,6 +220,7 @@ overflow:hidden;margin:18px 0}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / aerial</div>
+${learnNav(esc, 'aerial')}
 <div class="lhero">
   <h2>Drone shows and pyro</h2>
   <p class="lede">Both look like something is being driven live in front of you. Neither is. A drone show and a pyromusical are the same idea twice over: a sequence computed in advance, executed against a clock everybody reads — with the thing that can actually hurt someone kept deliberately off the network.</p>

@@ -9,7 +9,7 @@
  * GNSS is here for a reason people find surprising: on a show it is far more
  * often used as a clock than as a position.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnConnectivityPage({ esc, shell, jsonForScript, SITE, GH }) {
   const S = sec(esc)
@@ -74,6 +74,7 @@ border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel)}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / connectivity</div>
+${learnNav(esc, 'connectivity')}
 <div class="lhero">
   <h2>Which wireless, and why</h2>
   <p class="lede">Range, data rate, battery life. Every radio technology on a site is a different answer to that three-way trade, and none of them wins all three.</p>

@@ -14,7 +14,7 @@
  * programmer. The jitter figure carries it — a bar chart of cycle times says
  * nothing; the same cycle stuttering says everything.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnCodePage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -150,6 +150,7 @@ color:var(--dimmer);margin:18px 0 -6px}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / code</div>
+${learnNav(esc, 'code')}
 <div class="lhero">
   <h2>Code on a show</h2>
   <p class="lede">Most people in this industry write code only when a show needs it — a console macro, a bit of glue between two systems, a bridge to an automation platform. Those are three different jobs, and the reason "just use Python" is sometimes right and sometimes dangerous.</p>

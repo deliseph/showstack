@@ -90,6 +90,65 @@ border:1px solid var(--line);border-radius:7px;padding:11px 14px;margin-top:12px
 .l-fade{animation:l-fade 2s ease-in-out infinite}
 .l-rise{animation:l-rise 3s ease-in-out infinite}
 
+/* ---- ambient motion for figures that are otherwise still -------------
+   A diagram of a state - a topology, a stack, a spectrum plan - has nothing
+   inherently moving in it. These give one element a slow, low-amplitude
+   pulse so the eye is told where the mechanism is, without the figure
+   becoming a light show. All of them stop under prefers-reduced-motion via
+   the global rule in pages.mjs. */
+@keyframes l-breathe{0%,100%{opacity:.42}50%{opacity:1}}
+@keyframes l-sweep{0%{transform:translateX(0);opacity:0}8%{opacity:1}
+88%{transform:translateX(var(--sweep,300px));opacity:1}96%,100%{opacity:0}}
+@keyframes l-ripple{0%{r:6;opacity:.85}100%{r:var(--rmax,54);opacity:0}}
+@keyframes l-glow{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
+.l-breathe{animation:l-breathe 3.2s ease-in-out infinite}
+.l-sweep{animation:l-sweep 2.6s linear infinite}
+.l-ripple{animation:l-ripple 2.8s ease-out infinite}
+.l-glow{animation:l-glow 2.6s ease-in-out infinite}
+
+/* ---- the slider strip -------------------------------------------------
+   Used wherever one number decides what the figure shows. The value is
+   always echoed in the label, because a slider with no number on it is a
+   toy rather than an instrument. */
+.dial{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin:14px 0 0;
+padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md)}
+.dial .d{display:flex;flex-direction:column;gap:6px;flex:1 1 190px;min-width:0}
+.dial label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;
+color:var(--dimmer);display:flex;justify-content:space-between;gap:10px}
+.dial label b{color:var(--accent2);font-weight:600;text-transform:none;letter-spacing:0;font-size:12.5px}
+.dial input[type=range]{accent-color:var(--accent);width:100%;min-width:0;height:22px}
+.dial .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-end}
+.dial .seg button{background:var(--panel2);color:var(--dim);border:0;border-right:1px solid var(--line);
+font-family:var(--mono);font-size:12px;padding:9px 12px;cursor:pointer;min-height:40px}
+.dial .seg button:last-child{border-right:0}
+.dial .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 18%,var(--panel));color:var(--accent)}
+.verdict{font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--panel2);
+border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;
+padding:12px 15px;margin-top:12px;line-height:1.65}
+.verdict b{color:var(--accent2)}
+.verdict .ok{color:var(--ok)}
+.verdict .err{color:var(--warn)}
+
+/* ---- the learn sub-nav ------------------------------------------------
+   Twenty pages is too many for the site nav, and a reader on one explainer
+   almost always wants a neighbouring one. Grouped by stage so the rail is
+   also a reminder of where in the chain you are standing. */
+.lnav{margin:0 0 22px;padding:0 0 14px;border-bottom:1px solid var(--line)}
+.lnav .lrail{display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+scrollbar-width:none;padding-bottom:2px;
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+.lnav .lrail::-webkit-scrollbar{display:none}
+.lnav a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:7px;
+color:var(--dim);border:1px solid transparent;white-space:nowrap;text-decoration:none}
+.lnav a:hover{color:var(--accent);background:var(--panel);text-decoration:none}
+.lnav a.active{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.lnav .gsep{flex:0 0 auto;align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.6px;
+text-transform:uppercase;color:var(--dimmer);padding:0 6px 0 10px;border-left:1px solid var(--line);
+margin-left:5px;white-space:nowrap}
+.lnav .gsep:first-child{border-left:none;margin-left:0;padding-left:0}
+
 /* ---- hub cards ------------------------------------------------------ */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px;margin-top:24px}
 .lcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;
@@ -141,9 +200,14 @@ export const fig = (svg, caption = '', id = '') =>
  */
 export const LEARN_GROUPS = [
   {
+    id: 'foundation',
+    name: 'Foundations',
+    lede: 'How something physical becomes a signal, how that signal is written down as numbers, how it survives a wire, and what the plug on the end of it actually carries.',
+  },
+  {
     id: 'signal',
     name: 'The signal',
-    lede: 'What actually happens on the wire, on the network and in the air — and why each one fails in its own characteristic way.',
+    lede: 'What happens on the control bus, on the network, in the air and on the crew\'s headsets — and why each one fails in its own characteristic way.',
   },
   {
     id: 'room',
@@ -163,11 +227,57 @@ export const LEARN_GROUPS = [
   {
     id: 'person',
     name: 'The person',
-    lede: 'Every threshold in this industry is a measurement of a nervous system. This is the receiver at the end of the chain, and its data sheet.',
+    lede: 'Every threshold in this industry is a measurement of a nervous system. What it can detect, how it works, how a feeling is built, and what makes somebody believe they are somewhere.',
+  },
+  {
+    id: 'machine',
+    name: 'Machines that copy us',
+    lede: 'Each of these is an attempt to do in a tool what the previous stage does in a person: read the world, decide something about it, and act. Seeing them that way is what stops them being magic.',
   },
 ]
 
+/** The capstone. It sits above the stages rather than inside one. */
+export const LEARN_CAPSTONE = {
+  slug: 'experience',
+  tag: 'The practice',
+  title: 'Experience architecture',
+  blurb: 'What you do with the whole chain when the job is not "make the signal arrive" but "make something happen to a person over ninety minutes". Attention, arousal and expectation as materials — and why the peak and the ending are the only two moments that survive.',
+  questions: ['How do I structure a running order?', 'What actually gets remembered?', 'How should it fail?'],
+}
+
 export const LEARN_TOPICS = [
+  {
+    slug: 'transducers',
+    group: 'foundation',
+    tag: 'Sensing',
+    title: 'Turning the world into a voltage',
+    blurb: 'Dynamic and condenser microphones as signal problems and what phantom power actually feeds; why a balanced line rejects interference; what a ground loop is; and why an absolute encoder is a safety decision rather than a resolution one.',
+    questions: ['What does phantom power do?', 'Why is there a hum?', 'Absolute or incremental?'],
+  },
+  {
+    slug: 'bits',
+    group: 'foundation',
+    tag: 'Digital',
+    title: 'Numbers that stand for signals',
+    blurb: 'Sample rate, bit depth and 6 dB per bit — the same fact that explains 24-bit audio and 16-bit fixture control. Then the short list of arithmetic behind every delay, reverb, filter and distortion you have ever used.',
+    questions: ['What does 24-bit buy me?', 'Why does a mover step?', 'How does reverb work?'],
+  },
+  {
+    slug: 'encoding',
+    group: 'foundation',
+    tag: 'On the wire',
+    title: 'How a one gets down a wire',
+    blurb: 'A receiver has no clock of its own, which is the whole reason line codes exist. Manchester, NRZI and block codes; parity, checksum, CRC and forward error correction; and why almost every show protocol chooses UDP.',
+    questions: ['What is Manchester coding?', 'Checksum or CRC?', 'Why UDP and not TCP?'],
+  },
+  {
+    slug: 'connectors',
+    group: 'foundation',
+    tag: 'Pinouts',
+    title: 'The same plug is not the same signal',
+    blurb: 'Connector, pinout and protocol are three independent layers. What a USB-C port really carries in each mode, why Thunderbolt and DisplayPort share a socket but only work one way round, and the show connectors that catch everybody once.',
+    questions: ['Why does this cable not work?', 'What is on a USB-C pin?', 'Is 3-pin DMX fine?'],
+  },
   {
     slug: 'dmx',
     group: 'signal',
@@ -199,6 +309,14 @@ export const LEARN_TOPICS = [
     title: 'Which radio, and why',
     blurb: 'LoRa, Bluetooth LE, Zigbee, Wi-Fi, UWB, CRMX and cellular all answer the same three-way trade between range, data rate and battery differently. Plus what 2G through 6G actually changed, and why a GNSS antenna on site is usually feeding a clock.',
     questions: ['LoRa or Wi-Fi or BLE?', 'What changed from 4G to 5G?', 'What is GPS really giving me?'],
+  },
+  {
+    slug: 'comms',
+    group: 'signal',
+    tag: 'Talkback',
+    title: 'Getting the crew to hear each other',
+    blurb: 'Partyline, matrix, IP and wireless intercom; why a walkie-talkie is not an intercom and never becomes one; what latency does to a cue call; and the licensing question nobody asks until a show travels.',
+    questions: ['Partyline or matrix?', 'Why not just use radios?', 'How much latency is too much?'],
   },
   {
     slug: 'sound',
@@ -280,4 +398,67 @@ export const LEARN_TOPICS = [
     blurb: 'Every sense is a transducer and they all output the same currency, which is why brain-computer interfaces and sensory substitution work at all — and why their limits are bandwidth problems you already understand.',
     questions: ['Can you really read a brain?', 'How does a cochlear implant work?', 'Can a lost sense be replaced?'],
   },
+  {
+    slug: 'emotion',
+    group: 'person',
+    tag: 'Feeling',
+    title: 'How a feeling is built',
+    blurb: 'Emotion is not something a show transmits. It is constructed from bodily arousal plus an appraisal of what it means — which is why the same racing heart is terror in one room and joy in another, and why contrast is the only real lever.',
+    questions: ['Where does emotion come from?', 'Why does an audience amplify itself?', 'What do people actually remember?'],
+  },
+  {
+    slug: 'presence',
+    group: 'person',
+    tag: 'Being there',
+    title: 'Being somewhere',
+    blurb: 'The senses nobody counts — balance, proprioception, interoception — and how a body decides it is in a place, owns a limb, and caused a thing to happen. The mechanism a set, a room and a headset are all working on.',
+    questions: ['What are the other senses?', 'Why does VR feel real?', 'What breaks the illusion?'],
+  },
+  {
+    slug: 'reading',
+    group: 'machine',
+    tag: 'Machine vision',
+    title: 'How a machine reads the world',
+    blurb: 'A QR code that still scans with a hole in it, OCR that turns a photographed page into text, a camera that finds a face — three versions of the same trick, and all of them are engineered around a human limitation rather than a machine one.',
+    questions: ['How does a QR code survive damage?', 'How does OCR actually work?', 'How does a camera find a face?'],
+  },
+  {
+    slug: 'ai',
+    group: 'machine',
+    tag: 'AI',
+    title: 'What AI is actually doing',
+    blurb: 'A network of weights that learned a mapping, run forwards. How training differs from the thing you use, why an image generator starts from noise, what a language model is predicting, and where all of it is genuinely useful on a show.',
+    questions: ['How does a neural network work?', 'How is an AI image made?', 'What is a language model doing?'],
+  },
+  {
+    slug: 'devices',
+    group: 'machine',
+    tag: 'Robots & IoT',
+    title: 'Robots, animatronics and connected things',
+    blurb: 'How a machine decides where its own arm is, why a show robot is a safety case before it is a puppet, and what actually happens when a smart device joins a network — Matter, Thread, hubs, and why the cloud is a single point of failure.',
+    questions: ['How does a robot know where it is?', 'How is an animatronic driven?', 'What is Matter and Thread?'],
+  },
 ]
+
+/**
+ * The sub-nav that appears at the top of every explainer. Twenty pages is far
+ * more than the site nav can carry, and somebody reading one of these almost
+ * always wants a neighbour rather than a different section of the site.
+ * Grouped by stage so the rail doubles as a reminder of where in the chain
+ * the current page sits.
+ */
+export const learnNav = (esc, currentSlug) => {
+  let html = ''
+  for (const g of LEARN_GROUPS) {
+    html += `<span class="gsep">${esc(g.name)}</span>`
+    for (const t of LEARN_TOPICS.filter((t) => t.group === g.id)) {
+      const on = t.slug === currentSlug
+      html += `<a href="/learn/${esc(t.slug)}/"${on ? ' class="active" aria-current="page"' : ''}>${esc(t.title)}</a>`
+    }
+  }
+  const cap = LEARN_CAPSTONE.slug === currentSlug
+  return `<nav class="lnav" aria-label="Explainers"><div class="lrail">` +
+    `<a href="/learn/"${currentSlug ? '' : ' class="active" aria-current="page"'}>All</a>` +
+    `<a href="/learn/${esc(LEARN_CAPSTONE.slug)}/"${cap ? ' class="active" aria-current="page"' : ''}>` +
+    `${esc(LEARN_CAPSTONE.title)}</a>${html}</div></nav>`
+}

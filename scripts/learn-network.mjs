@@ -12,7 +12,7 @@
  * host halves change. Dragging the prefix is what makes /20 stop being magic.
  */
 import { subnetCidr } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 const MATH_SRC = [subnetCidr].map((f) => f.toString()).join('\n\n')
 
@@ -78,6 +78,7 @@ background:var(--panel2);color:var(--dimmer);transition:background .18s,color .1
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / network</div>
+${learnNav(esc, 'network')}
 <div class="lhero">
   <h2>Show networks</h2>
   <p class="lede">An entertainment network carries traffic with a property office IT rarely has to think about: some of it is worthless if it arrives late. Three things follow from that.</p>
