@@ -23,6 +23,21 @@ import { signalsPage } from './signals.mjs'
 import { signalsDataPage } from './signals-data.mjs'
 import { signalsMediaPage } from './signals-media.mjs'
 import { signalsDisplayPage } from './signals-display.mjs'
+import { learnPage } from './learn.mjs'
+import { learnDmxPage } from './learn-dmx.mjs'
+import { learnNetworkPage } from './learn-network.mjs'
+import { learnWirelessPage } from './learn-wireless.mjs'
+import { learnSoundPage } from './learn-sound.mjs'
+import { learnLightPage } from './learn-light.mjs'
+import { learnSoftwarePage } from './learn-software.mjs'
+import { learnConnectivityPage } from './learn-connectivity.mjs'
+import { learnSystemsPage } from './learn-systems.mjs'
+import { learnAerialPage } from './learn-aerial.mjs'
+import { learnCodePage } from './learn-code.mjs'
+import { learnEnginesPage } from './learn-engines.mjs'
+import { learnDrawingsPage } from './learn-drawings.mjs'
+import { learnPerceptionPage } from './learn-perception.mjs'
+import { learnNeuroPage } from './learn-neuro.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -157,6 +172,21 @@ td strong{color:var(--ink);font-weight:600}
    scroll inside its own box rather than widening the whole document, which
    is what makes a page feel broken on a phone. */
 @media(max-width:640px){table{display:block;max-width:100%;overflow-x:auto}}
+/* A long "what speaks this" list is folded away by default so it stops
+   burying the sources and the rest of the page under 80 table rows. */
+details.speaklist{border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel);margin:0 0 10px}
+details.speaklist > summary{cursor:pointer;list-style:none;padding:13px 16px;display:flex;align-items:center;
+gap:10px;font-size:14.5px;color:var(--dim);border-radius:var(--r-md)}
+details.speaklist > summary::-webkit-details-marker{display:none}
+details.speaklist > summary:hover{color:var(--ink)}
+details.speaklist[open] > summary{border-bottom:1px solid var(--line);border-radius:var(--r-md) var(--r-md) 0 0}
+.speakcount{font-family:var(--mono);font-size:15px;color:var(--accent);font-weight:600}
+.speakhint{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--dimmer);
+border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+details.speaklist[open] .speakhint::after{content:"";}
+details.speaklist[open] .speakhint{color:var(--accent)}
+details.speaklist > table{margin:0}
+details.speaklist td:first-child,details.speaklist th:first-child{padding-left:16px}
 .ports{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:0 0 10px;
 box-shadow:var(--shadow);transition:border-color .2s}
 .ports:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
@@ -227,7 +257,7 @@ function navBar(canonical) {
   }
   const search = link('/', 'Search')
   const tools = ['/tools/', '/network/', '/rf/'].map((h, i) => link(h, ['Tools', 'Network', 'RF'][i])).join('')
-  const views = ['/interop/', '/compare/', '/ports/', '/signals/'].map((h, i) => link(h, ['Interop', 'Compare', 'Ports', 'Signals'][i])).join('')
+  const views = ['/learn/', '/interop/', '/compare/', '/ports/', '/signals/'].map((h, i) => link(h, ['Learn', 'Interop', 'Compare', 'Ports', 'Signals'][i])).join('')
   return `<nav class="rail" aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span></nav>`
 }
 
@@ -331,11 +361,27 @@ function protocolPage(p, gap) {
   }
 
   if (p.spoken_by?.length) {
-    b += `<h3>What speaks ${esc(p.name)} (${p.spoken_by.length})</h3><table>
-      <tr><th>Product</th><th>Direction</th><th>Notes</th></tr>` +
-      p.spoken_by.map((s) => `<tr><td><strong>${esc(s.name)}</strong>${s.vendor ? `<br><span style="font-size:13px;color:var(--dimmer)">${esc(s.vendor)}</span>` : ''}</td>
+    // Art-Net is spoken by 80+ entries. Rendered flat that is a wall of table
+    // between the reader and everything below it, so past a dozen the list
+    // collapses behind a summary and the page stays readable. Under a dozen
+    // it stays open, because a disclosure you have to click to see three rows
+    // is just an obstacle.
+    const rows = p.spoken_by.map((s) => `<tr><td><strong>${esc(s.name)}</strong>${s.vendor ? `<br><span style="font-size:13px;color:var(--dimmer)">${esc(s.vendor)}</span>` : ''}</td>
         <td>${esc(s.direction)}${s.requires_licence ? '<br><span style="font-size:12px;color:var(--accent2)">needs licence</span>' : ''}</td>
-        <td>${esc(s.note ?? '')}</td></tr>`).join('') + `</table>`
+        <td>${esc(s.note ?? '')}</td></tr>`).join('')
+    const head = `<tr><th>Product</th><th>Direction</th><th>Notes</th></tr>`
+    b += `<h3>What speaks ${esc(p.name)} (${p.spoken_by.length})</h3>`
+    if (p.spoken_by.length <= 12) {
+      b += `<table>${head}${rows}</table>`
+    } else {
+      const kinds = { software: 0, hardware: 0 }
+      for (const s of p.spoken_by) if (s.kind in kinds) kinds[s.kind]++
+      const bits = []
+      if (kinds.hardware) bits.push(`${kinds.hardware} hardware`)
+      if (kinds.software) bits.push(`${kinds.software} software`)
+      b += `<details class="speaklist"><summary><span class="speakcount">${p.spoken_by.length}</span> products${bits.length ? ` — ${bits.join(', ')}` : ''}<span class="speakhint">show all</span></summary>
+        <table>${head}${rows}</table></details>`
+    }
   }
 
   if (p.implementations?.length) {
@@ -494,6 +540,55 @@ function standardPage(s, gap) {
     body: b })
 }
 
+/**
+ * A browsable index for one collection.
+ *
+ * Every entry already had its own page, but /protocols/ itself was a 404 —
+ * so anything that trimmed a URL, or followed a search result up a level,
+ * fell off the site. These are also the pages worth linking to from outside:
+ * "here is every standard we index" is a far better share than a single entry.
+ */
+function collectionIndex(kind, entries, { title, lede, group, label, sub }) {
+  const groups = new Map()
+  for (const e of entries) {
+    const g = group(e) || 'other'
+    if (!groups.has(g)) groups.set(g, [])
+    groups.get(g).push(e)
+  }
+  const ordered = [...groups.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+
+  let b = `<div class="crumb"><a href="/">showstack</a> / ${esc(kind)}</div>`
+  b += `<h2>${esc(title)}</h2><p class="lede">${lede}</p>`
+  b += `<p class="idxjump">` + ordered.map(([g, list]) =>
+    `<a href="#g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <b>${list.length}</b></a>`).join('') + `</p>`
+
+  for (const [g, list] of ordered) {
+    b += `<h3 id="g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <span class="idxn">${list.length}</span></h3><div class="idxlist">`
+    for (const e of [...list].sort((x, y) => String(label(x)).localeCompare(String(label(y))))) {
+      b += `<a class="idxrow" href="/${esc(kind)}/${esc(e.id)}/">
+        <span class="idxname">${esc(label(e))}</span>
+        <span class="idxsub">${esc(sub(e) ?? '')}</span></a>`
+    }
+    b += `</div>`
+  }
+  return b
+}
+
+const INDEX_CSS = `
+.idxjump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 30px;padding:0}
+.idxjump a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
+background:var(--panel);border-radius:999px;padding:6px 12px}
+.idxjump a:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);text-decoration:none}
+.idxjump a b{color:var(--dimmer);font-weight:500;margin-left:4px}
+.idxn{font-family:var(--mono);font-size:12px;color:var(--dimmer);font-weight:400;margin-left:6px}
+.idxlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-bottom:8px}
+.idxrow{display:flex;flex-direction:column;gap:3px;padding:11px 14px;border:1px solid var(--line);
+border-radius:var(--r-sm);background:var(--panel);transition:border-color .15s,transform .15s}
+.idxrow:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-1px);text-decoration:none}
+.idxname{color:var(--ink);font-size:14.5px;font-weight:600;line-height:1.3}
+.idxsub{color:var(--dimmer);font-family:var(--mono);font-size:11.5px;line-height:1.4}
+`
+
 // ------------------------------------------------------------------- driver
 export function buildPages(db, dist) {
   const gapOf = (col, id) => (db.gaps ?? []).find((g) => g.collection === col && g.id === id)
@@ -559,6 +654,73 @@ export function buildPages(db, dist) {
   urls.push(`${SITE}/signals/media/`)
   write('signals/display', signalsDisplayPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/signals/display/`)
+
+  // The explainers. Reference material answers "what is it"; these answer
+  // "why does it behave like that", which is the question that actually gets
+  // asked at load-in.
+  const learnArgs = { esc, shell, SITE, GH }
+  write('learn', learnPage(learnArgs));                     urls.push(`${SITE}/learn/`)
+  write('learn/dmx', learnDmxPage(learnArgs));              urls.push(`${SITE}/learn/dmx/`)
+  write('learn/network', learnNetworkPage(learnArgs));      urls.push(`${SITE}/learn/network/`)
+  write('learn/wireless', learnWirelessPage(learnArgs));    urls.push(`${SITE}/learn/wireless/`)
+  write('learn/sound', learnSoundPage(learnArgs));          urls.push(`${SITE}/learn/sound/`)
+  write('learn/light', learnLightPage(learnArgs));          urls.push(`${SITE}/learn/light/`)
+  write('learn/software', learnSoftwarePage(learnArgs));    urls.push(`${SITE}/learn/software/`)
+  write('learn/connectivity', learnConnectivityPage({ ...learnArgs, jsonForScript })); urls.push(`${SITE}/learn/connectivity/`)
+  write('learn/systems', learnSystemsPage(learnArgs));      urls.push(`${SITE}/learn/systems/`)
+  write('learn/aerial', learnAerialPage(learnArgs));        urls.push(`${SITE}/learn/aerial/`)
+  write('learn/code', learnCodePage(learnArgs));            urls.push(`${SITE}/learn/code/`)
+  write('learn/engines', learnEnginesPage(learnArgs));      urls.push(`${SITE}/learn/engines/`)
+  write('learn/drawings', learnDrawingsPage(learnArgs));    urls.push(`${SITE}/learn/drawings/`)
+  write('learn/perception', learnPerceptionPage(learnArgs)); urls.push(`${SITE}/learn/perception/`)
+  write('learn/neuro', learnNeuroPage(learnArgs));          urls.push(`${SITE}/learn/neuro/`)
+
+  // Browsable index per collection. These used to 404.
+  const INDEXES = [
+    ['protocols', db.protocols, {
+      title: 'Protocols', lede: 'Every wire protocol in the index, grouped by what it carries. Ports, addressing, gotchas and a citation on each.',
+      group: (e) => e.category, label: (e) => e.name,
+      sub: (e) => (e.default_ports ?? []).map((x) => `${x.transport}/${x.number}`).join(' · ') || e.openness,
+    }],
+    ['standards', db.standards, {
+      title: 'Standards', lede: 'Technical and safety standards that govern how live entertainment systems are built and operated, grouped by publishing body. Where a document is free to read, it says so.',
+      group: (e) => e.body, label: (e) => e.designation,
+      sub: (e) => `${e.domain}${e.free_to_read ? ' · free to read' : ''}`,
+    }],
+    ['glossary', db.terms, {
+      title: 'Glossary', lede: 'Bilingual EN / 繁中 vocabulary, grouped by department, with the regional variants and false friends that cause real confusion on headset.',
+      group: (e) => e.domain, label: (e) => e.en,
+      sub: (e) => e.zh_hant ?? '',
+    }],
+    ['software', db.software, {
+      title: 'Software', lede: 'Control, playback, design and diagnostic software, grouped by what it does — and crucially which protocols each one speaks.',
+      group: (e) => e.category, label: (e) => e.name,
+      sub: (e) => [e.vendor, e.price_model].filter(Boolean).join(' · '),
+    }],
+    ['hardware', db.hardware, {
+      title: 'Hardware', lede: 'Consoles, servers, processors, gateways, switches and the rest of the rack, grouped by category, with what each one speaks.',
+      group: (e) => e.category, label: (e) => e.name,
+      sub: (e) => e.vendor,
+    }],
+  ]
+  for (const [kind, entries, opts] of INDEXES) {
+    write(kind, shell({
+      title: `${opts.title} — ${entries.length} indexed | showstack`,
+      description: trunc(opts.lede, 300),
+      canonical: `${SITE}/${kind}/`,
+      jsonld: {
+        '@context': 'https://schema.org', '@type': 'CollectionPage',
+        name: `showstack ${opts.title.toLowerCase()}`,
+        description: trunc(opts.lede, 300),
+        url: `${SITE}/${kind}/`,
+        isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+      },
+      body: collectionIndex(kind, entries, opts),
+      extraStyle: INDEX_CSS,
+    }))
+    urls.push(`${SITE}/${kind}/`)
+  }
 
   // Port pages, plus an index of every port we know about.
   const byPort = new Map()

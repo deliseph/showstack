@@ -1,0 +1,64 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: max-msp
+name: Max
+aka:
+- Max/MSP
+- Max/MSP/Jitter
+- Cycling 74 Max
+vendor: Cycling '74
+category: content-creation
+license: Proprietary
+price_model: subscription
+platforms:
+- windows
+- macos
+status: current
+summary: >-
+  Dataflow programming environment where a patch is built from objects joined by cables. Max is
+  the message layer, MSP the sample-rate audio layer, Jitter the video and matrix layer — and being
+  able to move between an event and a continuous signal in one patch is the whole reason it stayed
+  the standard in music technology and interactive installation.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: Core to Max since the beginning.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Via widely used objects rather than as a built-in.
+  confidence: reported
+- protocol: ableton-link
+  direction: bidirectional
+  note: Through Max for Live and Link-aware objects.
+  confidence: unverified
+homepage:
+  url: https://cycling74.com/
+  label: Cycling '74
+typical_use:
+- Interactive installations and generative content
+- Custom show tooling where an audio signal and a control message need to meet
+- Max for Live devices inside Ableton Live
+gotchas:
+- Patches do not diff. Version them by hand and write down what each version changed, because the
+  usual "what changed?" safety net does not exist.
+- 'The tilde matters: objects ending in ~ run at audio rate, the rest run on messages. Mixing the
+  two mental models is the classic beginner fault.'
+- A show machine needs its licence sorted before the tour, not after — check what an unattended
+  install is allowed to do.
+tags:
+- dataflow
+- patching
+- interactive
+- audio
+- max
+sources:
+- title: Cycling '74 Max
+  url: https://cycling74.com/products/max
+  publisher: Cycling '74
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

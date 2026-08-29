@@ -1,0 +1,61 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: pathway-pathport-octo
+name: Pathway Connectivity Pathport OCTO
+vendor: Pathway Connectivity
+category: dmx-node
+status: current
+summary: >-
+  Eight-port DMX and RDM gateway with per-port protocol and direction selection. The workhorse node
+  in a lot of installed theatre infrastructure, and the one most likely to already be in the venue's
+  wall.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Per port.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Per port.
+  confidence: reported
+- protocol: pathport
+  direction: bidirectional
+  note: Pathway's own protocol.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Eight ports.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Discovery and configuration.
+  confidence: reported
+physical_ports:
+- 8x DMX/RDM (XLR5)
+- Ethernet
+form_factor: Rackmount or wall-mount gateway
+rack_units: 1
+homepage:
+  url: https://www.pathwayconnect.com/
+  label: Pathway Connectivity
+gotchas:
+- Ports are individually configurable for protocol and direction. A node that appears dead is very
+  often a port set to input.
+- Export the configuration. A swapped spare boots to defaults and will not tell you what the old
+  one was doing.
+tags:
+- dmx
+- node
+- gateway
+- rdm
+- pathway
+sources:
+- title: Pathway Connectivity
+  url: https://www.pathwayconnect.com/
+  publisher: Pathway Connectivity
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,59 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: avolites-arena
+name: Avolites Arena
+vendor: Avolites
+category: lighting-console
+status: current
+summary: >-
+  Mid-to-large Titan console with a built-in touchscreen and motorised faders, aimed at touring
+  and festival work where the console has to be quick to take over on someone else's rig.
+speaks:
+- protocol: art-net
+  direction: out
+  note: Network output.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: Network output.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Direct outputs.
+  confidence: reported
+- protocol: citp
+  direction: bidirectional
+  note: Media server thumbnails and control.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Notes and MSC.
+  confidence: reported
+form_factor: Console
+runs_software:
+- avolites-titan
+homepage:
+  url: https://www.avolites.com/
+  label: Avolites
+gotchas:
+- Titan show files move across the Avolites range; check the software version on the console matches
+  the one the show was built on before load-in.
+tags:
+- lighting
+- console
+- avolites
+- titan
+sources:
+- title: Avolites
+  url: https://www.avolites.com/
+  publisher: Avolites
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

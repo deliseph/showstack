@@ -1,0 +1,41 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: stype-redspy
+name: stYpe RedSpy
+vendor: stYpe
+category: tracking-system
+status: current
+summary: >-
+  Camera tracking sensor for broadcast augmented reality and virtual studios, outputting camera
+  position and lens data to a render engine over FreeD.
+speaks:
+- protocol: freed
+  direction: out
+  note: Camera position and lens data.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Frame reference.
+  confidence: reported
+form_factor: Camera-mounted tracking sensor
+homepage:
+  url: https://stype.tv/
+  label: stYpe
+gotchas:
+- Registration between the virtual and the real set is a coordinate-system agreement, and it is
+  surveyed once and then protected.
+tags:
+- tracking
+- camera
+- broadcast
+- ar
+sources:
+- title: stYpe
+  url: https://stype.tv/
+  publisher: stYpe
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

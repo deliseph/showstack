@@ -1,0 +1,40 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: itu-r-tf-460
+designation: ITU-R TF.460
+title: Standard-frequency and time-signal emissions
+body: ITU-R
+domain: networking
+year: 2002
+scope: >-
+  The recommendation that defines UTC as a time scale: how it relates to International Atomic Time
+  (TAI), and the leap-second mechanism that keeps it within a fraction of a second of the earth's
+  rotation.
+status: current
+free_to_read: true
+access_url:
+  url: https://www.itu.int/rec/R-REC-TF.460/en
+  label: ITU-R TF.460
+related_protocols:
+- ntp
+- ptp-1588
+- nmea-0183
+notes: >-
+  Relevant on a show because the three time scales in the rack are not the same: UTC includes leap
+  seconds, TAI does not, and GNSS time is offset from both. A device that mixes them up is out by
+  whole seconds, not milliseconds.
+tags:
+- time
+- utc
+- tai
+- leap-second
+sources:
+- title: Recommendation ITU-R TF.460
+  url: https://www.itu.int/rec/R-REC-TF.460/en
+  publisher: International Telecommunication Union
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

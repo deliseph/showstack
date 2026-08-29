@@ -1,0 +1,57 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: crestron-cp4n
+name: Crestron CP4N Control System
+vendor: Crestron
+category: show-controller
+status: current
+summary: >-
+  Building and AV control processor: the box behind the touch panel in a boardroom, a lecture theatre
+  or a venue's front of house. Where a show controller thinks in cues and timecode, this thinks
+  in rooms, sources and schedules.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Through modules.
+  confidence: unverified
+- protocol: midi
+  direction: bidirectional
+  note: Through modules.
+  confidence: unverified
+- protocol: bacnet
+  direction: bidirectional
+  note: Building systems integration.
+  confidence: reported
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: reported
+- protocol: visca-over-ip
+  direction: out
+  note: Camera control.
+  confidence: unverified
+form_factor: Rackmount control processor
+rack_units: 1
+homepage:
+  url: https://www.crestron.com/
+  label: Crestron
+gotchas:
+- Programming it is a specialism with its own toolchain and certification. Budget for the programmer,
+  not just the processor.
+- It is often the boundary between production systems and the building. Agree who owns that boundary
+  before commissioning.
+tags:
+- av-control
+- installation
+- crestron
+- building
+sources:
+- title: Crestron
+  url: https://www.crestron.com/
+  publisher: Crestron
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: l-acoustics-p1
+name: L-Acoustics P1
+vendor: L-Acoustics
+category: audio-processor
+status: current
+summary: >-
+  Processor and measurement platform combined: AVB bridging, system processing, and a built-in measurement
+  engine so alignment happens in the same device that applies it rather than in a separate laptop
+  workflow.
+speaks:
+- protocol: avb-milan
+  direction: bidirectional
+  note: Networked audio.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: unverified
+- protocol: madi
+  direction: bidirectional
+  note: Depending on configuration.
+  confidence: unverified
+form_factor: Rackmount processor
+rack_units: 2
+homepage:
+  url: https://www.l-acoustics.com/
+  label: L-Acoustics
+gotchas:
+- Measurement built into the signal path is convenient and still needs a disciplined method. The
+  tool does not choose the microphone position.
+tags:
+- audio
+- processor
+- measurement
+- l-acoustics
+sources:
+- title: L-Acoustics
+  url: https://www.l-acoustics.com/
+  publisher: L-Acoustics
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

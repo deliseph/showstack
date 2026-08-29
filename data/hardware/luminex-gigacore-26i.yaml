@@ -1,0 +1,60 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: luminex-gigacore-26i
+name: Luminex GigaCore 26i
+vendor: Luminex Network Intelligence
+category: network-switch
+status: current
+summary: >-
+  Larger managed switch in the GigaCore range, with fibre cages and the same Groups model as the
+  rest — so a profile built on a small system ports onto the big one. Sized for a full production
+  network rather than a single rack.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Transported.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Transported, with IGMP snooping.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Transported.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Transported.
+  confidence: reported
+- protocol: ptp-1588
+  direction: bidirectional
+  note: Clock distribution.
+  confidence: reported
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: reported
+form_factor: Rackmount managed switch
+rack_units: 1
+homepage:
+  url: https://www.luminex.be/
+  label: Luminex
+gotchas:
+- Export and carry the profile. A spare switch boots to defaults, and a defaulted switch on a multicast-heavy
+  network floods everything.
+- Fibre needs the right optic for the right fibre type. Carry spares of both.
+tags:
+- networking
+- switch
+- luminex
+- fibre
+sources:
+- title: Luminex
+  url: https://www.luminex.be/
+  publisher: Luminex Network Intelligence
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

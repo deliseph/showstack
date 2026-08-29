@@ -1,0 +1,60 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: vvvv
+name: vvvv
+aka:
+- vvvv gamma
+- vvvv beta
+vendor: vvvv group
+category: content-creation
+license: Proprietary
+price_model: freemium
+platforms:
+- windows
+status: current
+summary: >-
+  A long-standing visual programming environment for real-time media, strong on GPU work, large
+  projection setups and hardware interfacing. Free for non-commercial use, which is how most people
+  meet it.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Standard nodes.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Widely used for driving and receiving lighting data.
+  confidence: reported
+- protocol: dmx512
+  direction: bidirectional
+  note: Through interfaces.
+  confidence: unverified
+- protocol: midi
+  direction: bidirectional
+  note: Standard nodes.
+  confidence: reported
+homepage:
+  url: https://vvvv.org/
+  label: vvvv
+typical_use:
+- Interactive installations
+- Large multi-projector and LED content systems
+- Prototyping hardware-driven media
+gotchas:
+- Windows only, and the two generations (beta and gamma) are different environments — check which
+  one a project was built in before quoting time on it.
+tags:
+- dataflow
+- patching
+- projection
+- interactive
+sources:
+- title: vvvv
+  url: https://vvvv.org/
+  publisher: vvvv group
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

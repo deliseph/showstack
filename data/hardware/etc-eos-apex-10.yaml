@@ -1,0 +1,69 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: etc-eos-apex-10
+name: ETC Eos Apex 10
+vendor: ETC
+category: lighting-console
+status: current
+summary: >-
+  The larger Apex: the same Eos software family as every other ETC console, with more faders, more
+  screens and the motorised encoder layout the range introduced. Show files move across the whole
+  family, which is the reason theatres standardise on it.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: Primary network output.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Network output.
+  confidence: reported
+- protocol: etcnet3
+  direction: bidirectional
+  note: ETC networking.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Direct outputs.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Through Net3 gateways.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Remote control and feedback.
+  confidence: reported
+form_factor: Console
+runs_software:
+- eos-family
+homepage:
+  url: https://www.etcconnect.com/
+  label: ETC
+gotchas:
+- Output count is licensed. A console with the ports is not necessarily a console with the outputs.
+- Show files move down the family as well as up, but features used on a larger desk may have nowhere
+  to live on a smaller one.
+tags:
+- lighting
+- console
+- etc
+- eos
+sources:
+- title: ETC
+  url: https://www.etcconnect.com/
+  publisher: ETC
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,44 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: sketchup
+name: SketchUp
+vendor: Trimble
+category: cad-drafting
+license: Proprietary
+price_model: subscription
+platforms:
+- windows
+- macos
+- web
+status: current
+summary: >-
+  Fast, forgiving 3D modelling that answers "roughly, does this fit and what does it feel like"
+  in an afternoon. Excellent for the conversation with a director or a client. Not a data model
+  and not a documentation tool, so it is the wrong place for the source of truth on a build.
+homepage:
+  url: https://www.sketchup.com/
+  label: SketchUp
+typical_use:
+- Early massing and design communication
+- Quick venue and scenic studies
+- Sharing an idea with people who do not read plans
+gotchas:
+- Geometry only. Nothing in a SketchUp model knows what it weighs, draws or is patched to, so no
+  paperwork comes out of it.
+- Imported models from warehouses vary wildly in scale, cleanliness and polygon count. Check a known
+  dimension immediately.
+tags:
+- cad
+- 3d
+- modelling
+- design
+sources:
+- title: SketchUp
+  url: https://www.sketchup.com/
+  publisher: Trimble
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,74 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: grandma3-light
+name: MA Lighting grandMA3 light
+vendor: MA Lighting
+category: lighting-console
+status: current
+summary: >-
+  The smaller grandMA3 console: same software, same show files and same network model as the full
+  size, with fewer physical faders and executors. Where a full size is a workspace, this is the
+  one that travels.
+speaks:
+- protocol: sacn
+  direction: bidirectional
+  note: Primary network output.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Network output.
+  confidence: reported
+- protocol: ma-net
+  direction: bidirectional
+  note: Session networking between MA devices.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Direct outputs.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Fixture discovery and configuration.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: mtc
+  direction: in
+  note: MIDI timecode.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Remote control.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: Position data for tracking-driven fixtures.
+  confidence: unverified
+form_factor: Console
+runs_software:
+- grandma3-onpc
+homepage:
+  url: https://www.malighting.com/
+  label: MA Lighting
+gotchas:
+- Parameter count is licensed and is the number that actually constrains a rig, not the number of
+  DMX ports.
+- Plugins are written in Lua, which makes small automations approachable — and makes it worth version-controlling
+  them like any other code.
+tags:
+- lighting
+- console
+- ma
+- grandma3
+sources:
+- title: MA Lighting
+  url: https://www.malighting.com/
+  publisher: MA Lighting
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

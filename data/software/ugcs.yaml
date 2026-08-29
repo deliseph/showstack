@@ -1,0 +1,44 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: ugcs
+name: UgCS
+vendor: SPH Engineering
+category: production-management
+license: Proprietary
+price_model: subscription
+platforms:
+- windows
+- macos
+- linux
+status: current
+summary: >-
+  Mission planning and ground control for unmanned aircraft, including a drone-show workflow: choreography
+  is designed, checked for separation and limits across the whole flight, and uploaded to each aircraft
+  before launch, after which the fleet flies its own files against GNSS time.
+homepage:
+  url: https://www.ugcs.com/
+  label: UgCS
+typical_use:
+- Planning and validating drone light show choreography
+- Ground control and fleet monitoring during a display
+gotchas:
+- The plan is the safety case. A show that cannot be checked collision-free offline should not be
+  armed.
+- Every jurisdiction requires authorisation for a display. Confirm the current requirement with
+  the regulator, not with the software.
+tags:
+- drone
+- uav
+- show
+- planning
+- gnss
+sources:
+- title: UgCS
+  url: https://www.ugcs.com/
+  publisher: SPH Engineering
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

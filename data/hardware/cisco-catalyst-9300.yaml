@@ -1,0 +1,53 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: cisco-catalyst-9300
+name: Cisco Catalyst 9300
+vendor: Cisco
+category: network-switch
+status: current
+summary: >-
+  Enterprise stackable switch that turns up as venue and broadcast infrastructure rather than as
+  touring kit. Powerful, well supported, and configured in a language that assumes a network engineer
+  — which is why an entertainment-focused switch is often the better answer on a truck.
+speaks:
+- protocol: ptp-1588
+  direction: bidirectional
+  note: Depending on licence and configuration.
+  confidence: reported
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Transported when configured correctly.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Transported; IGMP snooping and a querier must be configured.
+  confidence: reported
+form_factor: Rackmount stackable switch
+rack_units: 1
+homepage:
+  url: https://www.cisco.com/
+  label: Cisco
+gotchas:
+- IGMP snooping without a querier is worse than no snooping. On a venue switch this is the single
+  most common cause of a lighting network that dies when audio is added.
+- Feature availability is licensed. Confirm the licence tier before designing around PTP or advanced
+  QoS.
+tags:
+- networking
+- switch
+- cisco
+- enterprise
+sources:
+- title: Cisco Catalyst 9300
+  url: https://www.cisco.com/
+  publisher: Cisco
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

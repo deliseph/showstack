@@ -23,6 +23,7 @@ import {
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
   throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
+  subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
 } from './toolmath.mjs'
 
 // The tested implementations, embedded verbatim.
@@ -34,6 +35,7 @@ const MATH_SRC = [
   ohmsLaw, speakerImpedance, processingDelay, speakerNetwork,
   throwRatio, screenLuminance, relayLogic, dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
+  subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
 ].map((f) => f.toString()).join('\n\n')
 
 export function toolsPage({ esc, shell, SITE, GH }) {
@@ -160,6 +162,19 @@ transition:height .35s ease,background .35s ease;min-height:2px}
   <p class="note">Absolute = (universe − 1) × 512 + address. sACN multicast per <a href="/protocols/sacn/">ANSI E1.31</a>; Art-Net port-address per <a href="/protocols/art-net/">Art-Net 4</a> (7-bit Net, 4-bit Sub-Net, 4-bit Universe — the sACN universe number and the Art-Net universe nibble are different things).</p>
 </div>
 
+<div class="tool" id="dmxload">
+  <h3>DMX line budget</h3>
+  <div class="row">
+    <div class="field"><label for="dl-1">at 1 UL</label><input id="dl-1" type="number" min="0" value="8" inputmode="numeric" style="width:92px"></div>
+    <div class="field"><label for="dl-2">at 1/2 UL</label><input id="dl-2" type="number" min="0" value="0" inputmode="numeric" style="width:92px"></div>
+    <div class="field"><label for="dl-4">at 1/4 UL</label><input id="dl-4" type="number" min="0" value="40" inputmode="numeric" style="width:92px"></div>
+    <div class="field"><label for="dl-8">at 1/8 UL</label><input id="dl-8" type="number" min="0" value="0" inputmode="numeric" style="width:92px"></div>
+  </div>
+  <div class="meter" id="dl-meter"></div>
+  <div class="out" id="dl-out" role="status" aria-live="polite"></div>
+  <p class="note">RS-485 caps a segment at <b>32 unit loads</b>, not 32 fixtures. A modern receiver is often 1/4 or 1/8 UL, so a line can carry far more than thirty-two boxes — and a rig of old 1 UL gear cannot. The figure is in the fixture manual; assume 1 UL if it is not stated. <a href="/learn/dmx/">Why this is the limit →</a></p>
+</div>
+
 <div class="tool" id="dip">
   <h3>DIP switch</h3>
   <div class="row">
@@ -211,6 +226,17 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="del-out" role="status" aria-live="polite"></div>
   <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
+</div>
+
+<div class="tool" id="spl">
+  <h3>SPL over distance</h3>
+  <div class="row">
+    <div class="field"><label for="sp-l">Level (dB)</label><input id="sp-l" type="number" value="100" inputmode="decimal" style="width:96px"></div>
+    <div class="field"><label for="sp-r">at (m)</label><input id="sp-r" type="number" value="1" min="0.1" step="0.1" inputmode="decimal" style="width:86px"></div>
+    <div class="field"><label for="sp-d">Listener at (m)</label><input id="sp-d" type="number" value="30" min="0.1" step="0.5" inputmode="decimal" style="width:120px"></div>
+  </div>
+  <div class="out" id="sp-out" role="status" aria-live="polite"></div>
+  <p class="note">Inverse square law: −6 dB per doubling of distance, in a free field. Indoors reflections give some back, so this is the conservative figure for neighbour-noise and clearance work and the pessimistic one for coverage. <a href="/learn/sound/">Why 6 dB →</a></p>
 </div>
 
 <div class="tool" id="latency">
@@ -395,6 +421,49 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
   <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
+</div>
+</div>
+
+<div class="toolgroup">Content &amp; timing</div>
+<div class="toolgrid">
+<div class="tool" id="frame">
+  <h3>Frame budget</h3>
+  <div class="row">
+    <div class="field"><label for="fb-fps">Frame rate</label><input id="fb-fps" type="number" min="1" max="240" step="1" value="60" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="fb-a">Geometry ms</label><input id="fb-a" type="number" min="0" step="0.1" value="4" inputmode="decimal" style="width:100px"></div>
+    <div class="field"><label for="fb-b">Lighting ms</label><input id="fb-b" type="number" min="0" step="0.1" value="5" inputmode="decimal" style="width:100px"></div>
+    <div class="field"><label for="fb-c">Effects ms</label><input id="fb-c" type="number" min="0" step="0.1" value="3" inputmode="decimal" style="width:100px"></div>
+    <div class="field"><label for="fb-d">Post + output ms</label><input id="fb-d" type="number" min="0" step="0.1" value="2" inputmode="decimal" style="width:118px"></div>
+  </div>
+  <div class="out" id="fb-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="fb-viz" aria-hidden="true"></div>
+  <p class="note">Every stage of a real-time pipeline spends part of the same frame period, and a pipeline that overruns does not run slightly slower — it drops frames. The achievable rate shown is what the measured work can actually hold. <a href="/learn/engines/">Why real-time is a timing problem →</a></p>
+</div>
+
+<div class="tool" id="pyro">
+  <h3>Pyro fire time</h3>
+  <div class="row">
+    <div class="field"><label for="py-e">Effect seen at (s)</label><input id="py-e" type="number" min="0" step="0.1" value="60" inputmode="decimal" style="width:120px"></div>
+    <div class="field"><label for="py-l">Lift time (s)</label><input id="py-l" type="number" min="0" step="0.1" value="4.2" inputmode="decimal" style="width:110px"></div>
+    <div class="field"><label for="py-p">Prefire (s)</label><input id="py-p" type="number" min="0" step="0.1" value="0.8" inputmode="decimal" style="width:110px"></div>
+  </div>
+  <div class="out" id="py-out" role="status" aria-live="polite"></div>
+  <p class="note">A designer programs the moment an effect is <em>seen</em>; the firing system fires earlier by the item&rsquo;s lift and prefire. Two effects bursting on the same beat can be seconds apart on the script. This is design arithmetic only — the item data comes from the manufacturer, and nothing here arms anything. <a href="/learn/aerial/">How pyro is synchronised →</a></p>
+</div>
+</div>
+
+<div class="toolgroup">Networking</div>
+<div class="toolgrid">
+<div class="tool wide" id="subnet">
+  <h3>Subnet calculator</h3>
+  <div class="row">
+    <div class="field"><label for="sb-ip">Address</label><input id="sb-ip" type="text" value="192.168.1.50" spellcheck="false" style="width:170px"></div>
+    <div class="field"><label for="sb-p">Prefix /<span id="sb-plab">24</span></label><input id="sb-p" type="range" min="0" max="32" value="24" style="width:190px"></div>
+    <div class="field"><label for="sb-pn">or type it</label><input id="sb-pn" type="number" min="0" max="32" value="24" inputmode="numeric" style="width:92px"></div>
+  </div>
+  <div class="out" id="sb-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap"><table class="tt" id="sb-table"></table></div>
+  <p class="note">The mask says how many of the 32 bits are the network; everything else follows from that. A /31 is a point-to-point link with both addresses usable (RFC 3021) and a /32 is a single host, which is why neither reserves a broadcast address. <a href="/learn/network/">How to calculate it by hand →</a></p>
 </div>
 </div>
 
@@ -968,6 +1037,102 @@ function imDraw(freqs, r) {
 $("#im-f").addEventListener("input", imRender);
 $("#im-g").addEventListener("input", imRender);
 
+// ---- DMX line budget in unit loads ----
+function dlRender(){
+  const g = [
+    {count: Number($("#dl-1").value) || 0, unitLoad: 1},
+    {count: Number($("#dl-2").value) || 0, unitLoad: 0.5},
+    {count: Number($("#dl-4").value) || 0, unitLoad: 0.25},
+    {count: Number($("#dl-8").value) || 0, unitLoad: 0.125},
+  ];
+  const r = dmxLineBudget(g);
+  if (!r) { $("#dl-out").innerHTML = '<span class="err">Counts must be zero or more.</span>'; return; }
+  const scale = Math.max(r.limit / 0.75, r.unitLoads * 1.08);
+  $("#dl-meter").innerHTML =
+    '<div class="fill" style="width:' + Math.min(100, (r.unitLoads / scale) * 100) + '%' +
+    (r.withinLimit ? '' : ';background:linear-gradient(90deg,var(--accent2),var(--warn))') + '"></div>' +
+    '<div class="tick" style="left:' + ((r.limit / scale) * 100) + '%"><span>32 UL</span></div>';
+  $("#dl-out").innerHTML = r.withinLimit
+    ? '<b>' + r.fixtures + '</b> fixtures = <b>' + r.unitLoads + '</b> unit loads · <span class="ok">one segment</span>, ' + r.headroomUnitLoads + ' UL spare'
+    : '<b>' + r.fixtures + '</b> fixtures = <b>' + r.unitLoads + '</b> unit loads · <span class="err">needs ' + r.segmentsNeeded + ' segments</span> — split with an opto-splitter';
+}
+for (const id of ["#dl-1","#dl-2","#dl-4","#dl-8"]) $(id).addEventListener("input", dlRender);
+
+// ---- Subnet calculator ----
+function fbRender(){
+  const r = frameBudget($("#fb-fps").value,
+    [$("#fb-a").value, $("#fb-b").value, $("#fb-c").value, $("#fb-d").value]);
+  if (!r) { $("#fb-out").textContent = "Enter a frame rate."; $("#fb-viz").innerHTML = ""; return; }
+  const verdict = r.withinBudget
+    ? '<b>' + r.headroomMs + ' ms</b> of headroom left'
+    : '<b class="bad">over by ' + (r.usedMs - r.periodMs).toFixed(2) + ' ms</b> — this drops frames';
+  $("#fb-out").innerHTML = 'A frame at ' + r.fps + ' fps is <b>' + r.periodMs + ' ms</b>. '
+    + 'Using <b>' + r.usedMs + ' ms</b> (' + r.percentUsed + '%), ' + verdict + '. '
+    + 'Achievable rate with this work: <b>' + r.achievableFps + ' fps</b>.';
+  const stages = [["geometry", $("#fb-a").value], ["lighting", $("#fb-b").value],
+    ["effects", $("#fb-c").value], ["post + output", $("#fb-d").value]];
+  const colours = ["var(--dom-control)", "var(--accent2)", "var(--dom-network)", "var(--dom-visual)"];
+  let bar = '<div style="display:flex;height:30px;border:1px solid var(--line);border-radius:6px;overflow:hidden">';
+  stages.forEach((st, i) => {
+    const ms = Math.max(0, Number(st[1]) || 0);
+    const w = Math.min(100, (ms / r.periodMs) * 100);
+    if (w > 0) bar += '<div style="width:' + w + '%;background:' + colours[i] + ';color:var(--bg);'
+      + 'font-family:var(--mono);font-size:10px;display:flex;align-items:center;justify-content:center;'
+      + 'overflow:hidden;white-space:nowrap">' + st[0] + '</div>';
+  });
+  if (r.withinBudget) bar += '<div style="flex:1;background:var(--panel2)"></div>';
+  $("#fb-viz").innerHTML = bar + '</div>';
+}
+for (const id of ["#fb-fps","#fb-a","#fb-b","#fb-c","#fb-d"]) $(id).addEventListener("input", fbRender);
+
+function pyRender(){
+  const r = pyroCueTime($("#py-e").value, $("#py-l").value, $("#py-p").value);
+  if (!r) { $("#py-out").textContent = "Enter a time and non-negative delays."; return; }
+  if (r.beforeShowStart) {
+    $("#py-out").innerHTML = 'Fire time is <b class="bad">' + r.fireSeconds + ' s</b> — before the show starts. '
+      + 'This item cannot land where it is programmed; move the effect later or choose a shorter lift.';
+    return;
+  }
+  $("#py-out").innerHTML = 'Fire at <b>' + r.fireSeconds + ' s</b> — '
+    + '<b>' + r.fireTimecode25 + '</b> at 25 fps, <b>' + r.fireTimecode30 + '</b> at 30 fps. '
+    + 'That is <b>' + r.totalDelaySeconds + ' s</b> before the audience sees it.';
+}
+for (const id of ["#py-e","#py-l","#py-p"]) $(id).addEventListener("input", pyRender);
+
+function sbRender(fromNum){
+  if (fromNum) $("#sb-p").value = Math.max(0, Math.min(32, Number($("#sb-pn").value) || 0));
+  else $("#sb-pn").value = $("#sb-p").value;
+  const p = Number($("#sb-p").value);
+  $("#sb-plab").textContent = p;
+  const r = subnetCidr($("#sb-ip").value.trim(), p);
+  if (!r) {
+    $("#sb-out").innerHTML = '<span class="err">Four numbers 0–255 separated by dots, and a prefix 0–32.</span>';
+    $("#sb-table").innerHTML = "";
+    return;
+  }
+  $("#sb-out").innerHTML = '<b>' + r.cidr + '</b> · ' + r.usableHosts.toLocaleString() + ' usable hosts · ' +
+    (r.isPrivate ? '<span class="ok">RFC 1918 private</span>' : '<span class="err">public address space</span>');
+  const row = (k, v) => '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+  $("#sb-table").innerHTML =
+    row("Network", r.network) + row("Subnet mask", r.mask) + row("Wildcard", r.wildcard) +
+    row("Broadcast", r.broadcast ?? "— none at /" + r.prefix) +
+    row("First host", r.firstHost ?? "—") + row("Last host", r.lastHost ?? "—") +
+    row("Total addresses", r.totalAddresses.toLocaleString()) +
+    row("Usable hosts", r.usableHosts.toLocaleString());
+}
+$("#sb-ip").addEventListener("input", () => sbRender(false));
+$("#sb-p").addEventListener("input", () => sbRender(false));
+$("#sb-pn").addEventListener("input", () => sbRender(true));
+
+// ---- SPL over distance ----
+function spRender(){
+  const r = splAtDistance($("#sp-l").value, $("#sp-r").value, $("#sp-d").value);
+  if (!r) { $("#sp-out").innerHTML = '<span class="err">Distances must be greater than zero.</span>'; return; }
+  $("#sp-out").innerHTML = '<b>' + r.spl + ' dB</b> at ' + $("#sp-d").value + ' m — down <b>' + r.dropDb +
+    ' dB</b> over ' + r.doublings + ' doublings of distance (free field)';
+}
+for (const id of ["#sp-l","#sp-r","#sp-d"]) $(id).addEventListener("input", spRender);
+
 dmxRender(false);
 dipRenderFromAddress();
 dbuvRender("dbu");
@@ -986,6 +1151,11 @@ latRender();
 thRender();
 scrRender();
 relayRender();
+dlRender();
+fbRender();
+pyRender();
+sbRender(false);
+spRender();
 brRender(true);
 vdRender();
 phRender();
@@ -994,7 +1164,7 @@ imRender();
 `
 
   return shell({
-    title: 'Field tools — bridle angle, voltage drop, phase balance, noise dose, RF intermod, DMX, delay and timecode | showstack',
+    title: 'Field tools — subnet, DMX unit loads, bridle angle, voltage drop, noise dose, RF intermod, delay and timecode | showstack',
     description: 'The calculators technicians use daily: bridle angle, voltage drop, three-phase balance, noise dose, RF intermod, DMX address, DIP switches, speaker delay and mixed impedance, timecode, relay logic, dBu/dBV and SPL weighting reference, power load, Ohm’s law, latency budget, beam photometrics, LED wall, projector throw and screen brightness, RF wavelength. Free, offline, tested arithmetic.',
     canonical: `${SITE}/tools/`,
     jsonld: {
@@ -1007,7 +1177,7 @@ imRender();
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      featureList: 'bridle angle and leg tension explainer, cable voltage drop calculator, three-phase load balance and neutral current calculator, noise exposure dose calculator, third-order intermodulation checker, DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, relay logic truth table, dBu/dBV line-level converter, SPL weighting (dBA/dBZ) reference, impedance vs resistance reference, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, RF wavelength calculator',
+      featureList: 'subnet calculator, DMX unit-load line budget, SPL over distance, bridle angle and leg tension explainer, cable voltage drop calculator, three-phase load balance and neutral current calculator, noise exposure dose calculator, third-order intermodulation checker, DMX address calculator, sACN multicast calculator, Art-Net port-address, DIP switch calculator, speaker delay calculator, drop-frame timecode converter, relay logic truth table, dBu/dBV line-level converter, SPL weighting (dBA/dBZ) reference, impedance vs resistance reference, power load calculator, Ohm law calculator, mixed series parallel speaker impedance calculator, latency budget calculator, beam angle and photometrics calculator, LED wall resolution calculator, projector throw ratio calculator, screen brightness foot-lambert calculator, RF wavelength calculator',
     },
     body,
     extraStyle: style,

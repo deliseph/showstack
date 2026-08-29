@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-61131-3
+designation: IEC 61131-3
+title: 'Programmable controllers — Part 3: Programming languages'
+body: IEC
+domain: machinery
+year: 2013
+scope: >-
+  Defines the five programming languages used on programmable logic controllers — Structured Text,
+  Ladder Diagram, Function Block Diagram, Sequential Function Chart and Instruction List — together
+  with a common data type and program organisation model.
+status: current
+free_to_read: false
+access_url:
+  url: https://webstore.iec.ch/publication/4552
+  label: IEC Webstore
+notes: >-
+  The reason a control program written for one PLC platform is recognisable to somebody who works
+  on another. Underlies TwinCAT, CODESYS, TIA Portal and most of the automation platforms used for
+  entertainment machinery.
+tags:
+- plc
+- automation
+- machinery
+- programming
+sources:
+- title: IEC 61131-3
+  url: https://webstore.iec.ch/publication/4552
+  publisher: International Electrotechnical Commission
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

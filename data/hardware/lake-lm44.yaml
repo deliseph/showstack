@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: lake-lm44
+name: Lab.gruppen Lake LM44
+vendor: Lab.gruppen
+category: audio-processor
+status: current
+summary: >-
+  Four-in, four-out loudspeaker processor running Lake processing, with the Mesa EQ and linear-phase
+  crossovers that made the platform a system-tech standard. Where a system's alignment and limiting
+  actually live.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Networked audio.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: unverified
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: unverified
+form_factor: Rackmount loudspeaker processor
+rack_units: 1
+homepage:
+  url: https://www.labgruppen.com/
+  label: Lab.gruppen
+gotchas:
+- The processor holds the system design. Back up the file, and know which version is in the rack
+  before anybody adjusts anything.
+tags:
+- audio
+- processor
+- lake
+- system
+sources:
+- title: Lab.gruppen
+  url: https://www.labgruppen.com/
+  publisher: Lab.gruppen
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

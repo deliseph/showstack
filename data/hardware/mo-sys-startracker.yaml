@@ -1,0 +1,43 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: mo-sys-startracker
+name: Mo-Sys StarTracker
+vendor: Mo-Sys Engineering
+category: tracking-system
+status: current
+summary: >-
+  Camera tracking that works by looking upward at retro-reflective markers on the ceiling and computing
+  where the camera is from what it sees. Robust because the reference is fixed to the building rather
+  than to encoders on a moving rig.
+speaks:
+- protocol: freed
+  direction: out
+  note: Camera position and lens data.
+  confidence: reported
+- protocol: genlock
+  direction: in
+  note: Frame reference so tracking data lines up with the picture.
+  confidence: reported
+form_factor: Camera-mounted sensor plus processing unit
+homepage:
+  url: https://www.mo-sys.com/
+  label: Mo-Sys Engineering
+gotchas:
+- Lens calibration is as important as position. An AR graphic that slides when the camera moves
+  is usually a lens data problem, not a tracking one.
+- It needs a ceiling it can see. Rigging, drapes and moving trusses all take markers out of view.
+tags:
+- tracking
+- camera
+- freed
+- virtual-production
+sources:
+- title: Mo-Sys
+  url: https://www.mo-sys.com/
+  publisher: Mo-Sys Engineering
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

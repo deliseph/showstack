@@ -1,0 +1,39 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: kinesys-libra
+name: Kinesys Libra
+vendor: Kinesys
+category: motion-control
+status: current
+summary: >-
+  Load-cell monitoring system for hoists and rigging points: it measures what each point is actually
+  carrying, live, and alarms on limits. The measurement that tells you whether the calculation was
+  right.
+speaks:
+- protocol: snmp
+  direction: out
+  note: Monitoring, depending on configuration.
+  confidence: unverified
+form_factor: Load cells with monitoring and display system
+homepage:
+  url: https://www.kinesys.com/
+  label: Kinesys
+gotchas:
+- Monitoring is not a substitute for a load calculation and a competent rigger. It is the check
+  on both.
+- Calibration matters and has a date on it. An uncalibrated load reading is a number, not a measurement.
+tags:
+- rigging
+- load
+- monitoring
+- kinesys
+sources:
+- title: Kinesys
+  url: https://www.kinesys.com/
+  publisher: Kinesys
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-16739-1
+designation: ISO 16739-1
+title: Industry Foundation Classes (IFC) for data sharing in the construction and facility management
+  industries
+body: ISO
+domain: rigging-structural
+year: 2024
+scope: >-
+  Defines IFC, the open data model for exchanging building information between software: elements,
+  their properties, and the relationships between them, rather than geometry alone.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/84123.html
+  label: ISO
+notes: >-
+  The format a venue's BIM model travels in. For touring work you mostly consume it — where the
+  steel is, what it takes, where the services run — rather than author it.
+tags:
+- bim
+- ifc
+- cad
+- venue
+sources:
+- title: ISO 16739-1
+  url: https://www.iso.org/standard/84123.html
+  publisher: International Organization for Standardization
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

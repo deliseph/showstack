@@ -1,0 +1,63 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: chamsys-magicq-mq80
+name: ChamSys MagicQ MQ80
+vendor: ChamSys
+category: lighting-console
+status: current
+summary: >-
+  Compact console running the full MagicQ software, with the same show files as the rest of the
+  range. The usual argument for it is that the software is free on a laptop, so a designer can program
+  anywhere and land on the console with a show that already works.
+speaks:
+- protocol: art-net
+  direction: out
+  note: Multiple universes over network.
+  confidence: reported
+- protocol: sacn
+  direction: out
+  note: Multiple universes over network.
+  confidence: reported
+- protocol: dmx512
+  direction: out
+  note: Direct DMX outputs.
+  confidence: reported
+- protocol: rdm
+  direction: bidirectional
+  note: Through supported nodes and outputs.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode for playback.
+  confidence: reported
+- protocol: mtc
+  direction: in
+  note: MIDI timecode.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Remote control and feedback.
+  confidence: reported
+form_factor: Compact console
+homepage:
+  url: https://chamsyslighting.com/
+  label: ChamSys
+gotchas:
+- Universe counts on the physical outputs and over the network are different numbers. Check both
+  against the rig before quoting.
+- The free PC software is the same application, which makes offline programming genuinely equivalent
+  — and makes it easy to build a show that outgrows the console it is going onto.
+tags:
+- lighting
+- console
+- chamsys
+sources:
+- title: ChamSys
+  url: https://chamsyslighting.com/
+  publisher: ChamSys
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

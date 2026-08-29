@@ -1,0 +1,54 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: l-isa-controller
+name: L-ISA Controller
+vendor: L-Acoustics
+category: audio-mixing
+license: Proprietary
+price_model: quote-only
+platforms:
+- macos
+- windows
+status: current
+summary: >-
+  Object-based audio control for L-Acoustics immersive systems: sources are positioned in the room
+  rather than panned between speakers, and the processing works out what each output has to do.
+  The point where a tracking system's coordinates become where a voice appears to come from.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Object positions and control.
+  confidence: reported
+- protocol: psn
+  direction: in
+  note: Performer position from tracking systems.
+  confidence: unverified
+- protocol: rttrpm
+  direction: in
+  note: Performer position from tracking systems.
+  confidence: unverified
+homepage:
+  url: https://www.l-acoustics.com/
+  label: L-Acoustics
+typical_use:
+- Immersive and object-based mixes
+- Following a tracked performer with a sound object
+- Theatre and residency work where localisation matters
+gotchas:
+- It consumes a coordinate system. Agree the origin with lighting and video before anybody surveys,
+  or the sound will be exactly as wrong as the light.
+tags:
+- immersive
+- object-audio
+- tracking
+- l-acoustics
+sources:
+- title: L-Acoustics
+  url: https://www.l-acoustics.com/
+  publisher: L-Acoustics
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

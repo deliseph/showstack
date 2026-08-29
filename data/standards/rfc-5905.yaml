@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: rfc-5905
+designation: RFC 5905
+title: 'Network Time Protocol Version 4: Protocol and Algorithms Specification'
+body: IETF
+domain: networking
+year: 2010
+scope: >-
+  Defines NTPv4: the on-wire protocol, the clock-filter and selection algorithms, and how a client
+  disciplines a local clock from one or more servers while compensating for network delay.
+status: current
+free_to_read: true
+access_url:
+  url: https://www.rfc-editor.org/rfc/rfc5905
+  label: RFC 5905 (free)
+related_protocols:
+- ntp
+notes: >-
+  Free to read, like every RFC. Worth skimming for the distinction between stepping and slewing
+  a clock, which is the behaviour that surprises people on show machines.
+tags:
+- time
+- ntp
+- networking
+sources:
+- title: RFC 5905
+  url: https://www.rfc-editor.org/rfc/rfc5905
+  publisher: IETF
+  accessed: '2026-08-29'
+  primary: true
+confidence: verified
+contributed_by: []
+updated: '2026-08-29'

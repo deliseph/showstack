@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: l-acoustics-la7-16i
+name: L-Acoustics LA7.16i
+vendor: L-Acoustics
+category: amplifier
+status: current
+summary: >-
+  Sixteen-channel installation amplified controller, aimed at fixed systems with many small loudspeakers
+  — immersive rooms, theatres and venues where channel count matters more than raw power per channel.
+speaks:
+- protocol: avb-milan
+  direction: bidirectional
+  note: Networked audio.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: unverified
+- protocol: aes70-oca
+  direction: bidirectional
+  note: Control and monitoring.
+  confidence: unverified
+form_factor: Rackmount sixteen-channel amplified controller
+rack_units: 2
+homepage:
+  url: https://www.l-acoustics.com/
+  label: L-Acoustics
+gotchas:
+- Milan is an AVB profile and needs an AVB-capable switch. It is not something a general-purpose
+  switch will simply carry.
+tags:
+- audio
+- amplifier
+- install
+- l-acoustics
+- milan
+sources:
+- title: L-Acoustics
+  url: https://www.l-acoustics.com/
+  publisher: L-Acoustics
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: db-40d
+name: d&b audiotechnik 40D installation amplifier
+vendor: d&b audiotechnik
+category: amplifier
+status: current
+summary: >-
+  Four-channel installation amplifier with the same DSP and loudspeaker library as the touring range,
+  in a form intended to be racked once and left. Networked control and monitoring are the reason
+  it belongs in an install rather than a plain power amp.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Digital audio input.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: unverified
+- protocol: aes70-oca
+  direction: bidirectional
+  note: Control and monitoring.
+  confidence: reported
+form_factor: Rackmount four-channel amplifier
+rack_units: 2
+homepage:
+  url: https://www.dbaudio.com/
+  label: d&b audiotechnik
+gotchas:
+- The loudspeaker setup selected in the amplifier is part of the system design, not a preference.
+  Changing it changes the protection and the response.
+tags:
+- audio
+- amplifier
+- install
+- d&b
+sources:
+- title: d&b audiotechnik
+  url: https://www.dbaudio.com/
+  publisher: d&b audiotechnik
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

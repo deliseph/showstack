@@ -1,0 +1,71 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: ntp
+name: NTP
+aka:
+- Network Time Protocol
+- NTPv4
+- SNTP
+category: timecode-sync
+summary: >-
+  The protocol that keeps ordinary computers agreeing about the time of day. It corrects
+  for network delay by measuring the round trip and disciplines the local clock gradually
+  rather than jumping it. Milliseconds on a good LAN — nowhere near PTP, and exactly right
+  for its actual job: making logs, licences and scheduled events line up across a rack.
+transport:
+- udp
+default_ports:
+- number: 123
+  transport: udp
+  role: NTP client and server
+  iana_registered: true
+  note: 'Symmetric: both ends use 123 in the classic mode. Blocking it outbound is a common cause
+    of machines that slowly drift apart.'
+multicast:
+  used: false
+  note: Broadcast and multicast NTP modes exist and are rarely the right answer on a show
+    network; unicast to a named server is predictable and debuggable.
+openness: open-published
+spec_url:
+  url: https://www.rfc-editor.org/rfc/rfc5905
+  label: RFC 5905 — NTPv4
+standards:
+- rfc-5905
+steward: IETF
+first_published: 1985
+status: current
+typical_use:
+- Keeping show machines, media servers and consoles on the same wall-clock time so logs can be compared
+  after a fault.
+- Time-stamping recordings, captures and measurement sessions.
+- Satisfying licensing and certificate checks that fail silently when a machine believes it is in
+  1970.
+- Scheduling in installations — building systems, digital signage, unattended playback.
+gotchas:
+- NTP is not a substitute for PTP, LTC or genlock. It gives a machine the right time of day; it
+  does not lock media clocks and cannot align a frame or a sample.
+- 'Two time sources on one network is the classic fault: a show LAN with no internet and a machine
+  still pointed at a public pool will drift away from everything else, or step suddenly when it
+  finally reaches one.'
+- Give an isolated show network its own NTP server — a switch, a router, a master clock or a GNSS
+  receiver — rather than leaving each machine to guess.
+- Windows domain time and NTP are related but configured differently, and a machine that has joined
+  a domain may quietly ignore the server you set.
+- A step correction rather than a slew can jump a clock backwards, which breaks anything measuring
+  elapsed time. Prefer a source that lets the daemon discipline gradually.
+tags:
+- time
+- sync
+- clock
+- networking
+- ntp
+sources:
+- title: 'RFC 5905: Network Time Protocol Version 4'
+  url: https://www.rfc-editor.org/rfc/rfc5905
+  publisher: IETF
+  accessed: '2026-08-29'
+  primary: true
+confidence: verified
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,49 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: allen-heath-avantis
+name: Allen & Heath Avantis
+vendor: Allen & Heath
+category: audio-console
+status: current
+summary: >-
+  Compact dLive-engine console at a price that put a serious processing platform into venues and
+  rental stock that would not previously have carried one. Two full-size touchscreens and card-based
+  I/O.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Via option card.
+  confidence: reported
+- protocol: soundgrid
+  direction: bidirectional
+  note: Via option card.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+- protocol: word-clock
+  direction: bidirectional
+  note: Clock.
+  confidence: unverified
+form_factor: Console
+homepage:
+  url: https://www.allen-heath.com/
+  label: Allen & Heath
+gotchas:
+- I/O is entirely a question of which cards are fitted and which stage boxes are on the loop. Confirm
+  the whole system, not the surface.
+tags:
+- audio
+- console
+- allen-heath
+sources:
+- title: Allen & Heath
+  url: https://www.allen-heath.com/
+  publisher: Allen & Heath
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

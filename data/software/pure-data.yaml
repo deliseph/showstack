@@ -1,0 +1,58 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: pure-data
+name: Pure Data
+aka:
+- Pd
+- Pd-vanilla
+- Pd extended
+vendor: Miller Puckette and contributors
+category: content-creation
+license: BSD-style
+price_model: open-source
+platforms:
+- windows
+- macos
+- linux
+- embedded
+status: current
+summary: >-
+  The open-source ancestor of the same dataflow idea, by the author of Max. Smaller, plainer and
+  free, which makes it the pragmatic choice for an installation that has to keep running for years
+  with no licence server in the way, and for embedded work on small Linux boards.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: Built in.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Through standard external objects.
+  confidence: reported
+homepage:
+  url: https://puredata.info/
+  label: Pure Data
+typical_use:
+- Long-running installations where licensing must not be a failure mode
+- Embedded audio and control on small computers
+- Teaching dataflow without a purchase
+gotchas:
+- The interface is spare and the documentation assumes you already know the model. Worth learning
+  alongside Max rather than instead of it.
+- Externals vary in maintenance. Freeze the exact set a piece depends on and archive them with the
+  patch.
+tags:
+- dataflow
+- patching
+- open-source
+- audio
+sources:
+- title: Pure Data
+  url: https://puredata.info/
+  publisher: Pure Data community
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,56 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: codesys
+name: CODESYS
+vendor: CODESYS Group
+category: show-control
+license: Proprietary
+price_model: freemium
+platforms:
+- windows
+status: current
+summary: >-
+  A vendor-independent IEC 61131-3 development environment used as the programming front end for
+  a very large number of PLCs and drives. Knowing CODESYS transfers across a lot of hardware, which
+  is exactly why it exists.
+speaks:
+- protocol: opc-ua
+  direction: bidirectional
+  note: Standard integration for exposing controller state.
+  confidence: reported
+- protocol: modbus-tcp
+  direction: bidirectional
+  note: Standard.
+  confidence: reported
+- protocol: canopen
+  direction: bidirectional
+  note: Standard.
+  confidence: reported
+- protocol: ethercat
+  direction: bidirectional
+  note: Supported as a fieldbus.
+  confidence: reported
+homepage:
+  url: https://www.codesys.com/
+  label: CODESYS
+typical_use:
+- Programming machinery controllers from many different manufacturers
+- Automation work where the hardware choice is not fixed
+gotchas:
+- A shared environment does not mean portable projects. Hardware configuration, libraries and safety
+  functions remain vendor-specific.
+tags:
+- plc
+- automation
+- iec-61131
+- machinery
+sources:
+- title: CODESYS
+  url: https://www.codesys.com/
+  publisher: CODESYS Group
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

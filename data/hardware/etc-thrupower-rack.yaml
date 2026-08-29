@@ -1,0 +1,55 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: etc-thrupower-rack
+name: ETC ThruPower Rack
+vendor: ETC
+category: dimmer-distro
+status: current
+summary: >-
+  Rack whose modules can be configured per circuit as dimmed, switched relay or constant power,
+  so a venue can move between tungsten and LED without rewiring. The answer to a building that has
+  both and will have both for years.
+speaks:
+- protocol: dmx512
+  direction: in
+  note: Control.
+  confidence: reported
+- protocol: sacn
+  direction: in
+  note: Network control.
+  confidence: reported
+- protocol: art-net
+  direction: in
+  note: Network control.
+  confidence: unverified
+- protocol: rdm
+  direction: bidirectional
+  note: Configuration and feedback.
+  confidence: reported
+- protocol: etcnet3
+  direction: bidirectional
+  note: ETC networking.
+  confidence: reported
+form_factor: Floor-standing dimmer and power rack
+homepage:
+  url: https://www.etcconnect.com/
+  label: ETC
+gotchas:
+- A circuit set to constant power will happily deliver mains to a fixture somebody expected to be
+  dark. Label the configuration at the socket, not only in the rack.
+- Configuration lives in the rack. Record it, because the next person will assume the default.
+tags:
+- power
+- dimmer
+- install
+- etc
+sources:
+- title: ETC
+  url: https://www.etcconnect.com/
+  publisher: ETC
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

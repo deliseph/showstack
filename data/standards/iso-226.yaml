@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-226
+designation: ISO 226
+title: Acoustics — Normal equal-loudness-level contours
+body: ISO
+domain: audio
+year: 2023
+scope: >-
+  Defines the equal-loudness contours: the sound pressure level required at each frequency for a
+  pure tone to be judged as loud as a reference tone at 1 kHz. The modern replacement for the Fletcher–Munson
+  curves.
+status: current
+free_to_read: false
+access_url:
+  url: https://www.iso.org/standard/83117.html
+  label: ISO
+notes: >-
+  The reason a mix balanced at show level sounds thin at rehearsal level, and the basis of the A-weighting
+  used in every noise-exposure measurement.
+tags:
+- acoustics
+- loudness
+- psychoacoustics
+- measurement
+sources:
+- title: ISO 226:2023
+  url: https://www.iso.org/standard/83117.html
+  publisher: International Organization for Standardization
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
