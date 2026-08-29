@@ -18,7 +18,7 @@
  * top to a person at the bottom. That is the site's entire argument, and
  * drawing it makes the claim visible instead of merely asserted.
  */
-import { LEARN_GROUPS, LEARN_TOPICS, LEARN_CAPSTONE } from './learn-kit.mjs'
+import { LEARN_GROUPS, LEARN_TOPICS, LEARN_CAPSTONE, LEARN_COUNT } from './learn-kit.mjs'
 
 /** One-line summaries of each stage, written for somebody who has not read anything yet. */
 const STAGE_NOTE = {
@@ -35,7 +35,7 @@ export function homePage({ esc, shell, SITE, GH, db }) {
   const n = db.counts ?? {}
   const total = db.total ?? 0
   const gaps = (db.gaps ?? []).length || db.open_gaps || 0
-  const topicCount = LEARN_TOPICS.length
+  const topicCount = LEARN_COUNT
   const per = (id) => LEARN_TOPICS.filter((t) => t.group === id).length
 
   const style = `

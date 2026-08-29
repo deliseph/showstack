@@ -16,7 +16,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { PAIRS, comparisonPage, comparisonIndex } from './compare.mjs'
 import { interopPage } from './interop.mjs'
-import { toolsPage } from './tools.mjs'
+import { toolsPage, TOOL_COUNT } from './tools.mjs'
 import { verifyPage } from './verify-page.mjs'
 import { networkPage } from './network.mjs'
 import { rfPage } from './rf.mjs'
@@ -52,6 +52,8 @@ import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
 import { learnRiggingPage } from './learn-rigging.mjs'
 import { learnPowerPage } from './learn-power.mjs'
+import { learnOutdoorsPage } from './learn-outdoors.mjs'
+import { learnAccessPage } from './learn-access.mjs'
 import { learnVideoPage } from './learn-video.mjs'
 import { learnColourPage } from './learn-colour.mjs'
 import { learnSensesPage } from './learn-senses.mjs'
@@ -1113,6 +1115,8 @@ export function buildPages(db, dist) {
     ['drawings', () => learnDrawingsPage(learnArgs)],
     ['video', () => learnVideoPage(learnArgs)],
     ['power', () => learnPowerPage(learnArgs)],
+    ['outdoors', () => learnOutdoorsPage(learnArgs)],
+    ['access', () => learnAccessPage(learnArgs)],
     ['rigging', () => learnRiggingPage(learnArgs)],
     ['senses', () => learnSensesPage(learnArgs)],
     ['perception', () => learnPerceptionPage(learnArgs)],
@@ -1207,7 +1211,7 @@ export function buildPages(db, dist) {
 
   // The fallback the service worker serves for an unsaved page. Deliberately
   // not in the sitemap: it is a state, not a destination.
-  write('offline', offlinePage({ esc, shell, SITE, GH }))
+  write('offline', offlinePage({ esc, shell, SITE, GH, TOOL_COUNT }))
   write('tools', toolsPage({ esc, shell, SITE, GH, SPONSOR }))
   urls.push(`${SITE}/check/`)
   write('check', checkPage({ esc, shell, SITE, GH }))

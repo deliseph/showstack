@@ -7,14 +7,14 @@
  * appears to have quietly replaced their request with something else. This
  * says what happened and offers what genuinely is available.
  */
-export function offlinePage({ esc, shell, SITE, GH }) {
+export function offlinePage({ esc, shell, SITE, GH, TOOL_COUNT }) {
   const body = `
 <div class="crumb"><a href="/">showstack</a> / offline</div>
 <h2>No network, and this page is not saved</h2>
 <p class="lede">You asked for a page this device has not stored. Everything below <em>is</em> saved and works right now.</p>
 
 <div class="offgrid">
-  <a class="offcard" href="/tools/"><b>Field tools</b><em>All 34 calculators. They compute on the page and never needed the network.</em></a>
+  <a class="offcard" href="/tools/"><b>Field tools</b><em>All ${TOOL_COUNT} calculators. They compute on the page and never needed the network.</em></a>
   <a class="offcard" href="/learn/"><b>Explainers</b><em>Saved if you asked for them on the tools page. Otherwise the ones you have read.</em></a>
   <a class="offcard" href="/search/"><b>Search the index</b><em>Saved if you asked for it. The whole dataset, searchable, with no signal.</em></a>
   <a class="offcard" href="/"><b>Start again</b><em>The front page, and everything reachable from what is cached.</em></a>

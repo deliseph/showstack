@@ -18,6 +18,8 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { ROOT } from '../scripts/lib/load.mjs'
 import { buildPages } from '../scripts/pages.mjs'
+import { TOOL_IDS, TOOL_GROUPS } from '../scripts/tools.mjs'
+import { LEARN_TOPICS, LEARN_COUNT, LEARN_CAPSTONE } from '../scripts/learn-kit.mjs'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
@@ -401,5 +403,87 @@ describe('vendor verification', () => {
     const expected = [...counts.values()].filter((n) => n >= 2).length
     const rows = (verify.match(/>Check th(em|it)</g) ?? []).length
     assert.equal(rows, expected, 'vendor table row count has drifted from the dataset')
+  })
+})
+
+/**
+ * The tool count, which used to be a lie.
+ *
+ * "34 calculators" was typed into the prose of three separate files and was
+ * wrong in all three within two rounds of work, because nobody updates a
+ * number in a sentence. The list is the source now, and this is what stops it
+ * drifting from the page it describes.
+ */
+describe('tool inventory', () => {
+  const tools = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+
+  test('every tool in the list is on the page, and every tool on the page is in the list', () => {
+    const rendered = [...tools.matchAll(/<div class="tool(?: wide)?" id="([a-z0-9]+)">/g)].map((m) => m[1])
+    assert.deepEqual(rendered, TOOL_IDS, 'the page and TOOL_IDS have drifted apart')
+  })
+
+  test('no tool is filed under two groups, and no group is empty', () => {
+    assert.equal(new Set(TOOL_IDS).size, TOOL_IDS.length, 'a tool id appears twice')
+    for (const [label, ids] of TOOL_GROUPS) {
+      assert.ok(ids.length > 0, `group ${label} is empty`)
+    }
+  })
+
+  test('the count in the offline page prose comes from the list', () => {
+    const offline = readFileSync(join(DIST, 'offline', 'index.html'), 'utf8')
+    assert.ok(offline.includes(`All ${TOOL_IDS.length} calculators`),
+      `the offline page does not say "All ${TOOL_IDS.length} calculators"`)
+  })
+})
+
+/**
+ * The explainer count, which was also a lie.
+ *
+ * Four sentences on three pages each computed this independently, and the
+ * capstone is an explainer page like any other - it has a URL, it is in the
+ * hub's hasPart list, and the offline panel caches it - so the ones that used
+ * LEARN_TOPICS.length were all short by one. Same failure as the tool count,
+ * same fix: one constant, and a test that walks the built pages.
+ */
+describe('explainer inventory', () => {
+  test('every explainer in the list has a built page', () => {
+    for (const slug of [...LEARN_TOPICS.map((t) => t.slug), LEARN_CAPSTONE.slug]) {
+      assert.ok(existsSync(join(DIST, 'learn', slug, 'index.html')), `/learn/${slug}/ was never built`)
+    }
+  })
+
+  test('the count in the prose matches the count of pages, on every page that states it', () => {
+    const hub = readFileSync(join(DIST, 'learn', 'index.html'), 'utf8')
+    const tools = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+    const home = readFileSync(join(DIST, 'index.html'), 'utf8')
+    // Every "N explainers" anywhere in these three pages has to be the one
+    // real total. A second large number means somebody hard-coded a count.
+    for (const [name, html] of [['hub', hub], ['tools', tools], ['home', home]]) {
+      const stated = [...html.matchAll(/(\d+) explainers/g)].map((m) => Number(m[1]))
+      assert.ok(stated.includes(LEARN_COUNT), `${name} never states the real count of ${LEARN_COUNT}`)
+      // Small numbers are legitimate: the home page counts each group of the
+      // chain separately, and no group is anywhere near ten. Anything larger
+      // is claiming to be the total, and the total has one correct value.
+      const wrong = [...new Set(stated)].filter((n) => n > 10 && n !== LEARN_COUNT)
+      assert.deepEqual(wrong, [], `${name} states ${wrong.join(', ')} explainers, not ${LEARN_COUNT}`)
+    }
+  })
+
+  test('the hub lists every explainer in its structured data', () => {
+    const hub = readFileSync(join(DIST, 'learn', 'index.html'), 'utf8')
+    const parts = (hub.match(/"@type":"TechArticle"/g) ?? []).length
+    assert.equal(parts, LEARN_COUNT, 'hasPart and the explainer list disagree')
+  })
+
+  test('every explainer with an assessment has one that is answerable', async () => {
+    const { QUIZZES } = await import('../scripts/quiz.mjs')
+    for (const [slug, questions] of Object.entries(QUIZZES)) {
+      const known = [...LEARN_TOPICS.map((t) => t.slug), LEARN_CAPSTONE.slug]
+      assert.ok(known.includes(slug), `there are questions for /learn/${slug}/, which is not an explainer`)
+      for (const q of questions) {
+        assert.equal(q.options.filter((o) => o.correct).length, 1, `${slug}: not exactly one correct answer`)
+        assert.ok(q.options.every((o) => o.why), `${slug}: an option has no explanation`)
+      }
+    }
   })
 })

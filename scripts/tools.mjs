@@ -15,11 +15,37 @@
  *    page says so instead of silently picking one. A wrong address set
  *    confidently is the exact failure this page exists to prevent.
  */
-import { LEARN_TOPICS } from './learn-kit.mjs'
+import { LEARN_TOPICS, LEARN_COUNT } from './learn-kit.mjs'
+
+/**
+ * Every calculator on the page, in the order it appears, grouped the way the
+ * page groups them.
+ *
+ * This exists because "34 calculators" was written into the prose of three
+ * different files by hand and was wrong in all three within two rounds of
+ * work. The count is now read off this list, and a test asserts the list
+ * matches what the page actually renders, so the sentence cannot lie again.
+ */
+export const TOOL_GROUPS = [
+  ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'tc', 'relay']],
+  ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array']],
+  ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mired', 'stops']],
+  ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'ohm', 'heat', 'battery']],
+  ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
+  ['Access', ['flash', 'ada']],
+  ['Content & timing', ['frame', 'pyro', 'storage']],
+  ['Networking', ['subnet', 'fibre', 'sdi']],
+  ['RF', ['im', 'rf']],
+]
+
+export const TOOL_IDS = TOOL_GROUPS.flatMap(([, ids]) => ids)
+export const TOOL_COUNT = TOOL_IDS.length
 import {
-  CORRECTION_GELS, FIBRE_ATTENUATION,
+  CORRECTION_GELS, FIBRE_ATTENUATION, BEAUFORT, BUNDLE_FACTORS, SDI_RATES,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
   roomModes, lineArrayCoverage, stopsOfLight,
+  windLoad, beaufort, dewPoint, flashRate, assistiveListening,
+  cableDerating, awgToMm2, mm2ToAwg, coaxReach,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -42,15 +68,20 @@ const MATH_SRC = [
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
   roomModes, lineArrayCoverage, stopsOfLight,
+  windLoad, beaufort, dewPoint, flashRate, assistiveListening,
+  cableDerating, awgToMm2, mm2ToAwg, coaxReach,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
 // function, so they are serialised beside the source rather than duplicated.
 const MATH_TABLES = `const CORRECTION_GELS = ${JSON.stringify(CORRECTION_GELS)};
-const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};`
+const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};
+const BEAUFORT = ${JSON.stringify(BEAUFORT)};
+const BUNDLE_FACTORS = ${JSON.stringify(BUNDLE_FACTORS)};
+const SDI_RATES = ${JSON.stringify(SDI_RATES)};`
 
 /**
- * Everything on this page that is the same for all 42 calculators: the finder,
+ * Everything on this page that is the same for every calculator: the finder,
  * the category rail, per-tool permalinks, copy-result and recently-used.
  *
  * Written once and applied generically rather than per tool - 42 hand-wired
@@ -337,6 +368,9 @@ line-height:1.65;font-variant-numeric:tabular-nums;position:relative}
 .out b:first-of-type{font-size:23px;color:var(--signal);letter-spacing:-.4px;line-height:1.15;
 display:inline-block;vertical-align:-1px}
 .out .err{color:var(--fail);font-weight:600}
+.out .warn{color:var(--warn);font-weight:600}
+.fllist{margin:6px 0 8px;padding-left:18px}
+.fllist li{margin:3px 0;color:var(--ink-muted)}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
 .outwrap{position:relative}
 .tcopy{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:10px;letter-spacing:.5px;
@@ -533,7 +567,7 @@ transition:height .35s ease,background .35s ease;min-height:2px}
   </div>
   <p class="offp" id="off-msg">These calculators already run on this page with no signal. Saving the rest means the explainers and the whole searchable index work in a basement too.</p>
   <div class="offbtns">
-    <button type="button" id="off-learn">Save the 29 explainers <span>&middot; ~3 MB</span></button>
+    <button type="button" id="off-learn">Save the ${LEARN_COUNT} explainers <span>&middot; ~3 MB</span></button>
     <button type="button" id="off-index">Save the searchable index <span>&middot; ~1.2 MB</span></button>
   </div>
   <p class="offnote" id="off-note">Stored by your browser on this device. Nothing is sent anywhere, and you can clear it from your browser&rsquo;s site settings.</p>
@@ -565,7 +599,6 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="out" id="dmx-out" role="status" aria-live="polite"></div>
   <p class="note">Absolute = (universe − 1) × 512 + address. sACN multicast per <a href="/protocols/sacn/">ANSI E1.31</a>; Art-Net port-address per <a href="/protocols/art-net/">Art-Net 4</a> (7-bit Net, 4-bit Sub-Net, 4-bit Universe — the sACN universe number and the Art-Net universe nibble are different things).</p>
 </div>
-
 <div class="tool" id="dmxload">
   <h3>DMX line budget</h3>
   <div class="row">
@@ -578,7 +611,6 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="out" id="dl-out" role="status" aria-live="polite"></div>
   <p class="note">RS-485 caps a segment at <b>32 unit loads</b>, not 32 fixtures. A modern receiver is often 1/4 or 1/8 UL, so a line can carry far more than thirty-two boxes — and a rig of old 1 UL gear cannot. The figure is in the fixture manual; assume 1 UL if it is not stated. <a href="/learn/dmx/">Why this is the limit →</a></p>
 </div>
-
 <div class="tool" id="dip">
   <h3>DIP switch</h3>
   <div class="row">
@@ -589,7 +621,6 @@ if the calculation you need is missing, it is one pull request.</p>
   <label class="inline"><input type="checkbox" id="dip-minus"> This fixture uses the (address − 1) convention</label>
   <p class="note">Most fixtures read the switches as plain binary of the address: switch 1 is value 1, switch 9 is value 256, so address 1 = switch 1 ON. Some older gear encodes address − 1 (address 1 = all OFF) — check the fixture manual before trusting either. Click switches to go the other way.</p>
 </div>
-
 <div class="tool wide" id="tc">
   <h3>Timecode</h3>
   <div class="row">
@@ -606,7 +637,6 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="out" id="tc-out" role="status" aria-live="polite"></div>
   <p class="note">Drop-frame skips frame labels 00 and 01 at the start of every minute except each tenth minute — labels, not time. Entering a label that does not exist (say 00:01:00;00 in DF) is reported as such rather than silently rounded. See <a href="/protocols/ltc/">LTC</a> and <a href="/protocols/mtc/">MTC</a>.</p>
 </div>
-
 <div class="tool wide" id="relay">
   <h3>Relay logic matrix</h3>
   <div class="row">
@@ -618,7 +648,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
 </div>
 </div>
-
 <div class="toolgroup">Audio</div>
 <div class="toolgrid">
 <div class="tool" id="delay">
@@ -631,7 +660,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="del-out" role="status" aria-live="polite"></div>
   <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
 </div>
-
 <div class="tool" id="spl">
   <h3>SPL over distance</h3>
   <div class="row">
@@ -642,7 +670,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="sp-out" role="status" aria-live="polite"></div>
   <p class="note">Inverse square law: −6 dB per doubling of distance, in a free field. Indoors reflections give some back, so this is the conservative figure for neighbour-noise and clearance work and the pessimistic one for coverage. <a href="/learn/sound/">Why 6 dB →</a></p>
 </div>
-
 <div class="tool" id="latency">
   <h3>Latency budget</h3>
   <div class="row">
@@ -652,7 +679,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="viz" id="lt-viz" aria-hidden="true"></div>
   <p class="note">List every hop in the chain: console, plugin, system processor, amp DSP. The total is what your time alignment has to absorb, shown as the distance sound covers in that time at 20 °C. Pair it with the speaker delay tool when you align delays to the main PA.</p>
 </div>
-
 <div class="tool" id="spkz">
   <h3>Speaker load</h3>
   <div class="row">
@@ -663,7 +689,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="viz" id="sz-viz" aria-hidden="true"></div>
   <p class="note">Mixed wiring the way you would say it: <b>8+8, 8+8</b> is two series pairs in parallel (8 Ω total). "+" chains boxes in series, "," or "||" puts groups in parallel. With amp watts set it shows power per group and per box: in parallel the lower-impedance group takes more, inside a series chain the higher-impedance box takes more. Check the amplifier's minimum rated load before you land below 4 Ω; 70/100 V line systems play by transformer-tap rules instead.</p>
 </div>
-
 <div class="tool wide" id="audiounits">
   <h3>Audio levels &amp; impedance</h3>
   <div class="row">
@@ -685,7 +710,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Ohms (Ω) also names two different things on this page. <b>Resistance</b> — the Ohm's law tool below, a lamp or heater element — opposes current the same way at any frequency, all of it dissipated as heat. <b>Impedance</b> — the Speaker load tool above — is resistance's AC generalisation, Z = R + jX: a reactance X from the driver's voice coil and crossover that shifts with frequency. A loudspeaker's "8 Ω" is a nominal average, not a fixed value — the real number can swing from under 5 Ω to well over 40 Ω near cone resonance. That is why the speaker load arithmetic above is exact for a stated nominal figure, while Ohm's law's resistive-only assumption is indicative, not exact, once it is pointed at a driver instead of a lamp.</p>
   <p class="note">Light and sound both obey the <b>inverse square law</b> because both radiate from a small source across an expanding sphere: double the distance and the energy spreads over 4× the area, so the level at any point is quartered. For light that is illuminance — lux = candela ÷ throw², see <a href="#beam">Beam &amp; throw</a> below — a fixture twice as far away lights its target at a quarter the lux, all else equal. For sound in a free field (no walls or ground reflection filling it back in) the same physics shows up as a level drop rather than a ratio: −6 dB every doubling of distance, +6 dB every halving. How to use it: to sanity-check a claimed SPL at FOH against a spec measured at 1 m, count doublings of distance and subtract 6 dB each — a source rated 100 dB at 1 m is roughly 88 dB by 4 m (two doublings) outdoors. Indoors, reflections refill part of that drop, so 6 dB/doubling is the conservative, worst-case figure for clearance and neighbour-noise planning, not what a meter will actually read in a live room.</p>
 </div>
-
 <div class="tool wide" id="dose">
   <h3>Noise exposure dose</h3>
   <div class="row">
@@ -702,8 +726,29 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="scene" id="ns-viz" aria-hidden="true"></div>
   <p class="note">The rule selector picks the criterion level, the exchange rate and the criterion duration together. Exchange rate is the whole argument: 3 dB halves the permitted time for every 3 dB louder, 5 dB is far more permissive, and which one applies is a matter of jurisdiction, not physics. This is <em>crew</em> exposure under <a href="/standards/eu-directive-2003-10-ec/">2003/10/EC</a> or <a href="/standards/osha-1910-95/">OSHA 1910.95</a>. Audience exposure is a separate question with its own document — in Germany, <a href="/standards/din-15905-5/">DIN 15905-5</a>.</p>
 </div>
+<div class="tool wide" id="modes">
+  <h3>Room modes</h3>
+  <div class="row">
+    <div class="field"><label for="rm-l">Length (m)</label><input id="rm-l" type="number" min="1" step="0.1" value="12" inputmode="decimal"></div>
+    <div class="field"><label for="rm-w">Width (m)</label><input id="rm-w" type="number" min="1" step="0.1" value="9" inputmode="decimal"></div>
+    <div class="field"><label for="rm-h">Height (m)</label><input id="rm-h" type="number" min="1" step="0.1" value="4" inputmode="decimal"></div>
+    <div class="field"><label for="rm-rt">RT60 (s)</label><input id="rm-rt" type="number" min="0" step="0.1" value="1.2" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="rm-out" role="status" aria-live="polite"></div>
+  <p class="note">Below the Schroeder frequency a room does not behave statistically &mdash; individual standing waves dominate and the response at a seat is set by the room&rsquo;s dimensions rather than by the system. Absorption on the walls does not fix that; the wavelengths are metres long. Axial modes (two parallel surfaces) are the loud ones. Rooms whose dimensions are simple multiples stack their modes instead of spreading them, which is why a cube sounds bad. <a href="/learn/sound/">Measuring and aligning sound</a> has the RT60 side.</p>
 </div>
-
+<div class="tool wide" id="array">
+  <h3>Line array coverage</h3>
+  <div class="row">
+    <div class="field"><label for="la-len">Array length (m)</label><input id="la-len" type="number" min="0.5" step="0.5" value="4" inputmode="decimal"></div>
+    <div class="field"><label for="la-f">Frequency (Hz)</label><input id="la-f" type="number" min="20" step="100" value="1000" inputmode="numeric"></div>
+    <div class="field"><label for="la-front">Front row (m)</label><input id="la-front" type="number" min="1" step="1" value="5" inputmode="numeric"></div>
+    <div class="field"><label for="la-back">Back row (m)</label><input id="la-back" type="number" min="2" step="1" value="35" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="la-out" role="status" aria-live="polite"></div>
+  <p class="note">A point source loses 6&nbsp;dB per doubling of distance because the energy spreads over a sphere. A line source long compared with the wavelength spreads cylindrically and loses 3&nbsp;dB &mdash; which is the whole reason an array reaches the back without removing the front row&rsquo;s hearing. It does not last: beyond a transition set by array length squared and frequency, the wavefront becomes spherical again. Designing as though the 3&nbsp;dB region reached the back wall is the classic mistake.</p>
+</div>
+</div>
 <div class="toolgroup">Lighting &amp; video</div>
 <div class="toolgrid">
 <div class="tool" id="beam">
@@ -717,7 +762,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="viz" id="bm-viz" aria-hidden="true"></div>
   <p class="note">Beam diameter = 2 × throw × tan(angle ÷ 2). Illuminance by the inverse square law: lux = candela ÷ throw². Enter the field angle instead to size the visible pool edge — fixture datasheets quote both.</p>
 </div>
-
 <div class="tool" id="led">
   <h3>LED wall</h3>
   <div class="row">
@@ -729,7 +773,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="ledprev" id="lw-prev" aria-hidden="true"></div>
   <p class="note">Resolution = size ÷ pitch. The minimum comfortable viewing distance shown is the common rule of thumb (1 m per 1 mm of pitch), not a spec — content, brightness and camera use all move it.</p>
 </div>
-
 <div class="tool" id="throw">
   <h3>Projector throw</h3>
   <div class="row">
@@ -740,7 +783,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="th-out" role="status" aria-live="polite">Enter any two values.</div>
   <p class="note">Ratio = distance ÷ image width, the number on every lens datasheet. Fill any two, the third follows (the two you touched last are the knowns). A 1.8:1 lens filling a 4 m screen sits at 7.2 m. Zoom lenses quote a range: check both ends still land in the booth.</p>
 </div>
-
 <div class="tool" id="screen">
   <h3>Screen brightness</h3>
   <div class="row">
@@ -752,24 +794,41 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="sc-out" role="status" aria-live="polite"></div>
   <p class="note">Incident light is lux = lumens ÷ area. What the audience sees is luminance: fL = lumens × gain ÷ area in ft², and 1 fL = 3.4263 cd/m² (nits). <a href="https://www.dcimovies.com/specification/" rel="noopener nofollow">DCI cinema reference</a> is 48 cd/m² (14 fL) in the dark; ambient light on the screen is the number that actually kills contrast. Gain redirects light toward the axis rather than creating it, so high gain trades viewing angle.</p>
 </div>
-</div>
-
-
-<div class="toolgroup">Rigging &amp; load</div>
-<div class="toolgrid">
-<div class="tool wide" id="bridle">
-  <h3>Bridle angle — why it is never half each</h3>
+<div class="tool wide" id="aspect">
+  <h3>Aspect fit</h3>
   <div class="row">
-    <div class="field"><label for="br-w">Load (kg)</label><input id="br-w" type="number" min="0" value="500" inputmode="decimal"></div>
-    <div class="field"><label for="br-a">Leg angle from vertical (°)</label><input id="br-a" type="range" min="0" max="80" value="30" style="width:200px"></div>
-    <div class="field"><label for="br-an">or type °</label><input id="br-an" type="number" min="0" max="80" value="30" inputmode="decimal" style="width:90px"></div>
+    <div class="field"><label for="as-cw">Content W</label><input id="as-cw" type="number" min="1" step="1" value="1920" inputmode="numeric"></div>
+    <div class="field"><label for="as-ch">Content H</label><input id="as-ch" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
+    <div class="field"><label for="as-sw">Surface W</label><input id="as-sw" type="number" min="1" step="1" value="2560" inputmode="numeric"></div>
+    <div class="field"><label for="as-sh">Surface H</label><input id="as-sh" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
   </div>
-  <div class="out" id="br-out" role="status" aria-live="polite"></div>
-  <div class="scene" id="br-viz" aria-hidden="true"></div>
-  <p class="note"><b>This is a geometry explainer, not a design tool.</b> It shows one symmetric two-leg bridle with the load hanging at the apex, and nothing else: no sling angle derating, no shock load, no self-weight, no assessment of whether the structure can take the sideways pull it shows you. Real bridles are designed by a qualified rigger against <a href="/standards/din-56950-1/">DIN 56950-1</a>, <a href="/standards/en-17206/">EN 17206</a> or the local equivalent. What it is good for is the thing people get wrong from memory: tension per leg is W / (2 cos θ), so at 60° from vertical each leg is carrying the <em>whole</em> load, not half of it.</p>
+  <div class="out" id="as-out" role="status" aria-live="polite"></div>
+  <p class="note">Fit letterboxes and wastes surface; fill crops and loses content. The bar and crop figures are the numbers a designer needs, because that is the dead area to mask or design around. Scaling past 1:1 is flagged separately &mdash; that is the point where an LED wall starts to look soft, and no amount of processing puts the pixels back.</p>
+</div>
+<div class="tool wide" id="mired">
+  <h3>Colour temperature correction</h3>
+  <div class="row">
+    <div class="field"><label for="mi-s">Source (K)</label><input id="mi-s" type="number" min="1000" max="20000" step="50" value="3200" inputmode="numeric"></div>
+    <div class="field"><label for="mi-t">Target (K)</label><input id="mi-t" type="number" min="1000" max="20000" step="50" value="5600" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="mi-out" role="status" aria-live="polite"></div>
+  <p class="note">Kelvin is the wrong scale for this arithmetic: the step from 3200 K to 3400 K looks far bigger than the step from 9000 K to 9200 K, so no gel can have a fixed effect stated in kelvin. The mired &mdash; micro reciprocal degree, 10<sup>6</sup>/K &mdash; is the scale on which correction <em>is</em> fixed, which is why every swatch book prints a mired shift. Gel values are the published Lee shifts; Rosco equivalents differ slightly. <a href="/learn/colour/">How a colour becomes a number</a> covers why.</p>
+</div>
+<div class="tool" id="stops">
+  <h3>Stops of light</h3>
+  <div class="row">
+    <div class="field"><label for="so-mode">Given</label><select id="so-mode">
+      <option value="stops">stops</option>
+      <option value="density">ND density</option>
+      <option value="transmission">transmission (0&ndash;1)</option>
+    </select></div>
+    <div class="field"><label for="so-v">Value</label><input id="so-v" type="number" min="0" step="0.1" value="1" inputmode="decimal"></div>
+    <div class="field"><label for="so-lux">Applied to (lux)</label><input id="so-lux" type="number" min="0" step="100" value="1000" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="so-out" role="status" aria-live="polite"></div>
+  <p class="note">A stop is a factor of two in light, which is the unit the trade counts in because it matches how the eye responds. The confusion is that ND is labelled two incompatible ways: photographic ND is an optical density where 0.3 is one stop, while plenty of stage filter is labelled by the fraction it passes. Stacking filters multiplies transmission, which is adding stops.</p>
 </div>
 </div>
-
 <div class="toolgroup">Power &amp; electrical</div>
 <div class="toolgrid">
 <div class="tool" id="power">
@@ -786,8 +845,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="meter" id="pw-meter" aria-hidden="true"></div>
   <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
 </div>
-
-
 <div class="tool" id="vdrop">
   <h3>Voltage drop</h3>
   <div class="row">
@@ -802,7 +859,22 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="scene" id="vd-viz" aria-hidden="true"></div>
   <p class="note">Single phase drops over the out-and-back pair (k = 2); a balanced three-phase line-to-line drop uses √3. Resistivity is taken at 20 °C, so a warm cable on a busy dimmer run is worse than this says. The 3 % and 5 % marks are the usual lighting and power conventions from installation practice — your local wiring rules, <a href="/standards/bs-7671/">BS 7671</a> or <a href="/standards/nfpa-70/">NFPA 70</a>, are what actually apply.</p>
 </div>
-
+<div class="tool wide" id="derate">
+  <h3>Cable derating &amp; gauge</h3>
+  <div class="row">
+    <div class="field"><label for="cd-a">Rated amps</label><input id="cd-a" type="number" min="1" step="1" value="100" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="cd-n">Loaded conductors</label><input id="cd-n" type="number" min="1" max="60" step="1" value="6" inputmode="numeric" style="width:140px"></div>
+    <div class="field"><label for="cd-t">Ambient (&deg;C)</label><input id="cd-t" type="number" min="-10" max="90" step="1" value="45" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="cd-i">Insulation</label><select id="cd-i">
+      <option value="90" selected>90 &deg;C</option>
+      <option value="75">75 &deg;C</option>
+      <option value="60">60 &deg;C</option>
+    </select></div>
+    <div class="field"><label for="cd-g">Gauge</label><input id="cd-g" type="number" min="-3" max="40" step="1" value="2" inputmode="numeric" style="width:90px"></div>
+  </div>
+  <div class="out" id="cd-out" role="status" aria-live="polite"></div>
+  <p class="note">A cable&rsquo;s rating is measured in still 30&nbsp;&deg;C air with three current-carrying conductors, and a touring rig gives it none of those things. Two published factors correct for it: bundling from NEC Table 310.15(C)(1), and ambient temperature from Table 310.15(B)(1) &mdash; computed here from the formula that table was generated from, <span class="mono">&radic;((Tc&minus;Ta)/(Tc&minus;30))</span>, so it lands on the published values and keeps working between the rows. The base rating has to come off your cable&rsquo;s own datasheet; a tool that guessed would be worse than no tool. Then check the run with <a href="#vdrop">voltage drop</a> &mdash; on a long run that, not heat, is usually what sizes the cable.</p>
+</div>
 <div class="tool" id="phase">
   <h3>Three-phase balance</h3>
   <div class="row">
@@ -814,7 +886,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="bars" id="ph-bars" aria-hidden="true"></div>
   <p class="note">Balanced legs cancel in the neutral; one leg alone puts its whole current there. The distro is sized by its <em>worst</em> leg, never by the total divided by three. This is the linear-load figure: LED drivers and switch-mode supplies inject triplen harmonics that add rather than cancel in the neutral, so a rig full of them can exceed this with the legs looking even.</p>
 </div>
-
 <div class="tool" id="ohm">
   <h3>Ohm's law</h3>
   <div class="row">
@@ -826,8 +897,106 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="oh-out" role="status" aria-live="polite">Enter any two values.</div>
   <p class="note">Fill in any two and the other two follow (V = I × R, P = V × I). The last two fields you edited are treated as the knowns. Resistive-load arithmetic: fine for lamps and heaters, indicative for anything reactive.</p>
 </div>
+<div class="tool" id="heat">
+  <h3>Heat load</h3>
+  <div class="row">
+    <div class="field"><label for="he-w">Equipment (W)</label><input id="he-w" type="number" min="0" step="100" value="20000" inputmode="numeric"></div>
+    <div class="field"><label for="he-p">People</label><input id="he-p" type="number" min="0" step="10" value="0" inputmode="numeric"></div>
+    <div class="field"><label for="he-d">Allowed rise (&deg;C)</label><input id="he-d" type="number" min="1" max="30" step="1" value="10" inputmode="numeric"></div>
+  </div>
+  <div class="out" id="he-out" role="status" aria-live="polite"></div>
+  <p class="note">Near enough every watt a rig draws ends up as heat in the room &mdash; the light and sound that leave are a rounding error against the input. 1&nbsp;W = 3.412&nbsp;BTU/hr; 1 ton of refrigeration = 12&nbsp;000&nbsp;BTU/hr. A seated person adds roughly 100&nbsp;W sensible, more when dancing, which is why a full house feels different from the tech. Airflow assumes air at 1.2&nbsp;kg/m&sup3; and 1005&nbsp;J/kg&middot;K.</p>
 </div>
-
+<div class="tool" id="battery">
+  <h3>Battery runtime</h3>
+  <div class="row">
+    <div class="field"><label for="ba-c">Capacity (Wh)</label><input id="ba-c" type="number" min="1" step="1" value="98" inputmode="decimal"></div>
+    <div class="field"><label for="ba-d">Draw (W)</label><input id="ba-d" type="number" min="0.1" step="0.5" value="12" inputmode="decimal"></div>
+    <div class="field"><label for="ba-u">Usable (%)</label><input id="ba-u" type="number" min="10" max="100" step="5" value="80" inputmode="numeric"></div>
+    <div class="field"><label for="ba-n">Need (hours)</label><input id="ba-n" type="number" min="0.5" step="0.5" value="6" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="ba-out" role="status" aria-live="polite"></div>
+  <p class="note">Packs are labelled in mAh more often than Wh: multiply mAh by the nominal voltage and divide by 1000. The derating matters more than the arithmetic &mdash; you lose some capacity to the device's cutoff voltage, some to cold, and a lithium pack that has done three hundred shows is not the pack on the label. 80% is a working default, not a measurement of your stock.</p>
+</div>
+</div>
+<div class="toolgroup">Rigging, load &amp; weather</div>
+<div class="toolgrid">
+<div class="tool wide" id="bridle">
+  <h3>Bridle angle — why it is never half each</h3>
+  <div class="row">
+    <div class="field"><label for="br-w">Load (kg)</label><input id="br-w" type="number" min="0" value="500" inputmode="decimal"></div>
+    <div class="field"><label for="br-a">Leg angle from vertical (°)</label><input id="br-a" type="range" min="0" max="80" value="30" style="width:200px"></div>
+    <div class="field"><label for="br-an">or type °</label><input id="br-an" type="number" min="0" max="80" value="30" inputmode="decimal" style="width:90px"></div>
+  </div>
+  <div class="out" id="br-out" role="status" aria-live="polite"></div>
+  <div class="scene" id="br-viz" aria-hidden="true"></div>
+  <p class="note"><b>This is a geometry explainer, not a design tool.</b> It shows one symmetric two-leg bridle with the load hanging at the apex, and nothing else: no sling angle derating, no shock load, no self-weight, no assessment of whether the structure can take the sideways pull it shows you. Real bridles are designed by a qualified rigger against <a href="/standards/din-56950-1/">DIN 56950-1</a>, <a href="/standards/en-17206/">EN 17206</a> or the local equivalent. What it is good for is the thing people get wrong from memory: tension per leg is W / (2 cos θ), so at 60° from vertical each leg is carrying the <em>whole</em> load, not half of it.</p>
+</div>
+<div class="tool wide" id="wind">
+  <h3>Wind load on a surface</h3>
+  <div class="row">
+    <div class="field"><label for="wl-v">Wind (m/s)</label><input id="wl-v" type="number" min="0" step="0.5" value="12" inputmode="decimal" style="width:100px"></div>
+    <div class="field"><label for="wl-a">Area (m&sup2;)</label><input id="wl-a" type="number" min="0.1" step="0.5" value="18" inputmode="decimal" style="width:100px"></div>
+    <div class="field"><label for="wl-cf">Shape</label><select id="wl-cf">
+      <option value="1.3">flat panel, square on (1.3)</option>
+      <option value="1.8">signboard, EN 1991-1-4 (1.8)</option>
+      <option value="0.7">mesh scrim, 50% open (0.7)</option>
+      <option value="2">sharp-edged worst case (2.0)</option>
+    </select></div>
+    <div class="field"><label for="wl-m">Mass (kg)</label><input id="wl-m" type="number" min="0" step="10" value="300" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="wl-h">Centre height (m)</label><input id="wl-h" type="number" min="0" step="0.5" value="3" inputmode="decimal" style="width:110px"></div>
+    <div class="field"><label for="wl-b">Base width (m)</label><input id="wl-b" type="number" min="0" step="0.5" value="2" inputmode="decimal" style="width:110px"></div>
+  </div>
+  <div class="out" id="wl-out" role="status" aria-live="polite"></div>
+  <p class="note"><b>A screening number, not a design.</b> Force goes with the square of wind speed, so doubling the wind quadruples the load &mdash; that is the whole reason a wind action plan carries speeds rather than opinions. What this does not model: terrain and height factors, the difference between a 10-minute mean and a 3-second gust at your actual site, dynamic response, or anything about how the structure is built. Temporary demountable structures are designed to <a href="/standards/">EN 13782 or ANSI E1.21</a> by somebody competent to do it. Use this to decide whether to have the conversation.</p>
+</div>
+<div class="tool" id="dew">
+  <h3>Dew point &amp; condensation</h3>
+  <div class="row">
+    <div class="field"><label for="dp-t">Air temp (&deg;C)</label><input id="dp-t" type="number" min="-40" max="60" step="0.5" value="26" inputmode="decimal" style="width:110px"></div>
+    <div class="field"><label for="dp-rh">Humidity (%)</label><input id="dp-rh" type="number" min="1" max="100" step="1" value="75" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="dp-s">Surface (&deg;C)</label><input id="dp-s" type="number" min="-40" max="60" step="0.5" value="12" inputmode="decimal" style="width:110px"></div>
+  </div>
+  <div class="out" id="dp-out" role="status" aria-live="polite"></div>
+  <p class="note">Two situations, one calculation. A case comes off a cold truck into a humid venue and water forms inside the amplifier before anyone plugs it in. Or an LED wall sits out overnight, the air reaches its dew point around dawn, and the panels are wet at 6am. The fix in both directions is the same: do not power it until the surface is above the dew point, and give it a margin, because exactly at the dew point is already wet.</p>
+</div>
+</div>
+<div class="toolgroup">Access</div>
+<div class="toolgrid">
+<div class="tool wide" id="flash">
+  <h3>Flash rate &amp; photosensitivity</h3>
+  <div class="row">
+    <div class="field"><label for="fl-bpm">Track BPM</label><input id="fl-bpm" type="number" min="20" max="300" step="1" value="128" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="fl-div">Strobe on</label><select id="fl-div">
+      <option value="4">every 1/16 note</option>
+      <option value="2">every 1/8 note</option>
+      <option value="1" selected>every beat</option>
+      <option value="0.5">every 2 beats</option>
+      <option value="0.25">every bar (4/4)</option>
+    </select></div>
+    <div class="field"><label for="fl-hz">or Hz (0 = use tempo)</label><input id="fl-hz" type="number" min="0" max="60" step="0.1" value="0" inputmode="decimal" style="width:110px"></div>
+    <div class="field"><label for="fl-red">Colour</label><select id="fl-red">
+      <option value="0">any colour but saturated red</option>
+      <option value="1">saturated red</option>
+    </select></div>
+    <div class="field"><label for="fl-st">Stripes in pattern</label><input id="fl-st" type="number" min="0" max="40" step="1" value="0" inputmode="numeric" style="width:130px"></div>
+  </div>
+  <div class="out" id="fl-out" role="status" aria-live="polite"></div>
+  <p class="note">Three flashes in any one second is the line, and it is the same number in <a href="https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html" rel="noopener nofollow">WCAG 2.3.1</a>, in ITU-R BT.1702 and in the Ofcom guidance. Sensitivity peaks between 15 and 20&nbsp;Hz, which is exactly where a strobe lands when somebody sets it by ear. Saturated deep red is judged more strictly than any other colour, and static patterns count too: more than five clearly discernible light-dark stripe pairs is its own hazard. This is a screening check &mdash; broadcast material is assessed with a Harding test, and a venue still needs signage at the door.</p>
+</div>
+<div class="tool" id="ada">
+  <h3>Assistive listening receivers</h3>
+  <div class="row">
+    <div class="field"><label for="al-s">Seats</label><input id="al-s" type="number" min="1" step="10" value="850" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="al-loop">System</label><select id="al-loop">
+      <option value="0">IR or RF receivers</option>
+      <option value="1">induction loop, all seats</option>
+    </select></div>
+  </div>
+  <div class="out" id="al-out" role="status" aria-live="polite"></div>
+  <p class="note">Table 219.3 of the <a href="/standards/ada-standards-2010/">2010 ADA Standards</a>, which is a stepped formula people reliably get wrong from memory. The second number is the one that gets forgotten: a share of receivers must be hearing-aid compatible, meaning a neckloop that couples to a telecoil, not headphones. An induction loop covering every seat waives that column under Exception 2, because the hearing aids in the room already are the receivers. Under Exception 1, assembly areas under one management can be counted together.</p>
+</div>
+</div>
 <div class="toolgroup">Content &amp; timing</div>
 <div class="toolgrid">
 <div class="tool" id="frame">
@@ -843,7 +1012,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="scene" id="fb-viz" aria-hidden="true"></div>
   <p class="note">Every stage of a real-time pipeline spends part of the same frame period, and a pipeline that overruns does not run slightly slower — it drops frames. The achievable rate shown is what the measured work can actually hold. <a href="/learn/engines/">Why real-time is a timing problem →</a></p>
 </div>
-
 <div class="tool" id="pyro">
   <h3>Pyro fire time</h3>
   <div class="row">
@@ -854,44 +1022,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="py-out" role="status" aria-live="polite"></div>
   <p class="note">A designer programs the moment an effect is <em>seen</em>; the firing system fires earlier by the item&rsquo;s lift and prefire. Two effects bursting on the same beat can be seconds apart on the script. This is design arithmetic only — the item data comes from the manufacturer, and nothing here arms anything. <a href="/learn/aerial/">How pyro is synchronised →</a></p>
 </div>
-</div>
-
-<div class="toolgroup">Colour, optics &amp; storage</div>
-<div class="toolgrid">
-<div class="tool wide" id="mired">
-  <h3>Colour temperature correction</h3>
-  <div class="row">
-    <div class="field"><label for="mi-s">Source (K)</label><input id="mi-s" type="number" min="1000" max="20000" step="50" value="3200" inputmode="numeric"></div>
-    <div class="field"><label for="mi-t">Target (K)</label><input id="mi-t" type="number" min="1000" max="20000" step="50" value="5600" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="mi-out" role="status" aria-live="polite"></div>
-  <p class="note">Kelvin is the wrong scale for this arithmetic: the step from 3200 K to 3400 K looks far bigger than the step from 9000 K to 9200 K, so no gel can have a fixed effect stated in kelvin. The mired &mdash; micro reciprocal degree, 10<sup>6</sup>/K &mdash; is the scale on which correction <em>is</em> fixed, which is why every swatch book prints a mired shift. Gel values are the published Lee shifts; Rosco equivalents differ slightly. <a href="/learn/colour/">How a colour becomes a number</a> covers why.</p>
-</div>
-
-<div class="tool wide" id="fibre">
-  <h3>Fibre loss budget</h3>
-  <div class="row">
-    <div class="field"><label for="fi-l">Length (m)</label><input id="fi-l" type="number" min="0" step="10" value="500" inputmode="numeric"></div>
-    <div class="field"><label for="fi-t">Fibre &amp; wavelength</label><select id="fi-t"></select></div>
-    <div class="field"><label for="fi-c">Connector pairs</label><input id="fi-c" type="number" min="0" max="40" step="1" value="2" inputmode="numeric"></div>
-    <div class="field"><label for="fi-s">Splices</label><input id="fi-s" type="number" min="0" max="40" step="1" value="0" inputmode="numeric"></div>
-    <div class="field"><label for="fi-b">Link budget (dB)</label><input id="fi-b" type="number" min="1" max="40" step="0.5" value="8" inputmode="decimal"></div>
-  </div>
-  <div class="out" id="fi-out" role="status" aria-live="polite"></div>
-  <p class="note">Attenuation figures are typical values per TIA-568 and FOA guidance: OM3/OM4 about 3.0&nbsp;dB/km at 850&nbsp;nm and 1.0 at 1300; OS2 about 0.4 at 1310 and 0.3 at 1550. Connector pairs are counted at 0.3&nbsp;dB (TIA allows up to 0.75) and fusion splices at 0.1. The link budget belongs to the optics, not the glass &mdash; take it from the transceiver datasheet rather than this default. A run that passes with under 3&nbsp;dB spare works on the day and fails after one re-terminated connector.</p>
-</div>
-
-<div class="tool" id="heat">
-  <h3>Heat load</h3>
-  <div class="row">
-    <div class="field"><label for="he-w">Equipment (W)</label><input id="he-w" type="number" min="0" step="100" value="20000" inputmode="numeric"></div>
-    <div class="field"><label for="he-p">People</label><input id="he-p" type="number" min="0" step="10" value="0" inputmode="numeric"></div>
-    <div class="field"><label for="he-d">Allowed rise (&deg;C)</label><input id="he-d" type="number" min="1" max="30" step="1" value="10" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="he-out" role="status" aria-live="polite"></div>
-  <p class="note">Near enough every watt a rig draws ends up as heat in the room &mdash; the light and sound that leave are a rounding error against the input. 1&nbsp;W = 3.412&nbsp;BTU/hr; 1 ton of refrigeration = 12&nbsp;000&nbsp;BTU/hr. A seated person adds roughly 100&nbsp;W sensible, more when dancing, which is why a full house feels different from the tech. Airflow assumes air at 1.2&nbsp;kg/m&sup3; and 1005&nbsp;J/kg&middot;K.</p>
-</div>
-
 <div class="tool" id="storage">
   <h3>Video storage</h3>
   <div class="row">
@@ -903,71 +1033,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="st-out" role="status" aria-live="polite"></div>
   <p class="note">The units are the trap. Cards and drives are sold in decimal gigabytes and reported by the operating system in binary gibibytes, so a &ldquo;1&nbsp;TB&rdquo; card holds about 931&nbsp;GiB &mdash; the difference is a whole afternoon of recording. The sustained write figure is the spec that actually decides whether media drops frames, not the capacity.</p>
 </div>
-
-<div class="tool" id="battery">
-  <h3>Battery runtime</h3>
-  <div class="row">
-    <div class="field"><label for="ba-c">Capacity (Wh)</label><input id="ba-c" type="number" min="1" step="1" value="98" inputmode="decimal"></div>
-    <div class="field"><label for="ba-d">Draw (W)</label><input id="ba-d" type="number" min="0.1" step="0.5" value="12" inputmode="decimal"></div>
-    <div class="field"><label for="ba-u">Usable (%)</label><input id="ba-u" type="number" min="10" max="100" step="5" value="80" inputmode="numeric"></div>
-    <div class="field"><label for="ba-n">Need (hours)</label><input id="ba-n" type="number" min="0.5" step="0.5" value="6" inputmode="decimal"></div>
-  </div>
-  <div class="out" id="ba-out" role="status" aria-live="polite"></div>
-  <p class="note">Packs are labelled in mAh more often than Wh: multiply mAh by the nominal voltage and divide by 1000. The derating matters more than the arithmetic &mdash; you lose some capacity to the device's cutoff voltage, some to cold, and a lithium pack that has done three hundred shows is not the pack on the label. 80% is a working default, not a measurement of your stock.</p>
 </div>
-
-<div class="tool wide" id="aspect">
-  <h3>Aspect fit</h3>
-  <div class="row">
-    <div class="field"><label for="as-cw">Content W</label><input id="as-cw" type="number" min="1" step="1" value="1920" inputmode="numeric"></div>
-    <div class="field"><label for="as-ch">Content H</label><input id="as-ch" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
-    <div class="field"><label for="as-sw">Surface W</label><input id="as-sw" type="number" min="1" step="1" value="2560" inputmode="numeric"></div>
-    <div class="field"><label for="as-sh">Surface H</label><input id="as-sh" type="number" min="1" step="1" value="1080" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="as-out" role="status" aria-live="polite"></div>
-  <p class="note">Fit letterboxes and wastes surface; fill crops and loses content. The bar and crop figures are the numbers a designer needs, because that is the dead area to mask or design around. Scaling past 1:1 is flagged separately &mdash; that is the point where an LED wall starts to look soft, and no amount of processing puts the pixels back.</p>
-</div>
-</div>
-
-<div class="tool wide" id="modes">
-  <h3>Room modes</h3>
-  <div class="row">
-    <div class="field"><label for="rm-l">Length (m)</label><input id="rm-l" type="number" min="1" step="0.1" value="12" inputmode="decimal"></div>
-    <div class="field"><label for="rm-w">Width (m)</label><input id="rm-w" type="number" min="1" step="0.1" value="9" inputmode="decimal"></div>
-    <div class="field"><label for="rm-h">Height (m)</label><input id="rm-h" type="number" min="1" step="0.1" value="4" inputmode="decimal"></div>
-    <div class="field"><label for="rm-rt">RT60 (s)</label><input id="rm-rt" type="number" min="0" step="0.1" value="1.2" inputmode="decimal"></div>
-  </div>
-  <div class="out" id="rm-out" role="status" aria-live="polite"></div>
-  <p class="note">Below the Schroeder frequency a room does not behave statistically &mdash; individual standing waves dominate and the response at a seat is set by the room&rsquo;s dimensions rather than by the system. Absorption on the walls does not fix that; the wavelengths are metres long. Axial modes (two parallel surfaces) are the loud ones. Rooms whose dimensions are simple multiples stack their modes instead of spreading them, which is why a cube sounds bad. <a href="/learn/sound/">Measuring and aligning sound</a> has the RT60 side.</p>
-</div>
-
-<div class="tool wide" id="array">
-  <h3>Line array coverage</h3>
-  <div class="row">
-    <div class="field"><label for="la-len">Array length (m)</label><input id="la-len" type="number" min="0.5" step="0.5" value="4" inputmode="decimal"></div>
-    <div class="field"><label for="la-f">Frequency (Hz)</label><input id="la-f" type="number" min="20" step="100" value="1000" inputmode="numeric"></div>
-    <div class="field"><label for="la-front">Front row (m)</label><input id="la-front" type="number" min="1" step="1" value="5" inputmode="numeric"></div>
-    <div class="field"><label for="la-back">Back row (m)</label><input id="la-back" type="number" min="2" step="1" value="35" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="la-out" role="status" aria-live="polite"></div>
-  <p class="note">A point source loses 6&nbsp;dB per doubling of distance because the energy spreads over a sphere. A line source long compared with the wavelength spreads cylindrically and loses 3&nbsp;dB &mdash; which is the whole reason an array reaches the back without removing the front row&rsquo;s hearing. It does not last: beyond a transition set by array length squared and frequency, the wavefront becomes spherical again. Designing as though the 3&nbsp;dB region reached the back wall is the classic mistake.</p>
-</div>
-
-<div class="tool" id="stops">
-  <h3>Stops of light</h3>
-  <div class="row">
-    <div class="field"><label for="so-mode">Given</label><select id="so-mode">
-      <option value="stops">stops</option>
-      <option value="density">ND density</option>
-      <option value="transmission">transmission (0&ndash;1)</option>
-    </select></div>
-    <div class="field"><label for="so-v">Value</label><input id="so-v" type="number" min="0" step="0.1" value="1" inputmode="decimal"></div>
-    <div class="field"><label for="so-lux">Applied to (lux)</label><input id="so-lux" type="number" min="0" step="100" value="1000" inputmode="numeric"></div>
-  </div>
-  <div class="out" id="so-out" role="status" aria-live="polite"></div>
-  <p class="note">A stop is a factor of two in light, which is the unit the trade counts in because it matches how the eye responds. The confusion is that ND is labelled two incompatible ways: photographic ND is an optical density where 0.3 is one stop, while plenty of stage filter is labelled by the fraction it passes. Stacking filters multiplies transmission, which is adding stops.</p>
-</div>
-
 <div class="toolgroup">Networking</div>
 <div class="toolgrid">
 <div class="tool wide" id="subnet">
@@ -981,8 +1047,31 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="ttwrap"><table class="tt" id="sb-table"></table></div>
   <p class="note">The mask says how many of the 32 bits are the network; everything else follows from that. A /31 is a point-to-point link with both addresses usable (RFC 3021) and a /32 is a single host, which is why neither reserves a broadcast address. <a href="/learn/network/">How to calculate it by hand →</a></p>
 </div>
+<div class="tool wide" id="fibre">
+  <h3>Fibre loss budget</h3>
+  <div class="row">
+    <div class="field"><label for="fi-l">Length (m)</label><input id="fi-l" type="number" min="0" step="10" value="500" inputmode="numeric"></div>
+    <div class="field"><label for="fi-t">Fibre &amp; wavelength</label><select id="fi-t"></select></div>
+    <div class="field"><label for="fi-c">Connector pairs</label><input id="fi-c" type="number" min="0" max="40" step="1" value="2" inputmode="numeric"></div>
+    <div class="field"><label for="fi-s">Splices</label><input id="fi-s" type="number" min="0" max="40" step="1" value="0" inputmode="numeric"></div>
+    <div class="field"><label for="fi-b">Link budget (dB)</label><input id="fi-b" type="number" min="1" max="40" step="0.5" value="8" inputmode="decimal"></div>
+  </div>
+  <div class="out" id="fi-out" role="status" aria-live="polite"></div>
+  <p class="note">Attenuation figures are typical values per TIA-568 and FOA guidance: OM3/OM4 about 3.0&nbsp;dB/km at 850&nbsp;nm and 1.0 at 1300; OS2 about 0.4 at 1310 and 0.3 at 1550. Connector pairs are counted at 0.3&nbsp;dB (TIA allows up to 0.75) and fusion splices at 0.1. The link budget belongs to the optics, not the glass &mdash; take it from the transceiver datasheet rather than this default. A run that passes with under 3&nbsp;dB spare works on the day and fails after one re-terminated connector.</p>
 </div>
-
+<div class="tool wide" id="sdi">
+  <h3>SDI reach on coax</h3>
+  <div class="row">
+    <div class="field"><label for="sd-att">Cable loss (dB/100 m)</label><input id="sd-att" type="number" min="0.1" step="0.1" value="21.6" inputmode="decimal" style="width:150px"></div>
+    <div class="field"><label for="sd-f">quoted at (MHz)</label><input id="sd-f" type="number" min="1" step="10" value="1000" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="sd-eq">Receiver EQ (dB)</label><input id="sd-eq" type="number" min="1" max="60" step="1" value="20" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="sd-len">Your run (m)</label><input id="sd-len" type="number" min="1" step="5" value="80" inputmode="numeric" style="width:120px"></div>
+  </div>
+  <div class="out" id="sd-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap"><table class="tt" id="sd-table"></table></div>
+  <p class="note">SDI does not degrade &mdash; it works perfectly and then stops, which is why a run that was fine in the shop fails in the venue ten metres longer. Two facts set the cliff: coax loss rises with the square root of frequency, and the frequency that matters is half the bit rate. Take both cable numbers off the manufacturer&rsquo;s datasheet, at whatever frequency they quoted; every coax maker publishes them. The 20&nbsp;dB equalisation figure is what SMPTE writes down, and real receivers often do better, which is why the same cable gets quoted at different lengths by different people. A run inside 3&nbsp;dB of the budget is flagged: it works today and fails after somebody swaps a barrel in.</p>
+</div>
+</div>
 <div class="toolgroup">RF</div>
 <div class="toolgrid">
 <div class="tool wide" id="im">
@@ -997,7 +1086,6 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="imlist" id="im-list"></div>
   <p class="note">Two transmitters make products at 2a−b and 2b−a; three make a+b−c. Third order is the set that matters because the products land near the originals and are strong enough to open a receiver. A product in empty spectrum is harmless — the ones flagged in red are landing on a channel you are actually using. This is a check, not a coordination tool: it ignores transmitter power, antenna placement, receiver selectivity, fifth-order products and every broadcaster already on air, which is what the <a href="/rf/">frequency map</a> and a real coordination pass are for.</p>
 </div>
-
 <div class="tool" id="rf">
   <h3>RF wavelength</h3>
   <div class="row">
@@ -1006,7 +1094,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="rf-out" role="status" aria-live="polite"></div>
   <p class="note">λ = c ÷ f. Antenna lengths include the standard ~5% end-effect shortening (the 468/f rule). Handy for wireless mic and IEM antenna placement: keep transmit and receive antennas at least a wavelength apart where you can.</p>
 </div>
-
+</div>
 </div>
 
 <div class="toolearn">
@@ -1021,7 +1109,7 @@ HORN = GO &amp; (A | B)</textarea></div>
     <a href="/learn/bits/"><b>Numbers that stand for signals</b><em>bit depth, sample rate, DSP</em></a>
     <a href="/learn/engines/"><b>Node graphs and game engines</b><em>the frame budget</em></a>
     <a href="/learn/aerial/"><b>Drone shows and pyro</b><em>lift time, prefire, timecode</em></a>
-    <a href="/learn/"><b>All ${LEARN_TOPICS.length} explainers &rarr;</b><em>arranged as one chain</em></a>
+    <a href="/learn/"><b>All ${LEARN_COUNT} explainers &rarr;</b><em>arranged as one chain</em></a>
   </div>
 </div>
 
@@ -1867,6 +1955,147 @@ function soRender(){
 ["#so-v","#so-mode","#so-lux"].forEach(id => $(id).addEventListener("input", soRender));
 $("#so-mode").addEventListener("change", soRender);
 soRender();
+
+/* ---- wind load ---------------------------------------------------------- */
+function wlRender(){
+  const m = Number($("#wl-m").value), h = Number($("#wl-h").value), b = Number($("#wl-b").value);
+  const r = windLoad($("#wl-v").value, $("#wl-a").value, {
+    forceCoefficient: $("#wl-cf").value,
+    centroidHeightM: h, baseWidthM: b, massKg: m,
+  });
+  if(!r){ $("#wl-out").innerHTML = '<span class="err">Speed cannot be negative and area has to be more than zero.</span>'; return; }
+  let html = "<b>" + r.forceKgf.toLocaleString() + "</b> kgf on the face at " + r.speedMs + " m/s"
+    + " &middot; " + r.pressurePa + " Pa &middot; Beaufort " + r.beaufort.force + ", " + r.beaufort.name.toLowerCase();
+  html += "<br>In a " + r.gustSpeedMs + " m/s gust: <b>" + r.gustForceKgf.toLocaleString() + "</b> kgf"
+    + ' <span class="dim">&mdash; the gust is what takes it over, not the average</span>';
+  if (r.overturning) {
+    const o = r.overturning;
+    html += o.stable
+      ? '<br><span class="ok">&#10003; Stable in that gust</span> &mdash; restoring moment is ' + o.ratio + '&times; the overturning moment'
+      : '<br><span class="err">&#9888; Overturns in that gust</span> &mdash; needs <b>' + o.extraBallastKg.toLocaleString() + '</b> kg more ballast, or a wider base';
+  }
+  html += "<br>At 20 m/s the same face takes <b>" + Math.round(r.atSpeed(20).forceN / 9.81).toLocaleString() + "</b> kgf.";
+  $("#wl-out").innerHTML = html;
+}
+["#wl-v","#wl-a","#wl-cf","#wl-m","#wl-h","#wl-b"].forEach(id => $(id).addEventListener("input", wlRender));
+$("#wl-cf").addEventListener("change", wlRender);
+wlRender();
+
+/* ---- dew point ---------------------------------------------------------- */
+function dpRender(){
+  const r = dewPoint($("#dp-t").value, $("#dp-rh").value, { surfaceTempC: Number($("#dp-s").value) });
+  if(!r){ $("#dp-out").innerHTML = '<span class="err">Relative humidity is 1 to 100%.</span>'; return; }
+  let html = "Dew point <b>" + r.dewPointC + "</b> &deg;C &middot; " + r.absoluteHumidityGm3 + " g of water per m&sup3;"
+    + " &middot; the air has " + r.spreadC + " &deg;C to give before it rains on the rig";
+  const c = r.condensation;
+  if (c) {
+    html += c.willCondense
+      ? '<br><span class="err">&#9888; A surface at ' + c.surfaceTempC + ' &deg;C will condense</span> &mdash; it is '
+        + Math.abs(c.marginC) + ' &deg;C below the dew point. Do not power it.'
+      : '<br><span class="ok">&#10003; A surface at ' + c.surfaceTempC + ' &deg;C stays dry</span> &mdash; '
+        + c.marginC + ' &deg;C of margin.';
+    html += "<br>Warm it to <b>" + r.safeSurfaceC + "</b> &deg;C for a 2 &deg;C margin.";
+  }
+  $("#dp-out").innerHTML = html;
+}
+["#dp-t","#dp-rh","#dp-s"].forEach(id => $(id).addEventListener("input", dpRender));
+dpRender();
+
+/* ---- flash rate --------------------------------------------------------- */
+function flRender(){
+  const typed = Number($("#fl-hz").value);
+  const bpm = Number($("#fl-bpm").value), div = Number($("#fl-div").value);
+  /* A typed Hz overrides the musical division, because somebody who typed a
+     number wants that number, not our arithmetic. */
+  const hz = typed > 0 ? typed : flashRate(0).fromBpm(bpm, div);
+  if (hz === null) { $("#fl-out").innerHTML = '<span class="err">Check the tempo.</span>'; return; }
+  const r = flashRate(hz, { saturatedRed: $("#fl-red").value === "1", stripes: Number($("#fl-st").value) });
+  if(!r){ $("#fl-out").innerHTML = '<span class="err">Flash rate cannot be negative.</span>'; return; }
+  let html = "<b>" + r.flashesPerSecond + "</b> flashes per second"
+    + (typed > 0 ? "" : ' <span class="dim">&mdash; ' + bpm + " BPM, " + $("#fl-div").selectedOptions[0].textContent + "</span>")
+    + (r.periodMs ? " &middot; one every " + r.periodMs + " ms" : "");
+  html += r.withinGuidance
+    ? '<br><span class="ok">&#10003; Within the three-per-second guidance</span>'
+    : '<br><span class="err">&#9888; Outside the guidance</span>';
+  /* Single quotes: a backslash-escaped quote inside the template literal that
+     wraps this script collapses to a bare quote and breaks the whole file. */
+  if (r.issues.length) html += '<ul class="fllist"><li>' + r.issues.join('</li><li>') + '</li></ul>';
+  if (!r.withinGuidance) {
+    const safe = r.slowestSafeDivision(bpm);
+    if (safe) html += "At " + bpm + " BPM the fastest division that stays inside the guidance is <b>"
+      + safe.label + "</b>, which is " + safe.rate + " a second.";
+  }
+  $("#fl-out").innerHTML = html;
+}
+["#fl-bpm","#fl-div","#fl-hz","#fl-red","#fl-st"].forEach(id => $(id).addEventListener("input", flRender));
+["#fl-div","#fl-red"].forEach(id => $(id).addEventListener("change", flRender));
+flRender();
+
+/* ---- assistive listening ------------------------------------------------ */
+function alRender(){
+  const r = assistiveListening($("#al-s").value, { inductionLoopAllSeats: $("#al-loop").value === "1" });
+  if(!r){ $("#al-out").innerHTML = '<span class="err">A venue needs at least one seat.</span>'; return; }
+  let html = "<b>" + r.receivers + "</b> receivers required"
+    + ' <span class="dim">&mdash; Table 219.3 row &ldquo;' + r.band + '&rdquo;, about one per ' + r.onePer + " seats</span>";
+  html += r.hearingAidCompatible > 0
+    ? "<br><b>" + r.hearingAidCompatible + "</b> of them hearing-aid compatible"
+    : "<br><b>No</b> hearing-aid compatible receivers required";
+  html += '<br><span class="dim">' + r.note + "</span>";
+  $("#al-out").innerHTML = html;
+}
+["#al-s","#al-loop"].forEach(id => $(id).addEventListener("input", alRender));
+$("#al-loop").addEventListener("change", alRender);
+alRender();
+
+/* ---- cable derating ----------------------------------------------------- */
+function cdRender(){
+  const r = cableDerating($("#cd-a").value, {
+    conductors: $("#cd-n").value, ambientC: $("#cd-t").value, insulationC: $("#cd-i").value,
+  });
+  if(!r){ $("#cd-out").innerHTML = '<span class="err">Check the rating, conductor count and temperatures.</span>'; return; }
+  if (r.overTemperature) {
+    $("#cd-out").innerHTML = '<span class="err">&#9888; Ambient is at or above the insulation rating &mdash; this cable has no ampacity here at all.</span>';
+    return;
+  }
+  let html = "<b>" + r.deratedAmps + "</b> A after derating"
+    + ' <span class="dim">&mdash; from ' + r.baseAmps + " A, a loss of " + r.lostPercent + "%</span>"
+    + "<br>Bundling &times;" + r.bundleFactor + " &middot; temperature &times;" + r.tempFactor;
+  const g = awgToMm2($("#cd-g").value);
+  if (g) {
+    const back = mm2ToAwg(g.areaMm2);
+    html += "<br>" + g.label + " is <b>" + g.areaMm2 + "</b> mm&sup2; (" + g.diameterMm + " mm across the conductor)";
+    if (back && back.nearestAwg !== g.awg) html += ' <span class="dim">&mdash; nearest metric size differs</span>';
+  }
+  $("#cd-out").innerHTML = html;
+}
+["#cd-a","#cd-n","#cd-t","#cd-i","#cd-g"].forEach(id => $(id).addEventListener("input", cdRender));
+$("#cd-i").addEventListener("change", cdRender);
+cdRender();
+
+/* ---- SDI reach ---------------------------------------------------------- */
+function sdRender(){
+  const r = coaxReach($("#sd-att").value, $("#sd-f").value, { equalisationDb: Number($("#sd-eq").value) });
+  if(!r){ $("#sd-out").innerHTML = '<span class="err">Loss, frequency and the EQ budget all have to be above zero.</span>'; $("#sd-table").innerHTML = ""; return; }
+  const len = Number($("#sd-len").value);
+  let rows = "<tr><th>Rate</th><th>Half clock</th><th>Loss</th><th>Max run</th><th>At " + (len > 0 ? len + " m" : "your run") + "</th></tr>";
+  for (const rate of r.rates) {
+    const run = len > 0 ? r.canRun(len, rate.key) : null;
+    let verdict = "&mdash;";
+    if (run) {
+      verdict = run.ok
+        ? (run.thin ? '<span class="warn">&#9679; ' + run.marginDb + ' dB spare</span>' : '<span class="ok">&#10003; ' + run.marginDb + " dB spare</span>")
+        : '<span class="err">&#9888; ' + Math.abs(run.marginDb) + " dB over</span>";
+    }
+    rows += "<tr><td>" + rate.label + "</td><td>" + Math.round(rate.halfClockMhz) + " MHz</td><td>"
+      + rate.lossDbPer100m + " dB/100 m</td><td><b>" + rate.reachM + "</b> m</td><td>" + verdict + "</td></tr>";
+  }
+  $("#sd-table").innerHTML = rows;
+  const twelve = r.rates.find(x => x.key === "12g"), three = r.rates.find(x => x.key === "3g");
+  $("#sd-out").innerHTML = "This cable carries 3G-SDI <b>" + three.reachM + "</b> m and 12G-SDI <b>" + twelve.reachM
+    + '</b> m &middot; <span class="dim">four times the bit rate is half the reach, because loss goes with the square root of frequency</span>';
+}
+["#sd-att","#sd-f","#sd-eq","#sd-len"].forEach(id => $(id).addEventListener("input", sdRender));
+sdRender();
 
 /* ---- offline ------------------------------------------------------------
    The panel only appears once a controller is actually running. Until then

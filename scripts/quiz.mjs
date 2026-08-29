@@ -33,6 +33,73 @@
  * not always last.
  */
 const BANK = {
+  outdoors: [
+    {
+      q: 'A 3 &times; 6 m banner is fine in this morning&rsquo;s 8 m/s breeze. By afternoon the wind has doubled to 16 m/s. What has happened to the load on the structure?',
+      options: [
+        { text: 'It has doubled', why: 'This is the intuition almost everybody starts with, and it is the one that gets structures put up on days they should not be. Force is not proportional to speed.' },
+        { text: 'It has roughly quadrupled', correct: true, why: 'Right. Dynamic pressure goes with the square of speed, so twice the wind is four times the force. The banner that was pulling 90 kg is now pulling around 360.' },
+        { text: 'It has gone up by about half', why: 'That would be true if force rose more slowly than speed. It rises faster: with the square.' },
+        { text: 'It depends on the shape factor, so it cannot be said', why: 'The shape factor scales the answer but does not change the relationship. Whatever the coefficient, doubling the speed quadruples the force.' },
+      ],
+    },
+    {
+      q: 'A flight case comes off a cold truck into a humid venue and the crew wants to power it immediately. What is the actual risk?',
+      options: [
+        { text: 'Thermal shock cracking the circuit boards', why: 'Not the mechanism at these temperature differences. The problem is water, not stress.' },
+        { text: 'Water condensing on surfaces inside the case that are below the room&rsquo;s dew point', correct: true, why: 'Right. The metal is colder than the temperature at which the room&rsquo;s air gives up its water, so water forms on it &mdash; inside the enclosure, on the boards. Wait until the surfaces are above the dew point, and do not open the lid to speed it up.' },
+        { text: 'Nothing, as long as the room is dry to the touch', why: 'The room being dry says nothing. What matters is the surface temperature of the cold gear against the air&rsquo;s dew point.' },
+        { text: 'The cold makes the power supply draw more current', why: 'There is no such mechanism here. The failure is a short across something wet.' },
+      ],
+    },
+    {
+      q: 'A fixture is rated IP65 and it is raining. Where is the water most likely to get in?',
+      options: [
+        { text: 'Through the housing, because IP65 only covers splashing', why: 'The second digit 5 is a jet test, which covers rain comfortably. The housing is not the weak point.' },
+        { text: 'At an unmated connector, or a cable gland done up on the wrong diameter', correct: true, why: 'Right. The rating describes the assembly as tested: closed, sealed and mated. A connector hanging open is rated at nothing, and a gland on the wrong cable size throws away the rating of everything behind it.' },
+        { text: 'Nowhere &mdash; IP65 is a full weatherproof rating', why: 'IP65 is a laboratory result about a specific configuration. It says nothing about how the thing was installed, or about condensation from air already inside it.' },
+        { text: 'Through the lens, which is never part of the rating', why: 'The lens is part of the tested enclosure. The install is what is usually not.' },
+      ],
+    },
+  ],
+  access: [
+    {
+      q: 'A track runs at 128 BPM and the strobe is programmed on every eighth note. Is that inside the photosensitivity guidance?',
+      options: [
+        { text: 'Yes &mdash; 128 BPM is a moderate tempo', why: 'The tempo is moderate; the division is what decides it. Every eighth note at 128 BPM is 4.27 flashes a second.' },
+        { text: 'No &mdash; that is about 4.3 flashes a second, over the limit of three', correct: true, why: 'Right, and this is the whole problem: on every beat it would be 2.13 and fine. The threshold sits between two completely ordinary programming decisions, which is why it gets crossed by accident.' },
+        { text: 'Only if the strobe is white', why: 'Colour changes the strictness &mdash; saturated red is judged harder &mdash; but every colour is subject to the three-per-second limit.' },
+        { text: 'It depends on the fixture&rsquo;s output, not its rate', why: 'Intensity matters to the assessment, but the rate limit is a rate limit. 4.3 a second is over it regardless.' },
+      ],
+    },
+    {
+      q: 'A 900-seat theatre is fitting an induction loop that covers every seat. What does that change about the receiver requirement?',
+      options: [
+        { text: 'Nothing &mdash; the receiver count is the same for every technology', why: 'The total count is, but the second column is not. There is a specific exception for full-coverage loops.' },
+        { text: 'The hearing-aid compatible receivers are no longer required, under Exception 2', correct: true, why: 'Right. A loop couples directly to the telecoil in a hearing aid, so the hearing aids in the room already are the receivers. The overall count still applies for people without a compatible aid.' },
+        { text: 'No receivers are needed at all', why: 'Not everyone in the audience has a telecoil-equipped hearing aid. The main count in Table 219.3 still stands.' },
+        { text: 'The count halves', why: 'The exception is about the hearing-aid compatible column specifically, not a reduction of the total.' },
+      ],
+    },
+    {
+      q: 'Live captions on a show are landing about four seconds after the line is spoken. Why is that worse than it sounds?',
+      options: [
+        { text: 'Four seconds exceeds the legal maximum for live captioning', why: 'There is no single universal figure of that kind, and the reason this matters is not compliance.' },
+        { text: 'The reader is out of step with the room &mdash; reading the previous line while everyone reacts to this one', correct: true, why: 'Right. The damage is not missing information, it is exclusion from the shared moment, which is the thing the audience actually came for. It is the same reason a few frames of lip-sync error is unbearable.' },
+        { text: 'The captions will be less accurate at that latency', why: 'Accuracy and latency trade against each other in the other direction: more time usually buys more accuracy. The cost here is social, not textual.' },
+        { text: 'It puts the caption display out of sync with the surtitle machine', why: 'That is an operational nuisance if both exist, but it is not why four seconds is bad for the person reading.' },
+      ],
+    },
+    {
+      q: 'Where does an assistive listening system most commonly fail in practice?',
+      options: [
+        { text: 'RF interference from the radio mics', why: 'It happens, and it is why the system belongs in the frequency coordination. But it is not the commonest failure.' },
+        { text: 'Nobody on duty knows how to switch it on, or where the receivers are', correct: true, why: 'Right, and by a distance. The receivers are in a cupboard, the batteries are flat, and the duty manager was never shown the panel. That is a technical handover problem, and it is the one most worth fixing.' },
+        { text: 'The loop wire failing over time', why: 'Loop wire is passive and durable. Installed systems rarely fail this way.' },
+        { text: 'Insufficient level at the receiver', why: 'Level is adjustable and rarely the issue. Being fed the wrong mix &mdash; the reverberant PA mix instead of a dry speech mix &mdash; is a real problem, but it still comes second to nobody turning it on.' },
+      ],
+    },
+  ],
   dmx: [
     {
       q: 'A DMX segment is rated at 32 unit loads. You have 40 fixtures on it and it works. What is the most likely explanation?',
