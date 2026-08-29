@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#0b0e14"/>
+  <!-- The site's thesis as a mark: a square wave that becomes a smooth curve.
+       Something discrete on the left, something felt on the right. -->
+  <path d="M64 300 h34 v-88 h34 v88 h34 v-88 h34 v88 h30
+           C258 300 262 168 300 168 c38 0 40 132 76 132 c30 0 34-64 72-64"
+        fill="none" stroke="#5fd4bb" stroke-width="26"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="448" cy="236" r="20" fill="#f0b866"/>
+</svg>

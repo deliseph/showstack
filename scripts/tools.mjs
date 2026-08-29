@@ -59,6 +59,118 @@ const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};`
  * suite checks.
  */
 const TOOLKIT_JS = `
+/**
+ * Render a result to a PNG on a canvas and put it on the clipboard.
+ *
+ * A link pasted into a production WhatsApp group shows a bare URL, and a
+ * screenshot of a phone browser loses the numbers to compression and includes
+ * half the nav. This produces a small, legible card with the tool name, the
+ * inputs, the answer and where it came from - which is what somebody actually
+ * wants to send at 4pm.
+ *
+ * Canvas rather than a server: it works with no signal, needs no runtime, and
+ * nothing about the calculation leaves the device.
+ */
+function shotResult(tool, out, btn){
+  try{
+    var title=(tool.querySelector('h3')||{}).textContent||'showstack';
+    title=title.replace(/#$|copied$/,'').replace(/image$/,'').trim();
+    var answer=out.innerText.trim();
+    var inputs=[].slice.call(tool.querySelectorAll('.field')).map(function(f){
+      var l=f.querySelector('label'), i=f.querySelector('input,select');
+      if(!l||!i)return null;
+      var v=i.tagName==='SELECT'?(i.selectedOptions[0]||{}).textContent:i.value;
+      return l.textContent.replace(/\\s+/g,' ').trim()+': '+String(v||'').trim();
+    }).filter(Boolean).slice(0,6);
+
+    var cs=getComputedStyle(document.documentElement);
+    var bg=cs.getPropertyValue('--surface-raised').trim()||'#fff';
+    var ink=cs.getPropertyValue('--ink').trim()||'#111';
+    var dim=cs.getPropertyValue('--ink-muted').trim()||'#555';
+    var faint=cs.getPropertyValue('--ink-faint').trim()||'#888';
+    var sig=cs.getPropertyValue('--signal').trim()||'#0b7561';
+    var rule=cs.getPropertyValue('--rule').trim()||'#ddd';
+
+    var W=1200,PAD=64,scale=2;
+    var mono='"JetBrains Mono", ui-monospace, monospace';
+    var sans='"IBM Plex Sans", system-ui, sans-serif';
+
+    /* Measure first so the card is exactly as tall as its content. */
+    var probe=document.createElement('canvas').getContext('2d');
+    function wrap(text,font,maxW){
+      probe.font=font;
+      var words=String(text).split(/\\s+/), lines=[], line='';
+      for(var i=0;i<words.length;i++){
+        var t=line?line+' '+words[i]:words[i];
+        if(probe.measureText(t).width>maxW && line){lines.push(line);line=words[i]}
+        else line=t;
+      }
+      if(line)lines.push(line);
+      return lines;
+    }
+    /* Split on meaning, not on where the line happens to break: the headline
+       is the first clause, the rest is context set smaller. Changing size
+       mid-sentence is what made the first version read badly. */
+    var flat=answer.replace(/\\s*\\n\\s*/g,' \u00b7 ');
+    var cut=flat.indexOf(' \u00b7 ');
+    var head=cut>0?flat.slice(0,cut):flat;
+    var restText=cut>0?flat.slice(cut+3):'';
+    var answerFont='600 44px '+mono;
+    var restFont='400 27px '+mono;
+    var headLines=wrap(head,answerFont,W-PAD*2);
+    var restLines=restText?wrap(restText,restFont,W-PAD*2).slice(0,3):[];
+    var H=PAD+34+22+headLines.length*56+restLines.length*38+26+(inputs.length?36:0)+56+PAD;
+
+    var cv=document.createElement('canvas');
+    cv.width=W*scale; cv.height=H*scale;
+    var g=cv.getContext('2d'); g.scale(scale,scale);
+    g.fillStyle=bg; g.fillRect(0,0,W,H);
+    g.fillStyle=sig; g.fillRect(0,0,W,6);
+
+    var y=PAD+8;
+    g.fillStyle=faint; g.font='500 20px '+mono;
+    g.fillText('showstack \u00b7 field tools',PAD,y);
+    y+=34;
+    g.fillStyle=ink; g.font='650 30px '+sans;
+    g.fillText(title,PAD,y);
+    y+=48;
+
+    g.font=answerFont; g.fillStyle=sig;
+    for(var i=0;i<headLines.length;i++){ g.fillText(headLines[i],PAD,y); y+=56 }
+    if(restLines.length){
+      g.font=restFont; g.fillStyle=dim; y-=6;
+      for(var j=0;j<restLines.length;j++){ g.fillText(restLines[j],PAD,y); y+=38 }
+    }
+
+    if(inputs.length){
+      y+=6; g.fillStyle=rule; g.fillRect(PAD,y,W-PAD*2,1); y+=30;
+      g.fillStyle=faint; g.font='400 22px '+mono;
+      g.fillText(inputs.join('   \u00b7   ').slice(0,110),PAD,y);
+    }
+
+    g.fillStyle=faint; g.font='400 20px '+mono;
+    g.fillText(location.origin.replace(/^https?:\\/\\//,'')+'/tools/#'+tool.id,PAD,H-PAD+12);
+
+    cv.toBlob(function(blob){
+      if(!blob){btn.textContent='image';return}
+      var done=function(){ btn.textContent='copied'; btn.setAttribute('data-done','');
+        setTimeout(function(){btn.textContent='image';btn.removeAttribute('data-done')},1600) };
+      if(navigator.clipboard && window.ClipboardItem){
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(done,function(){ download(blob) });
+      } else download(blob);
+      function download(b){
+        var a=document.createElement('a');
+        a.href=URL.createObjectURL(b);
+        a.download='showstack-'+tool.id+'.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+        btn.textContent='saved'; btn.setAttribute('data-done','');
+        setTimeout(function(){btn.textContent='image';btn.removeAttribute('data-done')},1600);
+      }
+    },'image/png');
+  }catch(err){ btn.textContent='image'; }
+}
+
 (function(){
   var wrap=document.getElementById('toolwrap');
   if(!wrap)return;
@@ -90,6 +202,15 @@ const TOOLKIT_JS = `
       w.className='outwrap';
       out.parentNode.insertBefore(w,out);
       w.appendChild(out);
+      /* Two ways to get a result out. Text for a terminal or a note; an image
+         for a production group chat, where a pasted link shows nothing and a
+         screenshot loses the numbers to compression. */
+      var img=document.createElement('button');
+      img.type='button'; img.className='tcopy tshot'; img.textContent='image';
+      img.setAttribute('aria-label','Copy this result as an image');
+      img.addEventListener('click',function(){ shotResult(t,out,img) });
+      w.appendChild(img);
+
       var c=document.createElement('button');
       c.type='button'; c.className='tcopy'; c.textContent='copy';
       c.setAttribute('aria-label','Copy this result');
@@ -183,7 +304,7 @@ const TOOLKIT_JS = `
 })();
 `
 
-export function toolsPage({ esc, shell, SITE, GH }) {
+export function toolsPage({ esc, shell, SITE, GH, SPONSOR }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
 .tool h3{margin-top:0}
@@ -210,7 +331,7 @@ min-height:44px;width:110px;font-variant-numeric:tabular-nums}
    large, in mono, with tabular figures so it does not jitter as you type.
    Later figures stay legible but recede. */
 .out{font-family:var(--mono);font-size:15px;color:var(--ink-muted);background:var(--surface-sunken);
-border:1px solid var(--rule);border-radius:var(--r-sm);padding:13px 74px 13px 15px;margin-top:8px;overflow-x:auto;min-height:56px;
+border:1px solid var(--rule);border-radius:var(--r-sm);padding:13px 140px 13px 15px;margin-top:8px;overflow-x:auto;min-height:56px;
 line-height:1.65;font-variant-numeric:tabular-nums;position:relative}
 .out b{color:var(--accent2);font-weight:600}
 .out b:first-of-type{font-size:23px;color:var(--signal);letter-spacing:-.4px;line-height:1.15;
@@ -227,9 +348,49 @@ transition:opacity var(--dur-fast),color var(--dur-fast)}
 .tcopy:hover{color:var(--signal);border-color:var(--signal)}
 .tcopy[data-done]{color:var(--verified);border-color:var(--verified);opacity:1}
 @media(hover:none){.tcopy{opacity:1}}
+/* Declared after .tcopy, not before it: .tshot carries both classes, both
+   selectors weigh the same, so whichever is written last sets the offset. When
+   this sat above, the image button was parked underneath the copy button and
+   could not be clicked at all. */
+.tshot{right:min(70px,38%)}
 
 /* Find a tool. Forty-two calculators in one scroll is a reference; a rigger
    on a phone should not pass nineteen of them to reach voltage drop. */
+/* The offline panel lives on /tools/ because that is where somebody who is
+   about to lose signal actually is. It stays hidden until the browser confirms
+   a service worker is running, so it never promises something that is not
+   there. */
+/* The ask, at the moment of value rather than in the footer. It appears once
+   per browser after somebody has actually got an answer out of the page, it is
+   one line, and dismissing it is permanent. A modal here would be a betrayal
+   of the thing that makes people want to support it in the first place. */
+.ask{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 0;padding:13px 16px;
+border:1px solid color-mix(in srgb,var(--signal) 30%,var(--rule));border-radius:var(--r-md);
+background:color-mix(in srgb,var(--signal) 6%,var(--surface-raised))}
+.ask p{margin:0;flex:1 1 300px;min-width:0;color:var(--ink-muted);font-size:13.8px;line-height:1.55}
+.ask a{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;flex:0 0 auto;
+border-radius:var(--r-pill);font-family:var(--mono);font-size:12.5px;
+background:var(--signal);color:var(--signal-ink);border:1px solid var(--signal)}
+.ask a:hover{filter:brightness(1.08);text-decoration:none;color:var(--signal-ink)}
+.ask button{flex:0 0 auto;min-height:44px;padding:0 12px;border:0;background:none;cursor:pointer;
+font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.ask button:hover{color:var(--ink-muted);text-decoration:underline}
+.offline{border:1px solid var(--rule);border-radius:var(--r-lg);background:var(--surface-raised);
+padding:18px 20px;margin:22px 0 4px}
+.offhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.offk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--signal)}
+.offstate{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+.offstate[data-on]{color:var(--verified)}
+.offp{margin:0 0 14px;color:var(--ink-muted);font-size:14.5px;line-height:1.6;max-width:66ch}
+.offbtns{display:flex;gap:9px;flex-wrap:wrap}
+.offbtns button{font-family:var(--mono);font-size:12.5px;padding:0 16px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;gap:7px}
+.offbtns button:hover:not(:disabled){color:var(--signal);border-color:var(--signal)}
+.offbtns button:disabled{opacity:.55;cursor:default}
+.offbtns button span{color:var(--ink-faint);font-size:11px}
+.offbtns button[data-done]{color:var(--verified);border-color:var(--verified)}
+.offnote{margin:12px 0 0;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);line-height:1.6}
 .tfind{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0 12px}
 .tfind label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
 .tfind input{flex:1 1 260px;min-width:0;min-height:44px;padding:0 14px;font-size:16px;font-family:var(--mono);
@@ -364,6 +525,19 @@ transition:height .35s ease,background .35s ease;min-height:2px}
 <div class="crumb"><a href="/">showstack</a> / tools</div>
 <h2>Field tools</h2>
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
+
+<div class="offline" id="offline" hidden>
+  <div class="offhead">
+    <span class="offk">Offline</span>
+    <span class="offstate" id="off-state">checking&hellip;</span>
+  </div>
+  <p class="offp" id="off-msg">These calculators already run on this page with no signal. Saving the rest means the explainers and the whole searchable index work in a basement too.</p>
+  <div class="offbtns">
+    <button type="button" id="off-learn">Save the 29 explainers <span>&middot; ~3 MB</span></button>
+    <button type="button" id="off-index">Save the searchable index <span>&middot; ~1.2 MB</span></button>
+  </div>
+  <p class="offnote" id="off-note">Stored by your browser on this device. Nothing is sent anywhere, and you can clear it from your browser&rsquo;s site settings.</p>
+</div>
 
 <div class="tfind">
   <label for="tf">Find a tool</label>
@@ -1693,6 +1867,102 @@ function soRender(){
 ["#so-v","#so-mode","#so-lux"].forEach(id => $(id).addEventListener("input", soRender));
 $("#so-mode").addEventListener("change", soRender);
 soRender();
+
+/* ---- offline ------------------------------------------------------------
+   The panel only appears once a controller is actually running. Until then
+   the site would be promising something it cannot do, and this is a site
+   whose whole pitch is not doing that. */
+(function(){
+  var box=document.getElementById('offline');
+  if(!box||!('serviceWorker' in navigator))return;
+  var state=document.getElementById('off-state');
+  var LEARN_URLS=${JSON.stringify(['/learn/', ...LEARN_TOPICS.map((t) => `/learn/${t.slug}/`), '/learn/experience/'])};
+  var INDEX_URLS=['/search/','/showstack.json'];
+
+  function show(on){
+    box.hidden=!on;
+    if(on){state.textContent='ready — this site works with no signal';state.setAttribute('data-on','')}
+  }
+  navigator.serviceWorker.ready.then(function(){show(true)}).catch(function(){});
+  if(navigator.serviceWorker.controller)show(true);
+
+  function saver(btn,urls,label){
+    if(!btn)return;
+    btn.addEventListener('click',function(){
+      if(!navigator.serviceWorker.controller){
+        btn.textContent='reload first, then try again'; return;
+      }
+      btn.disabled=true;
+      var orig=label;
+      navigator.serviceWorker.controller.postMessage({type:'cache-urls',urls:urls});
+      var handler=function(e){
+        if(!e.data)return;
+        if(e.data.type==='cache-progress'){
+          btn.textContent=orig+' — '+e.data.done+'/'+e.data.total;
+        } else if(e.data.type==='cache-done'){
+          btn.textContent='saved for offline';
+          btn.setAttribute('data-done','');
+          navigator.serviceWorker.removeEventListener('message',handler);
+        }
+      };
+      navigator.serviceWorker.addEventListener('message',handler);
+    });
+  }
+  saver(document.getElementById('off-learn'),LEARN_URLS,'Saving explainers');
+  saver(document.getElementById('off-index'),INDEX_URLS,'Saving index');
+
+  /* Say so plainly when the network has gone, rather than letting a stale
+     page look live. */
+  function net(){
+    if(navigator.onLine)return;
+    state.textContent='no network — you are reading saved copies';
+    state.removeAttribute('data-on');
+    box.hidden=false;
+  }
+  window.addEventListener('offline',net);
+  window.addEventListener('online',function(){
+    state.textContent='ready — this site works with no signal';
+    state.setAttribute('data-on','');
+  });
+  net();
+})();
+
+/* ---- the ask ------------------------------------------------------------
+   Shown once, after somebody has actually copied a result - which is the
+   moment the page has demonstrably been useful, rather than the moment they
+   arrived. Dismissing it is permanent, and it never becomes a modal. */
+(function(){
+  var KEY='ss-ask';
+  function seen(){try{return localStorage.getItem(KEY)}catch(e){return '1'}}
+  function mark(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+  if(seen())return;
+  var used=0;
+  function offer(tool){
+    if(seen())return;
+    mark('shown');
+    var box=document.createElement('div');
+    box.className='ask';
+    box.innerHTML='<p>That answer took somebody a while to get right, and there is no ad or account paying for it. '
+      +'If it saved you time tonight, you can keep it going.</p>'
+      +'<a href="${SPONSOR}" rel="noopener">'
+      +'<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="currentColor">'
+      +'<path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/>'
+      +'</svg>Sponsor</a>'
+      +'<button type="button">not now</button>';
+    box.querySelector('button').addEventListener('click',function(){ mark('dismissed'); box.remove() });
+    tool.appendChild(box);
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.tcopy');
+    if(!btn)return;
+    used++;
+    /* Two results copied, not one: once could be curiosity, twice is use. */
+    if(used>=2){
+      var tool=btn.closest('.tool');
+      if(tool)setTimeout(function(){offer(tool)},900);
+    }
+  });
+})();
 `
 
   return shell({
