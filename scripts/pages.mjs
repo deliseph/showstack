@@ -50,6 +50,8 @@ import { learnEmotionPage } from './learn-emotion.mjs'
 import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
 import { learnRiggingPage } from './learn-rigging.mjs'
+import { learnPowerPage } from './learn-power.mjs'
+import { learnVideoPage } from './learn-video.mjs'
 import { learnColourPage } from './learn-colour.mjs'
 import { learnSensesPage } from './learn-senses.mjs'
 import { buildPage } from './build-page.mjs'
@@ -978,6 +980,8 @@ export function buildPages(db, dist) {
     ['code', () => learnCodePage(learnArgs)],
     ['engines', () => learnEnginesPage(learnArgs)],
     ['drawings', () => learnDrawingsPage(learnArgs)],
+    ['video', () => learnVideoPage(learnArgs)],
+    ['power', () => learnPowerPage(learnArgs)],
     ['rigging', () => learnRiggingPage(learnArgs)],
     ['senses', () => learnSensesPage(learnArgs)],
     ['perception', () => learnPerceptionPage(learnArgs)],
