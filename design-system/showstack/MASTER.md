@@ -71,6 +71,11 @@ means a real failure — an intermod collision, no route between two devices.
 None of the three is ever decorative. The moment green appears on something
 that is not "sourced", the signal is dead.
 
+The sponsor button uses `--signal`, not GitHub's pink. It is an action in the
+link family, not a state, and one more hue for one more purpose is how the
+reserved-colour rule dies. The heart glyph carries the recognition; the colour
+does not have to.
+
 `--dom-*` (visual, audio, network, safety, control) identify a domain and
 nothing else. `--accent2` is the secondary figure colour inside calculator
 results. Neither is a semantic state.

@@ -62,6 +62,9 @@ import { label as human, labelList } from './labels.mjs'
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
 const GH = `https://github.com/${REPO}`
+/** Sponsorship goes through GitHub Sponsors; .github/FUNDING.yml carries the
+ *  repo-level button, this is the one on the site itself. */
+const SPONSOR = process.env.SHOWSTACK_SPONSOR ?? `https://github.com/sponsors/${REPO.split('/')[0]}`
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 
@@ -177,6 +180,30 @@ border-left:1px solid var(--line);flex:0 0 auto}
 .ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule-strong);
 padding:0 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
+/* Sponsorship, on every page rather than on two of them. It uses --signal
+   rather than a new pink, because the reserved-colour rule matters more than
+   matching GitHub's palette: this is an action in the link family, not a
+   state. The label collapses on a phone so the header stays two rows. */
+.sponsor{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;
+padding:0 13px;border-radius:var(--r-pill);white-space:nowrap;font-family:var(--mono);font-size:12px;
+color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 40%,var(--rule-strong));
+background:color-mix(in srgb,var(--signal) 8%,transparent);
+transition:border-color var(--dur-fast),background var(--dur-fast)}
+.sponsor:hover{border-color:var(--signal);text-decoration:none;
+background:color-mix(in srgb,var(--signal) 15%,transparent)}
+.sponsor svg{flex:0 0 auto}
+@media(max-width:620px){.sponsor{min-width:44px;padding:0 12px}.sponsor span{display:none}}
+/* The footer ask. One block, stated plainly, below the licence and the credit
+   rather than above them - it is a request, not a term. */
+.fund{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule);
+display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.fund p{margin:0;flex:1 1 320px;min-width:0;color:var(--ink-faint);font-size:12.5px;line-height:1.6;
+font-family:var(--sans)}
+.fundbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;flex:0 0 auto;
+border-radius:var(--r-pill);font-family:var(--mono);font-size:13px;font-weight:600;
+background:var(--signal);color:var(--signal-ink);border:1px solid var(--signal);
+transition:filter var(--dur-fast)}
+.fundbtn:hover{filter:brightness(1.08);text-decoration:none;color:var(--signal-ink)}
 .themebtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;
 border-radius:999px;border:1px solid var(--rule-strong);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
 flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
@@ -495,6 +522,10 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
   <div class="hbar">
     <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
     <a class="ghlink" href="${GH}">GitHub</a>
+    <a class="sponsor" href="${SPONSOR}" rel="noopener" aria-label="Sponsor showstack on GitHub">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/></svg>
+      <span>Sponsor</span>
+    </a>
     <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
   </div>
   ${navBar(canonical)}
@@ -514,6 +545,14 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
   <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
   <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
+  <div class="fund">
+    <p>Free forever, no ads and no tracking. If it saved you an argument at load-in,
+       you can put something toward keeping it maintained.</p>
+    <a class="fundbtn" href="${SPONSOR}" rel="noopener">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="currentColor"><path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/></svg>
+      Sponsor on GitHub
+    </a>
+  </div>
 </div></footer>
 </body>
 </html>`
