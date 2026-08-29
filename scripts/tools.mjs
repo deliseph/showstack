@@ -32,6 +32,7 @@ export const TOOL_GROUPS = [
   ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mix', 'whites', 'mired', 'stops']],
   ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'ohm', 'heat', 'battery']],
   ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
+  ['Scenic & illusion', ['peppers', 'forced']],
   ['Access', ['flash', 'ada']],
   ['Content & timing', ['frame', 'pyro', 'storage']],
   ['Networking', ['subnet', 'fibre', 'sdi']],
@@ -47,6 +48,7 @@ import {
   windLoad, beaufort, dewPoint, flashRate, assistiveListening,
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
+  peppersGhost, forcedPerspective, STEREO_LIMIT_M,
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
@@ -73,6 +75,7 @@ const MATH_SRC = [
   windLoad, beaufort, dewPoint, flashRate, assistiveListening,
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
+  peppersGhost, forcedPerspective,
   channelDetail, sysexDetail,
 ].map((f) => f.toString()).join('\n\n')
 
@@ -87,7 +90,8 @@ const MIDI_CHANNEL = ${JSON.stringify(MIDI_CHANNEL)};
 const MIDI_SYSTEM = ${JSON.stringify(MIDI_SYSTEM)};
 const NOTE_NAMES = ${JSON.stringify(NOTE_NAMES)};
 const MSC_FORMATS = ${JSON.stringify(MSC_FORMATS)};
-const MSC_COMMANDS = ${JSON.stringify(MSC_COMMANDS)};`
+const MSC_COMMANDS = ${JSON.stringify(MSC_COMMANDS)};
+const STEREO_LIMIT_M = ${JSON.stringify(STEREO_LIMIT_M)};`
 
 /**
  * Everything on this page that is the same for every calculator: the finder,
@@ -1017,6 +1021,32 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 <div class="toolgroup">Access</div>
 <div class="toolgrid">
+<div class="tool wide" id="peppers">
+  <h3>Pepper&rsquo;s ghost contrast</h3>
+  <div class="row">
+    <div class="field"><label for="pg-obj">Hidden object (cd/m&sup2;)</label><input id="pg-obj" type="number" min="1" step="50" value="1000" inputmode="numeric" style="width:150px"></div>
+    <div class="field"><label for="pg-bg">Behind the ghost (cd/m&sup2;)</label><input id="pg-bg" type="number" min="0" step="5" value="50" inputmode="numeric" style="width:170px"></div>
+    <div class="field"><label for="pg-r">Pane</label><select id="pg-r">
+      <option value="0.08">plain glass (~8% reflective)</option>
+      <option value="0.2">coated glass (~20%)</option>
+      <option value="0.45">stage foil (~45%)</option>
+      <option value="0.5">half-silvered (50/50)</option>
+    </select></div>
+    <div class="field"><label for="pg-t">Target ratio</label><input id="pg-t" type="number" min="1" step="0.5" value="4" inputmode="decimal" style="width:110px"></div>
+  </div>
+  <div class="out" id="pg-out" role="status" aria-live="polite"></div>
+  <p class="note">Everybody gets the geometry right and the contrast wrong. The image sits as far behind the pane as the object is in front &mdash; that part is easy. What decides whether it reads as a solid figure or a smear on a window is two luminances arriving at the same retina: the object times the pane&rsquo;s <b>reflectance</b>, against the set behind it times the pane&rsquo;s <b>transmittance</b>. There are only two moves, and brightening the object is the expensive one. Darkening what sits behind the ghost is almost always cheaper, and it is the one people reach for last. <a href="/learn/illusion/">The rest of the craft &rarr;</a></p>
+</div>
+<div class="tool wide" id="forced">
+  <h3>Forced perspective</h3>
+  <div class="row">
+    <div class="field"><label for="fp-s">Reference size (m)</label><input id="fp-s" type="number" min="0.01" step="0.1" value="1.8" inputmode="decimal" style="width:140px"></div>
+    <div class="field"><label for="fp-d1">at distance (m)</label><input id="fp-d1" type="number" min="0.1" step="0.5" value="4" inputmode="decimal" style="width:140px"></div>
+    <div class="field"><label for="fp-d2">Match it from (m)</label><input id="fp-d2" type="number" min="0.1" step="1" value="20" inputmode="decimal" style="width:150px"></div>
+  </div>
+  <div class="out" id="fp-out" role="status" aria-live="polite"></div>
+  <p class="note">Two things look the same size when they subtend the same angle, and angle is size over distance &mdash; so an object twice as far away has to be twice as big. That is the whole trick, and the arithmetic is the easy half. The useful half is where it stops: angular size is one depth cue among several, and inside about ten metres <b>binocular disparity simply overrules it</b>. A forced-perspective set that is perfect in a photograph collapses for the front row, because a camera has one eye and an audience has two. Motion parallax does the same job for anybody who moves their head. The technique is really a statement about who is allowed to look, and from where.</p>
+</div>
 <div class="tool wide" id="flash">
   <h3>Flash rate &amp; photosensitivity</h3>
   <div class="row">
@@ -2253,6 +2283,48 @@ function mdRender(){
 }
 $("#md-in").addEventListener("input", mdRender);
 mdRender();
+
+/* ---- Pepper's ghost ------------------------------------------------------ */
+function pgRender(){
+  const r = peppersGhost({
+    objectLuminance: $("#pg-obj").value,
+    backgroundLuminance: $("#pg-bg").value,
+    reflectance: $("#pg-r").value,
+  });
+  if(!r){ $("#pg-out").innerHTML = '<span class="err">Luminances cannot be negative and a pane cannot reflect everything.</span>'; return; }
+  const target = Number($("#pg-t").value);
+  let html = "Ghost <b>" + r.ghostLuminance + "</b> cd/m&sup2; against <b>" + r.backgroundLuminance
+    + "</b> cd/m&sup2; of set showing through";
+  html += "<br>" + (r.contrastRatio === null
+    ? '<span class="ok">&#10003; Nothing behind it &mdash; the ghost is as solid as it gets</span>'
+    : "<b>" + r.contrastRatio + ":1</b> &middot; reads as <b>" + r.reads + "</b>"
+      + (r.reads === "solid" ? ' <span class="ok">&#10003;</span>' : ' <span class="warn">&#9679;</span>'));
+  if (target > 0 && r.contrastRatio !== null && r.contrastRatio < target) {
+    const needObj = r.objectLuminanceFor(target);
+    const needBg = r.backgroundLuminanceFor(target);
+    html += "<br>For " + target + ":1 you can light the object to <b>" + needObj.toLocaleString()
+      + "</b> cd/m&sup2;, or bring the set behind it down to <b>" + needBg
+      + '</b> &mdash; <span class="dim">the second one costs nothing but a conversation</span>';
+  }
+  $("#pg-out").innerHTML = html;
+}
+["#pg-obj","#pg-bg","#pg-r","#pg-t"].forEach(id => $(id).addEventListener("input", pgRender));
+$("#pg-r").addEventListener("change", pgRender);
+pgRender();
+
+/* ---- forced perspective -------------------------------------------------- */
+function fpRender(){
+  const r = forcedPerspective($("#fp-s").value, $("#fp-d1").value, $("#fp-d2").value);
+  if(!r){ $("#fp-out").innerHTML = '<span class="err">Sizes and distances all have to be above zero.</span>'; return; }
+  let html = "To match a <b>" + r.realSize + "</b> m object at " + r.realDistanceM + " m, an object at "
+    + r.targetDistanceM + " m has to be <b>" + r.requiredSize + "</b> m &mdash; " + r.scaleFactor + "&times; the size";
+  html += '<br><span class="dim">Both subtend ' + r.angularSizeDeg + "&deg; at the eye, which is the only thing being matched.</span>";
+  html += "<br>" + (r.disparityWillBetrayIt
+    ? '<span class="warn">&#9679; ' : '<span class="ok">&#10003; ') + r.note + "</span>";
+  $("#fp-out").innerHTML = html;
+}
+["#fp-s","#fp-d1","#fp-d2"].forEach(id => $(id).addEventListener("input", fpRender));
+fpRender();
 
 /* ---- offline ------------------------------------------------------------
    The panel only appears once a controller is actually running. Until then

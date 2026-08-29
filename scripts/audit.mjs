@@ -47,7 +47,7 @@ const PAGES = [
   '/tools/', '/protocols/', '/protocols/sacn/', '/standards/', '/software/', '/hardware/',
   '/glossary/', '/search/', '/build/', '/interop/', '/compare/', '/ports/', '/rf/',
   '/network/', '/signals/', '/check/', '/verify/', '/offline/',
-  '/learn/outdoors/', '/learn/access/', '/learn/power/', '/learn/mixing/', '/learn/timecode/',
+  '/learn/outdoors/', '/learn/access/', '/learn/power/', '/learn/mixing/', '/learn/timecode/', '/learn/empathy/', '/learn/illusion/',
 ]
 const WIDTHS = [375, 768, 1024, 1440]
 
