@@ -130,6 +130,47 @@ pass.push(`no horizontal scroll, painted body, no emoji icons, zoom enabled, no 
 }
 pass.push('nothing animates under prefers-reduced-motion, and no SMIL exists to escape the CSS guard')
 
+// --- cumulative layout shift ----------------------------------------------
+// The brief sets a 0.1 budget and MASTER.md claimed 0.00 on every page. That
+// claim was not being checked, and it stopped being true: the tools page had
+// drifted to 0.15 on a phone because an empty category rail grew to a full row
+// of chips after load and pushed the whole tool list down. A number nobody
+// measures is a number that quietly goes wrong, so measure it.
+{
+  const BUDGET = 0.1
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } })
+  const page = await ctx.newPage()
+  await page.addInitScript(() => {
+    window.__cls = 0
+    window.__shifted = []
+    new PerformanceObserver((l) => {
+      for (const e of l.getEntries()) {
+        if (e.hadRecentInput) continue
+        window.__cls += e.value
+        for (const src of e.sources ?? []) {
+          const el = src.node
+          if (el?.tagName) window.__shifted.push(el.tagName + (el.id ? '#' + el.id : ''))
+        }
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+  })
+  let worst = 0
+  for (const p of PAGES) {
+    await page.goto(at(p), { waitUntil: 'networkidle' })
+    // Fonts are the classic late shift, so do not score before they settle.
+    await page.evaluate(() => document.fonts.ready)
+    await page.waitForTimeout(120)
+    const r = await page.evaluate(() => ({
+      cls: +window.__cls.toFixed(4),
+      who: [...new Set(window.__shifted)].slice(0, 5).join(', '),
+    }))
+    worst = Math.max(worst, r.cls)
+    if (r.cls > BUDGET) fail.push(`layout shift ${r.cls} over the ${BUDGET} budget: ${p} — ${r.who}`)
+  }
+  await ctx.close()
+  pass.push(`cumulative layout shift within budget on every page, worst ${worst} against a ${BUDGET} limit (mobile, after fonts settle)`)
+}
+
 // --- focus ring and target size -------------------------------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } })

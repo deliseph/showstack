@@ -293,14 +293,14 @@ function shotResult(tool, out, btn){
     }
   });
 
-  /* --- category rail, built from the group headings that are already there --- */
+  /* --- category rail ---
+     Rendered in the HTML rather than built here. It used to be created on
+     load, and an empty <nav> growing to a full row of chips pushed the whole
+     tool list down: 0.15 CLS on a phone, over the 0.1 budget, on the page
+     people use most. The labels and the group ids are both build-time
+     constants, so there was never a reason to wait for JavaScript. It also
+     means the categories are readable with JavaScript off. */
   var rail=document.getElementById('trail');
-  groups.forEach(function(g,i){
-    var id='g'+i; g.id=id;
-    var a=document.createElement('a');
-    a.href='#'+id; a.textContent=g.textContent.trim();
-    rail.appendChild(a);
-  });
   var seen=[].slice.call(rail.children);
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){
@@ -658,7 +658,7 @@ transition:height .35s ease,background .35s ease;min-height:2px}
          placeholder="voltage, delay, bridle, dose, subnet&hellip;" aria-controls="toolwrap">
   <span class="tfn" id="tfn" role="status" aria-live="polite"></span>
 </div>
-<nav class="trail" id="trail" aria-label="Tool categories"></nav>
+<nav class="trail" id="trail" aria-label="Tool categories">${TOOL_GROUPS.map(([label], i) => `<a href="#g${i}">${esc(label)}</a>`).join('')}</nav>
 <div class="trecent" id="trecent" hidden>
   <span class="trk">Last used</span><span class="trl" id="trl"></span>
 </div>
@@ -666,7 +666,7 @@ transition:height .35s ease,background .35s ease;min-height:2px}
 if the calculation you need is missing, it is one pull request.</p>
 
 <div id="toolwrap">
-<div class="toolgroup">Addressing &amp; show control</div>
+<div class="toolgroup" id="g0">Addressing &amp; show control</div>
 <div class="toolgrid">
 <div class="tool" id="dmx">
   <h3>DMX address</h3>
@@ -755,7 +755,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Write each output as a boolean rule: <b>&amp;</b> AND, <b>|</b> OR, <b>!</b> NOT, parentheses group. Every input combination is evaluated into the matrix, which is how you sanity-check an interlock chain before wiring it. Up to 5 inputs and 6 rules; outputs cannot feed back, because latching and timing belong in the controller, not a truth table. This is a thinking tool: a real e-stop chain is hard-wired to the <a href="/standards/">machinery standards</a>, never through software.</p>
 </div>
 </div>
-<div class="toolgroup">Audio</div>
+<div class="toolgroup" id="g1">Audio</div>
 <div class="toolgrid">
 <div class="tool" id="delay">
   <h3>Speaker delay</h3>
@@ -894,7 +894,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">WFS does not pan. It reconstructs the wavefront a real source would have made, using an array of loudspeakers as a discrete sampling of a continuous surface &mdash; so it has a Nyquist limit in <b>space</b> exactly as sampling has one in time: <span class="mono">f = c / 2d</span>. Above it the array can no longer represent the wavefront and produces spatial aliasing instead. This one number decides what a WFS system costs, because halving the spacing doubles the limit and doubles the loudspeaker count for the same length of array. Real systems alias somewhere in the low kilohertz and rely on the ear localising less by phase up there.</p>
 </div>
 </div>
-<div class="toolgroup">Lighting &amp; video</div>
+<div class="toolgroup" id="g2">Lighting &amp; video</div>
 <div class="toolgrid">
 <div class="tool" id="beam">
   <h3>Beam &amp; throw</h3>
@@ -1003,7 +1003,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">A stop is a factor of two in light, which is the unit the trade counts in because it matches how the eye responds. The confusion is that ND is labelled two incompatible ways: photographic ND is an optical density where 0.3 is one stop, while plenty of stage filter is labelled by the fraction it passes. Stacking filters multiplies transmission, which is adding stops.</p>
 </div>
 </div>
-<div class="toolgroup">Power &amp; electrical</div>
+<div class="toolgroup" id="g3">Power &amp; electrical</div>
 <div class="toolgrid">
 <div class="tool" id="power">
   <h3>Power load</h3>
@@ -1105,7 +1105,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Packs are labelled in mAh more often than Wh: multiply mAh by the nominal voltage and divide by 1000. The derating matters more than the arithmetic &mdash; you lose some capacity to the device's cutoff voltage, some to cold, and a lithium pack that has done three hundred shows is not the pack on the label. 80% is a working default, not a measurement of your stock.</p>
 </div>
 </div>
-<div class="toolgroup">Rigging, load &amp; weather</div>
+<div class="toolgroup" id="g4">Rigging, load &amp; weather</div>
 <div class="toolgrid">
 <div class="tool wide" id="bridle">
   <h3>Bridle angle — why it is never half each</h3>
@@ -1147,7 +1147,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Two situations, one calculation. A case comes off a cold truck into a humid venue and water forms inside the amplifier before anyone plugs it in. Or an LED wall sits out overnight, the air reaches its dew point around dawn, and the panels are wet at 6am. The fix in both directions is the same: do not power it until the surface is above the dew point, and give it a margin, because exactly at the dew point is already wet.</p>
 </div>
 </div>
-<div class="toolgroup">Access</div>
+<div class="toolgroup" id="g5">Scenic &amp; illusion</div>
 <div class="toolgrid">
 <div class="tool wide" id="peppers">
   <h3>Pepper&rsquo;s ghost contrast</h3>
@@ -1175,6 +1175,9 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="fp-out" role="status" aria-live="polite"></div>
   <p class="note">Two things look the same size when they subtend the same angle, and angle is size over distance &mdash; so an object twice as far away has to be twice as big. That is the whole trick, and the arithmetic is the easy half. The useful half is where it stops: angular size is one depth cue among several, and inside about ten metres <b>binocular disparity simply overrules it</b>. A forced-perspective set that is perfect in a photograph collapses for the front row, because a camera has one eye and an audience has two. Motion parallax does the same job for anybody who moves their head. The technique is really a statement about who is allowed to look, and from where.</p>
 </div>
+</div>
+<div class="toolgroup" id="g6">Access</div>
+<div class="toolgrid">
 <div class="tool wide" id="flash">
   <h3>Flash rate &amp; photosensitivity</h3>
   <div class="row">
@@ -1209,7 +1212,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Table 219.3 of the <a href="/standards/ada-standards-2010/">2010 ADA Standards</a>, which is a stepped formula people reliably get wrong from memory. The second number is the one that gets forgotten: a share of receivers must be hearing-aid compatible, meaning a neckloop that couples to a telecoil, not headphones. An induction loop covering every seat waives that column under Exception 2, because the hearing aids in the room already are the receivers. Under Exception 1, assembly areas under one management can be counted together.</p>
 </div>
 </div>
-<div class="toolgroup">Content &amp; timing</div>
+<div class="toolgroup" id="g7">Content &amp; timing</div>
 <div class="toolgrid">
 <div class="tool" id="frame">
   <h3>Frame budget</h3>
@@ -1246,7 +1249,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">The units are the trap. Cards and drives are sold in decimal gigabytes and reported by the operating system in binary gibibytes, so a &ldquo;1&nbsp;TB&rdquo; card holds about 931&nbsp;GiB &mdash; the difference is a whole afternoon of recording. The sustained write figure is the spec that actually decides whether media drops frames, not the capacity.</p>
 </div>
 </div>
-<div class="toolgroup">Networking</div>
+<div class="toolgroup" id="g8">Networking</div>
 <div class="toolgrid">
 <div class="tool wide" id="subnet">
   <h3>Subnet calculator</h3>
@@ -1304,7 +1307,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">SDI does not degrade &mdash; it works perfectly and then stops, which is why a run that was fine in the shop fails in the venue ten metres longer. Two facts set the cliff: coax loss rises with the square root of frequency, and the frequency that matters is half the bit rate. Take both cable numbers off the manufacturer&rsquo;s datasheet, at whatever frequency they quoted; every coax maker publishes them. The 20&nbsp;dB equalisation figure is what SMPTE writes down, and real receivers often do better, which is why the same cable gets quoted at different lengths by different people. A run inside 3&nbsp;dB of the budget is flagged: it works today and fails after somebody swaps a barrel in.</p>
 </div>
 </div>
-<div class="toolgroup">Analogue &amp; components</div>
+<div class="toolgroup" id="g9">Analogue &amp; components</div>
 <div class="toolgrid">
 <div class="tool wide" id="optical">
   <h3>Why a Blu-ray holds more than a CD</h3>
@@ -1349,7 +1352,7 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 </div>
 
-<div class="toolgroup">Protocol builders</div>
+<div class="toolgroup" id="g10">Protocol builders</div>
 <div class="toolgrid">
 <div class="tool wide" id="osc">
   <h3>OSC message</h3>
@@ -1443,7 +1446,7 @@ HORN = GO &amp; (A | B)</textarea></div>
 </div>
 </div>
 
-<div class="toolgroup">RF</div>
+<div class="toolgroup" id="g11">RF</div>
 <div class="toolgrid">
 <div class="tool wide" id="im">
   <h3>Third-order intermod check</h3>
@@ -3041,7 +3044,12 @@ ncRender();
   var box=document.getElementById('offline');
   if(!box||!('serviceWorker' in navigator))return;
   var state=document.getElementById('off-state');
-  var LEARN_URLS=${JSON.stringify(['/learn/', ...LEARN_TOPICS.map((t) => `/learn/${t.slug}/`), '/learn/experience/'])};
+  // The reading serif goes with them. It is fetched when an explainer
+  // renders, so somebody who saves from this page without opening one would
+  // otherwise go offline with the pages cached and the font not, and read the
+  // whole set in Georgia. It is not in the shell precache on purpose: a reader
+  // who never opens an explainer should not pay 57 KB for a face they never see.
+  var LEARN_URLS=${JSON.stringify(['/learn/', ...LEARN_TOPICS.map((t) => `/learn/${t.slug}/`), '/learn/experience/', '/assets/fonts/newsreader-latin.woff2', '/assets/fonts/newsreader-latin-italic.woff2'])};
   var INDEX_URLS=['/search/','/showstack.json'];
 
   function show(on){

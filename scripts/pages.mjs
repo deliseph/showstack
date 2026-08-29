@@ -390,11 +390,38 @@ unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+
 @font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;
 src:url(/assets/fonts/jetbrains-mono-latin-ext.woff2) format("woff2");
 unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+/* Newsreader, latin only, and only ever matched on an explainer - a page that
+   does not use var(--serif) never fetches these. Google serves this family
+   with an optical-size axis; requesting a fixed size drops it and takes the
+   pair from 272 KB to 80 KB, which is the difference between affordable on a
+   phone in a loading dock and not. The weight axis is kept because the prose
+   leans on <strong> throughout. */
+@font-face{font-family:"Newsreader";font-style:normal;font-weight:400 650;font-display:swap;
+src:url(/assets/fonts/newsreader-latin.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Newsreader";font-style:italic;font-weight:400 650;font-display:swap;
+src:url(/assets/fonts/newsreader-latin-italic.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 `
 
 const CSS = RELATED_CSS + QUIZ_CSS + TOKENS + `
 ${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
+/* The reading serif, on explainer prose and nowhere else.
+   Scoped to bare paragraphs and lists inside a section, so it cannot reach
+   the eyebrow, a figure caption, a quiz option, a table, a tool control or
+   anything set in mono. Those all carry a class; running prose does not,
+   which makes :not([class]) the honest hook rather than a long exclusion
+   list that goes stale the first time somebody adds a component. */
+body.reading .lsec > p:not([class]),
+body.reading .lsec > ul > li,
+body.reading .lhero .lede{font-family:var(--serif);font-size:18px;
+line-height:var(--leading-prose);max-width:var(--measure)}
+@media(max-width:640px){
+  body.reading .lsec > p:not([class]),
+  body.reading .lsec > ul > li,
+  body.reading .lhero .lede{font-size:17px}
+}
 ${SHELL_CSS}
 /* ---- paper ------------------------------------------------------------
    Riggers and electricians need a trail, and a phone screenshot is not one.
@@ -592,6 +619,10 @@ export function navBar(canonical) {
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
+  // Explainers get the reading serif; nothing else does. Derived from the
+  // canonical rather than passed in, because there are 39 explainer modules
+  // and a flag on 39 call sites is a flag somebody forgets on the 40th.
+  const reading = /\/learn\/./.test(canonical)
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -616,11 +647,12 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preload" href="/assets/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+${reading ? `<link rel="preload" href="/assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>` : ''}
 <script>${THEME_JS}</script>
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
 </head>
-<body>
+<body${reading ? ' class="reading"' : ''}>
 <a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap">
   <div class="hbar">
