@@ -57,6 +57,7 @@ import { homePage } from './home.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
+import { label as human, labelList } from './labels.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -511,6 +512,23 @@ function relatedLearn(kind, entry) {
   return learnBox(esc, learnFor(BACKLINKS, kind, entry))
 }
 
+/**
+ * Who maintained this entry.
+ *
+ * "Your handle goes on the entry" was a promise in a paragraph nobody read.
+ * Showing it on the entry itself is the half that turns a reader into a
+ * maintainer - and it is why the block renders nothing rather than an empty
+ * shell when there is no one to credit yet.
+ */
+function creditLine(entry) {
+  const who = entry.contributed_by ?? []
+  if (!who.length) return ''
+  return `<p class="credit"><span>Maintained by</span>` +
+    who.map((h) => `<a href="https://github.com/${esc(String(h).replace(/^@/, ''))}" rel="noopener">@${esc(String(h).replace(/^@/, ''))}</a>`).join('') +
+    (entry.updated ? `<span class="credit-when">updated ${esc(String(entry.updated).slice(0, 10))}</span>` : '') +
+    `</p>`
+}
+
 function contributeBox(collection, id, gap) {
   // esc() has to run per field name, not over the joined string - joining
   // first meant the <code> separators were escaped too and the reader saw
@@ -545,12 +563,13 @@ function protocolPage(p, gap) {
   b += `<p class="lede">${esc(p.summary)}</p>`
 
   b += `<div class="meta">`
-  b += `<span class="pill dom-${superDomain(p.category)}">${esc(p.category)}</span>`
-  if (p.openness) b += `<span class="pill">${esc(p.openness)}</span>`
+  b += `<span class="pill dom-${superDomain(p.category)}" data-value="${esc(p.category)}">${esc(human('category', p.category))}</span>`
+  if (p.openness) b += `<span class="pill" data-value="${esc(p.openness)}" title="${esc(p.openness)}">${esc(human('openness-short', p.openness))}</span>`
   if (p.steward) b += `<span class="pill">${esc(p.steward)}</span>`
-  if (p.confidence) b += `<span class="pill ${esc(p.confidence)}">${esc(p.confidence)}</span>`
-  if (p.status && p.status !== 'current') b += `<span class="pill">${esc(p.status)}</span>`
+  if (p.confidence) b += `<span class="pill ${esc(p.confidence)}" data-value="${esc(p.confidence)}" title="${esc(human('confidence', p.confidence))}">${esc(p.confidence === 'verified' ? 'Verified' : 'Reported')}</span>`
+  if (p.status && p.status !== 'current') b += `<span class="pill" data-value="${esc(p.status)}">${esc(human('status', p.status))}</span>`
   b += `</div>`
+  b += creditLine(p)
 
   if (ports.length) {
     b += `<h3>Ports</h3>`
@@ -699,14 +718,15 @@ function productPage(kind, e, gap) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / ${kind} / ${esc(e.id)}</div>`
   b += `<h2>${esc(e.name)}</h2><p class="lede">${esc(e.summary)}</p>`
-  b += `<div class="meta"><span class="pill dom-${superDomain(e.category)}">${esc(e.category)}</span>`
+  b += `<div class="meta"><span class="pill dom-${superDomain(e.category)}" data-value="${esc(e.category)}">${esc(human('category', e.category))}</span>`
   if (e.vendor) b += `<span class="pill">${esc(e.vendor)}</span>`
   if (e.license) b += `<span class="pill">${esc(e.license)}</span>`
-  if (e.price_model) b += `<span class="pill">${esc(e.price_model)}</span>`
-  for (const pf of e.platforms ?? []) b += `<span class="pill">${esc(pf)}</span>`
-  if (e.confidence) b += `<span class="pill ${esc(e.confidence)}">${esc(e.confidence)}</span>`
-  if (e.status && e.status !== 'current') b += `<span class="pill">${esc(e.status)}</span>`
+  if (e.price_model) b += `<span class="pill" data-value="${esc(e.price_model)}">${esc(human('price_model', e.price_model))}</span>`
+  for (const pf of e.platforms ?? []) b += `<span class="pill" data-value="${esc(pf)}">${esc(human('platforms', pf))}</span>`
+  if (e.confidence) b += `<span class="pill ${esc(e.confidence)}" data-value="${esc(e.confidence)}" title="${esc(human('confidence', e.confidence))}">${esc(e.confidence === 'verified' ? 'Verified' : 'Reported')}</span>`
+  if (e.status && e.status !== 'current') b += `<span class="pill" data-value="${esc(e.status)}">${esc(human('status', e.status))}</span>`
   b += `</div>`
+  b += creditLine(e)
 
   if (e.speaks?.length) {
     b += `<h3>Protocols it speaks</h3><table><tr><th>Protocol</th><th>Direction</th><th>Notes</th></tr>` +
@@ -773,11 +793,15 @@ function collectionIndex(kind, entries, { title, lede, group, label, sub }) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / ${esc(kind)}</div>`
   b += `<h2>${esc(title)}</h2><p class="lede">${lede}</p>`
+  // The anchor keeps the machine value so existing deep links still resolve;
+  // only what a person reads is mapped. The raw key stays on the element for
+  // anyone working against the API.
+  const groupField = kind === 'glossary' || kind === 'standards' ? 'domain' : 'category'
   b += `<p class="idxjump">` + ordered.map(([g, list]) =>
-    `<a href="#g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <b>${list.length}</b></a>`).join('') + `</p>`
+    `<a href="#g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}" data-value="${esc(g)}">${esc(human(groupField, g))} <b>${list.length}</b></a>`).join('') + `</p>`
 
   for (const [g, list] of ordered) {
-    b += `<h3 id="g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <span class="idxn">${list.length}</span></h3><div class="idxlist">`
+    b += `<h3 id="g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}" data-value="${esc(g)}">${esc(human(groupField, g))} <span class="idxn">${list.length}</span></h3><div class="idxlist">`
     for (const e of [...list].sort((x, y) => String(label(x)).localeCompare(String(label(y))))) {
       b += `<a class="idxrow" href="/${esc(kind)}/${esc(e.id)}/">
         <span class="idxname">${esc(label(e))}</span>
@@ -789,6 +813,12 @@ function collectionIndex(kind, entries, { title, lede, group, label, sub }) {
 }
 
 const INDEX_CSS = `
+.credit{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-14px 0 24px;
+font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.credit a{color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 35%,transparent);
+border-radius:var(--r-pill);padding:0 11px;min-height:32px;display:inline-flex;align-items:center}
+.credit a:hover{border-color:var(--signal);text-decoration:none}
+.credit-when{color:var(--ink-faint)}
 .idxjump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 30px;padding:0}
 .idxjump a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
 background:var(--panel);border-radius:999px;padding:6px 12px}
@@ -1021,12 +1051,12 @@ export function buildPages(db, dist) {
     ['protocols', db.protocols, {
       title: 'Protocols', lede: 'Every wire protocol in the index, grouped by what it carries. Ports, addressing, gotchas and a citation on each.',
       group: (e) => e.category, label: (e) => e.name,
-      sub: (e) => (e.default_ports ?? []).map((x) => `${x.transport}/${x.number}`).join(' · ') || e.openness,
+      sub: (e) => (e.default_ports ?? []).map((x) => `${x.transport}/${x.number}`).join(' · ') || human('openness-short', e.openness),
     }],
     ['standards', db.standards, {
       title: 'Standards', lede: 'Technical and safety standards that govern how live entertainment systems are built and operated, grouped by publishing body. Where a document is free to read, it says so.',
       group: (e) => e.body, label: (e) => e.designation,
-      sub: (e) => `${e.domain}${e.free_to_read ? ' · free to read' : ''}`,
+      sub: (e) => `${human('domain', e.domain)}${e.free_to_read ? ' · free to read' : ''}`,
     }],
     ['glossary', db.terms, {
       title: 'Glossary', lede: 'Bilingual EN / 繁中 vocabulary, grouped by department, with the regional variants and false friends that cause real confusion on headset.',
@@ -1036,7 +1066,7 @@ export function buildPages(db, dist) {
     ['software', db.software, {
       title: 'Software', lede: 'Control, playback, design and diagnostic software, grouped by what it does — and crucially which protocols each one speaks.',
       group: (e) => e.category, label: (e) => e.name,
-      sub: (e) => [e.vendor, e.price_model].filter(Boolean).join(' · '),
+      sub: (e) => [e.vendor, e.price_model && human('price_model', e.price_model)].filter(Boolean).join(' · '),
     }],
     ['hardware', db.hardware, {
       title: 'Hardware', lede: 'Consoles, servers, processors, gateways, switches and the rest of the rack, grouped by category, with what each one speaks.',

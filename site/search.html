@@ -259,6 +259,17 @@
 
 <script>
 const DATA = /*__SHOWSTACK_DATA__*/null;
+/* The same label map the 608 static pages use, injected at build time so the
+   search results and the entry pages can never disagree about wording. */
+const LABELS = /*__SHOWSTACK_LABELS__*/null;
+function LABEL(field, value){
+  var m = LABELS && LABELS[field];
+  if (m && Object.prototype.hasOwnProperty.call(m, value)) return m[value];
+  var v = String(value == null ? "" : value);
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v)) return v;
+  v = v.replace(/-/g, " ");
+  return v.charAt(0).toUpperCase() + v.slice(1);
+}
 const REPO = "https://github.com/deliseph/showstack";
 
 const COLS = [
@@ -309,16 +320,16 @@ const ITEMS = COLS.flatMap(c => (DATA?.[c.key] ?? []).map(d => {
 
 function pills(col, d){
   const out = [];
-  if (d.category) out.push(`<span class="pill dom-${superDomain(d.category)}">${esc(d.category)}</span>`);
-  if (d.domain) out.push(`<span class="pill dom-${superDomain(d.domain)}">${esc(d.domain)}</span>`);
+  if (d.category) out.push(`<span class="pill dom-${superDomain(d.category)}" data-value="${esc(d.category)}">${esc(LABEL("category", d.category))}</span>`);
+  if (d.domain) out.push(`<span class="pill dom-${superDomain(d.domain)}" data-value="${esc(d.domain)}">${esc(LABEL("domain", d.domain))}</span>`);
   if (d.body) out.push(`<span class="pill">${esc(d.body)}</span>`);
   if (d.vendor) out.push(`<span class="pill">${esc(d.vendor)}</span>`);
   for (const p of d.default_ports ?? []) out.push(`<span class="pill port">${p.transport}/${p.number}</span>`);
-  if (d.openness) out.push(`<span class="pill">${esc(d.openness)}</span>`);
+  if (d.openness) out.push(`<span class="pill" data-value="${esc(d.openness)}" title="${esc(LABEL("openness", d.openness))}">${esc(LABEL("openness-short", d.openness))}</span>`);
   if (d.license) out.push(`<span class="pill">${esc(d.license)}</span>`);
   if (d.free_to_read === true) out.push(`<span class="pill verified">free to read</span>`);
   if (d.safety_critical) out.push(`<span class="pill safety">safety critical</span>`);
-  if (d.confidence) out.push(`<span class="pill ${d.confidence}">${esc(d.confidence)}</span>`);
+  if (d.confidence) out.push(`<span class="pill ${d.confidence}" data-value="${esc(d.confidence)}" title="${esc(LABEL("confidence", d.confidence))}">${esc(d.confidence === "verified" ? "Verified" : "Reported")}</span>`);
   if (d.status && d.status !== "current") out.push(`<span class="pill">${esc(d.status)}</span>`);
   return out.join("");
 }
