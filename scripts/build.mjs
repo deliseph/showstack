@@ -75,10 +75,40 @@ const WANTED = {
   standards: ['year', 'scope', 'free_to_read', 'access_url'],
   terms: ['zh_hant', 'definition_zh_hant', 'false_friends', 'regional_variants'],
 }
+
+/**
+ * Fields that only make sense for some entries.
+ *
+ * A backlog that asks for something nobody can supply is not a backlog, it is
+ * noise — and it inflates the open-gap count, which is a number this site puts
+ * on its own front page. Dante Controller and grandMA3 onPC are free to
+ * download and will never have a public source repository, so listing `repo`
+ * as missing on them makes the index look 90-odd gaps deeper than it is and
+ * sends contributors after something that does not exist.
+ *
+ * A field is only a gap when it is applicable AND absent.
+ */
+const APPLICABLE = {
+  software: {
+    // Only open-source software can have a public repository. Free-to-download
+    // proprietary tools are a different thing from open source, and the
+    // price_model field already records which is which.
+    repo: (e) => e.price_model === 'open-source',
+  },
+  protocols: {
+    // A closed proprietary spec has no public document to link to. Where a
+    // vendor does publish one the field is filled in; where they do not, it is
+    // not a gap somebody can close with research.
+    spec_url: (e) => e.openness !== 'proprietary-closed',
+  },
+}
+
 const gaps = []
 for (const col of COLLECTIONS) {
+  const rules = APPLICABLE[col.key] ?? {}
   for (const entry of db[col.key]) {
     const missing = (WANTED[col.key] ?? []).filter((f) => {
+      if (rules[f] && !rules[f](entry)) return false
       const v = entry[f]
       return v == null || (Array.isArray(v) && v.length === 0)
     })

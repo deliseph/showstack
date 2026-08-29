@@ -7,6 +7,9 @@ vendor: Jean-Emmanuel Doucet
 category: show-control
 license: GPL-3.0
 price_model: open-source
+repo:
+  url: https://framagit.org/jean-emmanuel/open-stage-control
+  label: Open Stage Control source (moved from GitHub)
 status: current
 platforms:
 - windows

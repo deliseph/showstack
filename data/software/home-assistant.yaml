@@ -7,6 +7,9 @@ vendor: Open Home Foundation
 category: show-control
 license: Apache-2.0
 price_model: open-source
+repo:
+  url: https://github.com/home-assistant/core
+  label: Home Assistant Core
 status: current
 platforms:
 - linux

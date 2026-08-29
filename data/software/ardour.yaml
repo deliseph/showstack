@@ -7,6 +7,9 @@ vendor: Ardour Community
 category: audio-playback
 license: GPL-2.0-or-later
 price_model: open-source
+repo:
+  url: https://github.com/Ardour/ardour
+  label: Ardour source (official mirror)
 status: current
 platforms:
 - windows
