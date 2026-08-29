@@ -57,6 +57,7 @@ import { learnSensesPage } from './learn-senses.mjs'
 import { buildPage } from './build-page.mjs'
 import { homePage } from './home.mjs'
 import { offlinePage } from './offline-page.mjs'
+import { checkPage } from './check-page.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
@@ -279,8 +280,11 @@ color-scheme:light;
 /* reserved. Never decorative: green means "this fact is sourced", amber means
    a real caution, red means a real failure. */
 --verified:#3a7a22;     /*  4.91 */
---warn:#b6462e;         /*  5.02 */
---fail:#b6462e;
+/* Amber and red are different states and must look different. They were the
+   same value here, which quietly made the reserved-colour rule untrue: a
+   caution and a failure rendered identically. */
+--warn:#8a5a08;         /*  5.52 /  5.92 /  5.18 - a real caution */
+--fail:#b6462e;         /*  5.02 /  5.38 /  4.71 - a real failure */
 /* domain hues, used to identify a domain and nothing else */
 --dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;
 --dom-safety:#b6462e;--dom-control:#7440ab;
@@ -325,8 +329,8 @@ color-scheme:dark;
 --signal-ink:#0b0e14;   /* 10.69 on --signal */
 --focus:#5fd4bb;
 --verified:#8cc96a;     /*  9.82 */
---warn:#ec7f66;         /*  7.17 */
---fail:#ec7f66;
+--warn:#e5b463;         /* 10.16 /  9.43 /  8.49 - a real caution */
+--fail:#ec7f66;         /*  7.17 /  6.65 /  6.00 - a real failure */
 --dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
 --dom-safety:#ec7f66;--dom-control:#b98cf2;
 --glow:rgba(95,212,187,.06);
@@ -338,7 +342,7 @@ color-scheme:dark;
 --ink:#e9edf4;--ink-muted:#9aa8bc;--ink-faint:#7a889f;
 --rule:#242f42;--rule-strong:#556e9b;
 --signal:#5fd4bb;--signal-ink:#0b0e14;--focus:#5fd4bb;
---verified:#8cc96a;--warn:#ec7f66;--fail:#ec7f66;
+--verified:#8cc96a;--warn:#e5b463;--fail:#ec7f66;
 --dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
 --dom-safety:#ec7f66;--dom-control:#b98cf2;
 --glow:rgba(95,212,187,.06);
@@ -531,8 +535,8 @@ export function navBar(canonical) {
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
   }
   const home = link('/', 'Home')
-  const main = ['/learn/', '/search/', '/tools/', '/build/']
-    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Build'][i])).join('')
+  const main = ['/learn/', '/search/', '/tools/', '/check/', '/build/']
+    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Check', 'Build'][i])).join('')
   const index = ['/protocols/', '/standards/', '/software/', '/hardware/', '/glossary/']
     .map((h, i) => link(h, ['Protocols', 'Standards', 'Software', 'Hardware', 'Glossary'][i])).join('')
   const views = ['/interop/', '/compare/', '/ports/', '/signals/', '/network/', '/rf/']
@@ -1129,6 +1133,8 @@ export function buildPages(db, dist) {
   // not in the sitemap: it is a state, not a destination.
   write('offline', offlinePage({ esc, shell, SITE, GH }))
   write('tools', toolsPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/check/`)
+  write('check', checkPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
 
   // The converged-network planner: QoS queues, DSCP collisions, link fill.
