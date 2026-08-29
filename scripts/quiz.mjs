@@ -264,6 +264,69 @@ const BANK = {
     },
   ],
 
+  connectivity: [
+    {
+      q: 'A LoRa sensor runs for years on a coin cell. A radio mic runs for a show on a much bigger battery. What is the main reason?',
+      options: [
+        { text: 'LoRa transmits at far lower power', why: 'Transmit power differs, but not by the factor of a thousand this life difference implies.' },
+        { text: 'Duty cycle — the sensor is asleep almost all the time', correct: true, why: 'Right. A sensor transmitting 300 ms an hour has its transmitter on for about 0.008% of its life. A radio mic sits at 100%. Almost everything else is a second-order effect next to that ratio.' },
+        { text: 'LoRa uses a more efficient modulation', why: 'Its modulation does buy sensitivity, which buys range. It does not buy years of standby.' },
+        { text: 'Coin cells have a higher energy density', why: 'They have far less energy than a mic pack. They last because almost nothing is drawn from them.' },
+      ],
+    },
+    {
+      q: 'A production truck parks in an underground loading dock and its timecode starts drifting. Why?',
+      options: [
+        { text: 'The concrete attenuates the timecode distribution', why: 'Timecode inside the truck is cable-bound and unaffected by the building.' },
+        { text: 'The GNSS receiver has lost sight of the sky, so the clock is free-running', correct: true, why: 'Right. A GNSS receiver is an accurate traceable clock that happens to also know where it is. Lose the satellites and the grandmaster stops being disciplined and starts drifting on its own oscillator.' },
+        { text: 'Cellular handover changes the network time source', why: 'Cellular time is not what a broadcast plant disciplines its grandmaster from.' },
+        { text: 'Temperature underground changes the oscillator frequency', why: 'It does, slightly, which is exactly why the oscillator needs disciplining from outside.' },
+      ],
+    },
+  ],
+
+  light: [
+    {
+      q: 'A fixture is quoted with a 15° beam angle and a 30° field angle. What is the difference?',
+      options: [
+        { text: 'Beam is the lens size, field is the usable output', why: 'Neither is a physical dimension. Both are angles defined by how far the intensity has fallen.' },
+        { text: 'Beam is where intensity has fallen to 50%, field to 10%', correct: true, why: 'Right. They are two definitions of "edge" on the same cone. Feed either into the same formula and you get a different diameter — which is why a spec sheet quoting only one number is ambiguous.' },
+        { text: 'Beam is with the shutters open, field with them closed', why: 'Shutters cut the beam mechanically. These angles describe the optics before any shuttering.' },
+        { text: 'Beam applies to spots, field applies to washes', why: 'Both angles are quoted for both kinds of fixture.' },
+      ],
+    },
+    {
+      q: 'Two projectors edge-blend and the overlap still looks like a visible band. The ramp is set correctly. What is most likely wrong?',
+      options: [
+        { text: 'The blend width is too narrow', why: 'A narrow blend makes the ramp steep, but a correctly set ramp is the premise here.' },
+        { text: 'The black levels do not match', correct: true, why: 'Right. A blend hides a seam in brightness. It cannot hide a difference in black level, colour or geometry — and black level is the one that shows most in the dark content a show usually runs.' },
+        { text: 'The projectors are different resolutions', why: 'That shows as a sharpness difference across the join rather than a band in the overlap.' },
+        { text: 'The gamma curve is wrong on one machine', why: 'Worth checking, and it usually shows across the whole image rather than specifically in the overlap.' },
+      ],
+    },
+  ],
+
+  perception: [
+    {
+      q: 'An LED fixture is described as "flicker-free at 1000 Hz". Why is that claim incomplete?',
+      options: [
+        { text: 'Because 1000 Hz is below the flicker fusion threshold', why: 'It is well above it for most viewing conditions. The problem is that there is no single threshold.' },
+        { text: 'Because fusion depends on brightness, angle and movement', correct: true, why: 'Right. Fusion is a property of an eye in a condition, not of a light. Peripheral vision, high brightness and anything moving all push the threshold up — which is why a fixture that looks fine head-on strobes in the corner of your eye or on camera.' },
+        { text: 'Because cameras always see flicker that eyes do not', why: 'Cameras have their own sampling problem, but the human threshold varies too, which is the point.' },
+        { text: 'Because PWM frequency is not the same as refresh rate', why: 'True and worth knowing, but it does not explain why one number can never be the whole answer.' },
+      ],
+    },
+    {
+      q: 'Why does the biggest moment in a show only land if the rest of the show is restrained?',
+      options: [
+        { text: 'Because the audience needs rest before a climax', why: 'Fatigue is real, but the mechanism here is about contrast rather than recovery.' },
+        { text: 'Because a violation needs an expectation to violate', correct: true, why: 'Right. Chills need a before. Nothing can be broken that was not first established, so the loudest, brightest, widest moment is only ever as strong as the restraint that preceded it.' },
+        { text: 'Because loudness compresses over time', why: 'Auditory adaptation contributes, and it is not the reason a quiet first act makes a finale work.' },
+        { text: 'Because attention has a fixed budget per performance', why: 'Attention is finite, but the point here is that surprise is defined relative to what came before.' },
+      ],
+    },
+  ],
+
   connectors: [
     {
       q: 'A Thunderbolt 2 device will not work on a Mini DisplayPort output, even though the connector fits. Why?',
