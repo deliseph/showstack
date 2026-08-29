@@ -50,6 +50,16 @@ typical_use:
   - Feeding ST 2110-30 audio receivers from a pro audio network
   - Interop mode on Dante, RAVENNA, Q-LAN and Livewire devices
 
+media:
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [16, 24]
+    encoding: Linear PCM, L16 and L24
+    note: >-
+      48 kHz is the mandatory interoperability point; other rates may be
+      supported but cannot be assumed between vendors. The same applies to
+      packet time, where 1 ms is required and 125 microseconds is optional.
+
 gotchas:
   - >-
     AES67 mandates no discovery method at all. SAP, Bonjour/mDNS and NMOS IS-04

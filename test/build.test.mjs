@@ -283,6 +283,98 @@ describe('comparison and interop pages', () => {
   })
 })
 
+describe('media capability', () => {
+  // Sample rates and bit depths get quoted into specifications and purchase
+  // orders. A wrong one here is worse than a missing one, so these guard the
+  // shape of the data and the honesty of the rendering rather than trying to
+  // re-assert the numbers themselves, which live in the entries with sources.
+
+  const withMedia = () => bundle.protocols.filter((p) => p.media)
+
+  test('some protocols carry media capability at all', () => {
+    assert.ok(withMedia().length >= 8, `only ${withMedia().length} protocols carry media data`)
+  })
+
+  test('every media block says something rather than sitting empty', () => {
+    // An empty `media: {}` or `media: {audio: {}}` passes the schema and
+    // renders nothing, so it would look like data while being none.
+    for (const p of withMedia()) {
+      const filled = Object.values(p.media).filter((essence) => Object.keys(essence ?? {}).length)
+      assert.ok(filled.length, `${p.id} has a media block with nothing in it`)
+      for (const [kind, essence] of Object.entries(p.media)) {
+        const facts = Object.keys(essence).filter((k) => k !== 'note')
+        assert.ok(facts.length, `${p.id} media.${kind} has only a note and no facts`)
+      }
+    }
+  })
+
+  test('sample rates and bit depths are plausible numbers', () => {
+    for (const p of withMedia()) {
+      for (const r of p.media.audio?.sample_rates_khz ?? []) {
+        assert.ok(r >= 8 && r <= 768, `${p.id}: ${r} kHz is not a real sample rate — is it in Hz by mistake?`)
+      }
+      for (const b of p.media.audio?.bit_depths ?? []) {
+        assert.ok([8, 16, 20, 24, 32, 64].includes(b), `${p.id}: ${b}-bit audio is not a word length anyone ships`)
+      }
+      for (const b of p.media.video?.bit_depths ?? []) {
+        assert.ok(b >= 8 && b <= 16, `${p.id}: ${b}-bit video components look wrong`)
+      }
+      const res = p.media.video?.max_resolution
+      if (res) assert.match(res, /^\d{3,5}x\d{3,5}$/, `${p.id}: max_resolution should be WxH, got "${res}"`)
+    }
+  })
+
+  test('a video entry that fixes no ceiling says so rather than going blank', async () => {
+    // The bug this replaces: ST 2110 sets no resolution limit, the row was
+    // dropped as empty, and the page answered "does 2110 do 4K?" by never
+    // mentioning resolution. A reader cannot tell a missing answer from an
+    // unbounded one.
+    const { MEDIA_ROWS } = await import('../scripts/media.mjs')
+    const row = (label) => MEDIA_ROWS.find(([l]) => l === label)[1]
+    const unbounded = { media: { video: { compression: 'x' } } }
+    assert.match(row('Resolution')(unbounded), /Not fixed/)
+    assert.match(row('Frame rate')(unbounded), /Not fixed/)
+    // An audio-only protocol must still drop the video rows entirely.
+    const audioOnly = { media: { audio: { bit_depths: [24] } } }
+    assert.equal(row('Resolution')(audioOnly), '')
+    assert.equal(row('Frame rate')(audioOnly), '')
+  })
+
+  test('protocol pages surface what the protocol carries', () => {
+    for (const p of withMedia()) {
+      const html = readFileSync(join(DIST, 'protocols', p.id, 'index.html'), 'utf8')
+      assert.match(html, /<h3>What it carries<\/h3>/, `${p.id} page does not show its media capability`)
+    }
+  })
+
+  test('comparing two audio protocols compares their rates and depths', () => {
+    const path = join(DIST, 'compare', 'dante-vs-aes67', 'index.html')
+    if (!existsSync(path)) return
+    const html = readFileSync(path, 'utf8')
+    assert.match(html, /What each one carries/)
+    assert.match(html, /Sample rates/)
+    assert.match(html, /Audio bit depth/)
+    assert.match(html, /192 kHz/, 'Dante\u2019s top rate should appear in the comparison')
+  })
+
+  test('comparing two video protocols compares resolution and frame rate', () => {
+    const path = join(DIST, 'compare', 'ndi-vs-smpte-st-2110', 'index.html')
+    if (!existsSync(path)) return
+    const html = readFileSync(path, 'utf8')
+    assert.match(html, /What each one carries/)
+    assert.match(html, /Resolution/)
+    assert.match(html, /Frame rate/)
+    assert.match(html, /Video compression/)
+  })
+
+  test('the capability table is absent where neither protocol has media', () => {
+    // Otherwise every control-protocol comparison grows an empty section.
+    const path = join(DIST, 'compare', 'art-net-vs-sacn', 'index.html')
+    if (!existsSync(path)) return
+    assert.doesNotMatch(readFileSync(path, 'utf8'), /What each one carries/)
+  })
+})
+
 describe('the built site has no orphans', () => {
   test('every generated entry page corresponds to a live entry', () => {
     // Pages are named after entry ids. Renaming or deleting an entry used to

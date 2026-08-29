@@ -30,6 +30,16 @@ typical_use:
   - Digital output from playback machines and broadcast equipment
   - The transport under many older matrix and distribution systems
 
+media:
+  audio:
+    sample_rates_khz: [32, 44.1, 48]
+    bit_depths: [24]
+    max_channels: 2
+    encoding: Linear PCM, biphase mark coded
+    note: >-
+      Two channels in one subframe pair. Later revisions add higher rates, and
+      the consumer variant of the same electrical idea is S/PDIF.
+
 gotchas:
   - >-
     The cable is 110 Ω, not the 45–75 Ω of a normal mic line. A standard XLR

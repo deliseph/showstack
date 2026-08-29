@@ -38,6 +38,25 @@ typical_use:
   - Carrying camera, replay and graphics feeds on shared network infrastructure
   - Audio (ST 2110-30) alongside video on the same physical network
 
+media:
+  video:
+    colour_sampling: ["4:2:2", "4:4:4"]
+    bit_depths: [8, 10, 12, 16]
+    compression: None — uncompressed essence
+    note: >-
+      ST 2110-20 is resolution and frame-rate agnostic by design; what limits
+      you is the link. Uncompressed HD is around 1.5 Gbit/s and UHD around
+      12 Gbit/s, so the practical ceiling is the network rather than the
+      standard. Audio travels separately in ST 2110-30 as AES67.
+  audio:
+    sample_rates_khz: [48]
+    bit_depths: [16, 24]
+    encoding: ST 2110-30, which is AES67
+    note: >-
+      Essence streams are separate, so audio and video are independently
+      routable — which is the whole point of 2110 and the reason lip sync
+      becomes something you have to manage rather than something you get.
+
 gotchas:
   - >-
     Video, audio and ancillary data are separate streams with separate multicast

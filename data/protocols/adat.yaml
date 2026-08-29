@@ -25,6 +25,16 @@ typical_use:
   - Linking a stagebox or preamp to a converter
   - Eight-channel tie-lines inside a rack
 
+media:
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [24]
+    max_channels: 8
+    encoding: Linear PCM over optical
+    note: >-
+      Eight channels at 48 kHz. At 96 kHz sample-multiplexing (S/MUX) pairs
+      the channels, so the same cable carries four.
+
 gotchas:
   - >-
     The eight-channel count is at 44.1 or 48 kHz. At 88.2/96 kHz S/MUX halves

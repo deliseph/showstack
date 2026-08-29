@@ -13,6 +13,17 @@ transport:
 openness: open-free-registration
 steward: Audio Engineering Society (AES)
 status: current
+media:
+  audio:
+    sample_rates_khz: [48, 96]
+    bit_depths: [24]
+    max_channels: 64
+    encoding: Linear PCM
+    note: >-
+      64 channels at 48 kHz on one coax or fibre, halving to 32 at 96 kHz.
+      The channel count is fixed by the frame structure, so a MADI link is
+      always the same bandwidth whether the channels carry audio or silence.
+
 gotchas:
 - Original AES10-1991 caps out at 56 channels at 48kHz; 64-channel and higher-sample-rate operation needs
   the AES10-2003/2008 revisions and matching gear.

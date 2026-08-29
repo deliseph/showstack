@@ -60,6 +60,16 @@ typical_use:
   - Computer playback and recording via Dante Virtual Soundcard or Dante Via
   - Feeding AES67 or ST 2110-30 systems from a Dante plant
 
+media:
+  audio:
+    sample_rates_khz: [44.1, 48, 88.2, 96, 176.4, 192]
+    bit_depths: [16, 24, 32]
+    encoding: Linear PCM
+    note: >-
+      Channel count is a property of the device rather than of the protocol.
+      Higher sample rates halve or quarter the channels a given device carries,
+      which is the trade people meet when they switch a rig to 96 kHz.
+
 gotchas:
   - >-
     Dante's own clock is PTP version 1 (IEEE 1588-2002). AES67 and ST 2110 use
