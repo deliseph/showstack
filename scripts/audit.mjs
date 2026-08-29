@@ -248,6 +248,30 @@ for (const p of ['/', '/learn/', '/tools/', '/protocols/', '/search/', '/interop
   if (late.length) fail.push(`tools made requests while offline: ${late.join(', ')}`)
   if (errors.length) fail.push(`JS errors offline: ${errors.join(' | ')}`)
   else pass.push('tools still compute with the network disabled, with no new requests')
+
+  // --- every tool actually produced something ------------------------------
+  // The parse test in the suite catches a page script that dies. It cannot
+  // catch one that runs and gets the answer wrong, which is what happened
+  // when a \d inside a template literal collapsed to a plain d: no error,
+  // no dead page, just every OSC argument silently typed as a string. This
+  // walks all of them and looks for the shapes a broken handler produces.
+  {
+    const bad = await page.evaluate(() => {
+      const out = []
+      for (const tool of document.querySelectorAll('.tool')) {
+        const box = tool.querySelector('.out')
+        if (!box) continue
+        const text = (box.innerText || '').trim()
+        if (!text) { out.push(`${tool.id}: empty`); continue }
+        for (const smell of ['undefined', 'NaN', '[object Object]', 'null']) {
+          if (text.includes(smell)) out.push(`${tool.id}: says "${smell}"`)
+        }
+      }
+      return out
+    })
+    if (bad.length) fail.push(`tools rendering wrongly: ${bad.join(', ')}`)
+    else pass.push('every tool on the page rendered a result with no undefined, NaN or [object Object] in it')
+  }
   await ctx.close()
 }
 

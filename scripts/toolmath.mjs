@@ -3182,3 +3182,632 @@ export function crestFactor(peak, rms) {
         : 'Spiky. Size the source on the peaks, not the RMS — a supply that is comfortably large on paper will still clip these.',
   }
 }
+
+/* ===========================================================================
+ * Wire formats: building the actual bytes.
+ *
+ * Everything below produces the exact octets a protocol puts on the wire.
+ * That is useful for three different jobs — checking what a device should be
+ * sending, building a test packet by hand, and understanding a capture — and
+ * it is honest about the one thing it cannot do, which is send them. A
+ * browser cannot open a raw TCP or UDP socket. What it can do is hand you the
+ * bytes, and for MIDI it can genuinely transmit, because Web MIDI exists.
+ * ======================================================================== */
+
+const enc = new TextEncoder()
+const toHex = (bytes) => [...bytes].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ')
+
+/**
+ * OSC 1.0 message encoding.
+ *
+ * Four rules and everything follows. Strings are null-terminated and then
+ * padded with more nulls until the length is a multiple of four. Numbers are
+ * big-endian. The type tag string starts with a comma and names each argument
+ * in order. And the whole message is a multiple of four bytes, always, which
+ * is why an OSC packet dump is full of trailing zeros that mean nothing.
+ *
+ * Argument types: i (int32), f (float32), s (string), b (blob),
+ * T (true), F (false), N (null) and I (impulse) — the last four carry a tag
+ * and no bytes at all, which surprises people reading a capture.
+ */
+export function oscMessage(address, args = []) {
+  if (typeof address !== 'string' || !address.startsWith('/')) return null
+  if (!Array.isArray(args)) return null
+
+  const padded = (str) => {
+    const raw = enc.encode(str)
+    // Null terminator, then nulls up to the next multiple of four.
+    const len = raw.length + 1
+    const out = new Uint8Array(Math.ceil(len / 4) * 4)
+    out.set(raw)
+    return out
+  }
+
+  const tags = [',']
+  const chunks = []
+  for (const a of args) {
+    if (a && typeof a === 'object' && a.type) {
+      const t = a.type
+      if (t === 'T' || t === 'F' || t === 'N' || t === 'I') { tags.push(t); continue }
+      if (t === 'i') {
+        const v = Number(a.value)
+        if (!Number.isInteger(v)) return null
+        const b = new Uint8Array(4)
+        new DataView(b.buffer).setInt32(0, v, false)
+        tags.push('i'); chunks.push(b); continue
+      }
+      if (t === 'f') {
+        const v = Number(a.value)
+        if (!Number.isFinite(v)) return null
+        const b = new Uint8Array(4)
+        new DataView(b.buffer).setFloat32(0, v, false)
+        tags.push('f'); chunks.push(b); continue
+      }
+      if (t === 's') { tags.push('s'); chunks.push(padded(String(a.value))); continue }
+      if (t === 'b') {
+        const raw = a.value instanceof Uint8Array ? a.value : enc.encode(String(a.value))
+        const size = new Uint8Array(4)
+        new DataView(size.buffer).setInt32(0, raw.length, false)
+        const body = new Uint8Array(Math.ceil(raw.length / 4) * 4)
+        body.set(raw)
+        tags.push('b'); chunks.push(size, body); continue
+      }
+      return null
+    }
+    // Bare values: integers are ints, everything else numeric is a float,
+    // and anything else is a string. Guessing is a convenience, not a rule.
+    if (typeof a === 'number') {
+      const b = new Uint8Array(4)
+      if (Number.isInteger(a)) { new DataView(b.buffer).setInt32(0, a, false); tags.push('i') }
+      else { new DataView(b.buffer).setFloat32(0, a, false); tags.push('f') }
+      chunks.push(b); continue
+    }
+    tags.push('s'); chunks.push(padded(String(a)))
+  }
+
+  const addr = padded(address)
+  const tagBytes = padded(tags.join(''))
+  const total = addr.length + tagBytes.length + chunks.reduce((n, c) => n + c.length, 0)
+  const out = new Uint8Array(total)
+  let o = 0
+  out.set(addr, o); o += addr.length
+  out.set(tagBytes, o); o += tagBytes.length
+  for (const c of chunks) { out.set(c, o); o += c.length }
+
+  return {
+    address,
+    typeTags: tags.join(''),
+    bytes: out,
+    hex: toHex(out),
+    length: out.length,
+    // Every OSC message is a multiple of four bytes. If yours is not, it is
+    // not an OSC message.
+    aligned: out.length % 4 === 0,
+    // The default transport, and the reason ordering is not guaranteed.
+    transport: 'UDP, commonly port 8000, 9000 or whatever the device says',
+  }
+}
+
+/**
+ * MD5, needed for PJLink authentication and for nothing else here.
+ *
+ * PJLink's auth is a challenge: the projector greets you with a random
+ * 8-digit hex number, and the client prepends the MD5 of that number
+ * concatenated with the password to its first command. Without this the
+ * builder could only produce commands for projectors with security off,
+ * which is not the interesting case.
+ */
+export function md5(message) {
+  if (typeof message !== 'string') return null
+  const msg = enc.encode(message)
+  const K = new Int32Array(64)
+  for (let i = 0; i < 64; i++) K[i] = Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296)
+  const S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
+    5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+    4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21]
+
+  const bitLen = msg.length * 8
+  const withPad = new Uint8Array(((msg.length + 8) >> 6 << 6) + 64)
+  withPad.set(msg)
+  withPad[msg.length] = 0x80
+  const dv = new DataView(withPad.buffer)
+  dv.setUint32(withPad.length - 8, bitLen >>> 0, true)
+  dv.setUint32(withPad.length - 4, Math.floor(bitLen / 4294967296), true)
+
+  let [a0, b0, c0, d0] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]
+  const rotl = (x, c) => (x << c) | (x >>> (32 - c))
+
+  for (let chunk = 0; chunk < withPad.length; chunk += 64) {
+    const M = new Uint32Array(16)
+    for (let i = 0; i < 16; i++) M[i] = dv.getUint32(chunk + i * 4, true)
+    let [A, B, C, D] = [a0, b0, c0, d0]
+    for (let i = 0; i < 64; i++) {
+      let F, g
+      if (i < 16) { F = (B & C) | (~B & D); g = i }
+      else if (i < 32) { F = (D & B) | (~D & C); g = (5 * i + 1) % 16 }
+      else if (i < 48) { F = B ^ C ^ D; g = (3 * i + 5) % 16 }
+      else { F = C ^ (B | ~D); g = (7 * i) % 16 }
+      F = (F + A + K[i] + M[g]) | 0
+      A = D; D = C; C = B
+      B = (B + rotl(F, S[i])) | 0
+    }
+    a0 = (a0 + A) | 0; b0 = (b0 + B) | 0; c0 = (c0 + C) | 0; d0 = (d0 + D) | 0
+  }
+
+  const le = (n) => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]
+    .map((b) => b.toString(16).padStart(2, '0')).join('')
+  return le(a0) + le(b0) + le(c0) + le(d0)
+}
+
+/**
+ * PJLink class 1, the projector control protocol nearly every manufacturer
+ * implements and nearly nobody documents in their own manual.
+ *
+ * TCP port 4352. A command is one line:
+ *
+ *   %1POWR 1\r        set power on
+ *   %1POWR ?\r        ask the power state
+ *
+ * Per cent, class number, four upper-case letters, a space, the parameter,
+ * carriage return. Responses come back the same shape with an equals sign,
+ * and ERR1 to ERR4 mean undefined command, out of parameter, unavailable
+ * time, and projector failure.
+ *
+ * Authentication is a challenge. On connect the projector sends
+ * "PJLINK 1 <8 hex digits>" and the client prepends MD5(digits + password)
+ * to its first command, as 32 lower-case hex characters and nothing else —
+ * no separator. "PJLINK 0" means security is off and you send commands
+ * straight away.
+ */
+export const PJLINK_COMMANDS = {
+  POWR: { label: 'Power', set: '0 = off, 1 = on', query: '0 off, 1 on, 2 cooling, 3 warming' },
+  INPT: { label: 'Input select', set: '11-19 RGB, 21-29 video, 31-39 digital, 41-49 storage, 51-59 network', query: 'current input' },
+  AVMT: { label: 'AV mute', set: '11/10 video, 21/20 audio, 31/30 both — 1 on, 0 off', query: 'current mute state' },
+  ERST: { label: 'Error status', set: null, query: '6 digits: fan, lamp, temp, cover, filter, other' },
+  LAMP: { label: 'Lamp hours', set: null, query: 'hours and on/off per lamp' },
+  INST: { label: 'Input list', set: null, query: 'space-separated list of available inputs' },
+  NAME: { label: 'Projector name', set: null, query: 'the name set by the owner' },
+  INF1: { label: 'Manufacturer', set: null, query: 'manufacturer name' },
+  INF2: { label: 'Product name', set: null, query: 'model name' },
+  INFO: { label: 'Other information', set: null, query: 'free text' },
+  CLSS: { label: 'Class', set: null, query: '1 or 2' },
+}
+
+export function pjlinkCommand(command, parameter = '?', opts = {}) {
+  const cmd = String(command).toUpperCase()
+  if (!PJLINK_COMMANDS[cmd]) return null
+  const param = String(parameter)
+  if (!param.length) return null
+  const cls = Number(opts.class ?? 1)
+  if (![1, 2].includes(cls)) return null
+
+  const line = `%${cls}${cmd} ${param}\r`
+  const challenge = opts.challenge ? String(opts.challenge).trim() : null
+  const password = opts.password ? String(opts.password) : null
+
+  let auth = null
+  let wire = line
+  if (challenge && password) {
+    if (!/^[0-9a-fA-F]{8}$/.test(challenge)) return null
+    auth = md5(challenge + password)
+    // The digest is prepended to the first command with no separator at all.
+    wire = auth + line
+  }
+
+  return {
+    command: cmd,
+    label: PJLINK_COMMANDS[cmd].label,
+    parameter: param,
+    isQuery: param === '?',
+    line,
+    wire,
+    authDigest: auth,
+    port: 4352,
+    bytes: enc.encode(wire),
+    hex: toHex(enc.encode(wire)),
+    // A browser cannot open a TCP socket, so this is the honest deliverable:
+    // a line somebody can paste into a terminal.
+    netcat: `printf '${wire.replace(/\r/g, '\\r')}' | nc <projector-ip> 4352`,
+    note: challenge && !password
+      ? 'A challenge was given with no password, so no digest could be computed.'
+      : auth
+        ? 'Digest prepended to the first command only. Subsequent commands on the same connection go unprefixed.'
+        : 'No authentication. This is correct only where the projector greeted you with "PJLINK 0".',
+  }
+}
+
+/**
+ * Art-Net ArtDmx, and the ArtPoll that finds nodes.
+ *
+ * A short header and then the slots. The header is eighteen bytes:
+ * the identifier "Art-Net" with its null, the opcode, the protocol version,
+ * a sequence number, a physical port hint, and the port address split into
+ * a low byte and a net byte.
+ *
+ * Two things trip people. The opcode is sent LOW BYTE FIRST while the data
+ * length is sent HIGH BYTE FIRST, in the same header, which is a genuine
+ * inconsistency in the protocol rather than a mistake in your reading. And
+ * the sequence number is not a slot count — it is 1 to 255 with 0 meaning
+ * "not using sequencing", and a receiver uses it to drop packets that
+ * arrived out of order.
+ */
+export const ARTNET_ID = 'Art-Net\0'
+export const ARTNET_OPCODES = { ArtPoll: 0x2000, ArtPollReply: 0x2100, ArtDmx: 0x5000, ArtSync: 0x5200 }
+
+export function artnetDmx(net, subnet, universe, slots = [], opts = {}) {
+  const n = Number(net), s = Number(subnet), u = Number(universe)
+  if (!Number.isInteger(n) || n < 0 || n > 127) return null
+  if (!Number.isInteger(s) || s < 0 || s > 15) return null
+  if (!Number.isInteger(u) || u < 0 || u > 15) return null
+  if (!Array.isArray(slots) || slots.length > 512) return null
+  if (!slots.every((v) => Number.isInteger(v) && v >= 0 && v <= 255)) return null
+  const sequence = Number(opts.sequence ?? 0)
+  const physical = Number(opts.physical ?? 0)
+  if (!Number.isInteger(sequence) || sequence < 0 || sequence > 255) return null
+
+  // The wire always carries an even number of slots, minimum two.
+  const dataLen = Math.max(2, slots.length + (slots.length % 2))
+  const out = new Uint8Array(18 + dataLen)
+  out.set(enc.encode('Art-Net'), 0)
+  out[7] = 0
+  // Opcode, low byte first.
+  out[8] = ARTNET_OPCODES.ArtDmx & 0xff
+  out[9] = ARTNET_OPCODES.ArtDmx >> 8
+  out[10] = 0    // ProtVerHi
+  out[11] = 14   // ProtVerLo
+  out[12] = sequence
+  out[13] = physical
+  out[14] = (s << 4) | u  // SubUni
+  out[15] = n             // Net
+  // Length, high byte first — the opposite of the opcode, in the same header.
+  out[16] = dataLen >> 8
+  out[17] = dataLen & 0xff
+  out.set(slots, 18)
+
+  return {
+    net: n,
+    subnet: s,
+    universe: u,
+    portAddress: (n << 8) | (s << 4) | u,
+    sequence,
+    slots: slots.length,
+    dataLength: dataLen,
+    bytes: out,
+    hex: toHex(out.slice(0, Math.min(out.length, 32))) + (out.length > 32 ? ` … (${out.length} bytes total)` : ''),
+    length: out.length,
+    port: 6454,
+    transport: 'UDP port 6454, broadcast or unicast',
+    note: sequence === 0
+      ? 'Sequence 0 means sequencing is disabled and the receiver will not reorder.'
+      : 'Sequence increments 1-255 and wraps, skipping 0.',
+  }
+}
+
+/** ArtPoll: the broadcast that makes every node announce itself. */
+export function artnetPoll(opts = {}) {
+  const talkToMe = Number(opts.talkToMe ?? 0)
+  const priority = Number(opts.priority ?? 0)
+  if (!Number.isInteger(talkToMe) || talkToMe < 0 || talkToMe > 255) return null
+  const out = new Uint8Array(14)
+  out.set(enc.encode('Art-Net'), 0)
+  out[7] = 0
+  out[8] = ARTNET_OPCODES.ArtPoll & 0xff
+  out[9] = ARTNET_OPCODES.ArtPoll >> 8
+  out[10] = 0
+  out[11] = 14
+  out[12] = talkToMe
+  out[13] = priority
+  return {
+    bytes: out,
+    hex: toHex(out),
+    length: out.length,
+    port: 6454,
+    transport: 'UDP broadcast to 6454',
+    expects: 'Every node replies with ArtPollReply (opcode 0x2100), which is how a controller builds its node list.',
+  }
+}
+
+/**
+ * An RDM packet, checksum and all.
+ *
+ * Twenty-four bytes of header, then parameter data, then a two-byte
+ * additive checksum — a plain sum of every preceding byte, which is the
+ * simplest integrity check there is and catches exactly the single-bit
+ * errors a marginal RS-485 line produces.
+ *
+ * The message length field counts everything up to but NOT including the
+ * checksum, which is the off-by-two everybody hits once.
+ *
+ * PIDs here are the well-known ones from E1.20. The registry is much larger
+ * and manufacturer-specific PIDs live above 0x8000; an unknown PID is
+ * emitted as its number rather than guessed at.
+ */
+export const RDM_COMMAND_CLASSES = {
+  0x10: 'DISCOVERY_COMMAND', 0x11: 'DISCOVERY_COMMAND_RESPONSE',
+  0x20: 'GET_COMMAND', 0x21: 'GET_COMMAND_RESPONSE',
+  0x30: 'SET_COMMAND', 0x31: 'SET_COMMAND_RESPONSE',
+}
+
+export const RDM_PIDS = {
+  0x0001: 'DISC_UNIQUE_BRANCH', 0x0002: 'DISC_MUTE', 0x0003: 'DISC_UN_MUTE',
+  0x0060: 'DEVICE_INFO', 0x0080: 'DEVICE_MODEL_DESCRIPTION',
+  0x0081: 'MANUFACTURER_LABEL', 0x0082: 'DEVICE_LABEL',
+  0x00e0: 'DMX_PERSONALITY', 0x00e1: 'DMX_PERSONALITY_DESCRIPTION',
+  0x00f0: 'DMX_START_ADDRESS',
+  0x0200: 'SENSOR_DEFINITION', 0x0201: 'SENSOR_VALUE',
+  0x0400: 'DEVICE_HOURS', 0x0401: 'LAMP_HOURS',
+  0x1000: 'IDENTIFY_DEVICE',
+}
+
+export function rdmPacket(opts = {}) {
+  const dest = rdmUid(opts.destination ?? 'FFFF:FFFFFFFF')
+  const src = rdmUid(opts.source ?? '0001:00000001')
+  if (!dest || !src) return null
+  const cc = Number(opts.commandClass ?? 0x20)
+  const pid = Number(opts.pid ?? 0x0060)
+  if (!RDM_COMMAND_CLASSES[cc]) return null
+  if (!Number.isInteger(pid) || pid < 0 || pid > 0xffff) return null
+  const data = opts.data instanceof Uint8Array ? opts.data
+    : Array.isArray(opts.data) ? Uint8Array.from(opts.data) : new Uint8Array(0)
+  if (data.length > 231) return null
+  const tn = Number(opts.transactionNumber ?? 0)
+  const subDevice = Number(opts.subDevice ?? 0)
+  if (!Number.isInteger(tn) || tn < 0 || tn > 255) return null
+  if (!Number.isInteger(subDevice) || subDevice < 0 || subDevice > 0xffff) return null
+
+  const uidBytes = (u) => {
+    const b = new Uint8Array(6)
+    b[0] = u.manufacturerId >> 8; b[1] = u.manufacturerId & 0xff
+    b[2] = (u.deviceId >>> 24) & 0xff; b[3] = (u.deviceId >>> 16) & 0xff
+    b[4] = (u.deviceId >>> 8) & 0xff; b[5] = u.deviceId & 0xff
+    return b
+  }
+
+  // 24 header bytes before the parameter data, then two of checksum.
+  const messageLength = 24 + data.length
+  const out = new Uint8Array(messageLength + 2)
+  out[0] = 0xcc          // START code: this is RDM, not level data
+  out[1] = 0x01          // sub start code
+  out[2] = messageLength // up to but not including the checksum
+  out.set(uidBytes(dest), 3)
+  out.set(uidBytes(src), 9)
+  out[15] = tn
+  out[16] = Number(opts.portId ?? 1)
+  out[17] = 0            // message count, zero in a controller request
+  out[18] = subDevice >> 8
+  out[19] = subDevice & 0xff
+  out[20] = cc
+  out[21] = pid >> 8
+  out[22] = pid & 0xff
+  out[23] = data.length
+  out.set(data, 24)
+
+  let sum = 0
+  for (let i = 0; i < messageLength; i++) sum = (sum + out[i]) & 0xffff
+  out[messageLength] = sum >> 8
+  out[messageLength + 1] = sum & 0xff
+
+  return {
+    destination: dest.uid,
+    source: src.uid,
+    commandClass: RDM_COMMAND_CLASSES[cc],
+    pid: RDM_PIDS[pid] ?? `0x${pid.toString(16).toUpperCase().padStart(4, '0')}`,
+    pidKnown: Boolean(RDM_PIDS[pid]),
+    messageLength,
+    dataLength: data.length,
+    checksum: sum,
+    checksumHex: sum.toString(16).toUpperCase().padStart(4, '0'),
+    bytes: out,
+    hex: toHex(out),
+    length: out.length,
+    broadcast: dest.broadcast,
+    note: dest.broadcast
+      ? 'Broadcast: every addressed device acts on this and none of them answers, because simultaneous responses would collide.'
+      : 'Unicast: the addressed device responds in the window the controller leaves after the packet.',
+  }
+}
+
+/**
+ * MIDI Machine Control — transport commands as system exclusive.
+ *
+ *   F0 7F <device> 06 <command> F7
+ *
+ * Device 7F is all-call. The command set is small and stable, and LOCATE is
+ * the only one that carries data: sub-command 01 followed by five bytes of
+ * timecode in hours-with-rate, minutes, seconds, frames, subframes.
+ */
+export const MMC_COMMANDS = {
+  0x01: 'STOP', 0x02: 'PLAY', 0x03: 'DEFERRED PLAY', 0x04: 'FAST FORWARD',
+  0x05: 'REWIND', 0x06: 'RECORD STROBE', 0x07: 'RECORD EXIT', 0x09: 'PAUSE',
+  0x0d: 'RESET', 0x44: 'LOCATE',
+}
+
+export function mmcCommand(command, opts = {}) {
+  const cmd = Number(command)
+  if (!MMC_COMMANDS[cmd]) return null
+  const device = Number(opts.device ?? 0x7f)
+  if (!Number.isInteger(device) || device < 0 || device > 0x7f) return null
+
+  let body = [0xf0, 0x7f, device, 0x06, cmd]
+  let locate = null
+  if (cmd === 0x44) {
+    const h = Number(opts.hours ?? 0), m = Number(opts.minutes ?? 0)
+    const s = Number(opts.seconds ?? 0), f = Number(opts.frames ?? 0)
+    if (![h, m, s, f].every(Number.isInteger)) return null
+    if (h < 0 || h > 23 || m < 0 || m > 59 || s < 0 || s > 59 || f < 0 || f > 29) return null
+    const rateCode = MTC_RATES[opts.rate ?? '25']
+    if (rateCode === undefined) return null
+    // LOCATE target: sub-command 01, then hours carrying the rate in bits 5-6.
+    body = [...body, 0x06, 0x01, (rateCode << 5) | h, m, s, f, 0]
+    locate = { h, m, s, f, rate: opts.rate ?? '25' }
+  }
+  body.push(0xf7)
+  const bytes = Uint8Array.from(body)
+
+  return {
+    command: MMC_COMMANDS[cmd],
+    commandByte: cmd,
+    device: device === 0x7f ? 'all-call (127)' : device,
+    locate,
+    bytes,
+    hex: toHex(bytes),
+    length: bytes.length,
+    // Web MIDI can actually put these on a real wire, unlike everything else
+    // in this section.
+    sendable: true,
+    transport: 'MIDI — a DIN cable, a USB interface, or RTP-MIDI over a network',
+    note: device === 0x7f
+      ? 'All-call: every machine on the chain acts on this whatever its device ID.'
+      : `Only the machine set to device ${device} acts on this.`,
+  }
+}
+
+/**
+ * MIDI Show Control, built rather than decoded.
+ *
+ *   F0 7F <device> 02 <format> <command> <cue> 00 <list> 00 <path> 00 F7
+ *
+ * The cue data is ASCII DIGITS, not binary — cue 12 is 0x31 0x32, not 0x0C.
+ * That catches everybody once, and it is the reason a cue number can contain
+ * a decimal point.
+ */
+export function mscCommand(opts = {}) {
+  const device = Number(opts.device ?? 0x7f)
+  const format = Number(opts.format ?? 0x01)
+  const command = Number(opts.command ?? 0x01)
+  if (!Number.isInteger(device) || device < 0 || device > 0x7f) return null
+  if (!Number.isInteger(format) || format < 0 || format > 0x7f) return null
+  if (!Number.isInteger(command) || command < 0 || command > 0x7f) return null
+
+  const body = [0xf0, 0x7f, device, 0x02, format, command]
+  const parts = []
+  const ascii = (v) => {
+    const str = String(v ?? '').trim()
+    if (!str) return null
+    if (!/^[0-9.]+$/.test(str)) return undefined // invalid, not merely absent
+    return [...str].map((c) => c.charCodeAt(0))
+  }
+  for (const key of ['cue', 'list', 'path']) {
+    const a = ascii(opts[key])
+    if (a === undefined) return null
+    parts.push(a)
+  }
+  // Trailing empty fields are omitted; a delimiter follows each field present.
+  let lastUsed = -1
+  parts.forEach((p, i) => { if (p) lastUsed = i })
+  for (let i = 0; i <= lastUsed; i++) {
+    body.push(...(parts[i] ?? []))
+    body.push(0x00)
+  }
+  body.push(0xf7)
+  const bytes = Uint8Array.from(body)
+
+  return {
+    device: device === 0x7f ? 'all-call (127)' : device,
+    format: MSC_FORMATS[format] ?? `0x${format.toString(16).toUpperCase()}`,
+    command: MSC_COMMANDS[command] ?? `0x${command.toString(16).toUpperCase()}`,
+    cue: opts.cue ?? null,
+    list: opts.list ?? null,
+    path: opts.path ?? null,
+    bytes,
+    hex: toHex(bytes),
+    length: bytes.length,
+    sendable: true,
+    note: device === 0x7f
+      ? 'All-call: every receiver on the network acts on this whatever its device ID.'
+      : 'A receiver only acts if BOTH its device ID and its command format match. A format mismatch is the commonest reason MSC appears to do nothing.',
+  }
+}
+
+/**
+ * sACN (ANSI E1.31) data packet, laid out in full.
+ *
+ * Three nested PDUs — root, framing, DMP — each starting with a combined
+ * flags-and-length field where the top nibble is 0x7 and the remaining
+ * twelve bits are the length of that PDU including its own header. Getting
+ * those three lengths right is most of the work, and getting one wrong
+ * produces a packet that some receivers accept and others silently drop,
+ * which is a miserable thing to debug.
+ *
+ * The arithmetic for a full universe: 638 bytes total, root PDU 622,
+ * framing 600, DMP 523. Send fewer slots and all four shrink together.
+ *
+ * The CID is a UUID identifying the SOURCE, not the universe, and it must
+ * stay the same for the life of the source — a device that generates a fresh
+ * one every packet will be treated as an unlimited number of new sources and
+ * will break priority arbitration on any receiver paying attention.
+ */
+export const SACN_ACN_ID = 'ASC-E1.17'
+
+export function sacnPacket(universe, slots = [], opts = {}) {
+  const u = Number(universe)
+  if (!Number.isInteger(u) || u < 1 || u > 63999) return null
+  if (!Array.isArray(slots) || slots.length > 512) return null
+  if (!slots.every((v) => Number.isInteger(v) && v >= 0 && v <= 255)) return null
+  const priority = Number(opts.priority ?? 100)
+  const sequence = Number(opts.sequence ?? 0)
+  const syncAddress = Number(opts.syncAddress ?? 0)
+  if (!Number.isInteger(priority) || priority < 0 || priority > 200) return null
+  if (!Number.isInteger(sequence) || sequence < 0 || sequence > 255) return null
+  const sourceName = String(opts.sourceName ?? 'showstack')
+  if (enc.encode(sourceName).length > 63) return null
+
+  const n = slots.length
+  const total = 126 + n
+  const out = new Uint8Array(total)
+  const dv = new DataView(out.buffer)
+  const pdu = (offset, length) => dv.setUint16(offset, 0x7000 | length, false)
+
+  // ---- root layer ---------------------------------------------------------
+  dv.setUint16(0, 0x0010, false)   // preamble size
+  dv.setUint16(2, 0x0000, false)   // post-amble size
+  out.set(enc.encode(SACN_ACN_ID), 4)  // then three nulls, already zero
+  pdu(16, 110 + n)
+  dv.setUint32(18, 0x00000004, false)  // VECTOR_ROOT_E131_DATA
+  // CID: a UUID for the source. Deterministic here so the same inputs give
+  // the same packet, which is what makes this testable.
+  const cid = opts.cid instanceof Uint8Array && opts.cid.length === 16
+    ? opts.cid
+    : Uint8Array.from({ length: 16 }, (_, i) => (0x5a + i * 7) & 0xff)
+  out.set(cid, 22)
+
+  // ---- framing layer ------------------------------------------------------
+  pdu(38, 88 + n)
+  dv.setUint32(40, 0x00000002, false)  // VECTOR_E131_DATA_PACKET
+  out.set(enc.encode(sourceName), 44)  // 64-byte field, null padded
+  out[108] = priority
+  dv.setUint16(109, syncAddress, false)
+  out[111] = sequence
+  out[112] = Number(opts.options ?? 0)
+  dv.setUint16(113, u, false)
+
+  // ---- DMP layer ----------------------------------------------------------
+  pdu(115, 11 + n)
+  out[117] = 0x02   // VECTOR_DMP_SET_PROPERTY
+  out[118] = 0xa1   // address type and data type
+  dv.setUint16(119, 0x0000, false)  // first property address
+  dv.setUint16(121, 0x0001, false)  // address increment
+  dv.setUint16(123, 1 + n, false)   // property value count: start code + slots
+  out[125] = 0x00   // DMX start code
+  out.set(slots, 126)
+
+  return {
+    universe: u,
+    priority,
+    sequence,
+    slots: n,
+    sourceName,
+    rootPduLength: 110 + n,
+    framingPduLength: 88 + n,
+    dmpPduLength: 11 + n,
+    bytes: out,
+    hex: toHex(out.slice(0, Math.min(out.length, 48))) + (out.length > 48 ? ` … (${out.length} bytes total)` : ''),
+    length: total,
+    // The multicast group for a universe: 239.255.<high>.<low>.
+    multicastGroup: sacnMulticast(u),
+    port: 5568,
+    transport: `UDP port 5568, multicast to ${sacnMulticast(u)}`,
+    note: 'The CID identifies the source and must not change between packets. A device that generates a new one each time looks like an unlimited number of sources and breaks priority arbitration.',
+  }
+}

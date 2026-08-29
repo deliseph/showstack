@@ -24,6 +24,9 @@ import {
   ltcFrame, LTC_SYNC_WORD, mtcQuarterFrames, MTC_RATES, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
   dmxFrameTime, rdmOverhead, rdmUid, RDM_OVERHEAD_BYTES, thd, crestFactor,
+  oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS,
+  artnetDmx, artnetPoll, ARTNET_OPCODES, rdmPacket, RDM_PIDS,
+  mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, sacnMulticast as sacnGroup,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -2418,5 +2421,313 @@ describe('crest factor', () => {
   test('crest factor rejects a zero RMS', () => {
     assert.equal(crestFactor(4, 0), null)
     assert.equal(crestFactor(-1, 1), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Wire formats: the actual bytes
+// ---------------------------------------------------------------------------
+
+const hexOf = (bytes) => [...bytes].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ')
+
+describe('OSC encoding', () => {
+  test('every message is a multiple of four bytes, always', () => {
+    for (const addr of ['/a', '/eos/cue/1/fire', '/composition/layers/1/video/opacity']) {
+      const m = oscMessage(addr, [])
+      assert.equal(m.length % 4, 0, `${addr} came out ${m.length} bytes`)
+      assert.equal(m.aligned, true)
+    }
+  })
+
+  test('a bare message is address plus a lone comma, both null-padded', () => {
+    // "/eos/cue/1/fire" is 15 characters, so the null lands on 16 exactly.
+    const m = oscMessage('/eos/cue/1/fire', [])
+    assert.equal(m.length, 20)
+    assert.equal(m.typeTags, ',')
+    assert.equal(m.hex.slice(-11), '2C 00 00 00')
+  })
+
+  test('integers and floats are big-endian, four bytes each', () => {
+    const i = oscMessage('/x', [{ type: 'i', value: 1 }])
+    assert.ok(i.hex.endsWith('00 00 00 01'), i.hex)
+    // 0.5 as IEEE 754 single is 0x3F000000.
+    const f = oscMessage('/x', [{ type: 'f', value: 0.5 }])
+    assert.ok(f.hex.endsWith('3F 00 00 00'), f.hex)
+  })
+
+  test('T F N and I carry a tag and no bytes at all', () => {
+    const bare = oscMessage('/x', [])
+    const flags = oscMessage('/x', [{ type: 'T' }, { type: 'F' }])
+    assert.equal(flags.typeTags, ',TF')
+    // Same payload length: the tag string grew, nothing else did.
+    assert.equal(flags.length, bare.length)
+  })
+
+  test('bare values are guessed sensibly and the guess is stated in the tags', () => {
+    assert.equal(oscMessage('/x', [1]).typeTags, ',i')
+    assert.equal(oscMessage('/x', [1.5]).typeTags, ',f')
+    assert.equal(oscMessage('/x', ['go']).typeTags, ',s')
+  })
+
+  test('an address must start with a slash', () => {
+    assert.equal(oscMessage('eos/go', []), null)
+    assert.equal(oscMessage('/x', 'not an array'), null)
+    assert.equal(oscMessage('/x', [{ type: 'z', value: 1 }]), null)
+  })
+})
+
+describe('MD5 and PJLink', () => {
+  test('MD5 against the published test vectors', () => {
+    assert.equal(md5(''), 'd41d8cd98f00b204e9800998ecf8427e')
+    assert.equal(md5('a'), '0cc175b9c0f1b6a831c399e269772661')
+    assert.equal(md5('abc'), '900150983cd24fb0d6963f7d28e17f72')
+    assert.equal(md5('message digest'), 'f96b697d7cb7938d525a2f31aaf161d0')
+    assert.equal(md5('The quick brown fox jumps over the lazy dog'), '9e107d9d372bb6826bd81d3542a419d6')
+    // A message long enough to need a second block.
+    assert.equal(md5('12345678901234567890123456789012345678901234567890123456789012345678901234567890'),
+      '57edf4a22be3c955ac49da2e2107b67a')
+  })
+
+  test('the PJLink digest matches the worked example in the specification', () => {
+    // Challenge 498e4a67 with password JBMIAProjectorLink is the example
+    // PJLink itself publishes, which is what makes it worth testing against.
+    const p = pjlinkCommand('POWR', '1', { challenge: '498e4a67', password: 'JBMIAProjectorLink' })
+    assert.equal(p.authDigest, '5d8409bc1c3fa39749434aa3a5c38682')
+    assert.equal(p.wire, '5d8409bc1c3fa39749434aa3a5c38682%1POWR 1\r')
+  })
+
+  test('a command is per cent, class, four letters, space, parameter, carriage return', () => {
+    const q = pjlinkCommand('POWR', '?')
+    assert.equal(q.line, '%1POWR ?\r')
+    assert.equal(q.isQuery, true)
+    assert.equal(q.port, 4352)
+    assert.equal(pjlinkCommand('INPT', '31').line, '%1INPT 31\r')
+  })
+
+  test('with no challenge there is no digest, which is only right if security is off', () => {
+    const p = pjlinkCommand('POWR', '1')
+    assert.equal(p.authDigest, null)
+    assert.equal(p.wire, p.line)
+    assert.match(p.note, /PJLINK 0/)
+  })
+
+  test('PJLink rejects unknown commands and malformed challenges', () => {
+    assert.equal(pjlinkCommand('NOPE', '1'), null)
+    assert.equal(pjlinkCommand('POWR', ''), null)
+    assert.equal(pjlinkCommand('POWR', '1', { challenge: 'xyz', password: 'p' }), null)
+    assert.ok(Object.keys(PJLINK_COMMANDS).length >= 11)
+  })
+})
+
+describe('Art-Net', () => {
+  test('the header is eighteen bytes and starts with the identifier', () => {
+    const a = artnetDmx(0, 0, 1, [255])
+    assert.equal(a.hex.slice(0, 23), '41 72 74 2D 4E 65 74 00')
+    assert.equal(a.port, 6454)
+  })
+
+  test('the opcode is low byte first and the length is high byte first, in the same header', () => {
+    const a = artnetDmx(0, 0, 1, new Array(512).fill(0))
+    const b = a.bytes
+    // ArtDmx is 0x5000, so byte 8 is 0x00 and byte 9 is 0x50.
+    assert.equal(b[8], 0x00)
+    assert.equal(b[9], 0x50)
+    // 512 slots is 0x0200, high byte first.
+    assert.equal(b[16], 0x02)
+    assert.equal(b[17], 0x00)
+    assert.equal(a.length, 530)
+  })
+
+  test('the port address is net, subnet and universe packed together', () => {
+    assert.equal(artnetDmx(0, 0, 0, [0, 0]).portAddress, 0)
+    assert.equal(artnetDmx(0, 0, 15, [0, 0]).portAddress, 15)
+    assert.equal(artnetDmx(0, 1, 0, [0, 0]).portAddress, 16)
+    assert.equal(artnetDmx(1, 0, 0, [0, 0]).portAddress, 256)
+    assert.equal(artnetDmx(127, 15, 15, [0, 0]).portAddress, 32767)
+  })
+
+  test('the wire carries an even number of slots, minimum two', () => {
+    assert.equal(artnetDmx(0, 0, 1, [255]).dataLength, 2)
+    assert.equal(artnetDmx(0, 0, 1, [255, 255, 255]).dataLength, 4)
+    assert.equal(artnetDmx(0, 0, 1, []).dataLength, 2)
+  })
+
+  test('ArtPoll is fourteen bytes and asks every node to announce itself', () => {
+    const p = artnetPoll()
+    assert.equal(p.length, 14)
+    assert.equal(p.bytes[8], 0x00)
+    assert.equal(p.bytes[9], 0x20)
+    assert.match(p.expects, /ArtPollReply/)
+    assert.equal(ARTNET_OPCODES.ArtPollReply, 0x2100)
+  })
+
+  test('Art-Net rejects out-of-range addressing', () => {
+    assert.equal(artnetDmx(128, 0, 0, []), null)
+    assert.equal(artnetDmx(0, 16, 0, []), null)
+    assert.equal(artnetDmx(0, 0, 16, []), null)
+    assert.equal(artnetDmx(0, 0, 1, new Array(513).fill(0)), null)
+    assert.equal(artnetDmx(0, 0, 1, [256]), null)
+  })
+})
+
+describe('RDM packets', () => {
+  test('the checksum is a plain additive sum of everything before it', () => {
+    const r = rdmPacket({ destination: '4C55:12345678', source: '0001:00000001', pid: 0x00f0 })
+    let sum = 0
+    for (let i = 0; i < r.messageLength; i++) sum += r.bytes[i]
+    assert.equal(sum & 0xffff, r.checksum)
+    assert.equal(r.checksumHex, '03AD')
+  })
+
+  test('message length counts the header and data but NOT the checksum', () => {
+    const bare = rdmPacket({ pid: 0x0060 })
+    assert.equal(bare.messageLength, 24)
+    assert.equal(bare.length, 26)
+    const withData = rdmPacket({ pid: 0x00f0, commandClass: 0x30, data: [0x00, 0x64] })
+    assert.equal(withData.messageLength, 26)
+    assert.equal(withData.length, 28)
+    assert.equal(withData.bytes[2], 26)
+  })
+
+  test('it starts with 0xCC, which is how a fixture knows it is not level data', () => {
+    const r = rdmPacket({})
+    assert.equal(r.bytes[0], 0xcc)
+    assert.equal(r.bytes[1], 0x01)
+  })
+
+  test('known PIDs are named and unknown ones are printed rather than guessed', () => {
+    assert.equal(rdmPacket({ pid: 0x1000 }).pid, 'IDENTIFY_DEVICE')
+    assert.equal(rdmPacket({ pid: 0x00f0 }).pid, 'DMX_START_ADDRESS')
+    assert.equal(rdmPacket({ pid: 0x8123 }).pid, '0x8123')
+    assert.equal(rdmPacket({ pid: 0x8123 }).pidKnown, false)
+    assert.ok(RDM_PIDS[0x0001] === 'DISC_UNIQUE_BRANCH')
+  })
+
+  test('a broadcast gets no answer, and the packet says so', () => {
+    const b = rdmPacket({ destination: 'FFFF:FFFFFFFF' })
+    assert.equal(b.broadcast, true)
+    assert.match(b.note, /none of them answers/)
+    assert.equal(rdmPacket({ destination: '4C55:00000001' }).broadcast, false)
+  })
+
+  test('RDM packets reject bad command classes and oversized data', () => {
+    assert.equal(rdmPacket({ commandClass: 0x99 }), null)
+    assert.equal(rdmPacket({ data: new Array(232).fill(0) }), null)
+    assert.equal(rdmPacket({ destination: 'nonsense' }), null)
+  })
+})
+
+describe('MIDI Machine Control', () => {
+  test('the shape is F0 7F device 06 command F7', () => {
+    assert.equal(mmcCommand(0x02).hex, 'F0 7F 7F 06 02 F7')
+    assert.equal(mmcCommand(0x01).hex, 'F0 7F 7F 06 01 F7')
+    assert.equal(mmcCommand(0x02).command, 'PLAY')
+    assert.equal(mmcCommand(0x01).command, 'STOP')
+  })
+
+  test('a device id addresses one machine instead of all of them', () => {
+    assert.equal(mmcCommand(0x02, { device: 3 }).hex, 'F0 7F 03 06 02 F7')
+    assert.equal(mmcCommand(0x02, { device: 3 }).device, 3)
+    assert.equal(mmcCommand(0x02).device, 'all-call (127)')
+  })
+
+  test('LOCATE is the one that carries a timecode', () => {
+    const l = mmcCommand(0x44, { hours: 1, minutes: 2, seconds: 3, frames: 4, rate: '25' })
+    assert.equal(l.hex, 'F0 7F 7F 06 44 06 01 21 02 03 04 00 F7')
+    // Hours byte carries the rate in bits 5-6: rate 25 is code 1, so 0x20 | 1.
+    assert.equal(l.bytes[7], 0x21)
+    assert.deepEqual(l.locate, { h: 1, m: 2, s: 3, f: 4, rate: '25' })
+  })
+
+  test('MMC rejects unknown commands and impossible times', () => {
+    assert.equal(mmcCommand(0x77), null)
+    assert.equal(mmcCommand(0x44, { hours: 24 }), null)
+    assert.equal(mmcCommand(0x44, { rate: '23.976' }), null)
+    assert.ok(Object.keys(MMC_COMMANDS).length >= 10)
+  })
+})
+
+describe('MIDI Show Control, built', () => {
+  test('cue data is ASCII digits, which is the thing that catches everybody', () => {
+    // Cue 12 is 0x31 0x32, not 0x0C.
+    const m = mscCommand({ cue: '12', list: '3' })
+    assert.equal(m.hex, 'F0 7F 7F 02 01 01 31 32 00 33 00 F7')
+    assert.equal(m.format, 'Lighting (General)')
+    assert.equal(m.command, 'GO')
+  })
+
+  test('what it builds is what the decoder reads — the round trip closes', () => {
+    const built = mscCommand({ cue: '12', list: '3' })
+    const read = midiDecode(built.hex)
+    assert.equal(read.messages.length, 1)
+    assert.match(read.messages[0].detail, /GO to Lighting \(General\)/)
+    assert.match(read.messages[0].detail, /Cue 12 in list 3/)
+  })
+
+  test('trailing empty fields are omitted rather than sent as empty', () => {
+    assert.equal(mscCommand({ cue: '5' }).hex, 'F0 7F 7F 02 01 01 35 00 F7')
+    // No cue at all: command only.
+    assert.equal(mscCommand({ command: 0x02 }).hex, 'F0 7F 7F 02 01 02 F7')
+  })
+
+  test('a cue number can carry a decimal point, because it is text', () => {
+    const m = mscCommand({ cue: '10.5' })
+    assert.match(m.hex, /31 30 2E 35/)
+  })
+
+  test('MSC rejects a cue that is not a cue number', () => {
+    assert.equal(mscCommand({ cue: 'GO NOW' }), null)
+    assert.equal(mscCommand({ device: 200 }), null)
+  })
+})
+
+describe('sACN packets', () => {
+  test('a full universe is 638 bytes, and the three PDU lengths are the published ones', () => {
+    const p = sacnPacket(1, new Array(512).fill(0))
+    assert.equal(p.length, 638)
+    assert.equal(p.rootPduLength, 622)
+    assert.equal(p.framingPduLength, 600)
+    assert.equal(p.dmpPduLength, 523)
+  })
+
+  test('the ACN identifier and the three vectors are fixed', () => {
+    const p = sacnPacket(1, [255])
+    const b = p.bytes
+    assert.equal(new TextDecoder().decode(b.slice(4, 13)), 'ASC-E1.17')
+    assert.equal(b[0], 0x00); assert.equal(b[1], 0x10)   // preamble size
+    assert.equal(b[21], 0x04)  // VECTOR_ROOT_E131_DATA
+    assert.equal(b[43], 0x02)  // VECTOR_E131_DATA_PACKET
+    assert.equal(b[117], 0x02) // VECTOR_DMP_SET_PROPERTY
+    assert.equal(b[118], 0xa1) // address and data type
+  })
+
+  test('each PDU length field carries 0x7 in the top nibble', () => {
+    const p = sacnPacket(1, new Array(512).fill(0))
+    for (const [offset, expected] of [[16, 622], [38, 600], [115, 523]]) {
+      const word = (p.bytes[offset] << 8) | p.bytes[offset + 1]
+      assert.equal(word >> 12, 0x7, `flags nibble wrong at byte ${offset}`)
+      assert.equal(word & 0x0fff, expected, `length wrong at byte ${offset}`)
+    }
+  })
+
+  test('the property value count is the slots plus the start code', () => {
+    const p = sacnPacket(1, new Array(100).fill(0))
+    assert.equal((p.bytes[123] << 8) | p.bytes[124], 101)
+    assert.equal(p.bytes[125], 0x00) // DMX start code
+    assert.equal(p.length, 226)
+  })
+
+  test('the universe drives the multicast group', () => {
+    assert.equal(sacnPacket(1, [0]).multicastGroup, '239.255.0.1')
+    assert.equal(sacnPacket(256, [0]).multicastGroup, sacnGroup(256))
+    assert.equal(sacnPacket(1, [0]).port, 5568)
+  })
+
+  test('sACN rejects impossible universes and oversized data', () => {
+    assert.equal(sacnPacket(0, []), null)
+    assert.equal(sacnPacket(64000, []), null)
+    assert.equal(sacnPacket(1, new Array(513).fill(0)), null)
+    assert.equal(sacnPacket(1, [0], { priority: 201 }), null)
+    assert.equal(sacnPacket(1, [0], { sourceName: 'x'.repeat(64) }), null)
   })
 })
