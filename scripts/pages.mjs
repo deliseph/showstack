@@ -54,6 +54,8 @@ import { learnRiggingPage } from './learn-rigging.mjs'
 import { learnPowerPage } from './learn-power.mjs'
 import { learnOutdoorsPage } from './learn-outdoors.mjs'
 import { learnMixingPage } from './learn-mixing.mjs'
+import { learnEmpathyPage } from './learn-empathy.mjs'
+import { learnIllusionPage } from './learn-illusion.mjs'
 import { learnTimecodePage } from './learn-timecode.mjs'
 import { learnAccessPage } from './learn-access.mjs'
 import { learnVideoPage } from './learn-video.mjs'
@@ -1119,6 +1121,8 @@ export function buildPages(db, dist) {
     ['power', () => learnPowerPage(learnArgs)],
     ['outdoors', () => learnOutdoorsPage(learnArgs)],
     ['mixing', () => learnMixingPage(learnArgs)],
+    ['empathy', () => learnEmpathyPage(learnArgs)],
+    ['illusion', () => learnIllusionPage(learnArgs)],
     ['timecode', () => learnTimecodePage(learnArgs)],
     ['access', () => learnAccessPage(learnArgs)],
     ['rigging', () => learnRiggingPage(learnArgs)],

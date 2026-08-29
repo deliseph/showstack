@@ -487,3 +487,39 @@ describe('explainer inventory', () => {
     }
   })
 })
+
+/**
+ * Double-escaped HTML entities.
+ *
+ * Some fields on this site are rendered through esc() and some are rendered
+ * raw, and the two look identical in the source. Write "&mdash;" in an
+ * escaped field and the reader gets the literal seven characters. It has
+ * shipped twice — both times in quiz option text, both times invisible in
+ * review and obvious on the page.
+ *
+ * This walks every built page rather than the source, because the source is
+ * where the ambiguity lives and the output is where the truth is.
+ */
+describe('no double-escaped entities anywhere in the built site', () => {
+  test('every page renders its punctuation rather than printing it', () => {
+    const pages = []
+    const walk = (dir) => {
+      for (const name of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, name.name)
+        if (name.isDirectory()) walk(full)
+        else if (name.name.endsWith('.html')) pages.push(full)
+      }
+    }
+    walk(DIST)
+    assert.ok(pages.length > 100, `only found ${pages.length} pages to check`)
+
+    const bad = []
+    for (const page of pages) {
+      const html = readFileSync(page, 'utf8')
+      for (const m of html.matchAll(/&amp;([a-z]{2,8}|#\d{2,5});/g)) {
+        bad.push(`${page.replace(DIST, '')}: ${m[0]}`)
+      }
+    }
+    assert.deepEqual(bad.slice(0, 12), [], `${bad.length} double-escaped entities in the built site`)
+  })
+})

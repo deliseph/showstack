@@ -432,6 +432,14 @@ export const LEARN_TOPICS = [
     questions: ['Beam angle or field angle?', 'How wide will that beam be?', 'What does blending not fix?'],
   },
   {
+    slug: 'illusion',
+    group: 'room',
+    tag: 'Illusion',
+    title: 'Designing something an audience accepts',
+    blurb: 'Perception is a prediction machine rather than a camera, so an illusion is a plausible story the eye is allowed to finish. The contrast ratio that decides whether a Pepper’s ghost reads as solid, why forced perspective collapses for the front row, and what attention actually follows.',
+    questions: ['Why is my ghost see-through?', 'Why does it fail up close?', 'Where will they look?'],
+  },
+  {
     slug: 'drawings',
     group: 'room',
     tag: 'CAD & BIM',
@@ -558,6 +566,14 @@ export const LEARN_TOPICS = [
     title: 'Who the show is not reaching',
     blurb: 'Four access provisions as engineering problems with numbers attached: where the three-flashes-per-second threshold sits between two ordinary programming decisions, three assistive listening technologies that fail in different places, captioning as a latency budget, and audio description as a mix problem.',
     questions: ['Is this strobe over the line?', 'How many receivers do I need?', 'Why is a late caption worse than none?'],
+  },
+  {
+    slug: 'empathy',
+    group: 'person',
+    tag: 'Empathy',
+    title: 'Feeling it with them',
+    blurb: 'How one person’s state gets into another in an auditorium: simulation, expression contagion and entrainment — plus the two things that decide whether any of it is available, which are whether the room has held the audience and whether they can hear each other.',
+    questions: ['Why is a full house funnier?', 'Why will they not settle?', 'Who designs the ending?'],
   },
   {
     slug: 'presence',

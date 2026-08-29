@@ -2770,3 +2770,136 @@ export function sysexDetail(body) {
   if (body[0] === 0x7e) return 'Universal non-realtime.'
   return `Manufacturer ${body[0] === undefined ? '?' : '0x' + body[0].toString(16).toUpperCase()}, ${Math.max(0, body.length - 1)} data bytes.`
 }
+
+/**
+ * Pepper's ghost: the brightness problem, not the geometry problem.
+ *
+ * Everybody who builds one of these gets the geometry right and the contrast
+ * wrong. A pane of glass or foil is set between the audience and the scene;
+ * a hidden object, usually below and lit hard, reflects in it and appears to
+ * be standing in the space. The reflection is real optics and the position is
+ * easy — the image sits as far behind the pane as the object is in front.
+ *
+ * What decides whether it reads as a solid figure or as a smear on a window
+ * is a ratio of two luminances arriving at the same retina:
+ *
+ *   ghost      = object luminance      x pane reflectance
+ *   background = background luminance  x pane transmittance
+ *
+ * A ghost is solid when the first is far larger than the second, which is why
+ * the hidden object is lit like a rock star and the space behind the ghost is
+ * kept as dark as the design will allow. Turning the ghost up is only one of
+ * the two available moves, and it is usually the harder one.
+ *
+ * Uncoated glass reflects about 8% of what hits it, which is why plain glass
+ * needs a very dark background. Purpose-made foil runs far higher and buys
+ * you a lit set behind the ghost.
+ */
+export function peppersGhost(opts = {}) {
+  const objectLuminance = Number(opts.objectLuminance ?? 1000)
+  const backgroundLuminance = Number(opts.backgroundLuminance ?? 50)
+  const reflectance = Number(opts.reflectance ?? 0.08)
+  if (!Number.isFinite(objectLuminance) || objectLuminance < 0) return null
+  if (!Number.isFinite(backgroundLuminance) || backgroundLuminance < 0) return null
+  if (!Number.isFinite(reflectance) || reflectance <= 0 || reflectance >= 1) return null
+  // What the pane does not reflect or absorb, it passes. Absorption is small
+  // in a good pane and is folded in here as an option rather than ignored.
+  const absorption = Number(opts.absorption ?? 0)
+  if (!Number.isFinite(absorption) || absorption < 0 || absorption + reflectance >= 1) return null
+  const transmittance = 1 - reflectance - absorption
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  const ghost = objectLuminance * reflectance
+  const background = backgroundLuminance * transmittance
+  const ratio = background > 0 ? ghost / background : Infinity
+
+  return {
+    reflectance,
+    transmittance: r2(transmittance),
+    ghostLuminance: r2(ghost),
+    backgroundLuminance: r2(background),
+    contrastRatio: background > 0 ? r2(ratio) : null,
+    // Rough bands, and they are judgement rather than measurement: below
+    // parity the ghost is a suggestion, and it takes a good multiple before
+    // an audience stops seeing through it.
+    reads: ratio >= 4 ? 'solid' : ratio >= 1.5 ? 'translucent' : 'barely there',
+    /** How bright the hidden object has to be for a target contrast ratio. */
+    objectLuminanceFor: (targetRatio) => {
+      const t = Number(targetRatio)
+      if (!Number.isFinite(t) || t <= 0) return null
+      return Math.round((t * backgroundLuminance * transmittance) / reflectance)
+    },
+    /**
+     * How dark the background has to be instead. Almost always the cheaper
+     * move, and the one people reach for last.
+     */
+    backgroundLuminanceFor: (targetRatio) => {
+      const t = Number(targetRatio)
+      if (!Number.isFinite(t) || t <= 0 || transmittance <= 0) return null
+      return Math.round((objectLuminance * reflectance) / (t * transmittance) * 100) / 100
+    },
+  }
+}
+
+/**
+ * Forced perspective: the size an object has to be to read as another size.
+ *
+ * Two things look the same size when they subtend the same angle at the eye,
+ * and angle is size over distance. So an object twice as far away has to be
+ * twice as big to match, and the whole trick is that arithmetic:
+ *
+ *   apparent size = 2 * atan(size / (2 * distance))
+ *   to match:      size2 = size1 * (distance2 / distance1)
+ *
+ * What the arithmetic does not tell you is where it stops working, and that
+ * is the more useful half. Angular size is one depth cue among many. Inside
+ * roughly ten metres, binocular disparity reports the true distance and
+ * simply overrules it, which is why a forced-perspective set that is perfect
+ * in a photograph collapses for the front row. Motion parallax does the same
+ * job for anybody who moves their head.
+ *
+ * So the technique is really a statement about the audience: it works for one
+ * viewpoint, at a distance, for people who hold still — a camera, or a seat
+ * you can name.
+ */
+export const STEREO_LIMIT_M = 10
+
+export function forcedPerspective(realSize, realDistance, targetDistance, opts = {}) {
+  const s = Number(realSize)
+  const d1 = Number(realDistance)
+  const d2 = Number(targetDistance)
+  if (![s, d1, d2].every((n) => Number.isFinite(n) && n > 0)) return null
+  const r2 = (x) => Math.round(x * 100) / 100
+  const deg = (rad) => (rad * 180) / Math.PI
+
+  const angularRad = 2 * Math.atan(s / (2 * d1))
+  const requiredSize = s * (d2 / d1)
+
+  // Binocular disparity resolves depth well out to roughly this range for a
+  // typical interocular distance; past it the two eyes agree and stop
+  // contradicting the size cue. It is a soft edge rather than a threshold,
+  // which is why it is an option and not a constant buried in the maths.
+  const stereoLimitM = Number(opts.stereoLimitM ?? STEREO_LIMIT_M)
+  if (!Number.isFinite(stereoLimitM) || stereoLimitM < 0) return null
+  return {
+    realSize: s,
+    realDistanceM: d1,
+    targetDistanceM: d2,
+    angularSizeDeg: r2(deg(angularRad)),
+    requiredSize: r2(requiredSize),
+    scaleFactor: r2(d2 / d1),
+    // The honest part: where the trick stops working.
+    stereoLimitM,
+    disparityWillBetrayIt: Math.min(d1, d2) < stereoLimitM,
+    note: Math.min(d1, d2) < stereoLimitM
+      ? 'Inside the stereo range: two eyes will report the true distance and overrule the size cue. This works in a photograph and fails for a live front row.'
+      : 'Beyond the useful range of binocular disparity, so angular size is doing the work unopposed. Motion parallax still betrays it if the viewer moves.',
+    /** The reverse question: at what distance does an object of this size match? */
+    distanceToMatch: (otherSize) => {
+      const o = Number(otherSize)
+      if (!Number.isFinite(o) || o <= 0) return null
+      return r2(d1 * (o / s))
+    },
+  }
+}
+

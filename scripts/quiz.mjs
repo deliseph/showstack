@@ -31,14 +31,89 @@
  * answer it confirms the mechanism, for a wrong one it names the
  * misconception. Options are rendered in source order; the correct one is
  * not always last.
+ *
+ * ONE ASYMMETRY TO KNOW ABOUT, because it has already shipped a bug twice.
+ * In quizBlock() below, `q` and `text` go through esc() and `why` does not.
+ * So `why` may hold markup and HTML entities, and `q` and `text` must hold
+ * neither — an &mdash; written in a question renders as the literal five
+ * characters on the page. Use the real character (— ’ × °) in those two
+ * fields. A test walks every built page for double-escaped entities, so this
+ * is caught rather than discovered by a reader.
  */
 const BANK = {
+  empathy: [
+    {
+      q: 'The same comedy plays to a full house and to a half-empty one. The half-empty audience laughs measurably less. What is the main mechanism?',
+      options: [
+        { text: 'The performer works less hard with a smaller crowd', why: 'Often true and it compounds, but the effect appears even with an identical recorded performance.' },
+        { text: 'Expression contagion compounds with density — people mimic the faces and sounds around them', correct: true, why: 'Right. Mimicry feeds back into the mimic&rsquo;s own state, so in a dense room the effect multiplies. A sparse room breaks the chain, which is why a half-empty house is not just quieter but genuinely less funny.' },
+        { text: 'The acoustics of an empty room absorb less, so laughter is masked', why: 'An emptier room is usually more reverberant, not less, so if anything the acoustics work the other way.' },
+        { text: 'People self-select, and the smaller audience wanted it less', why: 'The effect holds with randomly assigned seating and matched audiences. It is about density, not disposition.' },
+      ],
+    },
+    {
+      q: 'A room of people starts clapping and locks to a common beat within a few seconds, with nobody leading. What has to be true for that to happen?',
+      options: [
+        { text: 'Somebody near the front sets the tempo and the rest follow visually', why: 'It happens with no visual line of sight and no leader. This is not imitation of one person.' },
+        { text: 'They can hear each other — the coupling between weakly coupled oscillators is sound', correct: true, why: 'Right, and it makes a social effect depend on a system-design decision. If the PA masks the room, or the crowd cannot hear itself at the back, it cannot lock, and a room that never locks stays a set of individuals in the same building.' },
+        { text: 'The music is playing, and they follow it', why: 'It happens in silence too, after a song ends. The music helps but it is not required.' },
+        { text: 'It is a learned social convention rather than a physical effect', why: 'The same entrainment happens in coupled pendulums and fireflies. Convention decides that people clap; physics decides that they converge.' },
+      ],
+    },
+    {
+      q: 'An audience will not settle in the first ten minutes of a show. What is the most likely explanation on this page?',
+      options: [
+        { text: 'The opening material is weak', why: 'Possible, but this page is about the conditions rather than the material, and the conditions are the ones a technical department can move.' },
+        { text: 'The room has not yet demonstrated it will hold them, so their attention is still on it', correct: true, why: 'Right. Temperature, sightlines, level, whether the exit is visible, whether the effect at the top was warned about. An audience managing the room is not available to the show, and no craft downstream recovers that attention.' },
+        { text: 'The house lights faded too quickly', why: 'A real effect on the separation phase, but a narrow one. The broader answer is that the room has not passed its own gate yet.' },
+        { text: 'Audiences always take ten minutes', why: 'They do not, and treating it as inevitable is what stops anybody investigating the cause.' },
+      ],
+    },
+  ],
+  illusion: [
+    {
+      q: 'Your Pepper’s ghost looks like a smear on a window rather than a solid figure. The geometry is correct. What is wrong?',
+      options: [
+        { text: 'The pane is at the wrong angle', why: 'The angle sets where the image appears. If the position is right, the angle is right.' },
+        { text: 'The ratio between the reflected object and the set showing through the pane is too low', correct: true, why: 'Right. The audience receives two light paths on one retina: object times reflectance, against background times transmittance. Plain glass reflects about 8%, so it demands a very dark background before the ghost reads as solid.' },
+        { text: 'The pane needs to be thicker', why: 'Thickness affects double-imaging on cheap glass but does nothing for solidity, which is purely the brightness ratio.' },
+        { text: 'The object is too far from the pane', why: 'Distance sets where the image appears, not how solid it looks.' },
+      ],
+    },
+    {
+      q: 'Your ghost needs more contrast. Which move is usually cheaper?',
+      options: [
+        { text: 'Light the hidden object harder', why: 'This is the one people reach for first and it is the expensive one: more fixtures, more power, more heat, and a performer standing in a punishing amount of light.' },
+        { text: 'Darken whatever sits behind the ghost', why: 'Right. It costs a conversation with the designer rather than a truck of fixtures, and it moves the same ratio. There are only two moves and this is the one that gets tried last.', correct: true },
+        { text: 'Move the audience further back', why: 'Distance does not change the ratio of two luminances arriving together.' },
+        { text: 'Use a larger pane', why: 'Size decides how much of the object you can see, not how solid it looks.' },
+      ],
+    },
+    {
+      q: 'A forced-perspective set is flawless in the production photograph and collapses for the first three rows. Why?',
+      options: [
+        { text: 'The camera lens compresses depth in a way the eye does not', why: 'Lens choice matters, but the effect fails from the front row even with a matched focal length.' },
+        { text: 'A camera has one eye and an audience has two — disparity reports the true distance inside about ten metres', correct: true, why: 'Right. Angular size is one depth cue among several and the others are not obliged to agree. Binocular disparity simply overrules it up close, and motion parallax does the same for anyone who moves their head. The set was only ever built for a viewpoint the audience was not in.' },
+        { text: 'The scale factor was calculated wrongly', why: 'The arithmetic can be perfect and the effect still fails, because the arithmetic only covers one cue.' },
+        { text: 'Stage lighting flattens the perspective cues', why: 'Lighting can help or hurt, but the front-row failure happens under any lighting because it is stereoscopic.' },
+      ],
+    },
+    {
+      q: 'What is the most reliable way to keep an audience from looking at the thing you do not want them to see?',
+      options: [
+        { text: 'Make it dark enough that it cannot be resolved', why: 'Useful, and fragile: black scenic has a real reflectance and enough spill will always find it eventually.' },
+        { text: 'Give them something else worth attending to, for a reason they would endorse', correct: true, why: 'Right. Attention is allocation, not prevention. The most robust reveals sit on a moment when attention was legitimately elsewhere &mdash; which is also why an audience given nothing to watch will find exactly the thing you were hiding.' },
+        { text: 'Move quickly enough that they cannot track it', why: 'Movement is one of the strongest attention pulls there is. Speed attracts the eye rather than escaping it.' },
+        { text: 'Rely on the fact that most people are not looking closely', why: 'True on average and useless as a design: the effect has to survive the one person who was.' },
+      ],
+    },
+  ],
   mixing: [
     {
       q: 'Two fixtures, one warm and one blue, from opposite sides. An object casts two shadows. Why is neither of them grey?',
       options: [
         { text: 'The eye adapts to the dominant colour, so a neutral shadow looks tinted', why: 'This effect is real and it compounds with the physical one, but it is not the main answer here. Something measurable is going on before perception gets involved.' },
-        { text: 'Each shadow is lit by the source it does not block, so it is that source&rsquo;s colour', correct: true, why: 'Right. A shadow is not an absence of light, it is the light that still arrives. Block the warm source and the patch is lit by the blue one and nothing else, so it is exactly blue.' },
+        { text: 'Each shadow is lit by the source it does not block, so it is that source’s colour', correct: true, why: 'Right. A shadow is not an absence of light, it is the light that still arrives. Block the warm source and the patch is lit by the blue one and nothing else, so it is exactly blue.' },
         { text: 'The two beams interfere where they overlap', why: 'Light at these scales does not interfere in any way you can see on a wall. The sources simply add.' },
         { text: 'The shadows pick up colour reflected from the surroundings', why: 'Bounce contributes in a real room, but the effect appears just as strongly in a black box where there is nothing to bounce off.' },
       ],
@@ -66,7 +141,7 @@ const BANK = {
     {
       q: 'An LTC frame is 80 bits. How many of them are the actual time?',
       options: [
-        { text: 'All 80 &mdash; hours, minutes, seconds and frames packed tightly', why: 'The time takes far less than that. Most of the frame is other things.' },
+        { text: 'All 80 — hours, minutes, seconds and frames packed tightly', why: 'The time takes far less than that. Most of the frame is other things.' },
         { text: '26, stored as BCD with each digit in its own field', correct: true, why: 'Right. 26 bits of time, 32 user bits, six flag bits and a 16-bit sync word. Storing each decimal digit separately is why the field widths look odd &mdash; frame tens only has to count to 2, so it gets two bits.' },
         { text: '32, the same as the user bits', why: 'The user bits are 32; the time is smaller than that, because BCD digits that only count to 2 or 5 do not need four bits each.' },
         { text: '64, with the last 16 as a checksum', why: 'The last 16 bits are the sync word, not a checksum. LTC has no checksum at all.' },
@@ -94,8 +169,8 @@ const BANK = {
       q: 'Drop-frame timecode. What exactly gets dropped?',
       options: [
         { text: 'Two frames of picture at the start of most minutes', why: 'This is the belief the name creates, and it is why people are afraid of drop frame. No picture is lost at any point.' },
-        { text: 'Two frame numbers &mdash; labels that simply never occur', correct: true, why: 'Right. 00 and 01 are skipped at the start of every minute except every tenth. That is 108 numbers an hour, which is very close to the 107.89 frames a 30 fps counter gains over real 29.97 time. Every frame that was shot is still there.' },
-        { text: 'Nothing &mdash; drop frame is only a display setting', why: 'It genuinely changes the count. 00:01:00:00 does not exist in drop frame, and a system that accepts it is not validating.' },
+        { text: 'Two frame numbers — labels that simply never occur', correct: true, why: 'Right. 00 and 01 are skipped at the start of every minute except every tenth. That is 108 numbers an hour, which is very close to the 107.89 frames a 30 fps counter gains over real 29.97 time. Every frame that was shot is still there.' },
+        { text: 'Nothing — drop frame is only a display setting', why: 'It genuinely changes the count. 00:01:00:00 does not exist in drop frame, and a system that accepts it is not validating.' },
         { text: 'One frame every second, to make 30 into 29.97', why: 'That would lose 3600 frames an hour, over thirty times too many.' },
       ],
     },
@@ -103,7 +178,7 @@ const BANK = {
       q: 'You are reading a MIDI stream and see the bytes 90 3C 7F 3E 7F. How many messages is that?',
       options: [
         { text: 'One, with three data bytes', why: 'Note On takes exactly two data bytes. A third would have to belong to something else.' },
-        { text: 'Two &mdash; the second uses running status and omits the repeated 90', correct: true, why: 'Right. 3E and 7F have their top bits clear, so they are data bytes, and with no new status byte they inherit the last one. That is running status, and it is why busy MIDI dumps have long stretches with no status byte visible.' },
+        { text: 'Two — the second uses running status and omits the repeated 90', correct: true, why: 'Right. 3E and 7F have their top bits clear, so they are data bytes, and with no new status byte they inherit the last one. That is running status, and it is why busy MIDI dumps have long stretches with no status byte visible.' },
         { text: 'Two, but the second is malformed because it has no status byte', why: 'It is not malformed &mdash; omitting a repeated status byte is the specified behaviour, not an error.' },
         { text: 'It cannot be determined without knowing the device', why: 'It can. The high bit of each byte says everything needed to parse it, which is the whole framing mechanism.' },
       ],
@@ -112,7 +187,7 @@ const BANK = {
       q: 'Pitch bend centre arrives as E0 00 40. Why is the small byte first?',
       options: [
         { text: 'MIDI is little-endian throughout', why: 'MIDI is not consistently one endianness; this is a specific convention for multi-byte values, and status and data bytes have no endianness at all.' },
-        { text: '14-bit values are sent as two 7-bit bytes, LSB first: value = (MSB &lt;&lt; 7) | LSB', correct: true, why: 'Right. Seven bits per data byte gives 128 steps, which is useless for a bend, so the value is split across two bytes least significant first. 00 then 40 reassembles to 8192, which is centre.' },
+        { text: '14-bit values are sent as two 7-bit bytes, LSB first: value = (MSB << 7) | LSB', correct: true, why: 'Right. Seven bits per data byte gives 128 steps, which is useless for a bend, so the value is split across two bytes least significant first. 00 then 40 reassembles to 8192, which is centre.' },
         { text: 'The first byte is a controller number and the second is the value', why: 'That is the shape of a control change. Pitch bend has its own status byte and both data bytes are parts of one number.' },
         { text: 'It is a manufacturer quirk that varies by device', why: 'It is specified, and it is the same on every compliant device.' },
       ],
@@ -120,7 +195,7 @@ const BANK = {
   ],
   outdoors: [
     {
-      q: 'A 3 &times; 6 m banner is fine in this morning&rsquo;s 8 m/s breeze. By afternoon the wind has doubled to 16 m/s. What has happened to the load on the structure?',
+      q: 'A 3 × 6 m banner is fine in this morning’s 8 m/s breeze. By afternoon the wind has doubled to 16 m/s. What has happened to the load on the structure?',
       options: [
         { text: 'It has doubled', why: 'This is the intuition almost everybody starts with, and it is the one that gets structures put up on days they should not be. Force is not proportional to speed.' },
         { text: 'It has roughly quadrupled', correct: true, why: 'Right. Dynamic pressure goes with the square of speed, so twice the wind is four times the force. The banner that was pulling 90 kg is now pulling around 360.' },
@@ -132,7 +207,7 @@ const BANK = {
       q: 'A flight case comes off a cold truck into a humid venue and the crew wants to power it immediately. What is the actual risk?',
       options: [
         { text: 'Thermal shock cracking the circuit boards', why: 'Not the mechanism at these temperature differences. The problem is water, not stress.' },
-        { text: 'Water condensing on surfaces inside the case that are below the room&rsquo;s dew point', correct: true, why: 'Right. The metal is colder than the temperature at which the room&rsquo;s air gives up its water, so water forms on it &mdash; inside the enclosure, on the boards. Wait until the surfaces are above the dew point, and do not open the lid to speed it up.' },
+        { text: 'Water condensing on surfaces inside the case that are below the room’s dew point', correct: true, why: 'Right. The metal is colder than the temperature at which the room&rsquo;s air gives up its water, so water forms on it &mdash; inside the enclosure, on the boards. Wait until the surfaces are above the dew point, and do not open the lid to speed it up.' },
         { text: 'Nothing, as long as the room is dry to the touch', why: 'The room being dry says nothing. What matters is the surface temperature of the cold gear against the air&rsquo;s dew point.' },
         { text: 'The cold makes the power supply draw more current', why: 'There is no such mechanism here. The failure is a short across something wet.' },
       ],
@@ -142,7 +217,7 @@ const BANK = {
       options: [
         { text: 'Through the housing, because IP65 only covers splashing', why: 'The second digit 5 is a jet test, which covers rain comfortably. The housing is not the weak point.' },
         { text: 'At an unmated connector, or a cable gland done up on the wrong diameter', correct: true, why: 'Right. The rating describes the assembly as tested: closed, sealed and mated. A connector hanging open is rated at nothing, and a gland on the wrong cable size throws away the rating of everything behind it.' },
-        { text: 'Nowhere &mdash; IP65 is a full weatherproof rating', why: 'IP65 is a laboratory result about a specific configuration. It says nothing about how the thing was installed, or about condensation from air already inside it.' },
+        { text: 'Nowhere — IP65 is a full weatherproof rating', why: 'IP65 is a laboratory result about a specific configuration. It says nothing about how the thing was installed, or about condensation from air already inside it.' },
         { text: 'Through the lens, which is never part of the rating', why: 'The lens is part of the tested enclosure. The install is what is usually not.' },
       ],
     },
@@ -151,16 +226,16 @@ const BANK = {
     {
       q: 'A track runs at 128 BPM and the strobe is programmed on every eighth note. Is that inside the photosensitivity guidance?',
       options: [
-        { text: 'Yes &mdash; 128 BPM is a moderate tempo', why: 'The tempo is moderate; the division is what decides it. Every eighth note at 128 BPM is 4.27 flashes a second.' },
-        { text: 'No &mdash; that is about 4.3 flashes a second, over the limit of three', correct: true, why: 'Right, and this is the whole problem: on every beat it would be 2.13 and fine. The threshold sits between two completely ordinary programming decisions, which is why it gets crossed by accident.' },
+        { text: 'Yes — 128 BPM is a moderate tempo', why: 'The tempo is moderate; the division is what decides it. Every eighth note at 128 BPM is 4.27 flashes a second.' },
+        { text: 'No — that is about 4.3 flashes a second, over the limit of three', correct: true, why: 'Right, and this is the whole problem: on every beat it would be 2.13 and fine. The threshold sits between two completely ordinary programming decisions, which is why it gets crossed by accident.' },
         { text: 'Only if the strobe is white', why: 'Colour changes the strictness &mdash; saturated red is judged harder &mdash; but every colour is subject to the three-per-second limit.' },
-        { text: 'It depends on the fixture&rsquo;s output, not its rate', why: 'Intensity matters to the assessment, but the rate limit is a rate limit. 4.3 a second is over it regardless.' },
+        { text: 'It depends on the fixture’s output, not its rate', why: 'Intensity matters to the assessment, but the rate limit is a rate limit. 4.3 a second is over it regardless.' },
       ],
     },
     {
       q: 'A 900-seat theatre is fitting an induction loop that covers every seat. What does that change about the receiver requirement?',
       options: [
-        { text: 'Nothing &mdash; the receiver count is the same for every technology', why: 'The total count is, but the second column is not. There is a specific exception for full-coverage loops.' },
+        { text: 'Nothing — the receiver count is the same for every technology', why: 'The total count is, but the second column is not. There is a specific exception for full-coverage loops.' },
         { text: 'The hearing-aid compatible receivers are no longer required, under Exception 2', correct: true, why: 'Right. A loop couples directly to the telecoil in a hearing aid, so the hearing aids in the room already are the receivers. The overall count still applies for people without a compatible aid.' },
         { text: 'No receivers are needed at all', why: 'Not everyone in the audience has a telecoil-equipped hearing aid. The main count in Table 219.3 still stands.' },
         { text: 'The count halves', why: 'The exception is about the hearing-aid compatible column specifically, not a reduction of the total.' },
@@ -170,7 +245,7 @@ const BANK = {
       q: 'Live captions on a show are landing about four seconds after the line is spoken. Why is that worse than it sounds?',
       options: [
         { text: 'Four seconds exceeds the legal maximum for live captioning', why: 'There is no single universal figure of that kind, and the reason this matters is not compliance.' },
-        { text: 'The reader is out of step with the room &mdash; reading the previous line while everyone reacts to this one', correct: true, why: 'Right. The damage is not missing information, it is exclusion from the shared moment, which is the thing the audience actually came for. It is the same reason a few frames of lip-sync error is unbearable.' },
+        { text: 'The reader is out of step with the room — reading the previous line while everyone reacts to this one', correct: true, why: 'Right. The damage is not missing information, it is exclusion from the shared moment, which is the thing the audience actually came for. It is the same reason a few frames of lip-sync error is unbearable.' },
         { text: 'The captions will be less accurate at that latency', why: 'Accuracy and latency trade against each other in the other direction: more time usually buys more accuracy. The cost here is social, not textual.' },
         { text: 'It puts the caption display out of sync with the surtitle machine', why: 'That is an operational nuisance if both exist, but it is not why four seconds is bad for the person reading.' },
       ],

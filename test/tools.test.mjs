@@ -22,6 +22,7 @@ import {
   cableDerating, awgToMm2, mm2ToAwg, coaxReach, SDI_RATES,
   srgbToLinear, linearToSrgb, colourMix, mixWhites,
   ltcFrame, LTC_SYNC_WORD, mtcQuarterFrames, MTC_RATES, midiDecode, midiNoteName,
+  peppersGhost, forcedPerspective, STEREO_LIMIT_M,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -2137,5 +2138,95 @@ describe('reading MIDI as hex', () => {
     assert.equal(midiNoteName(0), 'C-2')
     assert.equal(midiNoteName(127), 'G8')
     assert.equal(midiNoteName(128), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Designed illusion
+// ---------------------------------------------------------------------------
+
+describe("Pepper's ghost", () => {
+  test('the ghost is object luminance times reflectance, and nothing else', () => {
+    const g = peppersGhost({ objectLuminance: 1000, backgroundLuminance: 0, reflectance: 0.08 })
+    assert.equal(g.ghostLuminance, 80)
+    assert.equal(g.transmittance, 0.92)
+  })
+
+  test('the contrast ratio is the whole design, and plain glass is a hard place to start', () => {
+    // Uncoated glass at 8%: a 1000 cd/m2 object against a 50 cd/m2 set is
+    // only 1.74:1 and reads as a smear on a window.
+    const glass = peppersGhost({ objectLuminance: 1000, backgroundLuminance: 50, reflectance: 0.08 })
+    assert.equal(glass.contrastRatio, 1.74)
+    assert.equal(glass.reads, 'translucent')
+    // The same object on 45% foil is solid without touching a lamp.
+    const foil = peppersGhost({ objectLuminance: 1000, backgroundLuminance: 50, reflectance: 0.45 })
+    assert.ok(foil.contrastRatio > 4)
+    assert.equal(foil.reads, 'solid')
+  })
+
+  test('there are two ways to fix a weak ghost, and darkening is the cheap one', () => {
+    const g = peppersGhost({ objectLuminance: 1000, backgroundLuminance: 50, reflectance: 0.08 })
+    // Brighten the object to 2300, or drop the background to under 22.
+    assert.equal(g.objectLuminanceFor(4), 2300)
+    assert.equal(g.backgroundLuminanceFor(4), 21.74)
+    // Check the round trip: that background really does give 4:1.
+    const fixed = peppersGhost({ objectLuminance: 1000, backgroundLuminance: 21.74, reflectance: 0.08 })
+    assert.ok(Math.abs(fixed.contrastRatio - 4) < 0.01)
+  })
+
+  test('a black background makes any ghost solid, which is why black boxes are used', () => {
+    const g = peppersGhost({ objectLuminance: 100, backgroundLuminance: 0, reflectance: 0.08 })
+    assert.equal(g.contrastRatio, null)
+    assert.equal(g.reads, 'solid')
+  })
+
+  test('a pane cannot reflect everything, or absorb more than it has', () => {
+    assert.equal(peppersGhost({ reflectance: 1 }), null)
+    assert.equal(peppersGhost({ reflectance: 0 }), null)
+    assert.equal(peppersGhost({ reflectance: 0.5, absorption: 0.6 }), null)
+    assert.equal(peppersGhost({ objectLuminance: -5 }), null)
+  })
+})
+
+describe('forced perspective', () => {
+  test('matching size is matching the ratio of size to distance', () => {
+    // A 1.8 m person at 4 m; to match at 20 m you need 9 m of object.
+    const r = forcedPerspective(1.8, 4, 20)
+    assert.equal(r.requiredSize, 9)
+    assert.equal(r.scaleFactor, 5)
+  })
+
+  test('angular size is the thing actually being matched', () => {
+    const near = forcedPerspective(1, 10, 10)
+    const far = forcedPerspective(10, 100, 100)
+    // Same ratio, same angle, so they look the same size.
+    assert.equal(near.angularSizeDeg, far.angularSizeDeg)
+    assert.equal(far.requiredSize, 10)
+  })
+
+  test('the reverse question: where does a given object have to stand', () => {
+    const r = forcedPerspective(1.8, 4, 20)
+    // A 3.6 m object matches the same angle at twice the distance.
+    assert.equal(r.distanceToMatch(3.6), 8)
+    assert.equal(r.distanceToMatch(0), null)
+  })
+
+  test('the honest half: two eyes overrule the size cue up close', () => {
+    const close = forcedPerspective(1.8, 4, 6)
+    assert.equal(close.disparityWillBetrayIt, true)
+    assert.match(close.note, /fails for a live front row/)
+    const far = forcedPerspective(1.8, 40, 200)
+    assert.equal(far.disparityWillBetrayIt, false)
+    assert.match(far.note, /Motion parallax still betrays it/)
+    // The limit is a soft edge, so it is adjustable rather than baked in.
+    assert.equal(STEREO_LIMIT_M, 10)
+    assert.equal(forcedPerspective(1.8, 4, 6, { stereoLimitM: 2 }).disparityWillBetrayIt, false)
+  })
+
+  test('forced perspective rejects nonsense', () => {
+    assert.equal(forcedPerspective(0, 4, 20), null)
+    assert.equal(forcedPerspective(1.8, 0, 20), null)
+    assert.equal(forcedPerspective(1.8, 4, -20), null)
+    assert.equal(forcedPerspective(1.8, 4, 20, { stereoLimitM: -1 }), null)
   })
 })
