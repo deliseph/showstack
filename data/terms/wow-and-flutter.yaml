@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: wow-and-flutter
+en: Wow and flutter
+zh_hant: 抖晃度
+domain: audio
+definition_en: >-
+  Speed variation in a mechanical replay medium, named at two rates. Wow is slow variation,
+  below roughly four hertz, heard as pitch drifting. Flutter is faster, heard as roughness or
+  warble on sustained notes. Wow usually points at a capstan or a slipping pinch roller;
+  flutter more often at a bearing or tape dragging on a guide.
+definition_zh_hant: >-
+  機械式重播媒介的速度變動，依快慢分為兩種稱呼。抖（wow）指約四赫茲以下的慢速變動，聽感
+  為音高漂移；晃（flutter）指較快的變動，在持續音上聽起來是粗糙或顫抖。抖多半指向主
+  導軸或打滑的壓帶輪，晃則較常來自軸承或磁帶刮擦導引件。
+false_friends:
+  - >-
+    Wow and flutter is not a frequency response fault and no equalisation addresses it. It is
+    the transport, and it is measured as a percentage of speed rather than in decibels.
+regional_variants:
+  - region: UK / US
+    term: Wow and flutter
+  - region: HK / TW
+    term: 抖晃度
+tags:
+  - audio
+  - analogue
+  - archive
+  - tape
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

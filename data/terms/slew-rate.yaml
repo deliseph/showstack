@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: slew-rate
+en: Slew rate
+zh_hant: 擺率
+domain: audio
+definition_en: >-
+  How fast an amplifier’s output can change, quoted in volts per microsecond. Below what a
+  transient demands, a fast edge emerges as a ramp: a distortion that is a limit in time
+  rather than in level, and that sounds like smearing rather than the hardness of clipping.
+  Rarely the limiting factor in a modern amplifier and useful mainly as the one specification
+  describing a temporal failure.
+definition_zh_hant: >-
+  擴大機輸出電壓的最快變化速率，以每微秒多少伏特表示。若低於暫態訊號的需求，急促的邊緣會被
+  輸出成斜坡：這是一種發生在時間軸而非位準上的失真，聽感是模糊塗抹，而非削波那種硬質感。在
+  現代擴大機上鮮少成為限制，其主要價值在於它是唯一描述時間性失效的規格。
+false_friends:
+  - >-
+    Slew limiting is not clipping. Clipping is a ceiling on level and flattens peaks; slew
+    limiting is a ceiling on rate and rounds edges, and it can occur well below full output.
+regional_variants:
+  - region: UK / US
+    term: Slew rate
+  - region: HK / TW
+    term: 擺率 / 迴轉率
+tags:
+  - audio
+  - amplifier
+  - specification
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

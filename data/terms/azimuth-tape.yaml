@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: azimuth-tape
+en: Azimuth (tape)
+zh_hant: 磁頭方位角
+domain: audio
+definition_en: >-
+  The angle of a magnetic head gap relative to the tape path, which should be exactly
+  perpendicular. If the recording and playback machines disagree, the top of the track is read
+  fractionally before the bottom and high frequencies partly cancel across the track width. It
+  presents as a dull recording and is a phase error, so equalisation cannot recover it;
+  aligning the playback head can.
+definition_zh_hant: >-
+  磁頭間隙相對於磁帶行進方向的角度，理應完全垂直。若錄音機與放音機的方位角不一致，磁軌上緣
+  會比下緣稍早被讀取，高頻便會在磁軌寬度上部分相消。聽感上像是高頻不足，但本質是相位誤差，
+  因此無法用等化補回；調整放音磁頭方位角則可完全復原。
+false_friends:
+  - >-
+    A dull archive tape is far more often an azimuth mismatch than a degraded recording.
+    Boosting the top end cannot help, because the energy is cancelling itself rather than being
+    absent.
+regional_variants:
+  - region: UK / US
+    term: Azimuth
+  - region: HK / TW
+    term: 方位角 / azimuth
+tags:
+  - audio
+  - analogue
+  - archive
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

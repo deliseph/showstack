@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: rdm-sub-device
+en: RDM sub-device
+zh_hant: RDM 子裝置
+domain: lighting
+definition_en: >-
+  A logical device inside one physical RDM device, addressed by number so that a multi-channel
+  product can expose each channel separately under a single UID. Root device zero is the box
+  itself and carries what belongs to the box; sub-devices carry what belongs to each channel
+  or cell. A twelve-way dimmer rack is typically one UID and twelve sub-devices.
+definition_zh_hant: >-
+  RDM 實體裝置內部的邏輯裝置，以編號定址，使多通道產品能在單一 UID 之下分別呈現各
+  通道。根裝置（編號 0）代表機箱本身，承載屬於機箱的參數；子裝置則承載屬於各通道或各燈珠
+  的參數。十二路調光櫃通常就是一個 UID 加十二個子裝置。
+false_friends:
+  - >-
+    Addressing the root of a multi-cell fixture addresses the fixture, not its first cell. Some
+    products use separate UIDs per channel instead, and patch differently.
+related_protocols:
+  - rdm
+regional_variants:
+  - region: UK / US
+    term: Sub-device
+  - region: HK / TW
+    term: 子裝置 / sub-device
+tags:
+  - dmx
+  - rdm
+  - lighting
+sources:
+  - title: ANSI E1.20 Remote Device Management over DMX512 networks
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

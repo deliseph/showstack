@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: rdm-proxy
+en: RDM proxy
+zh_hant: RDM 代理裝置
+domain: lighting
+definition_en: >-
+  An RDM device that responds on behalf of others, holding a list of the UIDs behind it so a
+  controller can be handed that list rather than discovering through it. Typically a gateway
+  onto a segment that does not speak RDM, or a system with its own internal bus. Devices
+  behind a proxy appear in the patch as ordinary devices.
+definition_zh_hant: >-
+  代其他裝置回應的 RDM 裝置，內部保存其後方裝置的 UID 清單，控制器可直接取得該清
+  單，而毋須穿透它進行搜尋。通常是通往不支援 RDM 網段的閘道器，或本身具備內部匯流排的
+  系統。代理後方的裝置在配接表中會如同一般裝置般出現。
+false_friends:
+  - >-
+    A UID on your line need not be a device on your line. Behind a proxy it may sit on another
+    bus entirely, which is confusing when you go looking for it.
+related_protocols:
+  - rdm
+regional_variants:
+  - region: UK / US
+    term: Proxy device
+  - region: HK / TW
+    term: 代理裝置 / proxy
+tags:
+  - dmx
+  - rdm
+  - networking
+sources:
+  - title: ANSI E1.20 Remote Device Management over DMX512 networks
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

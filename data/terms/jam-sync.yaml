@@ -1,0 +1,45 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: jam-sync
+en: Jam sync
+zh_hant: 同步鎖定
+domain: video
+definition_en: >-
+  Matching a timecode generator to incoming code and then continuing to generate in step.
+  Continuous jam keeps correcting to the incoming code for as long as it is present; one-time
+  jam takes the value once when armed and then free-runs on its own crystal. One-time jam is
+  what a camera needs to keep sensible code after being unplugged, and it is also how a device
+  silently stops following the master while still displaying plausible timecode.
+definition_zh_hant: >-
+  將時碼產生器對準輸入時碼後，繼續同步產生時碼。連續鎖定會在輸入時碼存在期間持續修正；單次
+  鎖定則只在啟動當下取值一次，之後便依自身晶振自由運行。攝影機拔線後仍要輸出合理時碼時需要
+  單次鎖定；但這也是裝置在畫面仍顯示合理時碼的情況下、悄悄停止跟隨主時鐘並開始漂移的原因。
+false_friends:
+  - >-
+    Freewheel is not jam sync. Freewheel is how long a reader keeps counting after code
+    disappears; jam sync is a generator that took the time and now produces its own.
+see_also:
+  - biphase-mark
+related_protocols:
+  - ltc
+  - mtc
+regional_variants:
+  - region: UK / US
+    term: Jam sync
+  - region: HK / TW
+    term: Jam sync
+    note: Said in English; 同步鎖定 is the written form.
+tags:
+  - timecode
+  - sync
+  - video
+sources:
+  - title: SMPTE ST 12-1 time and control code
+    url: https://www.smpte.org/standards
+    publisher: Society of Motion Picture and Television Engineers
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

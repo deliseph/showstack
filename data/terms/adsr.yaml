@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: adsr
+en: ADSR
+zh_hant: ADSR 波封
+domain: audio
+definition_en: >-
+  The four stages of a standard synthesiser envelope: attack, decay, sustain and release.
+  Three are times and one is not. Attack is how long to reach full, decay how long to fall
+  from full to the sustain level, sustain the level held while the key is down, and release
+  how long to fall to silence after it is let go.
+definition_zh_hant: >-
+  標準合成器波封的四個階段：起音、衰減、延持、釋音。其中三個是時間，一個不是。起音是升到最
+  大值所需時間，衰減是由最大值降至延持位準所需時間，延持是按鍵持續按下期間所維持的位準，釋
+  音則是放開按鍵後降至無聲所需時間。
+false_friends:
+  - >-
+    Sustain is a level, not a duration. A note that will not stop while the key is held wants a
+    sustain of zero and a decay, not a shorter release.
+regional_variants:
+  - region: UK / US
+    term: ADSR / envelope
+  - region: HK / TW
+    term: ADSR / 波封
+tags:
+  - audio
+  - synthesis
+  - instrument
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

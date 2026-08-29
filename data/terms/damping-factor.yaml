@@ -1,0 +1,40 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: damping-factor
+en: Damping factor
+zh_hant: 阻尼係數
+domain: audio
+definition_en: >-
+  The load impedance divided by the amplifier’s output impedance, describing how firmly the
+  amplifier resists the voltage a moving loudspeaker cone generates back into it. Cable
+  resistance is in series with the amplifier’s output impedance, so a long or thin speaker run
+  dominates the figure: a couple of tenths of an ohm collapses a quoted factor of several
+  hundred to a few tens.
+definition_zh_hant: >-
+  負載阻抗除以擴大機輸出阻抗，用以描述擴大機抑制喇叭紙盆運動所產生反電動勢的能力。線材電阻
+  與擴大機輸出阻抗串聯，因此過長或過細的喇叭線會主導這個數字：僅零點幾歐姆便足以令標示數百
+  的阻尼係數降至數十。
+false_friends:
+  - >-
+    A damping factor above roughly 50 is a specification rather than a benefit, because the
+    cable has already decided the figure the driver actually experiences.
+regional_variants:
+  - region: UK / US
+    term: Damping factor
+  - region: HK / TW
+    term: 阻尼係數
+    note: Usually written on a spec sheet rather than said aloud.
+tags:
+  - audio
+  - amplifier
+  - loudspeaker
+sources:
+  - title: AES standards for audio engineering
+    url: https://www.aes.org/standards/
+    publisher: Audio Engineering Society
+    accessed: '2026-08-29'
+    primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
