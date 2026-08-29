@@ -417,6 +417,87 @@ describe('the built site has no orphans', () => {
   })
 })
 
+describe('tool grouping', () => {
+  // TOOL_GROUPS is the source of truth for both the category rail and the
+  // headings, but the headings are hand-written in a very long template. The
+  // existing inventory test checks that every tool id renders; it says nothing
+  // about which heading a tool renders *under*. That gap shipped: the "Scenic
+  // & illusion" heading was never written, so Pepper's Ghost and forced
+  // perspective sat under "Access" — a category about assistive listening and
+  // flash rate — and the rail had eleven entries for twelve groups.
+  const tools = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+  const unescape = (t) => t.replace(/&amp;/g, '&')
+
+  test('every group in TOOL_GROUPS has a heading, in the same order', () => {
+    const rendered = [...tools.matchAll(/<div class="toolgroup" id="g(\d+)">([^<]+)<\/div>/g)]
+      .map((m) => [Number(m[1]), unescape(m[2])])
+    assert.deepEqual(rendered.map(([, label]) => label), TOOL_GROUPS.map(([label]) => label))
+    // ids must be sequential and in document order, because the rail links to them
+    assert.deepEqual(rendered.map(([i]) => i), TOOL_GROUPS.map((_, i) => i))
+  })
+
+  test('each tool renders under its own group heading', () => {
+    // Walk the document once and attribute every .tool to the heading above it.
+    const marks = [...tools.matchAll(/<div class="toolgroup" id="g(\d+)">|<div class="tool[^"]*" id="([a-z0-9-]+)"/g)]
+    const found = new Map()
+    let current = null
+    for (const m of marks) {
+      if (m[1] !== undefined) current = Number(m[1])
+      else if (m[2]) found.set(m[2], current)
+    }
+    for (const [gi, [label, ids]] of TOOL_GROUPS.entries()) {
+      for (const id of ids) {
+        assert.equal(found.get(id), gi, `${id} should be under "${label}", not group ${found.get(id)}`)
+      }
+    }
+  })
+
+  test('the category rail is in the HTML, not built by script', () => {
+    // It used to be created on load, and an empty nav growing to a full row of
+    // chips pushed the tool list down: 0.15 CLS on a phone, on the page people
+    // use most. Server-rendering it also makes the categories readable with
+    // JavaScript off.
+    const nav = tools.match(/<nav class="trail"[^>]*>([\s\S]*?)<\/nav>/)
+    assert.ok(nav, 'no category rail in the markup')
+    const links = [...nav[1].matchAll(/href="#g(\d+)">([^<]+)</g)].map((m) => [Number(m[1]), unescape(m[2])])
+    assert.equal(links.length, TOOL_GROUPS.length, 'rail does not list every category')
+    assert.deepEqual(links, TOOL_GROUPS.map(([label], i) => [i, label]))
+  })
+})
+
+describe('the reading serif', () => {
+  // The brief asks for a reading serif on explainer prose and nowhere else.
+  // Both halves matter: a serif that leaks into a calculator readout or a
+  // figure label is worse than no serif, and a Learn page that misses it is
+  // inconsistent with the other 38.
+  test('every explainer gets it and no other page does', () => {
+    const reads = (p) => readFileSync(join(DIST, ...p, 'index.html'), 'utf8')
+    for (const t of LEARN_TOPICS) {
+      assert.match(reads(['learn', t.slug]), /<body class="reading">/, `/learn/${t.slug}/ is not set as reading`)
+    }
+    for (const p of [['tools'], ['search'], ['interop'], ['protocols'], ['learn']]) {
+      assert.doesNotMatch(reads(p), /<body class="reading">/, `/${p.join('/')}/ should not use the reading serif`)
+    }
+  })
+
+  test('it is self-hosted, so a Learn page still makes no third-party request', () => {
+    const html = readFileSync(join(DIST, 'learn', LEARN_TOPICS[0].slug, 'index.html'), 'utf8')
+    assert.match(html, /@font-face\{font-family:"Newsreader"/, 'Newsreader is not declared')
+    assert.match(html, /url\(\/assets\/fonts\/newsreader-latin\.woff2\)/, 'not served from our own origin')
+    assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/, 'a Google Fonts request crept in')
+  })
+
+  test('saving the explainers offline saves the face they are set in', () => {
+    // Otherwise somebody saves from the tools page without opening an
+    // explainer, goes offline, and reads the whole set in the Georgia fallback.
+    const tools = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+    const m = tools.match(/var LEARN_URLS=(\[[^\]]*\])/)
+    assert.ok(m, 'the offline explainer list is missing')
+    const urls = JSON.parse(m[1])
+    assert.ok(urls.includes('/assets/fonts/newsreader-latin.woff2'), 'the serif is not saved with the explainers')
+  })
+})
+
 /**
  * The vendor verification flow.
  *

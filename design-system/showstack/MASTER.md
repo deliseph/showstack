@@ -140,12 +140,13 @@ Three roles. Do not add a fourth.
 |---|---|---|
 | UI, index, prose | IBM Plex Sans | everything by default |
 | Numbers, labels, code | JetBrains Mono | every calculator field and result, every port number, frequency, token name, structural label |
-| Reading serif | `--serif` (Newsreader, Georgia fallback) | **declared, not yet used** — see below |
+| Reading serif | `--serif` (Newsreader, Georgia fallback) | explainer prose only — bare `<p>` and `<ul>` inside `.lsec`, plus the page lede |
 
-**Self-hosted, same origin.** Four variable `woff2` files covering weights
-400–700, 117 KB total, with `unicode-range` so the 42 KB of latin-ext only
-downloads on a page that contains those characters. `font-display: swap`,
-`rel=preload` on the two latin files.
+**Self-hosted, same origin.** Six variable `woff2` files, 197 KB total, with
+`unicode-range` so the 42 KB of latin-ext only downloads on a page that
+contains those characters, and the 80 KB of Newsreader only on an explainer.
+`font-display: swap`; `rel=preload` on the two latin files everywhere, plus
+Newsreader upright on Learn pages, which is what holds those pages at CLS 0.
 
 This was the single largest measured problem on the site. The fonts used to
 load render-blocking from Google — the only third-party request anywhere. With
@@ -156,16 +157,35 @@ There is now no external request to hang. **Do not reintroduce a font CDN.**
 `font-variant-numeric: tabular-nums` on every calculator field and result, so
 figures do not jitter as they update.
 
-### The serif, and why it is declared but unused
+### The serif, trialled and adopted
 
-The brief asks for Newsreader at 18px on Learn pages. The token exists; nothing
-uses it yet. The explainers are not essays — each is prose interleaved with
-five to eight animated SVG figures, interactive dials and tables of numbers,
-and a reading serif next to mono figure labels is a harder pairing than it
-looks. Setting Learn in a different family from the rest of the site also cuts
-against the requirement that every page share a design concept. The measure and
-leading changes are the bulk of the readability win and cost nothing; trial the
-serif on one page and look at it before committing 27.
+This was parked with a worry: the explainers are not essays — each is prose
+interleaved with animated SVG figures, interactive dials and tables of numbers
+— and a reading serif next to mono figure labels looked like a harder pairing
+than it sounds. Trialled on `/learn/mixing/` and `/learn/senses/` at 390 and
+1200 px, in both themes, and the worry did not survive contact: the mono
+eyebrow, sans heading and serif body read as the three distinct roles the
+brief asked for rather than as three fonts on a page. Adopted across all 39.
+
+**Where it applies.** Bare `<p>` and `<ul>` inside `.lsec`, plus the page
+lede. Scoped with `:not([class])`, because running prose is the only thing on
+these pages that carries no class — every eyebrow, caption, quiz option, table
+and control does. That is a hook that stays correct when somebody adds a
+component, which an exclusion list is not. 18px desktop, 17px mobile,
+`--leading-prose`, `--measure`. Colour unchanged, so contrast is unchanged.
+
+**The `body.reading` class is derived from the canonical**, not passed in.
+There are 39 explainer modules and a flag on 39 call sites is a flag somebody
+forgets on the 40th. The `/learn/` index is deliberately excluded — it is a
+card grid, not prose.
+
+**Cost, and how it was kept down.** Google serves Newsreader with an optical
+size axis; requesting a fixed size drops that axis and takes the upright and
+italic pair from 272 KB to 80 KB, with the weight axis kept because the prose
+leans on `<strong>` throughout. It is not in the service worker's shell
+precache — a reader who never opens an explainer should not pay for a face
+they never see — but it *is* in the explainer offline-save list, so somebody
+who saves the set and goes offline does not read all 39 in Georgia.
 
 ### Scale
 
@@ -299,9 +319,12 @@ It needs Playwright, which is deliberately not a dependency of this package:
 - Focus ring visible on every interactive element on every page
 - Every target at least 24×24 (SC 2.5.8 AA), spacing exception implemented
 - Zero animation under `prefers-reduced-motion`; zero SMIL; zero rAF/setInterval
-- CLS 0.00 on every page measured on the mobile profile at 4× CPU throttle
+- CLS 0.00 on every page, now measured by `npm run audit` against a 0.1 budget
+  rather than asserted here. This line used to be a claim nobody checked, and
+  it stopped being true: the tools page drifted to 0.15 on a phone when the
+  category rail started being built on load. It is a gate now.
 - No horizontal scroll at any of the four widths; zoom not disabled
 - **Zero third-party requests**
 - Tools still compute with the network disabled after first load, zero new requests
-- 268 tests passing; `data/` untouched by the refresh, so every calculator
+- 573 tests passing; `data/` untouched by the refresh, so every calculator
   returns the numbers it returned before and no prose was rewritten
