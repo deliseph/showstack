@@ -62,6 +62,9 @@ import { label as human, labelList } from './labels.mjs'
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
 const GH = `https://github.com/${REPO}`
+/** Sponsorship goes through GitHub Sponsors; .github/FUNDING.yml carries the
+ *  repo-level button, this is the one on the site itself. */
+const SPONSOR = process.env.SHOWSTACK_SPONSOR ?? `https://github.com/sponsors/${REPO.split('/')[0]}`
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 
@@ -92,6 +95,30 @@ const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').t
  * which left that one page with a transparent body and no focus ring.
  */
 export const BASE_CSS = `
+/* A keyboard user should not have to tab through 17 nav items to reach the
+   page. Hidden until focused, then it sits over the sticky header. */
+.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
+font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
+text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.skip:focus{left:0}
+/* "Free, no account, no tracking" was one line of small text at the bottom of
+   two pages. It is a real reason people trust this and it now sits under the
+   header on every page - one line, always there, not a banner and not a badge. */
+.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
+.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
+min-height:44px;padding-top:0;padding-bottom:0;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
+.trust .wrap::-webkit-scrollbar{display:none}
+.trust .wrap > *{flex:0 0 auto}
+.trust b{color:var(--ink-muted);font-weight:500}
+.trust svg{flex:0 0 auto;color:var(--verified)}
+.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px;
+display:inline-flex;align-items:center;min-height:44px}
+.trust a:hover{color:var(--signal)}
+@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
+-webkit-mask-image:none;mask-image:none}}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 /* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
    at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
@@ -106,6 +133,12 @@ flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
 label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
 display:inline-flex;align-items:center;gap:10px;cursor:pointer}
 
+/* SC 2.5.8 again, the case the 44px rule above does not reach: a link that
+   sits alone in a table cell or a list row is not "in a sentence", so it does
+   not get the inline exception, and at an 18px line box it is under the 24px
+   minimum. Growing the box rather than the type keeps the table's density
+   while giving the link a real target. */
+td a,.idxlist a,.detail a,.ep td a,li > a:only-child{display:inline-block;padding:4px 0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
 -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
@@ -147,6 +180,30 @@ border-left:1px solid var(--line);flex:0 0 auto}
 .ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule-strong);
 padding:0 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
+/* Sponsorship, on every page rather than on two of them. It uses --signal
+   rather than a new pink, because the reserved-colour rule matters more than
+   matching GitHub's palette: this is an action in the link family, not a
+   state. The label collapses on a phone so the header stays two rows. */
+.sponsor{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;
+padding:0 13px;border-radius:var(--r-pill);white-space:nowrap;font-family:var(--mono);font-size:12px;
+color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 40%,var(--rule-strong));
+background:color-mix(in srgb,var(--signal) 8%,transparent);
+transition:border-color var(--dur-fast),background var(--dur-fast)}
+.sponsor:hover{border-color:var(--signal);text-decoration:none;
+background:color-mix(in srgb,var(--signal) 15%,transparent)}
+.sponsor svg{flex:0 0 auto}
+@media(max-width:620px){.sponsor{min-width:44px;padding:0 12px}.sponsor span{display:none}}
+/* The footer ask. One block, stated plainly, below the licence and the credit
+   rather than above them - it is a request, not a term. */
+.fund{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule);
+display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.fund p{margin:0;flex:1 1 320px;min-width:0;color:var(--ink-faint);font-size:12.5px;line-height:1.6;
+font-family:var(--sans)}
+.fundbtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;flex:0 0 auto;
+border-radius:var(--r-pill);font-family:var(--mono);font-size:13px;font-weight:600;
+background:var(--signal);color:var(--signal-ink);border:1px solid var(--signal);
+transition:filter var(--dur-fast)}
+.fundbtn:hover{filter:brightness(1.08);text-decoration:none;color:var(--signal-ink)}
 .themebtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;
 border-radius:999px;border:1px solid var(--rule-strong);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
 flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
@@ -305,29 +362,6 @@ const CSS = RELATED_CSS + TOKENS + `
 ${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
-/* A keyboard user should not have to tab through 17 nav items to reach the
-   page. Hidden until focused, then it sits over the sticky header. */
-.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
-font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
-text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
-.skip:focus{left:0}
-/* "Free, no account, no tracking" was one line of small text at the bottom of
-   two pages. It is a real reason people trust this and it now sits under the
-   header on every page - one line, always there, not a banner and not a badge. */
-.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
-.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
-padding-top:6px;padding-bottom:6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
-letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
--webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
-.trust .wrap::-webkit-scrollbar{display:none}
-.trust .wrap > *{flex:0 0 auto}
-.trust b{color:var(--ink-muted);font-weight:500}
-.trust svg{flex:0 0 auto;color:var(--verified)}
-.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px}
-.trust a:hover{color:var(--signal)}
-@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
--webkit-mask-image:none;mask-image:none}}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -488,6 +522,10 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
   <div class="hbar">
     <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
     <a class="ghlink" href="${GH}">GitHub</a>
+    <a class="sponsor" href="${SPONSOR}" rel="noopener" aria-label="Sponsor showstack on GitHub">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/></svg>
+      <span>Sponsor</span>
+    </a>
     <button class="themebtn" id="themebtn" type="button" aria-label="Switch theme"></button>
   </div>
   ${navBar(canonical)}
@@ -507,6 +545,14 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
   <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
   <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
+  <div class="fund">
+    <p>Free forever, no ads and no tracking. If it saved you an argument at load-in,
+       you can put something toward keeping it maintained.</p>
+    <a class="fundbtn" href="${SPONSOR}" rel="noopener">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="currentColor"><path d="M4.25 2.5c-1.336 0-2.75 1.164-2.75 3 0 2.15 1.58 4.144 3.365 5.682A20.6 20.6 0 0 0 8 13.393a20.6 20.6 0 0 0 3.135-2.211C12.92 9.644 14.5 7.65 14.5 5.5c0-1.836-1.414-3-2.75-3-1.373 0-2.609.986-3.029 2.456a.75.75 0 0 1-1.442 0C6.859 3.486 5.623 2.5 4.25 2.5Z"/></svg>
+      Sponsor on GitHub
+    </a>
+  </div>
 </div></footer>
 </body>
 </html>`
@@ -831,6 +877,7 @@ border-radius:var(--r-pill);padding:0 11px;min-height:32px;display:inline-flex;a
 .credit-when{color:var(--ink-faint)}
 .idxjump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 30px;padding:0}
 .idxjump a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
+min-height:44px;display:inline-flex;align-items:center;
 background:var(--panel);border-radius:999px;padding:6px 12px}
 .idxjump a:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);text-decoration:none}
 .idxjump a b{color:var(--dimmer);font-weight:500;margin-left:4px}
