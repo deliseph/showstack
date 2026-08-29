@@ -14,6 +14,7 @@ import {
   dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, clockDrift, pollingCost, jitterMargin,
+  requiredPerformanceLevel, stoppingDistance, safeguardDistance,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -746,5 +747,112 @@ describe('jitter margin', () => {
     assert.equal(jitterMargin(0, 1, 1), null)
     assert.equal(jitterMargin(10, -1, 1), null)
     assert.equal(jitterMargin(10, 1, -1), null)
+  })
+})
+
+describe('required performance level (ISO 13849-1 risk graph)', () => {
+  test('the eight leaves of the graph', () => {
+    const pl = (s, f, p) => requiredPerformanceLevel(s, f, p).performanceLevel
+    assert.equal(pl('S1', 'F1', 'P1'), 'a')
+    assert.equal(pl('S1', 'F1', 'P2'), 'b')
+    assert.equal(pl('S1', 'F2', 'P1'), 'b')
+    assert.equal(pl('S1', 'F2', 'P2'), 'c')
+    assert.equal(pl('S2', 'F1', 'P1'), 'c')
+    assert.equal(pl('S2', 'F1', 'P2'), 'd')
+    assert.equal(pl('S2', 'F2', 'P1'), 'd')
+    assert.equal(pl('S2', 'F2', 'P2'), 'e')
+  })
+
+  test('a load over people, continuously, with no way to dodge, is PL e', () => {
+    const r = requiredPerformanceLevel('S2', 'F2', 'P2')
+    assert.equal(r.performanceLevel, 'e')
+    assert.equal(r.approxSil, 3)
+  })
+
+  test('severity dominates: S1 can never reach d or e', () => {
+    for (const f of ['F1', 'F2']) for (const p of ['P1', 'P2'])
+      assert.ok(['a', 'b', 'c'].includes(requiredPerformanceLevel('S1', f, p).performanceLevel))
+  })
+
+  test('is case insensitive, because nobody types S2 consistently', () => {
+    assert.equal(requiredPerformanceLevel('s2', 'f2', 'p2').performanceLevel, 'e')
+  })
+
+  test('rejects anything outside the three binary questions', () => {
+    assert.equal(requiredPerformanceLevel('S3', 'F1', 'P1'), null)
+    assert.equal(requiredPerformanceLevel('S1', 'F3', 'P1'), null)
+    assert.equal(requiredPerformanceLevel('S1', 'F1', ''), null)
+  })
+})
+
+describe('stopping distance', () => {
+  test('reaction distance and braking distance are separate contributions', () => {
+    // 0.2 m/s, 50 ms reaction, 1 m/s^2 deceleration.
+    const r = stoppingDistance(0.2, 0.05, 1)
+    assert.equal(r.reactionDistance, 0.01)   // 0.2 * 0.05
+    assert.equal(r.brakingDistance, 0.02)    // 0.04 / 2
+    assert.equal(r.totalDistance, 0.03)
+  })
+
+  test('braking dominates at speed, which is why relay response is the wrong number', () => {
+    const r = stoppingDistance(1, 0.03, 0.5)
+    assert.equal(r.reactionDistance, 0.03)
+    assert.equal(r.brakingDistance, 1)
+    assert.ok(r.reactionShare < 0.03)
+  })
+
+  test('doubling the speed quadruples the braking distance', () => {
+    const a = stoppingDistance(0.5, 0, 1).brakingDistance
+    const b = stoppingDistance(1.0, 0, 1).brakingDistance
+    assert.equal(b / a, 4)
+  })
+
+  test('a stationary load does not move', () => {
+    assert.equal(stoppingDistance(0, 0.05, 1).totalDistance, 0)
+  })
+
+  test('rejects zero or negative deceleration', () => {
+    assert.equal(stoppingDistance(1, 0.05, 0), null)
+    assert.equal(stoppingDistance(1, 0.05, -1), null)
+    assert.equal(stoppingDistance(-1, 0.05, 1), null)
+  })
+})
+
+describe('safeguard distance (ISO 13855)', () => {
+  test('S = K*T + C with the fast approach speed', () => {
+    // 0.1 s total stop, 0 mm intrusion allowance, 2000 mm/s.
+    const r = safeguardDistance(0.1, 0)
+    assert.equal(r.distanceMm, 200)
+    assert.equal(r.recalculated, false)
+  })
+
+  test('recalculates at 1600 mm/s once the first pass exceeds 500 mm', () => {
+    // 0.3 s at 2000 gives 600 mm, so it is recomputed at 1600 -> 480,
+    // then floored at 500.
+    const r = safeguardDistance(0.3, 0)
+    assert.equal(r.firstPassMm, 600)
+    assert.equal(r.recalculated, true)
+    assert.equal(r.approachMmPerS, 1600)
+    assert.equal(r.distanceMm, 500)
+  })
+
+  test('the recalculated value is never allowed below 500 mm', () => {
+    assert.equal(safeguardDistance(0.28, 0).distanceMm, 500)
+  })
+
+  test('a long stop time pushes the guard a long way back', () => {
+    // 1 s: first pass 2000 mm, recalculated to 1600 mm.
+    const r = safeguardDistance(1, 0)
+    assert.equal(r.distanceMm, 1600)
+  })
+
+  test('the intrusion allowance is added on top', () => {
+    assert.equal(safeguardDistance(0.1, 128).distanceMm, 328)
+  })
+
+  test('rejects nonsense', () => {
+    assert.equal(safeguardDistance(-1), null)
+    assert.equal(safeguardDistance(0.1, -5), null)
+    assert.equal(safeguardDistance(0.1, 0, 0), null)
   })
 })

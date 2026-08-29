@@ -49,6 +49,7 @@ import { learnDevicesPage } from './learn-devices.mjs'
 import { learnEmotionPage } from './learn-emotion.mjs'
 import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
+import { learnRiggingPage } from './learn-rigging.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE } from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS } from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
@@ -647,6 +648,7 @@ export function buildPages(db, dist) {
     ['code', () => learnCodePage(learnArgs)],
     ['engines', () => learnEnginesPage(learnArgs)],
     ['drawings', () => learnDrawingsPage(learnArgs)],
+    ['rigging', () => learnRiggingPage(learnArgs)],
     ['perception', () => learnPerceptionPage(learnArgs)],
     ['neuro', () => learnNeuroPage(learnArgs)],
     ['comms', () => learnCommsPage(learnArgs)],

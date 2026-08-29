@@ -372,6 +372,14 @@ export const LEARN_TOPICS = [
     questions: ['Geometry or data?', 'What does Braceworks actually do?', 'What are GDTF and MVR?'],
   },
   {
+    slug: 'rigging',
+    group: 'room',
+    tag: 'Machinery',
+    title: 'Hoists and the safety chain',
+    blurb: 'What D8, D8 Plus and C1 actually permit and where those words come from; what a safety relay does that a stop button does not; the standards behind an emergency stop; and how far a load keeps moving after somebody presses it.',
+    questions: ['What may hang over people?', 'How is a safety relay different?', 'What does SIL 3 mean?'],
+  },
+  {
     slug: 'systems',
     group: 'system',
     tag: 'Integration',

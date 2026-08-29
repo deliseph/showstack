@@ -924,3 +924,111 @@ export function jitterMargin(periodMs, nominalMs, jitterMs) {
     percentUsedNominal: r2((n / p) * 100),
   }
 }
+
+/**
+ * Required Performance Level, from the ISO 13849-1 Annex A risk graph.
+ *
+ * Three binary questions decide how much risk reduction a safety function has
+ * to deliver, and they are asked in a fixed order:
+ *
+ *   S - severity of injury      S1 slight, normally reversible
+ *                               S2 serious, normally irreversible, incl. death
+ *   F - frequency of exposure   F1 seldom to less often, or short exposure
+ *                               F2 frequent to continuous, or long exposure
+ *   P - possibility of avoiding P1 possible under specific conditions
+ *                               P2 scarcely possible
+ *
+ * The graph is deterministic, which is exactly why it belongs in a tested
+ * function rather than being typed into a page. This determines what the
+ * function must ACHIEVE; whether a given design achieves it is a separate
+ * calculation from architecture, MTTFd, diagnostic coverage and CCF.
+ */
+export function requiredPerformanceLevel(severity, frequency, avoidance) {
+  const S = String(severity).toUpperCase()
+  const F = String(frequency).toUpperCase()
+  const P = String(avoidance).toUpperCase()
+  if (!['S1', 'S2'].includes(S)) return null
+  if (!['F1', 'F2'].includes(F)) return null
+  if (!['P1', 'P2'].includes(P)) return null
+  const GRAPH = {
+    S1F1P1: 'a', S1F1P2: 'b',
+    S1F2P1: 'b', S1F2P2: 'c',
+    S2F1P1: 'c', S2F1P2: 'd',
+    S2F2P1: 'd', S2F2P2: 'e',
+  }
+  const pl = GRAPH[S + F + P]
+  // Approximate SIL correspondence, and the probability of a dangerous
+  // failure per hour that each PL band represents.
+  const SIL = { a: null, b: 1, c: 1, d: 2, e: 3 }
+  const PFH = {
+    a: '10⁻⁵ to 10⁻⁴', b: '3×10⁻⁶ to 10⁻⁵', c: '10⁻⁶ to 3×10⁻⁶',
+    d: '10⁻⁷ to 10⁻⁶', e: '10⁻⁸ to 10⁻⁷',
+  }
+  return { severity: S, frequency: F, avoidance: P, performanceLevel: pl,
+           approxSil: SIL[pl], pfhBand: PFH[pl] }
+}
+
+/**
+ * How far a load keeps moving after somebody hits the button.
+ *
+ * Total travel is what happens during the reaction time - detection, logic
+ * and output switching, none of which slows anything down - plus the
+ * distance covered while actually decelerating.
+ *
+ *   d = v * t_reaction  +  v^2 / (2 * a)
+ *
+ * The reaction part is usually tens of milliseconds and the deceleration
+ * part usually dominates, which is why "the relay responds in 15 ms" is a
+ * true statement that answers the wrong question.
+ */
+export function stoppingDistance(speedMps, reactionSeconds, decelMps2) {
+  const v = Number(speedMps), t = Number(reactionSeconds), a = Number(decelMps2)
+  if (!Number.isFinite(v) || v < 0) return null
+  if (!Number.isFinite(t) || t < 0) return null
+  if (!Number.isFinite(a) || a <= 0) return null
+  const r3 = (x) => Math.round(x * 1000) / 1000
+  const reactionDistance = v * t
+  const brakingDistance = (v * v) / (2 * a)
+  const brakingTime = v / a
+  return {
+    reactionDistance: r3(reactionDistance),
+    brakingDistance: r3(brakingDistance),
+    totalDistance: r3(reactionDistance + brakingDistance),
+    totalTime: r3(t + brakingTime),
+    // What share of the travel happened before anything started slowing down.
+    reactionShare: r3(reactionDistance / (reactionDistance + brakingDistance || 1)),
+  }
+}
+
+/**
+ * Minimum safeguard distance, from ISO 13855.
+ *
+ *   S = (K * T) + C
+ *
+ * K is an approach speed in mm/s - 2000 for a hand approaching a detection
+ * plane, reduced to 1600 where the resulting distance exceeds 500 mm. T is
+ * the total time from detection to the hazard stopping. C is an intrusion
+ * allowance that depends on the detection capability of the device.
+ *
+ * The reason this is worth having as a number: T includes everything, so a
+ * slow safety network or a long mechanical run-down pushes the guard further
+ * away, and the guard is the thing everyone assumed was fixed.
+ */
+export function safeguardDistance(totalStopSeconds, intrusionMm = 0, approachMmPerS = 2000) {
+  const T = Number(totalStopSeconds), C = Number(intrusionMm), K = Number(approachMmPerS)
+  if (!Number.isFinite(T) || T < 0) return null
+  if (!Number.isFinite(C) || C < 0) return null
+  if (!Number.isFinite(K) || K <= 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+  const first = K * T + C
+  // ISO 13855 allows K to drop to 1600 mm/s once the first result exceeds
+  // 500 mm, with a floor of 500 mm on the recalculated value.
+  let distance = first, usedK = K, recalculated = false
+  if (K === 2000 && first > 500) {
+    recalculated = true
+    usedK = 1600
+    distance = Math.max(500, 1600 * T + C)
+  }
+  return { totalStopSeconds: T, intrusionMm: C, approachMmPerS: usedK,
+           distanceMm: r1(distance), firstPassMm: r1(first), recalculated }
+}

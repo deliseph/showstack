@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-13850
+designation: ISO 13850
+title: Safety of machinery — Emergency stop function — Principles for design
+body: ISO
+domain: machinery
+year: 2015
+status: current
+free_to_read: false
+scope: >-
+  Specifies the emergency stop function: what it must do, how the device must be identified and
+  operated, that it must latch, that releasing it must not restart the machine, and that it is a
+  complementary protective measure rather than a primary one.
+access_url:
+  url: https://www.iso.org/standard/59970.html
+  label: ISO
+notes: >-
+  The source of the red actuator on a yellow background, of the requirement that release only PERMITS
+  a restart rather than causing one, and of the statement people most often skip: an emergency stop
+  does not make a machine safe, it is the last resort after safe design and guarding.
+tags:
+- e-stop
+- machinery
+- safety
+- iso
+sources:
+- title: ISO 13850:2015
+  url: https://www.iso.org/standard/59970.html
+  publisher: International Organization for Standardization
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

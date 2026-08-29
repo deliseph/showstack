@@ -1,0 +1,53 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: fsoe
+name: Safety over EtherCAT
+aka:
+- FSoE
+- FailSafe over EtherCAT
+category: machinery-motion
+status: current
+openness: published-paid
+transport:
+- ethernet-l2
+summary: >-
+  The same black-channel idea on EtherCAT: a safety container travels inside ordinary EtherCAT frames,
+  protected by its own CRC, sequence counting and watchdog, so the fieldbus underneath carries it
+  without being safety-rated. This is what a TwinSAFE emergency stop is actually riding on.
+multicast:
+  used: false
+  note: Safety connections are established between a safety master and each safe slave.
+spec_url:
+  url: https://www.ethercat.org/en/safety.html
+  label: EtherCAT Technology Group
+standards:
+- iec-61508
+- iec-62061
+steward: EtherCAT Technology Group
+first_published: 2005
+typical_use:
+- Safe stop, safe position and safe speed on winches, lifts and revolves
+- Distributed emergency stop across a machine with one cable rather than a parallel loop
+- Safety I/O sharing the fieldbus with ordinary control I/O
+gotchas:
+- The watchdog timeout is a design number, not a default. Too short and the machine nuisance-trips;
+  too long and the stopping distance grows.
+- Safety-rated and standard I/O on one bus is convenient and makes the boundary less visible. Document
+  which is which before somebody assumes.
+- Losing the safety connection is a stop, by design. A flaky cable therefore reveals itself as an
+  unexplained e-stop rather than as a fault message.
+tags:
+- functional-safety
+- ethercat
+- machinery
+- black-channel
+sources:
+- title: Safety over EtherCAT
+  url: https://www.ethercat.org/en/safety.html
+  publisher: EtherCAT Technology Group
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

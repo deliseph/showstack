@@ -1,0 +1,35 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iso-13855
+designation: ISO 13855
+title: Safety of machinery — Positioning of safeguards with respect to the approach speeds of parts
+  of the human body
+body: ISO
+domain: machinery
+year: 2010
+status: current
+free_to_read: false
+scope: >-
+  How far a guard, light curtain or detection field must be from a hazard so that the hazard has
+  stopped before anybody can reach it. Gives the approach speed constants and the S = (K × T) +
+  C formula.
+access_url:
+  url: https://www.iso.org/standard/42845.html
+  label: ISO
+notes: >-
+  The reason a slow safety network pushes a barrier further away: T is the total time from detection
+  to the hazard stopping, and every millisecond in the chain becomes millimetres on the floor.
+tags:
+- machinery
+- guarding
+- safety-distance
+sources:
+- title: ISO 13855:2010
+  url: https://www.iso.org/standard/42845.html
+  publisher: International Organization for Standardization
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

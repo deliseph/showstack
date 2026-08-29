@@ -1,0 +1,36 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-60204-1
+designation: IEC 60204-1
+title: 'Safety of machinery — Electrical equipment of machines — Part 1: General requirements'
+body: IEC
+domain: electrical
+year: 2016
+status: current
+free_to_read: false
+scope: >-
+  The electrical safety requirements for machinery, including supply disconnection, protection against
+  electric shock, control circuits, conductor identification, and the definition of stop categories
+  0, 1 and 2.
+access_url:
+  url: https://webstore.iec.ch/publication/26037
+  label: IEC Webstore
+notes: >-
+  Stop categories come from here. Category 0 is immediate removal of power — correct for a hoist,
+  because the brake is spring-applied and losing power applies it. Category 1 is a controlled stop
+  and then power removal. Category 2 keeps power on and is not permitted for an emergency stop.
+tags:
+- machinery
+- electrical
+- stop-category
+- e-stop
+sources:
+- title: IEC 60204-1
+  url: https://webstore.iec.ch/publication/26037
+  publisher: International Electrotechnical Commission
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

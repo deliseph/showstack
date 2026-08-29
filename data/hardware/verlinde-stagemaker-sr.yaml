@@ -1,0 +1,36 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: verlinde-stagemaker-sr
+name: Verlinde Stagemaker SR
+vendor: Verlinde
+category: motion-control
+status: current
+summary: >-
+  Long-established electric chain hoist for entertainment rigging, available in variants for the
+  different European classifications. The workhorse of a very large number of touring rigs.
+physical_ports:
+- Power and control multipin
+- Chain
+form_factor: Electric chain hoist
+homepage:
+  url: https://www.verlinde.com/
+  label: Verlinde
+gotchas:
+- Which variant you have decides what it may be used for. The model name alone does not tell you
+  whether it may hold a load over people.
+- Chain bag, limit switches and the control system are all part of the assembly being classified.
+tags:
+- hoist
+- rigging
+- machinery
+- verlinde
+sources:
+- title: Verlinde
+  url: https://www.verlinde.com/
+  publisher: Verlinde
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
