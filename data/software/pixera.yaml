@@ -1,0 +1,63 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: pixera
+name: PIXERA
+vendor: AV Stumpfl
+category: media-server
+license: Proprietary
+price_model: quote-only
+status: current
+platforms:
+- windows
+summary: >-
+  Media server software with a strong 3D scene model: content, projectors, surfaces and cameras
+  live in one space rather than being mapped separately, which is what makes complex geometry manageable.
+speaks:
+- protocol: art-net
+  direction: bidirectional
+  note: Control and output.
+  confidence: reported
+- protocol: sacn
+  direction: bidirectional
+  note: Control and output.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Control.
+  confidence: reported
+- protocol: ltc
+  direction: in
+  note: Timecode.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: Video over IP.
+  confidence: reported
+- protocol: ptp-1588
+  direction: bidirectional
+  note: For synchronised multi-machine playback.
+  confidence: unverified
+homepage:
+  url: https://www.pixera.one/
+  label: AV Stumpfl PIXERA
+typical_use:
+- Complex projection and LED geometry
+- Multi-machine synchronised playback
+- Permanent installations
+gotchas:
+- The 3D model is the point and it is also the work. Budget the scene build, not just the content.
+tags:
+- media-server
+- projection
+- 3d
+- video
+sources:
+- title: PIXERA
+  url: https://www.pixera.one/
+  publisher: AV Stumpfl
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

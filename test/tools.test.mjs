@@ -13,7 +13,7 @@ import {
   ohmsLaw, speakerImpedance, processingDelay,
   dbuToDbv, dbvToDbu,
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
-  subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime,
+  subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, clockDrift, pollingCost, jitterMargin,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -657,5 +657,94 @@ describe('pyro cue time', () => {
     assert.equal(pyroCueTime(-1, 0, 0), null)
     assert.equal(pyroCueTime(10, -1, 0), null)
     assert.equal(pyroCueTime(10, 0, -1), null)
+  })
+})
+
+describe('clock drift', () => {
+  test('50 ppm over an hour is 180 ms', () => {
+    const r = clockDrift(50, 3600, 25)
+    assert.equal(r.offsetMs, 180)
+    assert.equal(r.frames, 4.5)
+  })
+
+  test('reports the drift in samples, which is what an audio device cares about', () => {
+    // 10 ppm for 60 s = 0.6 ms = 28.8 samples at 48 kHz, rounded to 29.
+    assert.equal(clockDrift(10, 60).samples48k, 29)
+  })
+
+  test('says how long a whole frame of error takes to build up', () => {
+    // At 100 ppm a 40 ms frame accumulates in 400 s.
+    assert.equal(clockDrift(100, 0, 25).secondsPerFrame, 400)
+  })
+
+  test('a perfect clock never drifts, and does not divide by zero', () => {
+    const r = clockDrift(0, 7200, 25)
+    assert.equal(r.offsetMs, 0)
+    assert.equal(r.secondsPerFrame, null)
+  })
+
+  test('rejects nonsense', () => {
+    assert.equal(clockDrift(-1, 60), null)
+    assert.equal(clockDrift(10, -60), null)
+    assert.equal(clockDrift(10, 60, 0), null)
+  })
+})
+
+describe('polling cost', () => {
+  test('a 500 ms poll is 7200 requests an hour', () => {
+    const r = pollingCost(500, 1)
+    assert.equal(r.requestsPerHour, 7200)
+    assert.equal(r.meanStalenessMs, 250)
+    assert.equal(r.worstStalenessMs, 500)
+  })
+
+  test('worst-case staleness is the whole interval, not half of it', () => {
+    // The change can land the instant after a poll returns.
+    assert.equal(pollingCost(2000).worstStalenessMs, 2000)
+    assert.equal(pollingCost(2000).meanStalenessMs, 1000)
+  })
+
+  test('expresses the worst case in frames, which is the practical yardstick', () => {
+    // 500 ms at 25 fps is 12.5 frames late.
+    assert.equal(pollingCost(500).framesLateWorst25, 12.5)
+  })
+
+  test('scales the total with the duration', () => {
+    assert.equal(pollingCost(1000, 3).requestsTotal, 10800)
+  })
+
+  test('rejects an interval of zero', () => {
+    assert.equal(pollingCost(0), null)
+    assert.equal(pollingCost(-5), null)
+  })
+})
+
+describe('jitter margin', () => {
+  test('an average that fits can still miss the deadline', () => {
+    const r = jitterMargin(10, 8, 3)
+    assert.equal(r.percentUsedNominal, 80)
+    assert.equal(r.worstCaseMs, 11)
+    assert.equal(r.meetsDeadline, false)
+    assert.equal(r.marginMs, -1)
+  })
+
+  test('passes when the worst case fits', () => {
+    const r = jitterMargin(10, 6, 2)
+    assert.equal(r.meetsDeadline, true)
+    assert.equal(r.marginMs, 2)
+  })
+
+  test('exactly on the deadline counts as meeting it', () => {
+    assert.equal(jitterMargin(10, 7, 3).meetsDeadline, true)
+  })
+
+  test('zero jitter is the nominal case', () => {
+    assert.equal(jitterMargin(10, 4, 0).worstCaseMs, 4)
+  })
+
+  test('rejects nonsense', () => {
+    assert.equal(jitterMargin(0, 1, 1), null)
+    assert.equal(jitterMargin(10, -1, 1), null)
+    assert.equal(jitterMargin(10, 1, -1), null)
   })
 })

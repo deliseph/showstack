@@ -842,3 +842,85 @@ export function pyroCueTime(effectSeconds, liftSeconds = 0, prefireSeconds = 0) 
     beforeShowStart: fire < 0,
   }
 }
+
+/**
+ * Clock drift between two free-running devices.
+ *
+ * A crystal is specified in parts per million. Two devices at opposite ends
+ * of their tolerance drift apart at the sum of their errors, and the number
+ * that matters on a show is not the ppm - it is how many frames or samples
+ * apart they are by the end of the running time.
+ *
+ * ppm is the combined error between the two clocks. Returns the offset in
+ * milliseconds, in video frames at the given rate, and in samples at 48 kHz,
+ * plus how long it takes to accumulate a single frame of error.
+ */
+export function clockDrift(ppm, seconds, fps = 25) {
+  const p = Number(ppm), s = Number(seconds), f = Number(fps)
+  if (!Number.isFinite(p) || p < 0) return null
+  if (!Number.isFinite(s) || s < 0) return null
+  if (!Number.isFinite(f) || f <= 0) return null
+  const ms = (p / 1e6) * s * 1000
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    ppm: p,
+    seconds: s,
+    offsetMs: r2(ms),
+    frames: r2(ms / (1000 / f)),
+    samples48k: Math.round((ms / 1000) * 48000),
+    // How long until the two are a whole frame apart. Infinite at 0 ppm.
+    secondsPerFrame: p === 0 ? null : r2((1000 / f) / ((p / 1e6) * 1000)),
+  }
+}
+
+/**
+ * Polling against subscribing.
+ *
+ * The cost of polling is two numbers people rarely put together: how many
+ * requests it makes, and how stale the answer is when you get it. Mean
+ * staleness is half the interval; worst case is the whole interval, because
+ * the change can land the instant after a poll returns.
+ *
+ * A push subscription has neither cost, which is the entire argument.
+ */
+export function pollingCost(intervalMs, hours = 1) {
+  const i = Number(intervalMs), h = Number(hours)
+  if (!Number.isFinite(i) || i <= 0) return null
+  if (!Number.isFinite(h) || h < 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+  return {
+    intervalMs: i,
+    requestsPerHour: Math.round(3600000 / i),
+    requestsTotal: Math.round((3600000 / i) * h),
+    meanStalenessMs: r1(i / 2),
+    worstStalenessMs: i,
+    // A missed video frame is the practical yardstick for "too slow".
+    framesLateWorst25: r1(i / 40),
+  }
+}
+
+/**
+ * Does a control loop meet its deadline once jitter is included.
+ *
+ * The average cycle time tells you almost nothing. What decides whether a
+ * loop is safe is the WORST case - nominal plus jitter - against the period
+ * it has to finish in. A system that meets its deadline on average and
+ * misses it one cycle in a thousand has missed it.
+ */
+export function jitterMargin(periodMs, nominalMs, jitterMs) {
+  const p = Number(periodMs), n = Number(nominalMs), j = Number(jitterMs)
+  if (!Number.isFinite(p) || p <= 0) return null
+  if (!Number.isFinite(n) || n < 0 || !Number.isFinite(j) || j < 0) return null
+  const worst = n + j
+  const r2 = (x) => Math.round(x * 100) / 100
+  return {
+    periodMs: p,
+    nominalMs: n,
+    jitterMs: j,
+    worstCaseMs: r2(worst),
+    marginMs: r2(p - worst),
+    meetsDeadline: worst <= p,
+    percentUsedWorst: r2((worst / p) * 100),
+    percentUsedNominal: r2((n / p) * 100),
+  }
+}

@@ -1,0 +1,59 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: openframeworks
+name: openFrameworks
+vendor: openFrameworks community
+category: content-creation
+license: MIT
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: >-
+  A C++ toolkit for interactive and generative work, for when a patch or a sketch has run out of
+  performance and you need the machine itself. Steeper than everything around it and the thing people
+  reach for when an installation has to run at full rate on modest hardware.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Core addon.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Core addon.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Through addons.
+  confidence: unverified
+- protocol: ndi
+  direction: bidirectional
+  note: Through addons.
+  confidence: unverified
+homepage:
+  url: https://openframeworks.cc/
+  label: openFrameworks
+typical_use:
+- Permanent installations that must run at full rate for years
+- Custom real-time graphics where an engine is too heavy
+- Hardware-tied interactive work
+gotchas:
+- C++ with no garbage collector — see the code explainer for what that buys and what it costs.
+- Addon quality varies enormously. Vendor the exact versions a project depends on.
+tags:
+- creative-coding
+- cpp
+- installation
+- open-source
+sources:
+- title: openFrameworks
+  url: https://openframeworks.cc/
+  publisher: openFrameworks community
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -17,7 +17,7 @@
  * you are still taking it - because it is the one nobody explains and it is
  * where field work actually goes wrong.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnReadingPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -221,6 +221,26 @@ ${bites([
   '<b>Handwriting is a different problem</b>, not a harder version of the same one — there is no fixed glyph set to match against.',
 ])}
 
+${S('', 'How much of a code can you lose?', [
+  'Reed–Solomon redundancy is a dial, not a constant. Higher correction survives more damage and leaves less room for data in the same physical size.',
+])}
+
+<div class="dial">
+  <div class="d" style="flex:0 0 auto"><label>correction level</label>
+    <span class="seg" role="group" id="qr-seg">
+      <button type="button" data-l="L" aria-pressed="false">L</button>
+      <button type="button" data-l="M" aria-pressed="true">M</button>
+      <button type="button" data-l="Q" aria-pressed="false">Q</button>
+      <button type="button" data-l="H" aria-pressed="false">H</button>
+    </span></div>
+  <div class="d"><label for="qr-dam">damage to the code <b id="qr-damv">12%</b></label>
+    <input id="qr-dam" type="range" min="0" max="45" step="1" value="12"></div>
+</div>
+<div class="fig" data-driven="dial" style="padding:16px">
+  <div id="qr-grid" style="display:grid;grid-template-columns:repeat(21,1fr);gap:2px;max-width:320px;margin:0 auto"></div>
+</div>
+<div class="verdict" id="qr-out"></div>
+
 ${S('Distance', 'Every rangefinder is one of four principles', [
   'Anything that measures how far away something is uses one of a small number of tricks, and knowing which one a device uses tells you immediately where it will fail.',
 ])}
@@ -233,7 +253,7 @@ ${S('Distance', 'Every rangefinder is one of four principles', [
     ${SN('Infrared, reflective', 'reflected intensity', 'Shine IR, measure how much comes back. More light means closer.', 'A dark object nearby and a light object further away look identical. Sunlight swamps it. It is a presence detector wearing a distance sensor\'s clothes.')}
     ${SN('Infrared, break-beam', 'occlusion', 'An emitter and a receiver facing each other. Something crosses, the beam breaks.', 'Utterly reliable and gives no distance at all. The standard trigger for an effect, a counter, or a safety edge.')}
     ${SN('PIR', 'change in heat', 'A pyroelectric element sees change in infrared radiation across a segmented lens. Movement of a warm body registers.', 'It detects <em>change</em>, not presence. Stand perfectly still and it forgets you exist — which is why corridor lights go out on people.')}
-    ${SN('Laser / lidar', 'time of flight or phase', 'A pulsed or modulated laser, timed or phase-compared on return. Millimetres over hundreds of metres.', 'Glass, mirrors, water and very dark matt surfaces. Haze and smoke, which is a genuine issue in this industry.')}
+    ${SN('Laser / lidar', 'time of flight or phase', 'A pulsed or modulated laser, timed or phase-compared on return. Millimetres over hundreds of metres, into <a href="/software/rhino-3d/">Rhino</a>, <a href="/software/blender/">Blender</a> or <a href="/software/vectorworks-spotlight/">Vectorworks</a>. Survey-grade scanners feed <a href="/software/rhino-3d/">Rhino</a>, <a href="/software/blender/">Blender</a> and <a href="/software/vectorworks-spotlight/">Vectorworks</a>.', 'Glass, mirrors, water and very dark matt surfaces. Haze and smoke, which is a genuine issue in this industry.')}
     ${SN('Radar / mmWave', 'radio time of flight', 'Radio instead of light, so it sees through fabric, plastic and darkness. Doppler also gives velocity directly.', 'Coarser than lidar, and metal in the environment reflects enthusiastically.')}
     ${SN('Inductive', 'field disturbance', 'An oscillating coil is damped by nearby metal.', 'Metal only, and only a few millimetres. The industrial standard for machine position sensing.')}
     ${SN('Capacitive', 'change in capacitance', 'The object becomes part of a capacitor. Works on almost any material, including through a panel.', 'Humidity, dirt and anything else with a dielectric constant. This is also how a touchscreen and a pressure mat work.')}
@@ -252,7 +272,7 @@ ${S('Two sensors worth pulling apart', 'A pressure mat and an image sensor', [
 ${S('The hard one', 'Depth cameras, point clouds, and staying aligned while you scan', [
   'A depth camera returns a distance per pixel, by one of three methods. <b>Stereo</b> uses two lenses and triangulates from the disparity between them — cheap, and it needs texture to match on, so a blank white wall defeats it. <b>Structured light</b> projects a known pattern and reads how the pattern deforms across the surface — very precise up close, and useless in sunlight. <b>Time of flight</b> measures the return time of modulated light per pixel — robust and longer range, with lower spatial detail.',
   'The output is a <b>point cloud</b>: a large set of 3D coordinates, and nothing else. No surfaces, no objects, no meaning. Turning it into a mesh is a separate step, and turning that into something a CAD package can use is another.',
-  'And here is the problem nobody warns you about. A single scan only sees what is in front of it. To capture a room you take many, from many positions — and every one of them is in <em>its own</em> coordinate system, with its origin at the scanner. Making them into one model means finding the transform that puts each into a shared frame. That is <b>registration</b>, and it is the whole job.',
+  'And here is the problem nobody warns you about. A single scan only sees what is in front of it. To capture a room you take many, from many positions — and every one of them is in <em>its own</em> coordinate system, with its origin at the scanner. Making them into one model means finding the transform that puts each into a shared frame. That is <b>registration</b>, and it is the whole job — and it is the same coordinate-agreement problem that <a href="/protocols/psn/">PSN</a> and <a href="/protocols/rttrpm/">RTTrPM</a> carry the results of.',
 ])}
 
 ${fig(regFig, 'Two clouds of the same place from different positions. Registration is solving for the move that makes them agree.')}
@@ -280,6 +300,8 @@ ${bites([
   '<b>Reflective and transparent surfaces lie.</b> Mirrors produce a room that does not exist; glass produces nothing at all. Mask them or mark them at capture time.',
 ])}
 
+${xnote('Every sensing decision here is a decision about what a space can notice about a person — and a space that notices you is the difference between an installation you look at and one you are inside. <b>Plausibility, not resolution</b>, is what a sensor buys.')}
+
 ${S('The point', 'All of it is built around us', [
   'It is tempting to read this page as a list of clever machine tricks. It is closer to the opposite.',
   'A QR code has 30% redundancy because a person will damage it. It has finder patterns because a person holds a phone crooked. An image sensor has three colour channels because <em>we</em> have three. It has more green pixels because we are most sensitive to green. OCR leans on a language model because the shapes alone are genuinely ambiguous — and the ambiguity is only resolvable because human writing is predictable.',
@@ -289,6 +311,39 @@ ${S('The point', 'All of it is built around us', [
 
 <div class="cta"><strong>Doing capture work on shows?</strong>
 <p>Scanner behaviour in venues — haze, black surfaces, moving crew, truss geometry — is badly documented because it is nobody\'s core market. If you have field experience of what does and does not register in a theatre or arena, <a href="${GH}/issues/new?labels=tooling&amp;title=reading%3A+">open an issue</a>. That is exactly the knowledge this site exists to hold.</p></div>
+
+<script>
+(function(){
+  var seg=document.getElementById('qr-seg'); if(!seg) return;
+  var dam=document.getElementById('qr-dam'), damv=document.getElementById('qr-damv'),
+      grid=document.getElementById('qr-grid'), out=document.getElementById('qr-out');
+  var CAP={L:7,M:15,Q:25,H:30}, level='M', N=21, cells=[];
+  for(var i=0;i<N*N;i++){var e=document.createElement('i');e.style.cssText='display:block;aspect-ratio:1;border-radius:1px';grid.appendChild(e);cells.push(e)}
+  function rnd(s){var x=Math.sin(s)*10000;return x-Math.floor(x)}
+  function finder(c,r){
+    for (var f of [[0,0],[14,0],[0,14]]) if(c>=f[0]&&c<f[0]+7&&r>=f[1]&&r<f[1]+7) return true;
+    return false;
+  }
+  function draw(){
+    var d=Number(dam.value); damv.textContent=d+'%';
+    for(var b of seg.querySelectorAll('button')) b.setAttribute('aria-pressed',String(b.dataset.l===level));
+    for(var r=0;r<N;r++) for(var c=0;c<N;c++){
+      var i=r*N+c, on = finder(c,r) ? ((c%7===0||r%7===0||(c%7>1&&c%7<5&&r%7>1&&r%7<5)) ) : rnd(i*7.31)>0.5;
+      var damaged = rnd(i*3.77+900) < d/100;
+      cells[i].style.background = damaged ? 'var(--warn)' : (on ? 'var(--ink)' : 'var(--panel2)');
+      cells[i].style.opacity = damaged ? '.85' : '1';
+    }
+    var cap=CAP[level];
+    out.innerHTML = d<=cap
+      ? '<span class="ok">Still scans.</span> '+d+'% damaged, level '+level+' recovers up to about <b>'+cap+
+        '%</b>. The redundancy to rebuild that area was printed alongside it.'
+      : '<span class="err">Gone.</span> '+d+'% damaged is past what level '+level+' can rebuild (about <b>'+cap+
+        '%</b>). Higher correction would survive it, at the cost of data capacity in the same physical size.';
+  }
+  seg.addEventListener('click',function(e){var b=e.target.closest('button'); if(b){level=b.dataset.l;draw()}});
+  dam.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

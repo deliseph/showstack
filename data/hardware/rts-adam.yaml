@@ -1,0 +1,53 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: rts-adam
+name: RTS ADAM Intercom Matrix
+vendor: RTS (Bosch)
+category: io-interface
+status: current
+summary: >-
+  Large-format intercom matrix: a central router where every panel gets its own configurable set
+  of keys, so a position hears the departments it needs and nothing else. The broadcast standard
+  for big-facility comms.
+speaks:
+- protocol: dante
+  direction: bidirectional
+  note: Networked audio via cards.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: reported
+- protocol: madi
+  direction: bidirectional
+  note: Via cards.
+  confidence: unverified
+- protocol: snmp
+  direction: bidirectional
+  note: Monitoring.
+  confidence: unverified
+form_factor: Rackmount intercom matrix frame
+homepage:
+  url: https://www.rtsintercoms.com/
+  label: RTS Intercoms
+gotchas:
+- A matrix is programmed, and the programming is a design job with opinions in it. Budget the configuration,
+  not just the frame.
+- RTS and Clear-Com partyline conventions differ; interfacing them takes deliberate work rather
+  than a cable.
+tags:
+- intercom
+- comms
+- matrix
+- broadcast
+- rts
+sources:
+- title: RTS Intercoms
+  url: https://www.rtsintercoms.com/
+  publisher: RTS
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

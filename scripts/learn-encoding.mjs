@@ -14,7 +14,7 @@
  * anything by the time it arrives. On a show it usually is not, which is why
  * almost every protocol in this index is UDP.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnEncodingPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -191,6 +191,8 @@ ${bites([
   '<b>A TCP control channel on a show network is fine and can still bite.</b> A management session retransmitting hard can consume the same bandwidth your streams need.',
   '<b>Ethernet already CRCs every frame.</b> A corrupted frame is dropped by the switch before your protocol ever sees it — which means your protocol\'s losses are usually congestion, not corruption.',
 ])}
+
+${xnote('The choice not to verify is an experience decision. Live control drops a bad value and sends the next one 23 milliseconds later, because <b>a correct value that arrives late is worse than a wrong one that is immediately replaced</b> — which is only true because a person is watching in real time.')}
 
 ${S('Standing back', 'The same three questions, at every layer', [
   'Whether you are looking at a voltage on a wire, a byte in a serial frame, or a datagram on a network, the questions are identical.',

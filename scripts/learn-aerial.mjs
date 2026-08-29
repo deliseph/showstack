@@ -16,7 +16,7 @@
  * that a steered fleet degrades and a clocked fleet does not, and that a
  * firework is fired earlier than it is seen.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnAerialPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -296,6 +296,16 @@ ${S('The detail that surprises people', 'A firework is fired before you see it',
   'This is also why a pyromusical cannot be nudged live. By the time you can hear that a cue is early, it was fired several seconds ago.',
 ])}
 
+<div class="dial">
+  <div class="d"><label for="py2-e">the burst lands at <b id="py2-ev">60.0 s</b></label>
+    <input id="py2-e" type="range" min="10" max="180" step="1" value="60"></div>
+  <div class="d"><label for="py2-l">lift time <b id="py2-lv">4.2 s</b></label>
+    <input id="py2-l" type="range" min="0" max="90" step="1" value="42"></div>
+  <div class="d"><label for="py2-p">prefire <b id="py2-pv">0.8 s</b></label>
+    <input id="py2-p" type="range" min="0" max="40" step="1" value="8"></div>
+</div>
+<div class="verdict" id="py2-out"></div>
+
 ${fig(preFig, 'Fired here. Seen there. The offset is a property of the item, and the software owns it.')}
 
 ${S('The part that is not negotiable', 'Why arming is never on the show network', [
@@ -305,6 +315,8 @@ ${S('The part that is not negotiable', 'Why arming is never on the show network'
 ])}
 
 ${fig(armFig, 'The network may ask. Only the physical chain may permit.')}
+
+${xnote('Both of these are pure spectacle, which means they are entirely about arousal and scale, and neither can be nudged once it is running. That makes them the clearest case for the <b>peak and the ending</b>: they are usually one of the two moments an audience will actually keep, and everything in front of them is what makes them land.')}
 
 ${rule('Anything that can start a fire or leave the ground must be stoppable by something that is <b>not a computer</b>. Timing may come from the show network. Permission never does.')}
 
@@ -331,6 +343,29 @@ ${S('Putting it together', 'What a finale actually looks like underneath', [
 
 <div class="cta"><strong>Work in aerial or pyro and something here is wrong?</strong>
 <p>This page is written at systems level from public documentation and practice, and the operational detail differs between systems and jurisdictions. If a description does not match how your equipment or your regulator actually works, <a href="${GH}/issues/new?labels=tooling&amp;title=aerial%3A+">open an issue</a> — corrections from people who run these shows are the ones worth having.</p></div>
+
+<script>
+(function(){
+  var e=document.getElementById('py2-e'); if(!e) return;
+  var l=document.getElementById('py2-l'), p=document.getElementById('py2-p'),
+      ev=document.getElementById('py2-ev'), lv=document.getElementById('py2-lv'),
+      pv=document.getElementById('py2-pv'), out=document.getElementById('py2-out');
+  function tc(s,f){var t=Math.max(0,Math.round(s*f)),pad=function(n){return String(n).padStart(2,'0')};
+    return pad(Math.floor(t/(f*3600)))+':'+pad(Math.floor(t/(f*60))%60)+':'+pad(Math.floor(t/f)%60)+':'+pad(t%f)}
+  function draw(){
+    var E=Number(e.value), L=Number(l.value)/10, P=Number(p.value)/10;
+    ev.textContent=E.toFixed(1)+' s'; lv.textContent=L.toFixed(1)+' s'; pv.textContent=P.toFixed(1)+' s';
+    var total=L+P, fire=E-total;
+    if(fire<0){ out.innerHTML='<span class="err">Fire time is '+fire.toFixed(1)+' s \u2014 before the show started.</span> '
+      +'This item cannot land where it is programmed; move the effect later or choose a shorter lift.'; return; }
+    out.innerHTML='Programmed to burst at <b>'+E.toFixed(1)+' s</b>, so the controller fires at <b>'+fire.toFixed(1)+
+      ' s</b> \u2014 <b>'+tc(fire,25)+'</b> at 25 fps. That is <b>'+total.toFixed(1)+
+      ' s</b> before anybody sees it, which is also how long you have already been committed by the time you could hear it was early.';
+  }
+  for (var el of [e,l,p]) el.addEventListener('input',draw);
+  draw();
+})();
+</script>
 `
 
   return shell({

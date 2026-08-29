@@ -1,0 +1,54 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: clear-com-freespeak-ii
+name: Clear-Com FreeSpeak II
+vendor: Clear-Com
+category: io-interface
+status: current
+summary: >-
+  Wireless intercom system built on DECT in the 1.9 GHz band, with beltpacks roaming between distributed
+  antennas. The 1.9 GHz choice is the point: it is not competing with the venue's Wi-Fi, which is
+  why DECT displaced 2.4 GHz systems on show sites.
+speaks:
+- protocol: dect
+  direction: bidirectional
+  note: The radio link to the beltpacks.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Networked audio to the base station, depending on configuration.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Where enabled.
+  confidence: unverified
+physical_ports:
+- Antenna transceiver connections
+- Partyline and 4-wire interfaces
+- Ethernet
+form_factor: Base station, antennas and beltpacks
+rack_units: 1
+homepage:
+  url: https://www.clearcom.com/
+  label: Clear-Com
+gotchas:
+- Antenna coverage is a survey problem, and handover between antennas is where a system shows whether
+  it was designed or hoped.
+- Band allocation for DECT differs by region, so packs are not always portable between countries.
+- Every wireless hop adds latency the wired partyline did not have.
+tags:
+- intercom
+- comms
+- wireless
+- dect
+- clear-com
+sources:
+- title: Clear-Com
+  url: https://www.clearcom.com/
+  publisher: Clear-Com
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

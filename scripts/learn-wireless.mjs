@@ -11,7 +11,7 @@
  * mics in a long time, and because "one wide carrier carrying many channels"
  * is exactly the idea the grid above already taught.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnWirelessPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -99,11 +99,11 @@ color:var(--dimmer);text-align:center}
 ${learnNav(esc, 'wireless')}
 <div class="lhero">
   <h2>Sharing the airwaves</h2>
-  <p class="lede">Spectrum is finite and everyone wants some. Every wireless system on a show is an answer to one question — how do several signals occupy the same band without destroying each other — and there are only a few answers.</p>
+  <p class="lede">Spectrum is finite and everyone wants some. Every wireless system on a show is an answer to one question — how do several signals occupy the same band without destroying each other — and there are only a few answers. The band rules themselves are on the <a href="/rf/">frequency map</a>.</p>
 </div>
 
 ${S('First', 'Simplex, half duplex, full duplex', [
-  'Three words for who can talk, and when. <b>Simplex</b> is one direction only: a radio mic transmitter sends, the receiver listens, and there is no path back. <b>Half duplex</b> is both directions but one at a time, which is what a walkie-talkie is doing when you press the button and why you say "over". <b>Full duplex</b> is both directions simultaneously, like a phone call — or an intercom beltpack where you can hear the stage manager while you are still talking.',
+  'Three words for who can talk, and when. <b>Simplex</b> is one direction only: a radio mic transmitter sends, the receiver listens, and there is no path back. <b>Half duplex</b> is both directions but one at a time, which is what a walkie-talkie is doing when you press the button and why you say "over". <b>Full duplex</b> is both directions simultaneously, like a phone call — or a <a href="/protocols/dect/">DECT</a> intercom beltpack where you can hear the stage manager while you are still talking.',
   'This is not academic on a show. A simplex radio mic cannot be told anything by its receiver, which is exactly why older systems make you walk to the performer to change a frequency. A link with a return path can push a frequency change, read battery state, and mute the pack from front of house.',
 ])}
 
@@ -155,11 +155,13 @@ ${bites([
 ${S('Which brings us to', 'WMAS', [
   'Wireless Multichannel Audio Systems is the current change to how radio mics use spectrum. A conventional system gives every channel its own narrow carrier, with guard space either side that carries nothing — spectrum spent on separation rather than on audio.',
   'WMAS instead puts up one <b>wide</b> carrier — up to 20 MHz under the ETSI standard — and shares it between many audio channels, using the time and frequency division ideas above rather than one-carrier-per-mic. ETSI expresses the capability as three or more audio channels per MHz.',
-  'It is standardised in <b>ETSI EN 300 422-1</b>, which defines the WMAS transmit mask and caps the bandwidth. The FCC aligned US rules with it in February 2024, following a rulemaking petition Sennheiser filed in 2018.',
+  'It is standardised in <a href="/standards/etsi-en-300-422-1/">ETSI EN 300 422-1</a>, which defines the WMAS transmit mask and caps the bandwidth. The FCC aligned US rules with it in February 2024, following a rulemaking petition Sennheiser filed in 2018.',
   'The practical consequences are bigger than the channel count. A wide shared carrier is naturally bidirectional, so the link can carry telemetry and control back to the pack; and because channels are allocated inside one block rather than hunted between broadcasters, coordination becomes an allocation problem rather than a search.',
 ])}
 
 ${fig(wmasFig, 'Same piece of spectrum. Above: narrow carriers with guard space between them. Below: one wide carrier with the channels shared inside it.')}
+
+${xnote('A dropout in a radio mic is the single most expensive failure in this list, because a voice cutting out does not degrade the experience gradually — it <b>ends the fiction instantly</b> and the audience is in a room with equipment in it. Coordination buys you an audience that never has to notice there was a radio involved.')}
 
 ${rule('WMAS trades <b>many narrow carriers for one wide one</b>, and gets back the spectrum that used to be spent on the gaps — plus a return path to the transmitter.')}
 

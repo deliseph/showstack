@@ -1,0 +1,55 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: heavym
+name: HeavyM
+vendor: HeavyM
+category: media-server
+license: Proprietary
+price_model: subscription
+status: current
+platforms:
+- windows
+- macos
+summary: >-
+  Projection mapping aimed at getting a surface mapped quickly, with a built-in library of effects.
+  Where a full media server is more machine than a job needs, this is often the honest answer.
+speaks:
+- protocol: art-net
+  direction: in
+  note: External control.
+  confidence: unverified
+- protocol: osc
+  direction: in
+  note: External control.
+  confidence: reported
+- protocol: ndi
+  direction: bidirectional
+  note: Depending on version.
+  confidence: unverified
+- protocol: ltc
+  direction: in
+  note: Timecode-driven playback, depending on version.
+  confidence: unverified
+homepage:
+  url: https://heavym.net/
+  label: HeavyM
+typical_use:
+- Architectural and scenic projection mapping
+- Events where setup time is the constraint
+gotchas:
+- Fast to map and less flexible than a full media server. Check the control surface it exposes before
+  designing a show around it.
+tags:
+- projection
+- mapping
+- video
+sources:
+- title: HeavyM
+  url: https://heavym.net/
+  publisher: HeavyM
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

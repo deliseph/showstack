@@ -17,7 +17,7 @@
  * mode, because the whole point of that connector is that the same physical
  * pins mean different things depending on a negotiation you cannot see.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnConnectorsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -224,6 +224,8 @@ ${bites([
   '<b>Label at both ends, by what is on the pins.</b> "DMX" and "MIC" on identical XLR3s is worth more than any amount of care later.',
   '<b>Buy the locking version for anything that carries a show.</b> An etherCON or a TRUE1 costs a few pounds more than the moment it stops a disconnection mid-performance.',
 ])}
+
+${xnote('Connector confusion costs load-in hours, and load-in hours are the budget that programming, focus and tech come out of. <b>Time lost to a cable is time not spent on the show</b> — which is the least glamorous and most reliable way this page connects to what an audience eventually sees.')}
 
 ${S('The habit worth forming', 'Ask what is on the pins', [
   'Every connector question on a show reduces to the same three checks, in the same order.',

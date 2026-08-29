@@ -1,0 +1,43 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: zigbee
+name: Zigbee
+category: network-transport
+status: current
+openness: open-free-registration
+transport:
+- wireless-rf
+summary: >-
+  Low-power mesh networking on the same 802.15.4 radio as Thread, with its own application layer
+  and its own addressing rather than IP. Long established in building automation and consumer devices;
+  a hub translates it into whatever the rest of the system speaks.
+multicast:
+  used: true
+  note: Group addressing within the Zigbee network, not IP multicast.
+spec_url:
+  url: https://csa-iot.org/all-solutions/zigbee/
+  label: Connectivity Standards Alliance
+steward: Connectivity Standards Alliance
+first_published: 2004
+typical_use:
+- Installed sensor and control networks, often already present in a building.
+- Consumer devices being brought into a venue system through a hub.
+gotchas:
+- No IP, so a hub is not optional — it is the translator, and it is a single point of failure.
+- Profile compatibility between vendors has historically been imperfect. Test the specific pairing.
+- 2.4 GHz, alongside Wi-Fi and everything else on site.
+tags:
+- iot
+- mesh
+- low-power
+- building
+sources:
+- title: Zigbee
+  url: https://csa-iot.org/all-solutions/zigbee/
+  publisher: Connectivity Standards Alliance
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

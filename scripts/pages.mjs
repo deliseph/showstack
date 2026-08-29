@@ -49,6 +49,8 @@ import { learnDevicesPage } from './learn-devices.mjs'
 import { learnEmotionPage } from './learn-emotion.mjs'
 import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
+import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE } from './learn-kit.mjs'
+import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS } from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -77,7 +79,7 @@ const jsonForScript = (obj) =>
 
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
-const CSS = `
+const CSS = RELATED_CSS + `
 :root{color-scheme:dark;
 --bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#7a889f;
 --accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
@@ -323,6 +325,16 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
 </html>`
 }
 
+/**
+ * Populated at the top of buildPages, before any entry page is rendered, by
+ * rendering the explainers first and reading the links out of them.
+ */
+let BACKLINKS = new Map()
+
+function relatedLearn(kind, entry) {
+  return learnBox(esc, learnFor(BACKLINKS, kind, entry))
+}
+
 function contributeBox(collection, id, gap) {
   const missing = gap ? `<p>Known gaps on this entry: <code>${esc(gap.missing.join('</code>, <code>'))}</code>. If you can source one of them, that is a ten minute pull request.</p>` : ''
   return `<div class="cta">
@@ -408,6 +420,7 @@ function protocolPage(p, gap) {
   if (p.typical_use?.length) b += `<h3>Typical use</h3><ul>` + p.typical_use.map((u) => `<li>${esc(u)}</li>`).join('') + `</ul>`
 
   b += sourcesBlock(p.sources)
+  b += relatedLearn('protocols', p)
   b += contributeBox('protocols', p.id, gap)
 
   return shell({
@@ -474,6 +487,7 @@ function termPage(t, gap) {
     for (const f of t.false_friends) b += `<div class="gotcha">${esc(f)}</div>`
   }
   b += sourcesBlock(t.sources)
+  b += relatedLearn('glossary', t)
   b += contributeBox('terms', t.id, gap)
 
   return shell({
@@ -523,6 +537,7 @@ function productPage(kind, e, gap) {
   if (e.gotchas?.length) { b += `<h3>What to watch for</h3>`; for (const g of e.gotchas) b += `<div class="gotcha">${esc(g)}</div>` }
   if (e.typical_use?.length) b += `<h3>Typical use</h3><ul>` + e.typical_use.map((u) => `<li>${esc(u)}</li>`).join('') + `</ul>`
   b += sourcesBlock(e.sources)
+  b += relatedLearn(kind, e)
   b += contributeBox(kind, e.id, gap)
 
   return shell({ title, description, canonical: `${SITE}/${kind}/${e.id}/`,
@@ -549,6 +564,7 @@ function standardPage(s, gap) {
   if (s.access_url) b += `<h3>Where to get it</h3><p><a href="${esc(s.access_url.url)}" rel="noopener nofollow">${esc(s.access_url.label ?? s.access_url.url)}</a></p>`
   if (s.related_protocols?.length) b += `<h3>Related protocols</h3><ul>` + s.related_protocols.map((r) => `<li><a href="/protocols/${esc(r)}/">${esc(r)}</a></li>`).join('') + `</ul>`
   b += sourcesBlock(s.sources)
+  b += relatedLearn('standards', s)
   b += contributeBox('standards', s.id, gap)
 
   return shell({ title, description, canonical: `${SITE}/standards/${s.id}/`,
@@ -611,6 +627,43 @@ export function buildPages(db, dist) {
   const gapOf = (col, id) => (db.gaps ?? []).find((g) => g.collection === col && g.id === id)
   const urls = [`${SITE}/`]
   const write = (dir, html) => { mkdirSync(join(dist, dir), { recursive: true }); writeFileSync(join(dist, dir, 'index.html'), html) }
+
+  // The explainers are rendered BEFORE anything else, because the links they
+  // contain are what tells every index entry which explainers discuss it.
+  // Deriving the map from the rendered output rather than declaring it by hand
+  // is the only version of this that cannot drift out of date.
+  const learnArgs = { esc, shell, SITE, GH }
+  const LEARN_PAGES = [
+    ['', () => learnPage(learnArgs)],
+    ['dmx', () => learnDmxPage(learnArgs)],
+    ['network', () => learnNetworkPage(learnArgs)],
+    ['wireless', () => learnWirelessPage(learnArgs)],
+    ['sound', () => learnSoundPage(learnArgs)],
+    ['light', () => learnLightPage(learnArgs)],
+    ['software', () => learnSoftwarePage(learnArgs)],
+    ['connectivity', () => learnConnectivityPage({ ...learnArgs, jsonForScript })],
+    ['systems', () => learnSystemsPage(learnArgs)],
+    ['aerial', () => learnAerialPage(learnArgs)],
+    ['code', () => learnCodePage(learnArgs)],
+    ['engines', () => learnEnginesPage(learnArgs)],
+    ['drawings', () => learnDrawingsPage(learnArgs)],
+    ['perception', () => learnPerceptionPage(learnArgs)],
+    ['neuro', () => learnNeuroPage(learnArgs)],
+    ['comms', () => learnCommsPage(learnArgs)],
+    ['connectors', () => learnConnectorsPage(learnArgs)],
+    ['transducers', () => learnTransducersPage(learnArgs)],
+    ['bits', () => learnBitsPage(learnArgs)],
+    ['encoding', () => learnEncodingPage(learnArgs)],
+    ['reading', () => learnReadingPage(learnArgs)],
+    ['ai', () => learnAiPage(learnArgs)],
+    ['devices', () => learnDevicesPage(learnArgs)],
+    ['emotion', () => learnEmotionPage(learnArgs)],
+    ['presence', () => learnPresencePage(learnArgs)],
+    ['experience', () => learnExperiencePage(learnArgs)],
+  ]
+  const learnHtml = new Map()
+  for (const [slug, render] of LEARN_PAGES) learnHtml.set(slug, render())
+  BACKLINKS = buildBacklinks(new Map([...learnHtml].filter(([k]) => k)))
 
   for (const p of db.protocols) { write(`protocols/${p.id}`, protocolPage(p, gapOf('protocols', p.id))); urls.push(`${SITE}/protocols/${p.id}/`) }
   for (const t of db.terms)     { write(`glossary/${t.id}`,  termPage(t, gapOf('terms', t.id)));          urls.push(`${SITE}/glossary/${t.id}/`) }
@@ -675,33 +728,16 @@ export function buildPages(db, dist) {
   // The explainers. Reference material answers "what is it"; these answer
   // "why does it behave like that", which is the question that actually gets
   // asked at load-in.
-  const learnArgs = { esc, shell, SITE, GH }
-  write('learn', learnPage(learnArgs));                     urls.push(`${SITE}/learn/`)
-  write('learn/dmx', learnDmxPage(learnArgs));              urls.push(`${SITE}/learn/dmx/`)
-  write('learn/network', learnNetworkPage(learnArgs));      urls.push(`${SITE}/learn/network/`)
-  write('learn/wireless', learnWirelessPage(learnArgs));    urls.push(`${SITE}/learn/wireless/`)
-  write('learn/sound', learnSoundPage(learnArgs));          urls.push(`${SITE}/learn/sound/`)
-  write('learn/light', learnLightPage(learnArgs));          urls.push(`${SITE}/learn/light/`)
-  write('learn/software', learnSoftwarePage(learnArgs));    urls.push(`${SITE}/learn/software/`)
-  write('learn/connectivity', learnConnectivityPage({ ...learnArgs, jsonForScript })); urls.push(`${SITE}/learn/connectivity/`)
-  write('learn/systems', learnSystemsPage(learnArgs));      urls.push(`${SITE}/learn/systems/`)
-  write('learn/aerial', learnAerialPage(learnArgs));        urls.push(`${SITE}/learn/aerial/`)
-  write('learn/code', learnCodePage(learnArgs));            urls.push(`${SITE}/learn/code/`)
-  write('learn/engines', learnEnginesPage(learnArgs));      urls.push(`${SITE}/learn/engines/`)
-  write('learn/drawings', learnDrawingsPage(learnArgs));    urls.push(`${SITE}/learn/drawings/`)
-  write('learn/perception', learnPerceptionPage(learnArgs)); urls.push(`${SITE}/learn/perception/`)
-  write('learn/neuro', learnNeuroPage(learnArgs));          urls.push(`${SITE}/learn/neuro/`)
-  write('learn/comms', learnCommsPage(learnArgs));             urls.push(`${SITE}/learn/comms/`)
-  write('learn/connectors', learnConnectorsPage(learnArgs));   urls.push(`${SITE}/learn/connectors/`)
-  write('learn/transducers', learnTransducersPage(learnArgs));  urls.push(`${SITE}/learn/transducers/`)
-  write('learn/bits', learnBitsPage(learnArgs));               urls.push(`${SITE}/learn/bits/`)
-  write('learn/encoding', learnEncodingPage(learnArgs));       urls.push(`${SITE}/learn/encoding/`)
-  write('learn/reading', learnReadingPage(learnArgs));         urls.push(`${SITE}/learn/reading/`)
-  write('learn/ai', learnAiPage(learnArgs));                   urls.push(`${SITE}/learn/ai/`)
-  write('learn/devices', learnDevicesPage(learnArgs));         urls.push(`${SITE}/learn/devices/`)
-  write('learn/emotion', learnEmotionPage(learnArgs));         urls.push(`${SITE}/learn/emotion/`)
-  write('learn/presence', learnPresencePage(learnArgs));       urls.push(`${SITE}/learn/presence/`)
-  write('learn/experience', learnExperiencePage(learnArgs));   urls.push(`${SITE}/learn/experience/`)
+  // Now write them, with the onward block appended inside the page wrapper so a
+  // reader is never left at a dead end.
+  for (const [slug, html] of learnHtml) {
+    const dir = slug ? `learn/${slug}` : 'learn'
+    const foot = slug
+      ? learnFooter(esc, { slug, html, db, groups: LEARN_GROUPS, topics: LEARN_TOPICS, capstone: LEARN_CAPSTONE })
+      : ''
+    write(dir, foot ? html.replace('</div></main>', `${foot}</div></main>`) : html)
+    urls.push(`${SITE}/learn/${slug ? slug + '/' : ''}`)
+  }
 
   // Browsable index per collection. These used to 404.
   const INDEXES = [

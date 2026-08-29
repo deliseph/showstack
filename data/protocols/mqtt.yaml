@@ -1,0 +1,62 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: mqtt
+name: MQTT
+aka:
+- MQ Telemetry Transport
+category: device-management
+status: current
+openness: open-published
+transport:
+- tcp
+- websocket
+summary: >-
+  Publish and subscribe messaging designed for unreliable links and small devices. Nothing talks
+  to anything directly: publishers send to a topic on a broker and subscribers ask the broker for
+  topics they care about, which decouples every device from every other. The default plumbing of
+  connected-device work, and increasingly of show integration glue.
+default_ports:
+- number: 1883
+  transport: tcp
+  role: MQTT, unencrypted
+  iana_registered: true
+- number: 8883
+  transport: tcp
+  role: MQTT over TLS
+  iana_registered: true
+multicast:
+  used: false
+  note: Fan-out happens at the broker, not on the network. One publish becomes many unicast deliveries.
+spec_url:
+  url: https://mqtt.org/
+  label: MQTT specification
+steward: OASIS
+first_published: 1999
+typical_use:
+- Sensors, environmental monitoring and building systems reporting into a show or an installation.
+- Glue between show control and things that were never designed to be on a show network.
+- Status and telemetry from devices where a dropped message is survivable.
+gotchas:
+- The broker is a single point of failure and a single point of latency. Run it locally for anything
+  a cue depends on.
+- Quality-of-service levels 0, 1 and 2 buy delivery guarantees at the cost of round trips. QoS 2
+  is rarely worth it on a LAN.
+- Retained messages mean a subscriber can receive a value published hours ago as though it were
+  new. That surprises people exactly once.
+- Topic naming is a design decision with no standard. Agree the tree before anybody publishes to
+  it.
+tags:
+- iot
+- messaging
+- pubsub
+- integration
+sources:
+- title: MQTT
+  url: https://mqtt.org/
+  publisher: OASIS
+  accessed: '2026-08-29'
+  primary: true
+confidence: verified
+contributed_by: []
+updated: '2026-08-29'

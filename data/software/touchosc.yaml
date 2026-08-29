@@ -1,0 +1,52 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: touchosc
+name: TouchOSC
+vendor: Hexler
+category: show-control
+license: Proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+- linux
+- ios
+- android
+summary: >-
+  Design a control layout and run it on a tablet or phone, sending OSC or MIDI. The long-standing
+  default for a quick wireless remote, now with a scripting layer and desktop hosts as well as mobile.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+homepage:
+  url: https://hexler.net/touchosc
+  label: Hexler TouchOSC
+typical_use:
+- A wireless remote for a console, media server or playback machine
+- Purpose-built panels for a specific show
+gotchas:
+- A remote over production Wi-Fi is only as reliable as that Wi-Fi. Never make it the only path
+  to something a cue needs.
+- Older TouchOSC layouts do not carry across to the current application.
+tags:
+- osc
+- midi
+- remote
+- tablet
+sources:
+- title: TouchOSC
+  url: https://hexler.net/touchosc
+  publisher: Hexler
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

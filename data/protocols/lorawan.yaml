@@ -1,0 +1,49 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: lorawan
+name: LoRaWAN
+aka:
+- LoRa
+category: network-transport
+status: current
+openness: open-free-registration
+transport:
+- wireless-rf
+summary: >-
+  Kilometres of range on a coin cell, at a trickle of data. LoRa is the radio modulation; LoRaWAN
+  is the network on top of it, in which devices talk to gateways and gateways forward to a network
+  server. Built for sensors that report occasionally over a very large area.
+multicast:
+  used: false
+  note: Downlink multicast exists for firmware distribution and is not a general-purpose facility.
+spec_url:
+  url: https://lora-alliance.org/
+  label: LoRa Alliance
+steward: LoRa Alliance
+first_published: 2015
+typical_use:
+- Site-wide environmental sensing across a festival or a campus.
+- Crowd counting, gate counts and asset tracking where the update rate is minutes rather than milliseconds.
+- Anything where running power or a network to the sensor is the actual problem.
+gotchas:
+- The data rate is tiny and duty cycle is legally limited in most regions. It is not a control network
+  and cannot become one.
+- Sub-GHz band allocations differ by country — 868 MHz in Europe, 915 MHz in much of the Americas,
+  and elsewhere again in Asia.
+- Latency is seconds at best. Nothing a cue waits on should be on it.
+tags:
+- lora
+- iot
+- long-range
+- low-power
+- sensors
+sources:
+- title: LoRaWAN
+  url: https://lora-alliance.org/
+  publisher: LoRa Alliance
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

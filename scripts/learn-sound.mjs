@@ -11,7 +11,7 @@
  * delay until two wavefronts land together teaches it in one go.
  */
 import { speakerDelay, splAtDistance } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 const MATH_SRC = [speakerDelay, splAtDistance].map((f) => f.toString()).join('\n\n')
 
@@ -150,20 +150,22 @@ ${bites([
 ])}
 
 ${S('The measurement itself', 'How a transfer function is actually taken', [
-  'Dual-channel FFT measurement compares two signals: a <b>reference</b> taken from the signal you are sending, and a <b>measurement</b> taken from a microphone in the room. The software divides one by the other, and what is left is what the system and the room did to the signal — magnitude, phase, and impulse response.',
+  'Dual-channel FFT measurement — <a href="/software/smaart/">Smaart</a>, <a href="/software/open-sound-meter/">Open Sound Meter</a> or <a href="/software/rew-room-eq-wizard/">REW</a> — compares two signals: a <b>reference</b> taken from the signal you are sending, and a <b>measurement</b> taken from a microphone in the room. The software divides one by the other, and what is left is what the system and the room did to the signal — magnitude, phase, and impulse response.',
   'The third trace is the one to trust first. <b>Coherence</b> says how much of what the microphone heard is actually related to the reference. Where coherence is low — because of noise, reflections, or too little energy at that frequency — the magnitude trace above it is not evidence and should not be equalised against.',
 ])}
 
 ${bites([
   '<b>Take the reference before the processing you want to measure.</b> A reference tapped after the EQ measures everything except the EQ.',
   '<b>Low coherence means "do not act on this".</b> It is not a display problem to be smoothed away.',
-  '<b>The microphone position is the measurement.</b> Two engineers three metres apart get different and equally correct answers.',
+  '<b>The microphone position is the measurement.</b> Two engineers three metres apart get different and equally correct answers. Class 1 measurement microphones are specified by <a href="/standards/iec-61672-1/">IEC 61672-1</a>.',
   '<b>Fix time before frequency.</b> Find the arrival time, set the delay, then look at the magnitude — an unaligned measurement shows comb filtering that no EQ can remove.',
 ])}
 
+${xnote('Alignment is not tidiness. An audience under an unaligned delay tower localises the sound to the tower rather than the stage, so a voice arrives from the wrong place — and <b>sound from the wrong place is one of the strongest presence-breaking cues there is</b>. Every millisecond of this work is buying the illusion that the person on stage is making the noise.')}
+
 ${S('Which box, and why', 'Point source against line array', [
   'A point source radiates into a sphere: energy spreads in every direction and you get the full 6 dB per doubling. A line array, while it is long compared with the wavelength it is reproducing, radiates more like a cylinder — the energy spreads sideways but much less vertically, so the loss is closer to <b>3 dB per doubling</b> in that region.',
-  'That is the entire reason arrays exist for long throws: the front row and the back of an arena can be brought within a survivable level range. It is also why arrays are wrong for short rooms — the cylindrical behaviour needs distance to develop, and a short array in a small venue is just an awkward point source.',
+  'Prediction software — <a href="/software/l-acoustics-soundvision/">Soundvision</a>, <a href="/software/ease-focus/">EASE Focus</a>, <a href="/software/db-arraycalc/">ArrayCalc</a> — models this before anything is hung. That is the entire reason arrays exist for long throws: the front row and the back of an arena can be brought within a survivable level range. It is also why arrays are wrong for short rooms — the cylindrical behaviour needs distance to develop, and a short array in a small venue is just an awkward point source.',
   'The behaviour is frequency-dependent, too. An array that is long compared with a 200 Hz wavelength may be short compared with a 40 Hz one, which is why array low end behaves differently from array high end.',
 ])}
 

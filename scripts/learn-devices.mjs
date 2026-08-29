@@ -13,7 +13,7 @@
  * control versus cloud control is the difference between a venue that works
  * when the internet is down and one that does not.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnDevicesPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -120,8 +120,33 @@ ${learnNav(esc, 'devices')}
 ${S('The heart of it', 'Closed loop, and what open loop costs you', [
   'Every machine that moves is doing one of two things. In an <b>open loop</b> it sends a command and assumes it worked — energise the solenoid, so the flap is open. In a <b>closed loop</b> it sends the command and then <em>measures the result</em>, compares it with what it asked for, and corrects the difference, continuously.',
   'The measurement is the whole difference, and it is not about precision. It is about knowing. An open-loop machine whose belt has slipped, whose load has jammed, or whose air has run out reports success in exactly the same voice as one that worked. A closed-loop machine sees an error it cannot reduce and can raise a fault.',
-  'That is why anything with real energy in it on a show — a winch, a lift, a revolve, an arm — is closed loop with position feedback, and why the encoder question on the <a href="/learn/transducers/">transducers</a> page is a safety question rather than a resolution one.',
+  'That is why anything with real energy in it on a show — a winch, a lift, a revolve, an arm — is closed loop with position feedback, driven over <a href="/protocols/ethercat/">EtherCAT</a> from something like a <a href="/hardware/beckhoff-cx5140/">CX5140</a> running <a href="/software/twincat/">TwinCAT</a>, and why the encoder question on the <a href="/learn/transducers/">transducers</a> page is a safety question rather than a resolution one.',
 ])}
+
+${S('', 'What the measurement is actually buying', [
+  'Introduce a disturbance — a load, a jam, a belt slipping — and watch what each kind of machine knows about it.',
+])}
+
+<div class="dial">
+  <div class="d" style="flex:0 0 auto"><label>loop</label>
+    <span class="seg" role="group" id="lp-seg">
+      <button type="button" data-m="open" aria-pressed="false">Open</button>
+      <button type="button" data-m="closed" aria-pressed="true">Closed</button>
+    </span></div>
+  <div class="d"><label for="lp-dist">disturbance <b id="lp-distv">30%</b></label>
+    <input id="lp-dist" type="range" min="0" max="100" step="1" value="30"></div>
+  <div class="d"><label for="lp-gain">correction gain <b id="lp-gainv">0.45</b></label>
+    <input id="lp-gain" type="range" min="0" max="100" step="1" value="45"></div>
+</div>
+<div class="fig" data-driven="dial" style="padding:16px">
+  <svg viewBox="0 0 620 150" role="img" aria-hidden="true">
+    <line x1="20" y1="120" x2="600" y2="120" stroke="var(--line)"/>
+    <line x1="20" y1="40" x2="600" y2="40" stroke="var(--ok)" stroke-width="1.2" stroke-dasharray="4 5"/>
+    <text x="24" y="34" font-size="10" font-family="var(--mono)" fill="var(--ok)">where it should be</text>
+    <path id="lp-path" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+  </svg>
+</div>
+<div class="verdict" id="lp-out"></div>
 
 ${fig(loopFig, 'Command, act, measure, correct. Remove the measurement and the machine can no longer tell you it failed.')}
 
@@ -160,10 +185,10 @@ ${S('Connected things', 'What actually happens when a device joins a network', [
 ])}
 
 <div class="iot">
-  <div><div class="k">radio</div><div class="v"><b>Wi-Fi</b> for bandwidth and power, <b>Bluetooth LE</b> for short range and setup, <b>Zigbee</b> and <b>Thread</b> for low-power mesh, <b>Z-Wave</b> in its own sub-GHz band. See <a href="/learn/connectivity/">which radio, and why</a> — every one is the same three-way trade between range, rate and battery.</div></div>
-  <div><div class="k">network</div><div class="v">Thread devices get real <b>IPv6 addresses</b> and route to each other directly; Zigbee and Z-Wave devices talk to a hub that translates. That difference decides whether a hub is a convenience or a single point of failure.</div></div>
-  <div><div class="k">application</div><div class="v"><b>Matter</b> is the layer that made this less miserable: a common vocabulary for what a device <em>is</em> — a light, a lock, a sensor — so that any controller can drive it without a vendor integration. It runs over Thread, Wi-Fi and Ethernet.</div></div>
-  <div><div class="k">control</div><div class="v"><b>Local or cloud.</b> A device controlled locally keeps working when the line goes down. A device that round-trips through a vendor server is offline when they are, obeys a business decision you do not control, and adds hundreds of milliseconds you cannot remove.</div></div>
+  <div><div class="k">radio</div><div class="v"><b>Wi-Fi</b> for bandwidth and power, <a href="/protocols/bluetooth-le/">Bluetooth LE</a> for short range and setup, <a href="/protocols/zigbee/">Zigbee</a> and <a href="/protocols/thread/">Thread</a> for low-power mesh, <a href="/protocols/lorawan/">LoRaWAN</a> when the range is kilometres. See <a href="/learn/connectivity/">which radio, and why</a> — every one is the same three-way trade between range, rate and battery.</div></div>
+  <div><div class="k">network</div><div class="v">Thread devices get real <b>IPv6 addresses</b> and route to each other directly; <a href="/protocols/zigbee/">Zigbee</a> devices talk to a hub that translates. Between devices and whatever is integrating them, <a href="/protocols/mqtt/">MQTT</a> is the messaging layer most glue actually speaks. That difference decides whether a hub is a convenience or a single point of failure.</div></div>
+  <div><div class="k">application</div><div class="v"><a href="/protocols/matter/">Matter</a> is the layer that made this less miserable: a common vocabulary for what a device <em>is</em> — a light, a lock, a sensor — so that any controller can drive it without a vendor integration. It runs over Thread, Wi-Fi and Ethernet.</div></div>
+  <div><div class="k">control</div><div class="v"><b>Local or cloud.</b> A device controlled locally — through <a href="/software/home-assistant/">Home Assistant</a> or a flow in <a href="/software/node-red/">Node-RED</a> — keeps working when the line goes down. A device that round-trips through a vendor server is offline when they are, obeys a business decision you do not control, and adds hundreds of milliseconds you cannot remove.</div></div>
   <div><div class="k">lifetime</div><div class="v">A cloud dependency is a <b>discontinuation risk</b>. The device keeps working exactly as long as somebody keeps paying for the service behind it — which is the same lesson as the retinal implant on the <a href="/learn/neuro/">neuro page</a>, at lower stakes.</div></div>
 </div>
 
@@ -177,6 +202,8 @@ ${bites([
   '<b>Every radio in the building is in somebody\'s spectrum.</b> A mesh of forty 2.4 GHz devices is a real neighbour to your <a href="/learn/wireless/">wireless</a> systems.',
 ])}
 
+${xnote('A machine that moves is read by an audience as a character, whether or not you intended one. Its acceleration, its pauses and its recovery from being interrupted all carry meaning — which is why <b>motion design is performance direction</b>, and why a rest position an audience can see is a decision rather than a default.')}
+
 ${S('Where the line is', 'Control is not permission', [
   'This is the same rule as the <a href="/learn/aerial/">pyro arming chain</a> and the <a href="/learn/code/">safety channel on a PLC</a>, and it belongs here too because a robot is the most tempting place to break it.',
   'A show network can tell a machine what to do. It cannot be what makes the machine safe. Emergency stops, limits, guarding, light curtains and interlocks are a separate rated channel that stays valid when the control system is confused, disconnected, or running the wrong version of a file.',
@@ -185,6 +212,46 @@ ${S('Where the line is', 'Control is not permission', [
 
 <div class="cta"><strong>Building show machinery or interactive devices?</strong>
 <p>The <a href="/hardware/">hardware index</a> covers motion control and show controllers with what each one speaks, and the <a href="/standards/">standards index</a> has the machinery-safety documents. If you work in this area and a description here does not match practice, <a href="${GH}/issues/new?labels=tooling&amp;title=devices%3A+">open an issue</a>.</p></div>
+
+<script>
+(function(){
+  var seg=document.getElementById('lp-seg'); if(!seg) return;
+  var dist=document.getElementById('lp-dist'), gain=document.getElementById('lp-gain'),
+      dv=document.getElementById('lp-distv'), gv=document.getElementById('lp-gainv'),
+      path=document.getElementById('lp-path'), out=document.getElementById('lp-out'), mode='closed';
+  function draw(){
+    var d=Number(dist.value)/100, g=Number(gain.value)/100;
+    dv.textContent=Number(dist.value)+'%'; gv.textContent=g.toFixed(2);
+    for(var b of seg.querySelectorAll('button')) b.setAttribute('aria-pressed',String(b.dataset.m===mode));
+    var err=0, dd='', N=120, settled=-1, osc=false, prev=0;
+    for(var i=0;i<=N;i++){
+      if(i===30) err=d;
+      if(i>30 && mode==='closed') err = err*(1-g);
+      var y=40+err*80;
+      dd+=(i?'L':'M')+(20+i*(580/N)).toFixed(1)+' '+y.toFixed(1)+' ';
+      if(i>30 && settled<0 && Math.abs(err)<0.02) settled=i-30;
+      if(i>31 && err*prev<0) osc=true;
+      prev=err;
+    }
+    path.setAttribute('d',dd);
+    if(mode==='open'){
+      out.innerHTML='<span class="err">The error never goes away, and the machine never learns it is there.</span> '
+        +'It reports the position it commanded, not the position it reached. A belt that slipped, a load it could not '
+        +'shift and a job done perfectly all look identical from outside.';
+    } else if(g<0.05){
+      out.innerHTML='<span class="err">Almost no correction.</span> The loop is closed and doing nothing with what it measures \u2014 the measurement alone is not the fix.';
+    } else if(g>0.98){
+      out.innerHTML='Corrected in one step. Real machines cannot do this: mass, backlash and drive limits mean an aggressive gain '
+        +'<b>overshoots and rings</b> rather than arriving. Which is why tuning a loop is a job.';
+    } else {
+      out.innerHTML='<span class="ok">Corrected in about '+settled+' cycles.</span> The machine measured the difference and closed it \u2014 and, '
+        +'crucially, if it <em>could not</em> close it, it would know, and could raise a fault instead of reporting success.';
+    }
+  }
+  seg.addEventListener('click',function(ev){var b=ev.target.closest('button'); if(b){mode=b.dataset.m;draw()}});
+  dist.addEventListener('input',draw); gain.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

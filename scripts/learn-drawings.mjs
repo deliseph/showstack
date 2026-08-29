@@ -13,7 +13,7 @@
  * The other thing it insists on is that a drawing is a contract between
  * departments rather than a picture of the show.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnDrawingsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -180,6 +180,27 @@ ${S('Loads', 'What Braceworks is actually doing, and what it is not', [
 
 ${fig(loadFig, 'A load path, computed continuously. The number is only as good as what was modelled.')}
 
+${S('', 'Where does the weight actually go?', [
+  'A truss on three hoists does not put a third of the load on each, and moving one fixture two metres changes every reaction along the span. Drag a fixture along the truss below and watch the three points argue about it.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="ld-pos">fixture position along the truss <b id="ld-posv">32%</b></label>
+    <input id="ld-pos" type="range" min="0" max="100" step="1" value="32"></div>
+  <div class="d"><label for="ld-w">fixture weight <b id="ld-wv">30 kg</b></label>
+    <input id="ld-w" type="range" min="5" max="200" step="5" value="30"></div>
+</div>
+<div class="fig" data-driven="dial" style="padding:16px">
+  <svg viewBox="0 0 620 150" role="img" aria-hidden="true">
+    <line x1="40" y1="34" x2="580" y2="34" stroke="var(--dim)" stroke-width="3"/>
+    <rect x="40" y="86" width="540" height="10" rx="4" fill="var(--panel2)" stroke="var(--line)"/>
+    <g id="ld-hoists"></g>
+    <g id="ld-load"></g>
+  </svg>
+</div>
+<div class="verdict" id="ld-out"></div>
+<p style="color:var(--dimmer);font-size:12.5px;font-family:var(--mono);margin-top:6px">Illustrative statics for two supports at a time, to show the shape of the problem. Real load calculation belongs in <a href="/software/vectorworks-braceworks/">Braceworks</a> or its equivalent, reviewed by a competent rigger.</p>
+
 ${bites([
   '<b>Weights get left out, not entered wrong.</b> The cable, the safety, the clamp, the scroller, the haze machine somebody clipped on at the end. A structural total is only as complete as the model.',
   '<b>A venue DWG is a starting point, not a survey.</b> It may be from before the last refurbishment, drawn in a different unit, or accurate about the building and silent about the steel. Verify anything you are going to hang from.',
@@ -207,6 +228,8 @@ ${S('Exchange', 'What survives a hand-off, and what quietly does not', [
 
 ${rule('<b>GDTF and MVR are the ones to push for.</b> They are the reason a plot can move from CAD to previz to console without anyone retyping a patch — and retyped patches are where the errors live.')}
 
+${xnote('A drawing set is where an experience stops being an intention and becomes something several departments can build the same way. Most of what an audience later experiences as <em>incoherence</em> — a sightline that fails, a position that conflicts, a coordinate everybody assumed — was a disagreement that could have been found on paper. <b>The boring parts of a title block are experience work.</b>')}
+
 ${S('The point of it all', 'A drawing is a contract', [
   'It is tempting to treat drawings as documentation — something produced after the design, for the file. On a show they are the opposite: they are how departments agree with each other before anything is built, and how a disagreement is discovered on paper rather than at 40 feet.',
   'That is why the boring parts are the important ones. A stated scale. A stated origin. A revision number and a date. A legend that says what the symbols mean. A title block that says who drew it and who to ask. None of that makes the drawing better looking, and all of it is what makes it usable by somebody who was not in the room.',
@@ -215,6 +238,45 @@ ${S('The point of it all', 'A drawing is a contract', [
 
 <div class="cta"><strong>Drawing and paperwork workflows vary a lot by market.</strong>
 <p>This page describes the shape that is common across them; the naming, the standard sheet set and the responsibility split differ by country and by venue. If your region does it meaningfully differently, <a href="${GH}/issues/new?labels=tooling&amp;title=drawings%3A+">open an issue</a> — regional practice is exactly the sort of thing this site should record rather than flatten.</p></div>
+
+<script>
+(function(){
+  var pos=document.getElementById('ld-pos'); if(!pos) return;
+  var w=document.getElementById('ld-w'), pv=document.getElementById('ld-posv'),
+      wv=document.getElementById('ld-wv'), hg=document.getElementById('ld-hoists'),
+      lg=document.getElementById('ld-load'), out=document.getElementById('ld-out');
+  var X0=40,X1=580, HX=[110,310,510];
+  function draw(){
+    var f=Number(pos.value)/100, kg=Number(w.value);
+    pv.textContent=Number(pos.value)+'%'; wv.textContent=kg+' kg';
+    var x=X0+f*(X1-X0);
+    // Simple statics: the load is shared between the two nearest supports in
+    // inverse proportion to distance. Outside the end supports it cantilevers,
+    // which is deliberately shown as a warning rather than a number.
+    var r=[0,0,0], note='';
+    if (x<=HX[0]) { r[0]=kg; note=' <span class="err">Outboard of the first point \u2014 this is a cantilever, not a span.</span>'; }
+    else if (x>=HX[2]) { r[2]=kg; note=' <span class="err">Outboard of the last point \u2014 this is a cantilever, not a span.</span>'; }
+    else {
+      var a = x<HX[1] ? 0 : 1, b = a+1;
+      var t = (x-HX[a])/(HX[b]-HX[a]);
+      r[a]=kg*(1-t); r[b]=kg*t;
+    }
+    hg.innerHTML=HX.map(function(hx,i){
+      var frac=r[i]/kg, col= frac>0.8?'var(--warn)':frac>0.05?'var(--accent)':'var(--dimmer)';
+      return '<line x1="'+hx+'" y1="34" x2="'+hx+'" y2="86" stroke="'+col+'" stroke-width="'+(2+frac*5).toFixed(1)+'"/>'
+        +'<text x="'+hx+'" y="118" font-size="11" font-family="var(--mono)" text-anchor="middle" fill="'+col+'">'
+        +r[i].toFixed(1)+' kg</text>'
+        +'<text x="'+hx+'" y="26" font-size="9" font-family="var(--mono)" text-anchor="middle" fill="var(--dimmer)">H'+(i+1)+'</text>';
+    }).join('');
+    lg.innerHTML='<circle cx="'+x.toFixed(1)+'" cy="106" r="7" fill="var(--accent2)"/>';
+    var max=Math.max.apply(null,r);
+    out.innerHTML='One '+kg+' kg fixture becomes <b>'+r.map(function(v){return v.toFixed(1)}).join(' / ')+
+      ' kg</b> across the three points. The busiest point is carrying <b>'+(max/kg*100).toFixed(0)+
+      '%</b> of it.'+note+' Move it and every number changes \u2014 which is why a spreadsheet from last Tuesday is not a load calculation.';
+  }
+  pos.addEventListener('input',draw); w.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({
