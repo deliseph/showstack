@@ -18,6 +18,8 @@ import {
   hexToChannels, codeToLight, videoRange, chromaBitrate, rt60Sabine, stereoParallax,
   miredShift, fibreLossBudget, heatLoad, videoStorage, batteryRuntime, whFromMah, aspectFit,
   roomModes, lineArrayCoverage, stopsOfLight,
+  windLoad, beaufort, dewPoint, flashRate, assistiveListening,
+  cableDerating, awgToMm2, mm2ToAwg, coaxReach, SDI_RATES,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -1413,4 +1415,320 @@ test('stops reject impossible transmission', () => {
   assert.equal(stopsOfLight(0, 'transmission'), null)
   assert.equal(stopsOfLight(1.5, 'transmission'), null)
   assert.equal(stopsOfLight(1, 'not-a-mode'), null)
+})
+
+// ---------------------------------------------------------------------------
+// Wind load
+// ---------------------------------------------------------------------------
+
+describe('wind load', () => {
+  test('dynamic pressure follows 0.5 rho v squared', () => {
+    // 20 m/s at rho 1.25: 0.5 * 1.25 * 400 = 250 Pa. This is the textbook
+    // figure and the one every wind table is generated from.
+    assert.equal(windLoad(20, 1).pressurePa, 250)
+    assert.equal(windLoad(10, 1).pressurePa, 62.5)
+  })
+
+  test('force is the square of speed, which is the entire point', () => {
+    const ten = windLoad(10, 10)
+    const twenty = windLoad(20, 10)
+    // forceN is rounded to a whole newton, so compare the relation, not the
+    // rounded quotient: 812.5 rounds up and 3250 does not.
+    assert.ok(Math.abs(twenty.forceN / ten.forceN - 4) < 0.01)
+    assert.equal(ten.atSpeed(20).timesCurrent, 4)
+    assert.equal(ten.atSpeed(30).timesCurrent, 9)
+  })
+
+  test('a 3x2 banner in a fresh breeze, in kilograms a rigger can weigh', () => {
+    // 10 m/s, 6 m2, cf 1.3: 62.5 * 1.3 * 6 = 487.5 N = 49.7 kgf.
+    const r = windLoad(10, 6)
+    assert.equal(r.forceN, 488)
+    assert.equal(r.forceKgf, 50)
+  })
+
+  test('the gust is what takes it over, not the average', () => {
+    const r = windLoad(10, 6)
+    assert.equal(r.gustSpeedMs, 14)
+    // 1.4x the speed is 1.96x the force.
+    assert.ok(r.gustForceN / r.forceN > 1.95 && r.gustForceN / r.forceN < 1.97)
+  })
+
+  test('overturning needs geometry, and reports the ballast short', () => {
+    const light = windLoad(15, 8, { centroidHeightM: 2, baseWidthM: 1, massKg: 50 })
+    assert.equal(light.overturning.stable, false)
+    assert.ok(light.overturning.extraBallastKg > 0)
+    const heavy = windLoad(5, 8, { centroidHeightM: 2, baseWidthM: 3, massKg: 2000 })
+    assert.equal(heavy.overturning.stable, true)
+    assert.equal(heavy.overturning.extraBallastKg, 0)
+    assert.equal(windLoad(10, 6).overturning, null)
+  })
+
+  test('Beaufort boundaries match the published scale', () => {
+    assert.deepEqual(beaufort(0), { force: 0, name: 'Calm' })
+    assert.deepEqual(beaufort(5.4), { force: 3, name: 'Gentle breeze' })
+    assert.deepEqual(beaufort(5.5), { force: 4, name: 'Moderate breeze' })
+    assert.deepEqual(beaufort(17.2), { force: 8, name: 'Gale' })
+    assert.deepEqual(beaufort(40), { force: 12, name: 'Hurricane force' })
+    assert.equal(beaufort(-1), null)
+  })
+
+  test('wind load rejects nonsense', () => {
+    assert.equal(windLoad(-1, 5), null)
+    assert.equal(windLoad(10, 0), null)
+    assert.equal(windLoad(10, 5, { forceCoefficient: 0 }), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Dew point
+// ---------------------------------------------------------------------------
+
+describe('dew point', () => {
+  test('known vectors from a psychrometric chart', () => {
+    // 20 C at 50% RH gives 9.3 C; 30 C at 80% gives 26.2 C.
+    assert.equal(dewPoint(20, 50).dewPointC, 9.3)
+    assert.equal(dewPoint(30, 80).dewPointC, 26.2)
+    // Saturated air is at its own dew point.
+    assert.equal(dewPoint(15, 100).dewPointC, 15)
+  })
+
+  test('a cold case in a humid room sweats, and says by how much', () => {
+    const r = dewPoint(28, 75, { surfaceTempC: 12 })
+    assert.equal(r.condensation.willCondense, true)
+    assert.ok(r.condensation.marginC < 0)
+    const dry = dewPoint(28, 75, { surfaceTempC: 26 })
+    assert.equal(dry.condensation.willCondense, false)
+  })
+
+  test('the safe surface temperature carries a margin, because exactly at the dew point is already wet', () => {
+    const r = dewPoint(20, 50)
+    assert.equal(r.safeSurfaceC, 11.3)
+    assert.equal(dewPoint(20, 50, { marginC: 5 }).safeSurfaceC, 14.3)
+  })
+
+  test('dew point rejects impossible humidity', () => {
+    assert.equal(dewPoint(20, 0), null)
+    assert.equal(dewPoint(20, 101), null)
+    assert.equal(dewPoint(20, -5), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Flash rate
+// ---------------------------------------------------------------------------
+
+describe('flash rate', () => {
+  test('three per second is the line, in WCAG and in the broadcast guidance alike', () => {
+    assert.equal(flashRate(3).withinGuidance, true)
+    assert.equal(flashRate(3.1).withinGuidance, false)
+    assert.equal(flashRate(2).issues.length, 0)
+  })
+
+  test('a strobe set against a track is where the rate actually comes from', () => {
+    const r = flashRate(0)
+    // 128 BPM on every beat: 2.13 a second, fine. Every half beat: 4.27, not.
+    assert.equal(r.fromBpm(128, 1), 2.13)
+    assert.equal(r.fromBpm(128, 2), 4.27)
+    assert.equal(flashRate(r.fromBpm(128, 1)).withinGuidance, true)
+    assert.equal(flashRate(r.fromBpm(128, 2)).withinGuidance, false)
+  })
+
+  test('it answers "so what can I have" rather than only saying no', () => {
+    const safe = flashRate(5).slowestSafeDivision(128)
+    assert.equal(safe.label, 'every beat')
+    assert.equal(safe.rate, 2.13)
+    // At 200 BPM even every beat is 3.33, so it has to drop to every 2 beats.
+    assert.equal(flashRate(5).slowestSafeDivision(200).label, 'every 2 beats')
+  })
+
+  test('the 15 to 20 Hz peak and saturated red are called out separately', () => {
+    const r = flashRate(17, { saturatedRed: true })
+    assert.equal(r.peakBand, true)
+    assert.equal(r.issues.length, 3)
+    assert.ok(r.issues.some((i) => i.includes('red')))
+    assert.equal(flashRate(2, { saturatedRed: true }).issues.length, 0)
+  })
+
+  test('spatial patterns count too, not just rate', () => {
+    assert.equal(flashRate(1, { stripes: 6 }).withinGuidance, false)
+    assert.equal(flashRate(1, { stripes: 5 }).withinGuidance, true)
+  })
+
+  test('period is the reciprocal, and zero flashes has none', () => {
+    assert.equal(flashRate(4).periodMs, 250)
+    assert.equal(flashRate(0).periodMs, null)
+    assert.equal(flashRate(-1), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Assistive listening
+// ---------------------------------------------------------------------------
+
+describe('assistive listening receivers', () => {
+  test('reproduces ADA Table 219.3 at every band boundary', () => {
+    assert.equal(assistiveListening(50).receivers, 2)
+    // 51 to 200: 2 plus one per 25 over 50.
+    assert.equal(assistiveListening(200).receivers, 8)
+    // 201 to 500: same formula, different hearing-aid column.
+    assert.equal(assistiveListening(500).receivers, 20)
+    // 501 to 1000: 20 plus one per 33 over 500.
+    assert.equal(assistiveListening(1000).receivers, 36)
+    // 1001 to 2000: 35 plus one per 50 over 1000.
+    assert.equal(assistiveListening(2000).receivers, 55)
+    // 2001 and over: 55 plus one per 100 over 2000.
+    assert.equal(assistiveListening(3000).receivers, 65)
+  })
+
+  test('the hearing-aid compatible column is the part people forget', () => {
+    assert.equal(assistiveListening(200).hearingAidCompatible, 2)
+    // Over 200 it becomes one in four of the total, not a flat 2.
+    assert.equal(assistiveListening(500).hearingAidCompatible, 5)
+    assert.equal(assistiveListening(2000).hearingAidCompatible, 14)
+  })
+
+  test('an induction loop over every seat waives that column, per Exception 2', () => {
+    const r = assistiveListening(1200, { inductionLoopAllSeats: true })
+    assert.equal(r.hearingAidCompatible, 0)
+    assert.equal(r.inductionLoopWaiver, true)
+    assert.match(r.note, /Exception 2/)
+  })
+
+  test('the band label says which row of the table applied', () => {
+    assert.equal(assistiveListening(40).band, '50 or fewer')
+    assert.equal(assistiveListening(150).band, '51 to 200')
+    assert.equal(assistiveListening(900).band, '501 to 1000')
+    assert.equal(assistiveListening(5000).band, '2001 and over')
+  })
+
+  test('a venue with no seats is not a venue', () => {
+    assert.equal(assistiveListening(0), null)
+    assert.equal(assistiveListening(-10), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Cable derating and gauge conversion
+// ---------------------------------------------------------------------------
+
+describe('cable derating', () => {
+  test('the temperature formula reproduces NEC Table 310.15(B)(1) exactly', () => {
+    // These are the published correction factors, to two places. The formula
+    // is what the table was generated from, so it has to land on them.
+    const at = (ambient, insulation) => cableDerating(100, { ambientC: ambient, insulationC: insulation, conductors: 3 }).tempFactor
+    assert.equal(at(35, 90), 0.96)
+    assert.equal(at(40, 90), 0.91)
+    assert.equal(at(50, 90), 0.82)
+    assert.equal(at(40, 75), 0.88)
+    assert.equal(at(50, 75), 0.75)
+    assert.equal(at(40, 60), 0.82)
+    assert.equal(at(45, 60), 0.71)
+    assert.equal(at(30, 90), 1)
+  })
+
+  test('bundling factors are the published steps, not a curve', () => {
+    const f = (n) => cableDerating(100, { conductors: n }).bundleFactor
+    assert.equal(f(3), 1.0)
+    assert.equal(f(4), 0.8)
+    assert.equal(f(6), 0.8)
+    assert.equal(f(7), 0.7)
+    assert.equal(f(10), 0.5)
+    assert.equal(f(21), 0.45)
+    assert.equal(f(50), 0.35)
+  })
+
+  test('both factors multiply, which is how a 100 A cable becomes a 56 A cable', () => {
+    const r = cableDerating(100, { conductors: 6, ambientC: 45, insulationC: 90 })
+    assert.equal(r.bundleFactor, 0.8)
+    assert.equal(r.tempFactor, 0.87)
+    assert.equal(r.deratedAmps, 69.28)
+    assert.equal(r.lostPercent, 30.72)
+  })
+
+  test('at or above the insulation rating there is no ampacity at all', () => {
+    const r = cableDerating(100, { ambientC: 95, insulationC: 90 })
+    assert.equal(r.deratedAmps, 0)
+    assert.equal(r.overTemperature, true)
+  })
+
+  test('AWG to mm2 matches the published wire table', () => {
+    assert.ok(Math.abs(awgToMm2(12).areaMm2 - 3.31) < 0.01)
+    assert.ok(Math.abs(awgToMm2(10).areaMm2 - 5.26) < 0.01)
+    assert.ok(Math.abs(awgToMm2(0).areaMm2 - 53.5) < 0.1)
+    assert.ok(Math.abs(awgToMm2(-3).areaMm2 - 107.2) < 0.5)
+    assert.equal(awgToMm2(0).label, '0 (1/0) AWG')
+    assert.equal(awgToMm2(-3).label, '0000 (4/0) AWG')
+    assert.equal(awgToMm2(12).label, '12 AWG')
+  })
+
+  test('mm2 back to AWG, and it says when the nearest size is thinner', () => {
+    const r = mm2ToAwg(2.5)
+    assert.equal(r.nearestAwg, 13)
+    // 2.5 mm2 is the common metric size and there is no exact AWG for it, so
+    // which side of it you land on is the whole question.
+    assert.equal(mm2ToAwg(3.5).nearestIsSmaller, true)
+    assert.equal(mm2ToAwg(3).nearestIsSmaller, false)
+    assert.equal(mm2ToAwg(0), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// SDI reach on coax
+// ---------------------------------------------------------------------------
+
+describe('SDI reach', () => {
+  test('loss scales with the square root of frequency', () => {
+    // Four times the frequency is twice the loss. That is skin effect, and it
+    // is why 12G reaches roughly half as far as 3G rather than a quarter.
+    const r = coaxReach(10, 100)
+    const at400 = r.rates.find((x) => x.key === 'hd')
+    // HD half-clock is 742.5 MHz: sqrt(7.425) = 2.725, so 27.2 dB/100m.
+    assert.equal(at400.lossDbPer100m, 27.2)
+  })
+
+  test('every SDI rate comes back at once, which is the useful answer', () => {
+    const r = coaxReach(21.6, 1000)
+    assert.equal(r.rates.length, Object.keys(SDI_RATES).length)
+    const by = Object.fromEntries(r.rates.map((x) => [x.key, x.reachM]))
+    // Longer runs at lower rates, always, and 12G is the shortest.
+    assert.ok(by.sd > by.hd && by.hd > by['3g'] && by['3g'] > by['6g'] && by['6g'] > by['12g'])
+    // Doubling the bit rate costs a factor of sqrt(2) in reach.
+    assert.ok(Math.abs(by['3g'] / by['6g'] - Math.SQRT2) < 0.02)
+  })
+
+  test('half the clock is the frequency that matters, not the bit rate', () => {
+    const r = coaxReach(20, 1000)
+    assert.equal(r.rates.find((x) => x.key === '12g').halfClockMhz, 5940)
+    assert.equal(r.rates.find((x) => x.key === '3g').halfClockMhz, 1485)
+  })
+
+  test('the other direction: will this run work, and is it close', () => {
+    const r = coaxReach(21.6, 1000)
+    const rate = r.rates.find((x) => x.key === '3g')
+    const inside = r.canRun(Math.round(rate.reachM * 0.5), '3g')
+    assert.equal(inside.ok, true)
+    assert.equal(inside.thin, false)
+    const over = r.canRun(Math.round(rate.reachM * 1.2), '3g')
+    assert.equal(over.ok, false)
+    assert.ok(over.marginDb < 0)
+    // Just inside the cliff is the dangerous case, and it is called out.
+    const marginal = r.canRun(Math.round(rate.reachM * 0.95), '3g')
+    assert.equal(marginal.ok, true)
+    assert.equal(marginal.thin, true)
+  })
+
+  test('a bigger equalisation budget is a longer run, proportionally', () => {
+    const a = coaxReach(20, 1000, { equalisationDb: 20 })
+    const b = coaxReach(20, 1000, { equalisationDb: 40 })
+    const ra = a.rates.find((x) => x.key === 'hd').reachM
+    const rb = b.rates.find((x) => x.key === 'hd').reachM
+    assert.ok(Math.abs(rb / ra - 2) < 0.02)
+  })
+
+  test('SDI reach rejects nonsense', () => {
+    assert.equal(coaxReach(0, 1000), null)
+    assert.equal(coaxReach(20, 0), null)
+    assert.equal(coaxReach(20, 1000, { equalisationDb: 0 }), null)
+    assert.equal(coaxReach(20, 1000).canRun(50, 'not-a-rate'), null)
+  })
 })

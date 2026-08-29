@@ -1756,3 +1756,467 @@ export function stopsOfLight(input, mode = 'stops') {
     },
   }
 }
+
+/**
+ * Wind pressure and force on a flat surface.
+ *
+ * Everything with an area outdoors is a sail, and the number that surprises
+ * people is how fast it grows: force goes with the square of wind speed, so a
+ * banner that shrugs off a 10 m/s breeze takes four times the load at 20 m/s.
+ * That is the whole reason a wind action plan has speeds written on it rather
+ * than a judgement call at the time.
+ *
+ *   q = 0.5 * rho * v^2      dynamic pressure, Pa, rho ~1.25 kg/m3 for air
+ *   F = q * cf * A           force, N, cf the shape's force coefficient
+ *
+ * cf is where the honesty lives. A flat panel square to the wind is about 1.3;
+ * EN 1991-1-4 puts a signboard at 1.8; a lattice tower is far lower because
+ * most of it is hole. The default here is the flat-panel figure, and the
+ * structure's own documentation is what governs on a real job.
+ *
+ * THIS IS A SCREENING NUMBER. It tells you whether to have the conversation,
+ * not whether the thing stands up. Temporary demountable structures are
+ * designed to EN 13782 / ANSI E1.21 by somebody competent to do it, against a
+ * site-specific wind speed, with gust and terrain factors this does not model.
+ */
+export function windLoad(speedMs, areaM2, opts = {}) {
+  const v = Number(speedMs)
+  const a = Number(areaM2)
+  if (!Number.isFinite(v) || v < 0 || !Number.isFinite(a) || a <= 0) return null
+  const rho = Number(opts.airDensity ?? 1.25)
+  const cf = Number(opts.forceCoefficient ?? 1.3)
+  const gustFactor = Number(opts.gustFactor ?? 1.4)
+  if (!Number.isFinite(rho) || rho <= 0 || !Number.isFinite(cf) || cf <= 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+  const r0 = (x) => Math.round(x)
+
+  const pressure = 0.5 * rho * v * v
+  const force = pressure * cf * a
+  // A gust is what actually takes the thing over, and it arrives at a speed
+  // the anemometer's averaged reading never showed you.
+  const gustSpeed = v * gustFactor
+  const gustForce = 0.5 * rho * gustSpeed * gustSpeed * cf * a
+
+  // Overturning, when there is enough geometry to check it. Moment about the
+  // downwind edge of the base: wind pushing at the centroid height against the
+  // weight acting through the middle of the base.
+  let overturning = null
+  const h = Number(opts.centroidHeightM)
+  const base = Number(opts.baseWidthM)
+  const mass = Number(opts.massKg)
+  if ([h, base, mass].every((n) => Number.isFinite(n) && n > 0)) {
+    const overturningMoment = gustForce * h
+    const restoringMoment = mass * 9.81 * (base / 2)
+    const ballastKg = Math.max(0, (overturningMoment / (base / 2) / 9.81) - mass)
+    overturning = {
+      overturningNm: r0(overturningMoment),
+      restoringNm: r0(restoringMoment),
+      ratio: r1(restoringMoment / overturningMoment),
+      stable: restoringMoment > overturningMoment,
+      extraBallastKg: r0(ballastKg),
+    }
+  }
+
+  return {
+    speedMs: r1(v),
+    speedKmh: r1(v * 3.6),
+    speedMph: r1(v * 2.237),
+    beaufort: beaufort(v),
+    areaM2: a,
+    forceCoefficient: cf,
+    pressurePa: r1(pressure),
+    forceN: r0(force),
+    // Kilogram-force, because that is the unit a rigger can weigh against.
+    forceKgf: r0(force / 9.81),
+    gustSpeedMs: r1(gustSpeed),
+    gustForceN: r0(gustForce),
+    gustForceKgf: r0(gustForce / 9.81),
+    overturning,
+    // Doubling the wind is four times the load; this is the sentence the
+    // numbers exist to make unavoidable.
+    atSpeed: (otherMs) => {
+      const o = Number(otherMs)
+      if (!Number.isFinite(o) || o < 0) return null
+      return { speedMs: r1(o), forceN: r0(0.5 * rho * o * o * cf * a), timesCurrent: v > 0 ? r1((o * o) / (v * v)) : null }
+    },
+  }
+}
+
+export const BEAUFORT = [
+  [0.5, 0, 'Calm'], [1.6, 1, 'Light air'], [3.4, 2, 'Light breeze'],
+  [5.5, 3, 'Gentle breeze'], [8.0, 4, 'Moderate breeze'], [10.8, 5, 'Fresh breeze'],
+  [13.9, 6, 'Strong breeze'], [17.2, 7, 'Near gale'], [20.8, 8, 'Gale'],
+  [24.5, 9, 'Strong gale'], [28.5, 10, 'Storm'], [32.7, 11, 'Violent storm'],
+]
+
+/** Beaufort force and its name, from a wind speed in m/s. */
+export function beaufort(speedMs) {
+  const v = Number(speedMs)
+  if (!Number.isFinite(v) || v < 0) return null
+  for (const [ceiling, force, name] of BEAUFORT) {
+    if (v < ceiling) return { force, name }
+  }
+  return { force: 12, name: 'Hurricane force' }
+}
+
+/**
+ * Dew point, and whether a cold surface is about to sweat.
+ *
+ * Two situations, one calculation. A flight case comes off a cold truck into a
+ * humid venue and the metal is below the dew point, so water forms inside the
+ * amplifier before anybody has plugged it in. Or an LED wall sits out
+ * overnight, the air cools to its dew point around dawn, and the panels are
+ * wet at 6am with a show at noon.
+ *
+ * Magnus-Tetens, with the WMO coefficients:
+ *   gamma = ln(RH/100) + (b*T)/(c+T)
+ *   Td    = (c*gamma)/(b-gamma)          b = 17.62, c = 243.12 C
+ *
+ * Good to about +/-0.4 C between -45 and +60 C, which is far better than the
+ * humidity reading you are feeding it.
+ */
+export function dewPoint(tempC, relativeHumidity, opts = {}) {
+  const t = Number(tempC)
+  const rh = Number(relativeHumidity)
+  if (!Number.isFinite(t) || !Number.isFinite(rh) || rh <= 0 || rh > 100) return null
+  const b = 17.62
+  const c = 243.12
+  const r1 = (x) => Math.round(x * 10) / 10
+  const gamma = Math.log(rh / 100) + (b * t) / (c + t)
+  const td = (c * gamma) / (b - gamma)
+
+  // Absolute humidity, g/m3 - the number that says how much water is actually
+  // in the air, which is what a dehumidifier has to remove.
+  const svp = 6.112 * Math.exp((b * t) / (c + t))
+  const absolute = (svp * (rh / 100) * 2.1674) / (273.15 + t) * 100
+
+  const surface = Number(opts.surfaceTempC)
+  let condensation = null
+  if (Number.isFinite(surface)) {
+    condensation = {
+      surfaceTempC: r1(surface),
+      marginC: r1(surface - td),
+      willCondense: surface <= td,
+    }
+  }
+
+  return {
+    tempC: r1(t),
+    relativeHumidity: r1(rh),
+    dewPointC: r1(td),
+    dewPointF: r1(td * 1.8 + 32),
+    absoluteHumidityGm3: r1(absolute),
+    condensation,
+    // How far the air has to cool before it starts raining on your rig.
+    spreadC: r1(t - td),
+    // The other direction: how warm a surface has to get to be safe, with a
+    // margin, because "exactly at the dew point" is already wet.
+    safeSurfaceC: r1(td + Number(opts.marginC ?? 2)),
+  }
+}
+
+/**
+ * Flash rate against the photosensitivity guidance.
+ *
+ * The threshold that matters is three flashes in any one second. It is the
+ * same number in WCAG 2.3.1, in ITU-R BT.1702 and in the Ofcom guidance, and
+ * it is not a house style - it is the rate above which a sequence starts
+ * provoking seizures in people with photosensitive epilepsy. Saturated red is
+ * treated separately and more strictly, because deep red provokes responses
+ * that the same rate in another colour does not.
+ *
+ * Sensitivity peaks around 15-20 Hz, which is squarely inside the range a
+ * strobe sits at when somebody sets it by ear against a track.
+ *
+ * The BPM conversion is here because that is how the rate actually gets chosen.
+ * Nobody types 3.2 Hz into a console; they put a strobe on every half beat of
+ * a 128 BPM track and that is 4.3 flashes a second.
+ */
+export function flashRate(flashesPerSecond, opts = {}) {
+  const f = Number(flashesPerSecond)
+  if (!Number.isFinite(f) || f < 0) return null
+  const limit = Number(opts.limit ?? 3)
+  const r2 = (x) => Math.round(x * 100) / 100
+  const red = Boolean(opts.saturatedRed)
+  const stripes = Number(opts.stripes)
+
+  const over = f > limit
+  // 3 to 60 Hz provokes; the peak of it is 15 to 20.
+  const peakBand = f >= 15 && f <= 20
+  const provokingBand = f >= 3 && f <= 60
+
+  const issues = []
+  if (over) issues.push(`${r2(f)} flashes per second exceeds the limit of ${limit}`)
+  if (red && f > limit) issues.push('saturated red flashing is judged more strictly than any other colour')
+  if (peakBand) issues.push('this rate is in the 15-20 Hz band where sensitivity peaks')
+  if (Number.isFinite(stripes) && stripes > 5) issues.push(`${stripes} light-dark pairs exceeds the 5-stripe pattern limit`)
+
+  return {
+    flashesPerSecond: r2(f),
+    periodMs: f > 0 ? r2(1000 / f) : null,
+    limit,
+    withinGuidance: !over && !(Number.isFinite(stripes) && stripes > 5),
+    peakBand,
+    provokingBand,
+    saturatedRed: red,
+    issues,
+    // What a strobe on the beat actually comes to.
+    fromBpm: (bpm, division = 1) => {
+      const b = Number(bpm), d = Number(division)
+      if (!Number.isFinite(b) || b <= 0 || !Number.isFinite(d) || d <= 0) return null
+      return r2((b / 60) * d)
+    },
+    // And the answer to "so what can I have": the fastest musical division
+    // that still lands inside the guidance at this tempo.
+    slowestSafeDivision: (bpm) => {
+      const b = Number(bpm)
+      if (!Number.isFinite(b) || b <= 0) return null
+      const divisions = [
+        [4, 'every 1/16 note'], [2, 'every 1/8 note'], [1, 'every beat'],
+        [0.5, 'every 2 beats'], [0.25, 'every bar (4/4)'],
+      ]
+      for (const [d, label] of divisions) {
+        if ((b / 60) * d <= limit) return { division: d, label, rate: r2((b / 60) * d) }
+      }
+      return null
+    },
+  }
+}
+
+/**
+ * Assistive listening receivers required, from ADA 2010 Standards Table 219.3.
+ *
+ * This reproduces a published table rather than deriving anything, which is
+ * exactly why it is worth having: the table is a stepped formula that people
+ * get wrong from memory, and getting it wrong is a compliance failure that
+ * surfaces on opening night.
+ *
+ * The second column is the part everyone forgets. A share of the receivers
+ * have to be hearing-aid compatible - meaning a neckloop or similar that
+ * couples to a hearing aid's telecoil, not just headphones. Exception 2 waives
+ * that where every seat is covered by an induction loop, because the hearing
+ * aids in the room are already the receivers.
+ *
+ * Source: 2010 ADA Standards for Accessible Design, section 219.3.
+ */
+export function assistiveListening(seats, opts = {}) {
+  const n = Math.floor(Number(seats))
+  if (!Number.isFinite(n) || n < 1) return null
+
+  let receivers
+  let band
+  if (n <= 50) {
+    receivers = 2
+    band = '50 or fewer'
+  } else if (n <= 500) {
+    receivers = 2 + Math.ceil((n - 50) / 25)
+    band = n <= 200 ? '51 to 200' : '201 to 500'
+  } else if (n <= 1000) {
+    receivers = 20 + Math.ceil((n - 500) / 33)
+    band = '501 to 1000'
+  } else if (n <= 2000) {
+    receivers = 35 + Math.ceil((n - 1000) / 50)
+    band = '1001 to 2000'
+  } else {
+    receivers = 55 + Math.ceil((n - 2000) / 100)
+    band = '2001 and over'
+  }
+
+  const loop = Boolean(opts.inductionLoopAllSeats)
+  // 50 or fewer, and 51 to 200, require 2 hearing-aid compatible. Above that
+  // it is one in four of the total.
+  let hearingAidCompatible
+  if (loop) hearingAidCompatible = 0
+  else if (n <= 200) hearingAidCompatible = 2
+  else hearingAidCompatible = Math.ceil(receivers / 4)
+
+  return {
+    seats: n,
+    band,
+    receivers,
+    hearingAidCompatible,
+    inductionLoopWaiver: loop,
+    // The ratio, because a venue manager's question is usually "is one in
+    // twenty about right" and the answer changes a lot with size.
+    onePer: Math.round(n / receivers),
+    note: loop
+      ? 'Exception 2: an induction loop serving all seats waives the hearing-aid compatible receiver count.'
+      : 'Hearing-aid compatible means it couples to a telecoil - a neckloop, not headphones.',
+  }
+}
+
+/**
+ * NEC conductor ampacity derating, and AWG to mm2 both ways.
+ *
+ * A cable's rating is a single number on a datasheet measured in still 30 C
+ * air with three current-carrying conductors. A touring rig gives it none of
+ * those things: cable is coiled, bundled in a loom, run over a hot roof, and
+ * carrying harmonics on the neutral. Two published factors correct for the
+ * two conditions that matter.
+ *
+ * The temperature factor is not a lookup here - it is the formula NEC's own
+ * Table 310.15(B)(1) is generated from, which reproduces the published values
+ * exactly and keeps working between the rows:
+ *
+ *   correction = sqrt((Tc - Ta) / (Tc - 30))
+ *
+ * Tc is the insulation's temperature rating, Ta the ambient. The bundling
+ * factors are from Table 310.15(C)(1) and are steps, not a curve.
+ *
+ * The base ampacity has to come from the cable's own datasheet. This does not
+ * know what you are holding, and a tool that guessed would be worse than no
+ * tool.
+ */
+export const BUNDLE_FACTORS = [
+  [3, 1.00], [6, 0.80], [9, 0.70], [20, 0.50], [30, 0.45], [40, 0.40],
+]
+
+export function cableDerating(baseAmps, opts = {}) {
+  const base = Number(baseAmps)
+  if (!Number.isFinite(base) || base <= 0) return null
+  const conductors = Math.floor(Number(opts.conductors ?? 3))
+  const ambientC = Number(opts.ambientC ?? 30)
+  const insulationC = Number(opts.insulationC ?? 90)
+  if (!Number.isFinite(conductors) || conductors < 1) return null
+  if (!Number.isFinite(ambientC) || !Number.isFinite(insulationC)) return null
+  // Above the insulation rating there is no ampacity at all, not a small one.
+  if (ambientC >= insulationC) {
+    return { baseAmps: base, conductors, ambientC, insulationC, bundleFactor: 0, tempFactor: 0, deratedAmps: 0, overTemperature: true }
+  }
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  let bundleFactor = 0.35
+  for (const [ceiling, factor] of BUNDLE_FACTORS) {
+    if (conductors <= ceiling) { bundleFactor = factor; break }
+  }
+  const tempFactor = Math.sqrt((insulationC - ambientC) / (insulationC - 30))
+  const derated = base * bundleFactor * tempFactor
+
+  return {
+    baseAmps: base,
+    conductors,
+    ambientC,
+    insulationC,
+    bundleFactor,
+    tempFactor: r2(tempFactor),
+    deratedAmps: r2(derated),
+    // What it cost, as the sentence people actually say out loud.
+    lostAmps: r2(base - derated),
+    lostPercent: r2((1 - bundleFactor * tempFactor) * 100),
+    overTemperature: false,
+  }
+}
+
+/** AWG to conductor area in mm2. Handles 0, 00, 000, 0000 as 0, -1, -2, -3. */
+export function awgToMm2(awg) {
+  const n = Number(awg)
+  if (!Number.isFinite(n) || n > 40 || n < -3) return null
+  const diameterMm = 0.127 * 92 ** ((36 - n) / 39)
+  const area = Math.PI * (diameterMm / 2) ** 2
+  return {
+    awg: n,
+    label: n <= 0 ? `${'0'.repeat(1 - n)} (${1 - n}/0) AWG` : `${n} AWG`,
+    diameterMm: Math.round(diameterMm * 1000) / 1000,
+    areaMm2: Math.round(area * 1000) / 1000,
+  }
+}
+
+/** The nearest AWG size to a metric cross-section, and whether it is over or under. */
+export function mm2ToAwg(areaMm2) {
+  const a = Number(areaMm2)
+  if (!Number.isFinite(a) || a <= 0) return null
+  const diameterMm = 2 * Math.sqrt(a / Math.PI)
+  const exact = 36 - 39 * (Math.log(diameterMm / 0.127) / Math.log(92))
+  const nearest = Math.round(exact)
+  const n = awgToMm2(nearest)
+  if (!n) return null
+  return {
+    areaMm2: a,
+    exactAwg: Math.round(exact * 10) / 10,
+    nearestAwg: nearest,
+    nearestLabel: n.label,
+    nearestAreaMm2: n.areaMm2,
+    // A smaller AWG number is a bigger conductor, so "nearest" can be thinner
+    // than what you asked for, and that is the direction that matters.
+    nearestIsSmaller: n.areaMm2 < a,
+  }
+}
+
+/**
+ * How far an SDI signal reaches on a given coax.
+ *
+ * A receiver equalises a fixed amount of cable loss and then gives up. The
+ * cliff is famously sharp: SDI does not degrade into a noisy picture the way
+ * analogue did, it works perfectly and then stops, which is why a run that was
+ * fine in the shop fails in the venue at ten metres longer.
+ *
+ * Two facts do the work. Coax loss rises with the square root of frequency
+ * (skin effect), and the frequency that matters is half the bit rate, because
+ * that is the fastest fundamental in the data:
+ *
+ *   loss(f) = loss(f_ref) * sqrt(f / f_ref)
+ *   reach   = equalisation budget / loss at half the clock
+ *
+ * The attenuation figure comes off the cable's datasheet, at whatever
+ * frequency the manufacturer quoted. Every coax maker publishes it. The
+ * equalisation budget is the receiver's, and 20 dB is the figure SMPTE writes
+ * down - real receivers often do considerably better, which is why the same
+ * cable is quoted at different lengths by different people.
+ */
+export const SDI_RATES = {
+  'sd': { label: 'SD-SDI (SMPTE 259M)', gbps: 0.27 },
+  'hd': { label: 'HD-SDI (SMPTE 292M)', gbps: 1.485 },
+  '3g': { label: '3G-SDI (SMPTE 424M)', gbps: 2.97 },
+  '6g': { label: '6G-SDI (SMPTE ST 2081)', gbps: 5.94 },
+  '12g': { label: '12G-SDI (SMPTE ST 2082)', gbps: 11.88 },
+}
+
+export function coaxReach(attenuationDbPer100m, atFrequencyMhz, opts = {}) {
+  const att = Number(attenuationDbPer100m)
+  const refF = Number(atFrequencyMhz)
+  if (!Number.isFinite(att) || att <= 0 || !Number.isFinite(refF) || refF <= 0) return null
+  const budget = Number(opts.equalisationDb ?? 20)
+  if (!Number.isFinite(budget) || budget <= 0) return null
+  const r1 = (x) => Math.round(x * 10) / 10
+
+  const rates = Object.entries(SDI_RATES).map(([key, r]) => {
+    // Half the clock: the highest fundamental the serial stream produces.
+    const halfClockMhz = (r.gbps * 1000) / 2
+    const lossPer100m = att * Math.sqrt(halfClockMhz / refF)
+    const reachM = (budget / lossPer100m) * 100
+    return {
+      key,
+      label: r.label,
+      gbps: r.gbps,
+      halfClockMhz: r1(halfClockMhz),
+      lossDbPer100m: r1(lossPer100m),
+      reachM: Math.round(reachM),
+      reachFt: Math.round(reachM * 3.281),
+    }
+  })
+
+  return {
+    attenuationDbPer100m: att,
+    atFrequencyMhz: refF,
+    equalisationDb: budget,
+    rates,
+    // The question people actually arrive with, in the other direction.
+    canRun: (metres, rateKey) => {
+      const m = Number(metres)
+      const rate = rates.find((r) => r.key === rateKey)
+      if (!Number.isFinite(m) || m <= 0 || !rate) return null
+      const loss = (m / 100) * rate.lossDbPer100m
+      return {
+        metres: m,
+        rate: rate.label,
+        lossDb: r1(loss),
+        budgetDb: budget,
+        marginDb: r1(budget - loss),
+        ok: loss <= budget,
+        // Inside 3 dB of the cliff is a run that works today and fails after
+        // somebody swaps a barrel connector in.
+        thin: loss <= budget && budget - loss < 3,
+      }
+    },
+  }
+}

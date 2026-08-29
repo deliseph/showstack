@@ -68,7 +68,7 @@ background:var(--warn)}
 .tryit .f{display:flex;flex-direction:column;gap:4px;min-width:0}
 .tryit label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
 .tryit input,.tryit select{padding:8px 10px;background:var(--panel);color:var(--ink);border:1px solid var(--line);
-border-radius:7px;font-family:var(--mono);font-size:14px;min-height:40px;max-width:100%}
+border-radius:7px;font-family:var(--mono);font-size:14px;min-height:44px;max-width:100%}
 .tryit input[type=range]{accent-color:var(--accent);min-width:150px;padding:0}
 .tryit .seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden}
 .tryit .seg button{background:var(--panel);color:var(--dim);border:0;border-right:1px solid var(--line);
@@ -448,6 +448,14 @@ export const LEARN_TOPICS = [
     questions: ['Why is my neutral hot?', 'Breaker or RCD?', 'Why does it brown out?'],
   },
   {
+    slug: 'outdoors',
+    group: 'room',
+    tag: 'Outdoors',
+    title: 'When the venue is a field',
+    blurb: 'Wind force goes with the square of speed, air gives its water back on a schedule set by temperature rather than rain, and an IP rating describes a sealed laboratory assembly rather than your deck at 4pm. The three outdoor facts that are worse than they look.',
+    questions: ['How much is the banner pulling?', 'Why is the rig wet on a clear night?', 'What does IP65 not cover?'],
+  },
+  {
     slug: 'rigging',
     group: 'room',
     tag: 'Machinery',
@@ -528,6 +536,14 @@ export const LEARN_TOPICS = [
     questions: ['Where does emotion come from?', 'Why does an audience amplify itself?', 'What do people actually remember?'],
   },
   {
+    slug: 'access',
+    group: 'person',
+    tag: 'Access',
+    title: 'Who the show is not reaching',
+    blurb: 'Four access provisions as engineering problems with numbers attached: where the three-flashes-per-second threshold sits between two ordinary programming decisions, three assistive listening technologies that fail in different places, captioning as a latency budget, and audio description as a mix problem.',
+    questions: ['Is this strobe over the line?', 'How many receivers do I need?', 'Why is a late caption worse than none?'],
+  },
+  {
     slug: 'presence',
     group: 'person',
     tag: 'Being there',
@@ -568,6 +584,17 @@ export const LEARN_TOPICS = [
  * Grouped by stage so the rail doubles as a reminder of where in the chain
  * the current page sits.
  */
+/**
+ * How many explainer pages there are.
+ *
+ * The capstone is an explainer page like any other - it has a URL, it is in
+ * the hub's hasPart list, and the offline panel caches it - so a count that
+ * leaves it out is wrong by one everywhere it appears. Four different
+ * sentences on three pages were computing this independently and had already
+ * drifted apart by one. Compute it here.
+ */
+export const LEARN_COUNT = LEARN_TOPICS.length + 1
+
 export const learnNav = (esc, currentSlug) => {
   let html = ''
   for (const g of LEARN_GROUPS) {

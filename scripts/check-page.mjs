@@ -1,7 +1,8 @@
 /**
  * /check/ — describe the rig once, get every warning at once.
  *
- * /tools/ has 34 calculators and answers 34 questions. This answers the one
+ * /tools/ has a calculator per question, and answers them one at a time.
+ * This answers the one
  * question a production electrician actually has at 2pm: is anything about
  * this rig going to bite me tonight?
  *

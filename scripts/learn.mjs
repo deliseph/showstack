@@ -16,7 +16,7 @@
  * the material is actually looked for - nobody searches for "RS-485 unit
  * loads", they search for whether they can put forty fixtures on one line.
  */
-import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, learnNav, LEARN_READING} from './learn-kit.mjs'
+import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, learnNav, LEARN_READING, LEARN_COUNT } from './learn-kit.mjs'
 
 export function learnPage({ esc, shell, SITE, GH }) {
   const style = LEARN_CSS + `
@@ -87,7 +87,7 @@ gap:6px 18px;font-size:12.5px;color:var(--dimmer);font-family:var(--mono)}
 ${learnNav(esc, null)}
 <div class="lhero">
   <h2>Why it behaves like that</h2>
-  <p class="lede">${LEARN_TOPICS.length} explainers, arranged as one chain — the mechanism drawn moving, so the rule stays with you after you close the tab. The index tells you what a thing is; the tools give you the number for tonight; this is the part in between that nobody writes down.</p>
+  <p class="lede">${LEARN_COUNT} explainers, arranged as one chain — the mechanism drawn moving, so the rule stays with you after you close the tab. The index tells you what a thing is; the tools give you the number for tonight; this is the part in between that nobody writes down.</p>
 </div>
 
 <p style="color:var(--dim);font-size:15.5px;max-width:66ch">They are arranged as one chain, because that is what they are. Something physical becomes a signal, the signal survives a wire, a network and the air, it becomes something in a room, it agrees with other systems about time and space, and it finally arrives at a nervous system — which is the only part of it that was ever the point. The last stage is the machines we built to imitate that nervous system, which is the right place for them.</p>
