@@ -366,6 +366,37 @@ const CSS = RELATED_CSS + QUIZ_CSS + TOKENS + `
 ${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
+/* ---- paper ------------------------------------------------------------
+   Riggers and electricians need a trail, and a phone screenshot is not one.
+   Printing gives black-on-white with the assumptions and the sources kept,
+   and everything that only makes sense on a screen removed. */
+@media print{
+  :root{--surface:#fff;--surface-raised:#fff;--surface-sunken:#f4f4f4;
+    --ink:#000;--ink-muted:#222;--ink-faint:#555;--rule:#bbb;--rule-strong:#666;
+    --signal:#065f4c;--verified:#1f5c12;--warn:#8a2f19;--fail:#8a2f19;--shadow:none;--glow:transparent}
+  html,body{background:#fff!important;color:#000!important}
+  header,.trust,footer,.skip,nav,.lnav,.tfind,.trail,.trecent,.offline,
+  .quiz,.egs,.pfilter,.tcopy,.tlink,.cta,.contrib,.onward,.dial input[type=range],
+  .sponsor,.fund,.themebtn,.ghlink,.showall,.gapbtn{display:none!important}
+  main{padding:0!important;background:none!important}
+  .wrap{max-width:none!important;padding:0!important}
+  a{color:#000!important;text-decoration:none}
+  /* A printed page loses the link, so put it back in the margin. */
+  .note a[href^="/"]::after,.lede a[href^="/"]::after{content:" (showstack.dev" attr(href) ")";
+    font-size:9pt;color:#555}
+  .tool,.fig,.out{break-inside:avoid;page-break-inside:avoid}
+  .tool{border:1px solid #999!important;padding:14px!important;margin:0 0 12px!important}
+  .out{border:1px solid #999!important;background:#f4f4f4!important;padding:10px 12px!important}
+  .out b:first-of-type{font-size:16pt!important;color:#000!important}
+  .note{font-size:9pt!important;color:#333!important}
+  .toolgroup{page-break-after:avoid}
+  h2,h3{page-break-after:avoid}
+  /* Say where it came from and when, because that is the point of paper. */
+  body::after{content:"showstack.dev — every figure here is the same arithmetic the test suite checks. Printed " attr(data-printed) ".";
+    display:block;margin-top:18px;padding-top:8px;border-top:1px solid #bbb;
+    font-family:var(--mono);font-size:8.5pt;color:#555}
+  @page{margin:16mm}
+}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -461,6 +492,13 @@ const THEME_JS = `
       navigator.serviceWorker.register('/sw.js').catch(function(){});
     });
   }
+  /* The printed footer says when it was printed. Set at print time rather
+     than at build time, because the useful date is the one on the paper. */
+  if(window.matchMedia){
+    var stamp=function(){document.body.setAttribute('data-printed',new Date().toISOString().slice(0,10))};
+    window.addEventListener('beforeprint',stamp);
+    try{window.matchMedia('print').addEventListener('change',function(e){if(e.matches)stamp()})}catch(e){}
+  }
   document.addEventListener('DOMContentLoaded',function(){
     var btn=document.getElementById('themebtn');
     if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
@@ -522,7 +560,11 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="${SITE}/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="showstack">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch.png">

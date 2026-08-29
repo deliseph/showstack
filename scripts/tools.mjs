@@ -59,6 +59,118 @@ const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};`
  * suite checks.
  */
 const TOOLKIT_JS = `
+/**
+ * Render a result to a PNG on a canvas and put it on the clipboard.
+ *
+ * A link pasted into a production WhatsApp group shows a bare URL, and a
+ * screenshot of a phone browser loses the numbers to compression and includes
+ * half the nav. This produces a small, legible card with the tool name, the
+ * inputs, the answer and where it came from - which is what somebody actually
+ * wants to send at 4pm.
+ *
+ * Canvas rather than a server: it works with no signal, needs no runtime, and
+ * nothing about the calculation leaves the device.
+ */
+function shotResult(tool, out, btn){
+  try{
+    var title=(tool.querySelector('h3')||{}).textContent||'showstack';
+    title=title.replace(/#$|copied$/,'').replace(/image$/,'').trim();
+    var answer=out.innerText.trim();
+    var inputs=[].slice.call(tool.querySelectorAll('.field')).map(function(f){
+      var l=f.querySelector('label'), i=f.querySelector('input,select');
+      if(!l||!i)return null;
+      var v=i.tagName==='SELECT'?(i.selectedOptions[0]||{}).textContent:i.value;
+      return l.textContent.replace(/\\s+/g,' ').trim()+': '+String(v||'').trim();
+    }).filter(Boolean).slice(0,6);
+
+    var cs=getComputedStyle(document.documentElement);
+    var bg=cs.getPropertyValue('--surface-raised').trim()||'#fff';
+    var ink=cs.getPropertyValue('--ink').trim()||'#111';
+    var dim=cs.getPropertyValue('--ink-muted').trim()||'#555';
+    var faint=cs.getPropertyValue('--ink-faint').trim()||'#888';
+    var sig=cs.getPropertyValue('--signal').trim()||'#0b7561';
+    var rule=cs.getPropertyValue('--rule').trim()||'#ddd';
+
+    var W=1200,PAD=64,scale=2;
+    var mono='"JetBrains Mono", ui-monospace, monospace';
+    var sans='"IBM Plex Sans", system-ui, sans-serif';
+
+    /* Measure first so the card is exactly as tall as its content. */
+    var probe=document.createElement('canvas').getContext('2d');
+    function wrap(text,font,maxW){
+      probe.font=font;
+      var words=String(text).split(/\\s+/), lines=[], line='';
+      for(var i=0;i<words.length;i++){
+        var t=line?line+' '+words[i]:words[i];
+        if(probe.measureText(t).width>maxW && line){lines.push(line);line=words[i]}
+        else line=t;
+      }
+      if(line)lines.push(line);
+      return lines;
+    }
+    /* Split on meaning, not on where the line happens to break: the headline
+       is the first clause, the rest is context set smaller. Changing size
+       mid-sentence is what made the first version read badly. */
+    var flat=answer.replace(/\\s*\\n\\s*/g,' \u00b7 ');
+    var cut=flat.indexOf(' \u00b7 ');
+    var head=cut>0?flat.slice(0,cut):flat;
+    var restText=cut>0?flat.slice(cut+3):'';
+    var answerFont='600 44px '+mono;
+    var restFont='400 27px '+mono;
+    var headLines=wrap(head,answerFont,W-PAD*2);
+    var restLines=restText?wrap(restText,restFont,W-PAD*2).slice(0,3):[];
+    var H=PAD+34+22+headLines.length*56+restLines.length*38+26+(inputs.length?36:0)+56+PAD;
+
+    var cv=document.createElement('canvas');
+    cv.width=W*scale; cv.height=H*scale;
+    var g=cv.getContext('2d'); g.scale(scale,scale);
+    g.fillStyle=bg; g.fillRect(0,0,W,H);
+    g.fillStyle=sig; g.fillRect(0,0,W,6);
+
+    var y=PAD+8;
+    g.fillStyle=faint; g.font='500 20px '+mono;
+    g.fillText('showstack \u00b7 field tools',PAD,y);
+    y+=34;
+    g.fillStyle=ink; g.font='650 30px '+sans;
+    g.fillText(title,PAD,y);
+    y+=48;
+
+    g.font=answerFont; g.fillStyle=sig;
+    for(var i=0;i<headLines.length;i++){ g.fillText(headLines[i],PAD,y); y+=56 }
+    if(restLines.length){
+      g.font=restFont; g.fillStyle=dim; y-=6;
+      for(var j=0;j<restLines.length;j++){ g.fillText(restLines[j],PAD,y); y+=38 }
+    }
+
+    if(inputs.length){
+      y+=6; g.fillStyle=rule; g.fillRect(PAD,y,W-PAD*2,1); y+=30;
+      g.fillStyle=faint; g.font='400 22px '+mono;
+      g.fillText(inputs.join('   \u00b7   ').slice(0,110),PAD,y);
+    }
+
+    g.fillStyle=faint; g.font='400 20px '+mono;
+    g.fillText(location.origin.replace(/^https?:\\/\\//,'')+'/tools/#'+tool.id,PAD,H-PAD+12);
+
+    cv.toBlob(function(blob){
+      if(!blob){btn.textContent='image';return}
+      var done=function(){ btn.textContent='copied'; btn.setAttribute('data-done','');
+        setTimeout(function(){btn.textContent='image';btn.removeAttribute('data-done')},1600) };
+      if(navigator.clipboard && window.ClipboardItem){
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(done,function(){ download(blob) });
+      } else download(blob);
+      function download(b){
+        var a=document.createElement('a');
+        a.href=URL.createObjectURL(b);
+        a.download='showstack-'+tool.id+'.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+        btn.textContent='saved'; btn.setAttribute('data-done','');
+        setTimeout(function(){btn.textContent='image';btn.removeAttribute('data-done')},1600);
+      }
+    },'image/png');
+  }catch(err){ btn.textContent='image'; }
+}
+
 (function(){
   var wrap=document.getElementById('toolwrap');
   if(!wrap)return;
@@ -90,6 +202,15 @@ const TOOLKIT_JS = `
       w.className='outwrap';
       out.parentNode.insertBefore(w,out);
       w.appendChild(out);
+      /* Two ways to get a result out. Text for a terminal or a note; an image
+         for a production group chat, where a pasted link shows nothing and a
+         screenshot loses the numbers to compression. */
+      var img=document.createElement('button');
+      img.type='button'; img.className='tcopy tshot'; img.textContent='image';
+      img.setAttribute('aria-label','Copy this result as an image');
+      img.addEventListener('click',function(){ shotResult(t,out,img) });
+      w.appendChild(img);
+
       var c=document.createElement('button');
       c.type='button'; c.className='tcopy'; c.textContent='copy';
       c.setAttribute('aria-label','Copy this result');
@@ -210,7 +331,7 @@ min-height:44px;width:110px;font-variant-numeric:tabular-nums}
    large, in mono, with tabular figures so it does not jitter as you type.
    Later figures stay legible but recede. */
 .out{font-family:var(--mono);font-size:15px;color:var(--ink-muted);background:var(--surface-sunken);
-border:1px solid var(--rule);border-radius:var(--r-sm);padding:13px 74px 13px 15px;margin-top:8px;overflow-x:auto;min-height:56px;
+border:1px solid var(--rule);border-radius:var(--r-sm);padding:13px 140px 13px 15px;margin-top:8px;overflow-x:auto;min-height:56px;
 line-height:1.65;font-variant-numeric:tabular-nums;position:relative}
 .out b{color:var(--accent2);font-weight:600}
 .out b:first-of-type{font-size:23px;color:var(--signal);letter-spacing:-.4px;line-height:1.15;
@@ -218,6 +339,7 @@ display:inline-block;vertical-align:-1px}
 .out .err{color:var(--fail);font-weight:600}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
 .outwrap{position:relative}
+.tshot{right:70px}
 .tcopy{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:10px;letter-spacing:.5px;
 text-transform:uppercase;color:var(--ink-faint);background:var(--surface-raised);border:1px solid var(--rule-strong);
 border-radius:var(--r-pill);min-height:44px;min-width:56px;padding:0 12px;cursor:pointer;opacity:0;
