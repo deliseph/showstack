@@ -698,7 +698,7 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="dips-wrap"><div class="dipkey" aria-hidden="true"><b>ON</b><i>off</i></div><div class="dips" id="dip-bank" aria-label="DIP switch bank"></div></div>
   <div class="out" id="dip-out" role="status" aria-live="polite"></div>
   <label class="inline"><input type="checkbox" id="dip-minus"> This fixture uses the (address − 1) convention</label>
-  <p class="note">Most fixtures read the switches as plain binary of the address: switch 1 is value 1, switch 9 is value 256, so address 1 = switch 1 ON. Some older gear encodes address − 1 (address 1 = all OFF) — check the fixture manual before trusting either. Click switches to go the other way.</p>
+  <p class="note"><b>Why nine and not eight.</b> Eight switches give 2<sup>8</sup> = 256 combinations, which reaches address 255 and stops &mdash; not enough for a 512-address universe. Nine give 512, which is exactly enough, and it is why nine is the minimum any DMX fixture can carry. Real blocks are often ten-way because that is a common part size, with the tenth switch used for mode, inversion or a function rather than for address. Most fixtures read the switches as plain binary of the address: switch 1 is value 1, switch 9 is value 256, so address 1 = switch 1 ON. Some older gear encodes address − 1 (address 1 = all OFF) — check the fixture manual before trusting either. Click switches to go the other way.</p>
 </div>
 <div class="tool wide" id="dmxrate">
   <h3>DMX refresh &amp; what RDM costs</h3>
