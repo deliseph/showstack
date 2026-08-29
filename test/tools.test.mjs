@@ -27,6 +27,8 @@ import {
   oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS,
   artnetDmx, artnetPoll, ARTNET_OPCODES, rdmPacket, RDM_PIDS,
   mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, sacnMulticast as sacnGroup,
+  opticalSpot, OPTICAL_FORMATS, rcFilter, transformer,
+  waveHarmonics, WAVE_SHAPES, vbapStereo, dbapGains, wfsAliasing,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -2729,5 +2731,279 @@ describe('sACN packets', () => {
     assert.equal(sacnPacket(1, new Array(513).fill(0)), null)
     assert.equal(sacnPacket(1, [0], { priority: 201 }), null)
     assert.equal(sacnPacket(1, [0], { sourceName: 'x'.repeat(64) }), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// The analogue layer
+// ---------------------------------------------------------------------------
+
+describe('optical media', () => {
+  test('the focused spot is diffraction limited, and that is what sets capacity', () => {
+    // 1.22 lambda / NA, in nanometres.
+    assert.equal(opticalSpot(780, 0.45).spotUm, 2.115)
+    assert.equal(opticalSpot(650, 0.60).spotUm, 1.322)
+    assert.equal(opticalSpot(405, 0.85).spotUm, 0.581)
+  })
+
+  test('a shorter wavelength or a wider aperture both shrink the spot', () => {
+    const base = opticalSpot(650, 0.6).spotNm
+    assert.ok(opticalSpot(405, 0.6).spotNm < base, 'shorter wavelength should be smaller')
+    assert.ok(opticalSpot(650, 0.85).spotNm < base, 'higher NA should be smaller')
+  })
+
+  test('density goes with the square, because a disc is a surface', () => {
+    const bd = opticalSpot(405, 0.85)
+    const vs = bd.compare('cd')
+    assert.equal(vs.against, 'CD')
+    // CD's spot is 3.64x wider, so 13.2x the area per bit.
+    assert.equal(vs.linearRatio, 3.638)
+    assert.equal(vs.areaRatio, 13.234)
+  })
+
+  test('capacity outruns the optics, and the gap is the coding', () => {
+    const g = opticalSpot(780, 0.45).codingGain('cd', 'bluray')
+    assert.equal(g.areaRatio, 13.234)
+    assert.equal(g.capacityRatio, 35.714)
+    // Everything diffraction did not give you: modulation and error coding.
+    assert.equal(g.beyondOptics, 2.699)
+    assert.ok(g.beyondOptics > 1, 'coding should have contributed something')
+  })
+
+  test('the three formats are the same disc with different optics', () => {
+    assert.equal(Object.keys(OPTICAL_FORMATS).length, 3)
+    // Wavelength falls and NA rises across the generations, both helping.
+    assert.ok(OPTICAL_FORMATS.cd.wavelengthNm > OPTICAL_FORMATS.dvd.wavelengthNm)
+    assert.ok(OPTICAL_FORMATS.dvd.wavelengthNm > OPTICAL_FORMATS.bluray.wavelengthNm)
+    assert.ok(OPTICAL_FORMATS.cd.na < OPTICAL_FORMATS.bluray.na)
+  })
+
+  test('optical spot rejects impossible optics', () => {
+    assert.equal(opticalSpot(0, 0.5), null)
+    assert.equal(opticalSpot(650, 0), null)
+    assert.equal(opticalSpot(650, 2), null)
+    assert.equal(opticalSpot(650, 0.6).compare('minidisc'), null)
+  })
+})
+
+describe('RC networks', () => {
+  test('the corner frequency is one over two pi R C', () => {
+    // 10k and 100n: 159.15 Hz, the figure on every filter chart.
+    const f = rcFilter(10000, 100e-9)
+    assert.equal(f.cornerHz, 159.155)
+    assert.equal(f.tauSeconds, 0.001)
+    assert.equal(f.tau, '1 ms')
+  })
+
+  test('the same R and C give a time constant and a corner, because they are one fact', () => {
+    const f = rcFilter(1000, 1e-6)
+    assert.equal(f.tauSeconds, 0.001)
+    // tau of 1 ms is always 159 Hz, whatever R and C got you there.
+    assert.equal(f.cornerHz, 159.155)
+  })
+
+  test('63% in one time constant, 95% in three, 99% in five', () => {
+    const f = rcFilter(10000, 100e-6)
+    assert.equal(f.tau, '1 s')
+    assert.equal(f.riseTo95, '3 s')
+    assert.equal(f.riseTo99, '5 s')
+  })
+
+  test('one pole is 3 dB down at the corner and 6 dB per octave after it', () => {
+    const f = rcFilter(10000, 100e-9)
+    assert.ok(Math.abs(f.responseAt(f.cornerHz) + 3.01) < 0.02, 'should be -3 dB at the corner')
+    // An octave above the corner is about -7 dB, two octaves about -12.3.
+    const oneOctave = f.responseAt(f.cornerHz * 2)
+    const twoOctaves = f.responseAt(f.cornerHz * 4)
+    assert.ok(Math.abs((twoOctaves - oneOctave) - -6) < 0.7, 'slope should approach 6 dB per octave')
+    assert.equal(f.slopeDbPerOctave, 6)
+  })
+
+  test('RC rejects impossible components', () => {
+    assert.equal(rcFilter(0, 1e-6), null)
+    assert.equal(rcFilter(1000, 0), null)
+    assert.equal(rcFilter(1000, 1e-6).responseAt(0), null)
+  })
+})
+
+describe('transformers', () => {
+  test('voltage follows the turns ratio and impedance follows its square', () => {
+    const t = transformer(10, 1, { primaryVolts: 10, secondaryOhms: 6 })
+    assert.equal(t.turnsRatio, 10)
+    assert.equal(t.secondaryVolts, 1)
+    // 6 ohms through a 10:1 looks like 600 — the square, not the ratio.
+    assert.equal(t.reflectedPrimaryOhms, 600)
+  })
+
+  test('a step-up transformer is the same maths the other way round', () => {
+    const t = transformer(1, 10, { primaryVolts: 10 })
+    assert.equal(t.stepsUp, true)
+    assert.equal(t.secondaryVolts, 100)
+    assert.equal(transformer(10, 1).stepsUp, false)
+  })
+
+  test('current goes the opposite way to voltage, because power is conserved', () => {
+    const t = transformer(10, 1)
+    assert.equal(t.currentRatio, 0.1)
+  })
+
+  test('isolation is the other reason one gets fitted', () => {
+    assert.equal(transformer(1, 1).isolates, true)
+    assert.match(transformer(1, 1).note, /ground loop/)
+  })
+
+  test('transformers reject zero turns', () => {
+    assert.equal(transformer(0, 1), null)
+    assert.equal(transformer(1, -1), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Waveforms and spatial audio
+// ---------------------------------------------------------------------------
+
+describe('what a waveform is made of', () => {
+  test('a sine has nothing above the fundamental', () => {
+    const w = waveHarmonics('sine', 8)
+    assert.ok(w.relative.every((a) => a === 0))
+    assert.equal(thd(w.relative).thdF, 0)
+  })
+
+  test('a square is odd harmonics only, at one over n', () => {
+    const w = waveHarmonics('square', 6)
+    // Index 0 is the 2nd harmonic, so the odd orders sit at 1, 3, 5.
+    assert.deepEqual(w.relative, [0, 0.3333, 0, 0.2, 0, 0.1429])
+    assert.equal(w.hasEvenHarmonics, false)
+    assert.equal(w.thirdHarmonic, 0.3333)
+  })
+
+  test('a sawtooth has every harmonic, which is why it is the bright one', () => {
+    const w = waveHarmonics('sawtooth', 4)
+    assert.deepEqual(w.relative, [0.5, 0.3333, 0.25, 0.2])
+    assert.equal(w.hasEvenHarmonics, true)
+  })
+
+  test('a triangle falls away as one over n squared, so it is nearly a sine', () => {
+    const w = waveHarmonics('triangle', 4)
+    assert.deepEqual(w.relative, [0, 0.1111, 0, 0.04])
+    // Third harmonic at a ninth rather than a third: that is the difference.
+    assert.equal(w.thirdHarmonic, 1 / 9 === 0.1111111111111111 ? 0.1111 : w.thirdHarmonic)
+  })
+
+  test('the shapes feed straight into the harmonic distortion maths', () => {
+    // A square wave and a switch-mode supply are the same fact pointed at
+    // different jobs, and both put energy on the third harmonic.
+    const square = thd(waveHarmonics('square', 40).relative)
+    const saw = thd(waveHarmonics('sawtooth', 40).relative)
+    assert.ok(square.thdF > 46 && square.thdF < 49, `square THD-F was ${square.thdF}`)
+    assert.ok(saw.thdF > 77 && saw.thdF < 81, `saw THD-F was ${saw.thdF}`)
+    assert.ok(saw.thdF > square.thdF, 'a saw has more harmonic content than a square')
+    // The odd-only shapes are triplen-heavy; that is the neutral problem.
+    assert.ok(square.triplenShare > 30)
+  })
+
+  test('waveHarmonics rejects unknown shapes', () => {
+    assert.equal(waveHarmonics('noise', 8), null)
+    assert.equal(waveHarmonics('square', 0), null)
+    assert.equal(waveHarmonics('square', 500), null)
+    assert.equal(WAVE_SHAPES.length, 4)
+  })
+})
+
+describe('amplitude panning', () => {
+  test('dead centre is equal power, which is -3 dB each and not -6', () => {
+    const c = vbapStereo(0)
+    assert.equal(c.left, 0.707)
+    assert.equal(c.right, 0.707)
+    assert.equal(c.leftDb, -3.01)
+    assert.equal(c.powerSum, 1)
+  })
+
+  test('hard over puts everything in one speaker', () => {
+    const r = vbapStereo(30, 30)
+    assert.equal(r.right, 1)
+    assert.equal(r.left, 0)
+    const l = vbapStereo(-30, 30)
+    assert.equal(l.left, 1)
+    assert.equal(l.right, 0)
+  })
+
+  test('power stays constant across the whole sweep', () => {
+    for (let a = -30; a <= 30; a += 5) {
+      assert.equal(vbapStereo(a, 30).powerSum, 1, `power drifted at ${a} degrees`)
+    }
+  })
+
+  test('a source cannot be panned outside the pair', () => {
+    assert.equal(vbapStereo(45, 30), null)
+    assert.equal(vbapStereo(0, 0), null)
+    assert.equal(vbapStereo(0, 90), null)
+  })
+})
+
+describe('distance-based panning', () => {
+  const rig = [{ name: 'L', x: -3, y: 0 }, { name: 'R', x: 3, y: 0 }, { name: 'C', x: 0, y: 2 }]
+
+  test('the nearest speaker gets the most, and the power still sums to one', () => {
+    const d = dbapGains(0, 0, rig)
+    const by = Object.fromEntries(d.gains.map((g) => [g.name, g.gain]))
+    assert.ok(by.C > by.L, 'the closer speaker should be louder')
+    assert.equal(by.L, by.R, 'symmetry should give equal gains')
+    assert.equal(d.powerSum, 1)
+  })
+
+  test('the rolloff exponent is the design choice, not physics', () => {
+    const tight = dbapGains(0, 0, rig, { rolloff: 4 })
+    const spread = dbapGains(0, 0, rig, { rolloff: 0.5 })
+    const cOf = (r) => r.gains.find((g) => g.name === 'C').gain
+    assert.ok(cOf(tight) > cOf(spread), 'a higher rolloff should localise harder')
+    assert.ok(spread.activeSpeakers >= tight.activeSpeakers)
+    assert.match(tight.note, /jump audibly/)
+    assert.match(spread.note, /survives an audience/)
+  })
+
+  test('a source sitting exactly on a speaker does not divide by zero', () => {
+    const d = dbapGains(-3, 0, rig)
+    assert.equal(d.powerSum, 1)
+    assert.ok(d.gains.every((g) => Number.isFinite(g.gain)))
+    assert.equal(d.gains.find((g) => g.name === 'L').distance, 0)
+  })
+
+  test('DBAP rejects an empty rig or a nonsense position', () => {
+    assert.equal(dbapGains(0, 0, []), null)
+    assert.equal(dbapGains(NaN, 0, rig), null)
+    assert.equal(dbapGains(0, 0, rig, { rolloff: 0 }), null)
+    assert.equal(dbapGains(0, 0, [{ x: 'left', y: 0 }]), null)
+  })
+})
+
+describe('wave field synthesis', () => {
+  test('spatial aliasing is Nyquist, in space instead of time', () => {
+    // c / 2d. At 250 mm spacing that is 686 Hz.
+    assert.equal(wfsAliasing(0.25).aliasingHz, 686)
+    assert.equal(wfsAliasing(0.125).aliasingHz, 1372)
+    // Halving the spacing doubles the limit. That is the cost sentence.
+    assert.equal(wfsAliasing(0.125).aliasingHz, wfsAliasing(0.25).aliasingHz * 2)
+  })
+
+  test('it answers the cost question in the other direction too', () => {
+    const w = wfsAliasing(0.25)
+    assert.equal(w.spacingForHz(4000), 0.043)
+    assert.equal(w.speakersPerMetre, 4)
+    // 4 kHz needs about 23 loudspeakers a metre, which is the whole story.
+    assert.ok(1 / w.spacingForHz(4000) > 20)
+  })
+
+  test('the verdict tracks where the limit lands', () => {
+    assert.match(wfsAliasing(0.03).verdict, /Above most localisation cues/)
+    assert.match(wfsAliasing(0.1).verdict, /Ordinary for a real installation/)
+    assert.match(wfsAliasing(0.5).verdict, /bottom of the spectrum/)
+  })
+
+  test('WFS rejects impossible arrays', () => {
+    assert.equal(wfsAliasing(0), null)
+    assert.equal(wfsAliasing(-1), null)
+    assert.equal(wfsAliasing(0.25, { speedOfSound: 0 }), null)
+    assert.equal(wfsAliasing(0.25).spacingForHz(0), null)
   })
 })

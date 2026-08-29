@@ -328,6 +328,14 @@ export function setLearnReading(m) { LEARN_READING = m }
 
 export const LEARN_TOPICS = [
   {
+    slug: 'analogue',
+    group: 'foundation',
+    tag: 'Analogue',
+    title: 'Before there was a computer in it',
+    blurb: 'What a resistor, capacitor, transformer and transistor actually do; how an analogue console controlled a rig with no memory and no processor; how an amplifier is built; and why a CD, a DVD and a Blu-ray are the same disc holding 0.7, 4.7 and 25 gigabytes.',
+    questions: ['What does a capacitor do?', 'How did consoles work with no memory?', 'Why does Blu-ray hold more?'],
+  },
+  {
     slug: 'transducers',
     group: 'foundation',
     tag: 'Sensing',

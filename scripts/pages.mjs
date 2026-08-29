@@ -54,6 +54,7 @@ import { learnRiggingPage } from './learn-rigging.mjs'
 import { learnPowerPage } from './learn-power.mjs'
 import { learnOutdoorsPage } from './learn-outdoors.mjs'
 import { learnMixingPage } from './learn-mixing.mjs'
+import { learnAnaloguePage } from './learn-analogue.mjs'
 import { learnEmpathyPage } from './learn-empathy.mjs'
 import { learnIllusionPage } from './learn-illusion.mjs'
 import { learnTimecodePage } from './learn-timecode.mjs'
@@ -269,38 +270,53 @@ export const TOKENS = `
    explicit choice via [data-theme] beats the OS in both directions. */
 :root{
 color-scheme:light;
-/* surfaces */
---surface:#f6f7f9;--surface-raised:#ffffff;--surface-sunken:#edf0f4;
-/* text - every one of these measured >= 4.5:1 on all three surfaces */
---ink:#141922;          /* 16.44 / 17.62 / 15.41 */
---ink-muted:#46536a;    /*  7.24 /  7.76 /  6.79 */
---ink-faint:#5f6b80;    /*  5.02 /  5.38 /  4.71 - labels only, never body */
+/* surfaces
+   No pure white anywhere, and a very slight WARM bias rather than the blue
+   one this palette used to have. Both are eye-comfort decisions and both
+   were reported as strain before they were changed: a card in #ffffff is the
+   brightest thing most screens can produce, and a blue-biased neutral reads
+   as glarier than a neutral or warm one at the same luminance. */
+--surface:#f4f2ee;--surface-raised:#fbfaf7;--surface-sunken:#e9e6e0;
+/* text - every one of these measured on all three surfaces, and the three
+   figures below each colour are exactly that, in surface / raised / sunken
+   order.
+
+   --ink used to be #141922, which put body text at 17.62:1 on a pure white
+   card. That is more than twice what WCAG asks for AAA and it is genuinely
+   tiring to read for an hour. It is 13.61 now: still nearly double the AAA
+   threshold of 7, and considerably kinder. Contrast is a floor to clear, not
+   a score to maximise. */
+--ink:#282b30;          /* 12.70 / 13.61 / 11.40 */
+--ink-muted:#4e5560;    /*  6.73 /  7.21 /  6.04 */
+--ink-faint:#5f656f;    /*  5.25 /  5.62 /  4.71 - labels only, never body */
 /* boundaries. --rule is decorative and deliberately quiet; --rule-strong is
    for anything whose boundary a person needs to see to operate it, and is the
    only one of the two that clears SC 1.4.11's 3:1. */
---rule:#dbe1ea;         /*  1.23 - decorative only */
---rule-strong:#7f8288;  /*  3.59 /  3.85 /  3.37 - controls */
+--rule:#ddd9d2;         /*  1.26 - decorative only */
+--rule-strong:#7c7973;  /*  3.88 /  4.16 /  3.48 - controls */
 /* the one accent */
---signal:#0b7561;       /*  5.25 /  5.63 /  4.92 */
---signal-ink:#ffffff;   /*  5.63 on --signal */
---focus:#0b7561;        /*  5.25 - clears 3:1 on every surface it lands on */
+--signal:#0a6e5c;       /*  5.53 /  5.92 /  4.96 */
+--signal-ink:#ffffff;   /*  6.18 on --signal */
+--focus:#0a6e5c;        /*  5.53 - clears 3:1 on every surface it lands on */
 /* reserved. Never decorative: green means "this fact is sourced", amber means
    a real caution, red means a real failure. */
---verified:#3a7a22;     /*  4.91 */
+--verified:#376f22;     /*  5.43 /  5.82 /  4.87 */
 /* Amber and red are different states and must look different. They were the
    same value here, which quietly made the reserved-colour rule untrue: a
    caution and a failure rendered identically. */
---warn:#8a5a08;         /*  5.52 /  5.92 /  5.18 - a real caution */
---fail:#b6462e;         /*  5.02 /  5.38 /  4.71 - a real failure */
+--warn:#8a5608;         /*  5.50 /  5.89 /  4.94 - a real caution */
+--fail:#b13f28;         /*  5.20 /  5.57 /  4.67 - a real failure */
 /* domain hues, used to identify a domain and nothing else */
---dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;
---dom-safety:#b6462e;--dom-control:#7440ab;
+--dom-visual:#8a5410;--dom-audio:#0f657f;--dom-network:#25528f;
+--dom-safety:#b13f28;--dom-control:#6c3d9c;
 --glow:transparent;
---shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
+/* A warm shadow under warm surfaces. A blue-black shadow on a warm ground
+   reads as a smudge rather than as depth. */
+--shadow:0 1px 2px rgba(48,40,30,.06),0 4px 16px rgba(48,40,30,.07);
 /* legacy aliases - do not use in new code */
 --bg:var(--surface);--panel:var(--surface-raised);--panel2:var(--surface-sunken);
 --line:var(--rule);--dim:var(--ink-muted);--dimmer:var(--ink-faint);
---accent:var(--signal);--accent2:#8f6110;--ok:var(--verified);
+--accent:var(--signal);--accent2:#8a5c10;--ok:var(--verified);
 }
 /* --- type scale, 1.2 minor third off a 16px base ------------------------ */
 :root{
@@ -1121,6 +1137,7 @@ export function buildPages(db, dist) {
     ['power', () => learnPowerPage(learnArgs)],
     ['outdoors', () => learnOutdoorsPage(learnArgs)],
     ['mixing', () => learnMixingPage(learnArgs)],
+    ['analogue', () => learnAnaloguePage(learnArgs)],
     ['empathy', () => learnEmpathyPage(learnArgs)],
     ['illusion', () => learnIllusionPage(learnArgs)],
     ['timecode', () => learnTimecodePage(learnArgs)],
