@@ -56,6 +56,7 @@ import { learnColourPage } from './learn-colour.mjs'
 import { learnSensesPage } from './learn-senses.mjs'
 import { buildPage } from './build-page.mjs'
 import { homePage } from './home.mjs'
+import { offlinePage } from './offline-page.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
@@ -451,6 +452,15 @@ const THEME_JS = `
     if(btn){btn.innerHTML=ICONS[m];btn.setAttribute('aria-label','Theme: '+m+' (click to change)');btn.title='Theme: '+m}
   }
   apply(mode());
+  /* Register the service worker so the site survives having no signal.
+     isSecureContext rather than a protocol check: browsers treat localhost as
+     secure, and testing for 'https:' silently disables the worker for anyone
+     running the site locally - including our own offline test. */
+  if('serviceWorker' in navigator && window.isSecureContext){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
+    });
+  }
   document.addEventListener('DOMContentLoaded',function(){
     var btn=document.getElementById('themebtn');
     if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
@@ -513,6 +523,11 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
 <meta name="twitter:card" content="summary">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch.png">
+<meta name="theme-color" content="#0b0e14">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preload" href="/assets/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>${THEME_JS}</script>
@@ -1067,6 +1082,10 @@ export function buildPages(db, dist) {
   // the header, nav rail, tokens and footer cannot drift; `${SITE}/` is
   // already the first entry in `urls`.
   write('', homePage({ esc, shell, SITE, GH, db }))
+
+  // The fallback the service worker serves for an unsaved page. Deliberately
+  // not in the sitemap: it is a state, not a destination.
+  write('offline', offlinePage({ esc, shell, SITE, GH }))
   write('tools', toolsPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
 

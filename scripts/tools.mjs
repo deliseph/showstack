@@ -230,6 +230,26 @@ transition:opacity var(--dur-fast),color var(--dur-fast)}
 
 /* Find a tool. Forty-two calculators in one scroll is a reference; a rigger
    on a phone should not pass nineteen of them to reach voltage drop. */
+/* The offline panel lives on /tools/ because that is where somebody who is
+   about to lose signal actually is. It stays hidden until the browser confirms
+   a service worker is running, so it never promises something that is not
+   there. */
+.offline{border:1px solid var(--rule);border-radius:var(--r-lg);background:var(--surface-raised);
+padding:18px 20px;margin:22px 0 4px}
+.offhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.offk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--signal)}
+.offstate{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+.offstate[data-on]{color:var(--verified)}
+.offp{margin:0 0 14px;color:var(--ink-muted);font-size:14.5px;line-height:1.6;max-width:66ch}
+.offbtns{display:flex;gap:9px;flex-wrap:wrap}
+.offbtns button{font-family:var(--mono);font-size:12.5px;padding:0 16px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;gap:7px}
+.offbtns button:hover:not(:disabled){color:var(--signal);border-color:var(--signal)}
+.offbtns button:disabled{opacity:.55;cursor:default}
+.offbtns button span{color:var(--ink-faint);font-size:11px}
+.offbtns button[data-done]{color:var(--verified);border-color:var(--verified)}
+.offnote{margin:12px 0 0;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);line-height:1.6}
 .tfind{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0 12px}
 .tfind label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
 .tfind input{flex:1 1 260px;min-width:0;min-height:44px;padding:0 14px;font-size:16px;font-family:var(--mono);
@@ -364,6 +384,19 @@ transition:height .35s ease,background .35s ease;min-height:2px}
 <div class="crumb"><a href="/">showstack</a> / tools</div>
 <h2>Field tools</h2>
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
+
+<div class="offline" id="offline" hidden>
+  <div class="offhead">
+    <span class="offk">Offline</span>
+    <span class="offstate" id="off-state">checking&hellip;</span>
+  </div>
+  <p class="offp" id="off-msg">These calculators already run on this page with no signal. Saving the rest means the explainers and the whole searchable index work in a basement too.</p>
+  <div class="offbtns">
+    <button type="button" id="off-learn">Save the 29 explainers <span>&middot; ~3 MB</span></button>
+    <button type="button" id="off-index">Save the searchable index <span>&middot; ~1.2 MB</span></button>
+  </div>
+  <p class="offnote" id="off-note">Stored by your browser on this device. Nothing is sent anywhere, and you can clear it from your browser&rsquo;s site settings.</p>
+</div>
 
 <div class="tfind">
   <label for="tf">Find a tool</label>
@@ -1693,6 +1726,65 @@ function soRender(){
 ["#so-v","#so-mode","#so-lux"].forEach(id => $(id).addEventListener("input", soRender));
 $("#so-mode").addEventListener("change", soRender);
 soRender();
+
+/* ---- offline ------------------------------------------------------------
+   The panel only appears once a controller is actually running. Until then
+   the site would be promising something it cannot do, and this is a site
+   whose whole pitch is not doing that. */
+(function(){
+  var box=document.getElementById('offline');
+  if(!box||!('serviceWorker' in navigator))return;
+  var state=document.getElementById('off-state');
+  var LEARN_URLS=${JSON.stringify(['/learn/', ...LEARN_TOPICS.map((t) => `/learn/${t.slug}/`), '/learn/experience/'])};
+  var INDEX_URLS=['/search/','/showstack.json'];
+
+  function show(on){
+    box.hidden=!on;
+    if(on){state.textContent='ready — this site works with no signal';state.setAttribute('data-on','')}
+  }
+  navigator.serviceWorker.ready.then(function(){show(true)}).catch(function(){});
+  if(navigator.serviceWorker.controller)show(true);
+
+  function saver(btn,urls,label){
+    if(!btn)return;
+    btn.addEventListener('click',function(){
+      if(!navigator.serviceWorker.controller){
+        btn.textContent='reload first, then try again'; return;
+      }
+      btn.disabled=true;
+      var orig=label;
+      navigator.serviceWorker.controller.postMessage({type:'cache-urls',urls:urls});
+      var handler=function(e){
+        if(!e.data)return;
+        if(e.data.type==='cache-progress'){
+          btn.textContent=orig+' — '+e.data.done+'/'+e.data.total;
+        } else if(e.data.type==='cache-done'){
+          btn.textContent='saved for offline';
+          btn.setAttribute('data-done','');
+          navigator.serviceWorker.removeEventListener('message',handler);
+        }
+      };
+      navigator.serviceWorker.addEventListener('message',handler);
+    });
+  }
+  saver(document.getElementById('off-learn'),LEARN_URLS,'Saving explainers');
+  saver(document.getElementById('off-index'),INDEX_URLS,'Saving index');
+
+  /* Say so plainly when the network has gone, rather than letting a stale
+     page look live. */
+  function net(){
+    if(navigator.onLine)return;
+    state.textContent='no network — you are reading saved copies';
+    state.removeAttribute('data-on');
+    box.hidden=false;
+  }
+  window.addEventListener('offline',net);
+  window.addEventListener('online',function(){
+    state.textContent='ready — this site works with no signal';
+    state.setAttribute('data-on','');
+  });
+  net();
+})();
 `
 
   return shell({

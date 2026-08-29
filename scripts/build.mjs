@@ -161,6 +161,41 @@ writeFileSync(join(DIST, 'search', 'index.html'), searchTpl
 // somebody reading a paragraph would be rude.
 if (existsSync(join(ROOT, 'site', 'assets'))) cpSync(join(ROOT, 'site', 'assets'), join(DIST, 'assets'), { recursive: true })
 
+// ---- Installable, and honest about working offline ------------------------
+// The site describes its user as a phone in a loading dock. Until there was a
+// service worker, "works offline once loaded" stopped being true the moment
+// they reloaded.
+//
+// The version stamp is the build date plus the entry count, so a corrected
+// dataset invalidates the cache. A data site serving a stale port number from
+// cache would be worse than serving nothing.
+const swVersion = `${stats.generated}-${stats.total}`
+writeFileSync(join(DIST, 'sw.js'),
+  readFileSync(join(ROOT, 'site', 'sw.js'), 'utf8').replace('__SW_VERSION__', swVersion))
+
+writeFileSync(join(DIST, 'manifest.webmanifest'), JSON.stringify({
+  name: 'showstack — live entertainment technology',
+  short_name: 'showstack',
+  description: `An open, citable index of live entertainment technology: ${stats.total} entries with a source on every fact, plus animated explainers and offline field calculators.`,
+  start_url: '/',
+  scope: '/',
+  display: 'standalone',
+  orientation: 'any',
+  background_color: '#0b0e14',
+  theme_color: '#0b0e14',
+  categories: ['productivity', 'utilities', 'education'],
+  icons: [
+    { src: '/assets/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+    { src: '/assets/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    { src: '/assets/icons/icon-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+  ],
+  shortcuts: [
+    { name: 'Field tools', short_name: 'Tools', url: '/tools/' },
+    { name: 'Search the index', short_name: 'Search', url: '/search/' },
+    { name: 'Explainers', short_name: 'Learn', url: '/learn/' },
+  ],
+}, null, 2))
+
 // Static pages. The search app at / serves people who already know we exist;
 // these serve the person typing "what port does sACN use" into a search engine,
 // which is where nearly all first contact will come from.
