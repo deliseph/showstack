@@ -111,6 +111,8 @@ transition:color .15s,background .15s,border-color .15s}
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
 header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
 border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+header nav .ncl{font-family:var(--mono);font-size:9px;letter-spacing:.9px;text-transform:uppercase;
+color:var(--ink-faint);padding:0 6px 0 0;white-space:nowrap;flex:0 0 auto;align-self:center}
 header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;
 border-left:1px solid var(--line);flex:0 0 auto}
 .ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule-strong);
@@ -292,6 +294,29 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16p
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
+/* A keyboard user should not have to tab through 17 nav items to reach the
+   page. Hidden until focused, then it sits over the sticky header. */
+.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
+font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
+text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.skip:focus{left:0}
+/* "Free, no account, no tracking" was one line of small text at the bottom of
+   two pages. It is a real reason people trust this and it now sits under the
+   header on every page - one line, always there, not a banner and not a badge. */
+.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
+.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
+padding-top:6px;padding-bottom:6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
+.trust .wrap::-webkit-scrollbar{display:none}
+.trust .wrap > *{flex:0 0 auto}
+.trust b{color:var(--ink-muted);font-weight:500}
+.trust svg{flex:0 0 auto;color:var(--verified)}
+.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px}
+.trust a:hover{color:var(--signal)}
+@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
+-webkit-mask-image:none;mask-image:none}}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -383,10 +408,15 @@ const THEME_JS = `
     if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
     apply(mode());
     /* The nav is a sideways rail on a phone, so the page you are actually on
-       can start off-screen to the right. Bring it into view without moving the
-       page itself. */
-    var cur=document.querySelector('header nav a.active');
-    if(cur&&cur.scrollIntoView){try{cur.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
+       can start off-screen to the right. Scroll the rail itself rather than
+       calling scrollIntoView on the link: scrollIntoView sets the sequential
+       focus navigation starting point, which made the first Tab land in the
+       middle of the nav and skip the skip link entirely. */
+    var nav=document.querySelector('header nav.rail');
+    var cur=nav&&nav.querySelector('a.active');
+    if(nav&&cur&&nav.scrollWidth>nav.clientWidth+1){
+      nav.scrollLeft=Math.max(0,cur.offsetLeft-(nav.clientWidth-cur.offsetWidth)/2);
+    }
   });
 })();
 `
@@ -411,8 +441,14 @@ export function navBar(canonical) {
     .map((h, i) => link(h, ['Protocols', 'Standards', 'Software', 'Hardware', 'Glossary'][i])).join('')
   const views = ['/interop/', '/compare/', '/ports/', '/signals/', '/network/', '/rf/']
     .map((h, i) => link(h, ['Interop', 'Compare', 'Ports', 'Signals', 'Network', 'RF'][i])).join('')
-  return `<nav class="rail" aria-label="Site">${home}<span class="navgroup">${main}</span>` +
-    `<span class="navgroup">${index}</span><span class="navgroup">${views}</span></nav>`
+  // The three clusters carry visible labels. Sixteen undifferentiated pills
+  // ask the reader to reconstruct the grouping from a thin border; naming the
+  // runs is what turns the rail into a model of the site. The labels scroll
+  // with the rail, so on a phone you can always see which cluster you are in.
+  return `<nav class="rail" aria-label="Site">${home}` +
+    `<span class="navgroup"><span class="ncl">Learn</span>${main}</span>` +
+    `<span class="navgroup"><span class="ncl">Look up</span>${index}</span>` +
+    `<span class="navgroup"><span class="ncl">Work it out</span>${views}</span></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -436,6 +472,7 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
 <style>${CSS}${extraStyle}</style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap">
   <div class="hbar">
     <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
@@ -445,7 +482,12 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
   ${navBar(canonical)}
   ${h1extra}
 </div></header>
-<main><div class="wrap">${body}</div></main>
+<div class="trust"><div class="wrap">
+  <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <b>Free forever</b><span>&middot;</span><span>no account, no tracking, no third-party requests</span>
+  <span>&middot;</span><a href="/build/">open data, free API</a>
+</div></div>
+<main id="main" tabindex="-1"><div class="wrap">${body}</div></main>
 ${extraScript ? `<script>${extraScript}</script>` : ''}
 <footer><div class="wrap">
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.

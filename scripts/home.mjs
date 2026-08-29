@@ -187,7 +187,7 @@ border-color:color-mix(in srgb,var(--accent) 42%,var(--line))}
   <h2>Everything a show runs on, <em>and why it behaves like that</em></h2>
   <p class="thesis">An open, citable index of live entertainment technology &mdash; every protocol, standard,
   tool and box, with a source on each fact &mdash; and <b>${topicCount} animated explainers arranged as one
-  chain</b>, from a vibration in the air to a feeling in a person. Free, no account, no tracking.</p>
+  chain</b>, from a vibration in the air to a feeling in a person.</p>
 
   <form class="findbar" action="/search/" method="get" role="search">
     <input id="q" name="q" type="search" placeholder="sACN, 5568, 吊桿, D8 Plus, RT60&hellip;"
