@@ -16,7 +16,7 @@
  * WCAG 2.3.1), uses low contrast, and refuses to run under
  * prefers-reduced-motion. Do not make it bigger or brighter.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnPerceptionPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -133,6 +133,7 @@ line-height:1.55}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / perception</div>
+${learnNav(esc, 'perception')}
 <div class="lhero">
   <h2>The person on the other end</h2>
   <p class="lede">24 frames a second. 35 milliseconds of delay. 3 kHz of PWM. Not one of those numbers is a fact about equipment — every one of them is a fact about a nervous system, and about where it stops being able to tell. This page is the floor everything else on the site stands on.</p>

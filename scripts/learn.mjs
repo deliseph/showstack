@@ -16,7 +16,7 @@
  * the material is actually looked for - nobody searches for "RS-485 unit
  * loads", they search for whether they can put forty fixtures on one line.
  */
-import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS } from './learn-kit.mjs'
+import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, learnNav } from './learn-kit.mjs'
 
 export function learnPage({ esc, shell, SITE, GH }) {
   const style = LEARN_CSS + `
@@ -41,6 +41,19 @@ border:1px solid color-mix(in srgb,var(--accent) 38%,transparent);border-radius:
 color:var(--accent);margin-bottom:5px}
 .lintro dd{margin:0;color:var(--dim);font-size:14px;line-height:1.55}
 .lgrid{margin-top:18px}
+/* The capstone sits above the stages because it is what they are all for. */
+.cap{display:block;margin:28px 0 6px;padding:26px 28px;border-radius:var(--r-lg);color:inherit;
+background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 11%,var(--panel)),var(--panel));
+border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line));transition:border-color .18s,transform .18s}
+.cap:hover{border-color:color-mix(in srgb,var(--accent) 62%,var(--line));transform:translateY(-2px);
+text-decoration:none}
+.cap .ct{font-family:var(--mono);font-size:11px;letter-spacing:.7px;text-transform:uppercase;
+color:var(--accent);display:block;margin-bottom:12px}
+.cap h3{margin:0 0 10px;font-size:clamp(21px,3vw,27px);font-family:var(--sans);text-transform:none;
+letter-spacing:-.4px;color:var(--ink);font-weight:660}
+.cap p{margin:0;color:var(--dim);font-size:15px;line-height:1.6;max-width:64ch}
+.cap .cq{margin-top:15px;padding-top:13px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;
+gap:6px 18px;font-size:12.5px;color:var(--dimmer);font-family:var(--mono)}
 @media(max-width:640px){.stage > .shead h3{font-size:20px}}
 `
 
@@ -57,14 +70,22 @@ color:var(--accent);margin-bottom:5px}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / learn</div>
+${learnNav(esc, null)}
 <div class="lhero">
   <h2>Why it behaves like that</h2>
-  <p class="lede">The index tells you what a thing is. The tools give you the number for tonight. These pages are the part in between — the mechanism, drawn moving, so the rule stays with you after you close the tab.</p>
+  <p class="lede">Twenty-five explainers, arranged as one chain — the mechanism drawn moving, so the rule stays with you after you close the tab. The index tells you what a thing is; the tools give you the number for tonight; this is the part in between that nobody writes down.</p>
 </div>
 
-<p style="color:var(--dim);font-size:15.5px;max-width:66ch">They are arranged as one chain, because that is what they are. A signal leaves a console, survives a wire, a network and the air, becomes something in a room, agrees with several other systems about time and space, and finally arrives at a nervous system — which is the only part of it that was ever the point.</p>
+<p style="color:var(--dim);font-size:15.5px;max-width:66ch">They are arranged as one chain, because that is what they are. Something physical becomes a signal, the signal survives a wire, a network and the air, it becomes something in a room, it agrees with other systems about time and space, and it finally arrives at a nervous system — which is the only part of it that was ever the point. The last stage is the machines we built to imitate that nervous system, which is the right place for them.</p>
 
-<nav class="chain" aria-label="The five stages">${chain}</nav>
+<nav class="chain" aria-label="The stages">${chain}</nav>
+
+<a class="cap" href="/learn/${esc(LEARN_CAPSTONE.slug)}/">
+  <span class="ct">Start here if you only read one</span>
+  <h3>${esc(LEARN_CAPSTONE.title)}</h3>
+  <p>${esc(LEARN_CAPSTONE.blurb)}</p>
+  <div class="cq">${LEARN_CAPSTONE.questions.map((q) => `<span>${esc(q)}</span>`).join('')}</div>
+</a>
 
 <dl class="lintro">
   <div><dt>Built on the index</dt><dd>Every claim links to the protocol, standard or term it comes from, so you can go from the explanation to the citation in one click.</dd></div>
@@ -98,7 +119,7 @@ ${LEARN_GROUPS.map((g, i) => {
       url: `${SITE}/learn/`,
       isPartOf: { '@type': 'Dataset', name: 'showstack', url: SITE },
       license: 'https://creativecommons.org/licenses/by/4.0/',
-      hasPart: LEARN_TOPICS.map((t) => ({
+      hasPart: [LEARN_CAPSTONE, ...LEARN_TOPICS].map((t) => ({
         '@type': 'TechArticle',
         name: t.title,
         url: `${SITE}/learn/${t.slug}/`,

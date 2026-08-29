@@ -11,7 +11,7 @@
  * delay until two wavefronts land together teaches it in one go.
  */
 import { speakerDelay, splAtDistance } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 const MATH_SRC = [speakerDelay, splAtDistance].map((f) => f.toString()).join('\n\n')
 
@@ -19,6 +19,21 @@ export function learnSoundPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* the two arrivals, so that "they land together" is something you can watch */
+@keyframes arr-main{0%{transform:translateX(0);opacity:0}8%{opacity:.85}
+84%{transform:translateX(492px);opacity:.85}96%,100%{opacity:0}}
+@keyframes arr-dly{0%,26%{transform:translateX(0);opacity:0}32%{opacity:.85}
+84%{transform:translateX(190px);opacity:.85}96%,100%{opacity:0}}
+.wavepair .fa{animation:arr-main 2.8s linear infinite}
+.wavepair .fb{animation:arr-dly 2.8s linear infinite}
+/* the difference is the shape of the wavefront, which only reads when it moves */
+@keyframes sph{0%{r:14;opacity:.9}100%{r:118;opacity:0}}
+@keyframes cyl{0%{transform:translateX(0) scaleY(1);opacity:.9}
+100%{transform:translateX(110px) scaleY(1.28);opacity:0}}
+.ptfig .wf{animation:sph 2.4s ease-out infinite}
+.arrfig .wf{animation:cyl 2.4s ease-out infinite;transform-origin:178px 70px}
+.spreadfig .w1{animation-delay:.8s}
+.spreadfig .w2{animation-delay:1.6s}
 @keyframes ring-out{0%{r:6;opacity:.85}100%{r:120;opacity:0}}
 .isq circle.ring{animation:ring-out 3s ease-out infinite;fill:none;stroke:var(--accent);stroke-width:2}
 .isq circle.ring:nth-of-type(2){animation-delay:1s}
@@ -50,6 +65,8 @@ export function learnSoundPage({ esc, shell, SITE, GH }) {
   <text x="35" y="98" class="lbl" text-anchor="middle">MAIN</text>
   <rect x="330" y="34" width="30" height="46" rx="5" fill="var(--panel)" stroke="var(--accent2)" stroke-width="2"/>
   <text x="345" y="98" class="lbl" text-anchor="middle">DELAY</text>
+  <g class="fa"><rect x="54" y="44" width="5" height="38" rx="2.5" fill="var(--accent)"/></g>
+  <g class="fb"><rect x="362" y="44" width="5" height="38" rx="2.5" fill="var(--accent2)"/></g>
   <rect x="546" y="40" width="26" height="34" rx="13" fill="var(--dimmer)"/>
   <text x="559" y="98" class="lbl" text-anchor="middle">EAR</text>
   <line x1="52" y1="57" x2="546" y2="57" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
@@ -66,7 +83,7 @@ export function learnSoundPage({ esc, shell, SITE, GH }) {
   const arrayFig = (kind) => {
     const isArray = kind === 'array'
     return `
-<svg viewBox="0 0 300 190" role="img">
+<svg viewBox="0 0 300 190" role="img" class="${isArray ? 'arrfig' : 'ptfig'} spreadfig">
   ${isArray
     ? `${[...Array(6)].map((_, i) => `<rect x="140" y="${22 + i * 15}" width="26" height="13" rx="2" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>`).join('')}
        <path d="M166 28 L286 88 L286 128 L166 112 Z" fill="var(--accent)" opacity=".16"/>
@@ -78,12 +95,16 @@ export function learnSoundPage({ esc, shell, SITE, GH }) {
        <path d="M170 62 L286 20" stroke="var(--accent2)" stroke-width="1.5" opacity=".7"/>
        <path d="M170 98 L286 148" stroke="var(--accent2)" stroke-width="1.5" opacity=".7"/>
        <text x="150" y="180" class="lbl" text-anchor="middle">−6 dB per doubling</text>`}
+  ${[0, 1, 2].map((i) => isArray
+    ? `<rect class="wf w${i}" x="176" y="34" width="4" height="72" rx="2" fill="var(--accent)"/>`
+    : `<circle class="wf w${i}" cx="170" cy="80" r="14" fill="none" stroke="var(--accent2)" stroke-width="2"/>`).join('')}
   <text x="10" y="16" class="lbl">${isArray ? 'line array — cylindrical spread' : 'point source — spherical spread'}</text>
 </svg>`
   }
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / sound</div>
+${learnNav(esc, 'sound')}
 <div class="lhero">
   <h2>Measuring and aligning sound</h2>
   <p class="lede">Sound takes time to travel and loses level on the way. Nearly every decision a system engineer makes follows from those two sentences.</p>

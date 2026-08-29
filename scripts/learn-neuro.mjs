@@ -17,7 +17,7 @@
  *
  * Nothing here is medical advice and the page says so.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnNeuroPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -147,6 +147,7 @@ margin:20px 0;font-size:14.5px;color:var(--dim);line-height:1.65}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / neuro</div>
+${learnNav(esc, 'neuro')}
 <div class="lhero">
   <h2>The brain as a signal system</h2>
   <p class="lede">Transduce, encode, carry, decode, act — with a latency budget on every stage. That is the block diagram of a show system, and it is also the block diagram of a nervous system. Once you draw them next to each other, controlling a game with brain activity and giving somebody back a sense they lost stop being science fiction and become engineering, with honest limits.</p>

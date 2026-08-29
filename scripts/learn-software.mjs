@@ -10,12 +10,19 @@
  * between polling and subscribing is a difference in *timing*, and timing is
  * the one thing a static diagram cannot show.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnSoftwarePage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* a call going down through SDK, API and protocol, and an answer coming back */
+@keyframes down{0%{transform:translateY(0);opacity:0}10%{opacity:1}
+44%{transform:translateY(116px);opacity:1}52%,100%{opacity:0}}
+@keyframes up{0%,52%{transform:translateY(116px);opacity:0}58%{opacity:1}
+92%{transform:translateY(0);opacity:1}98%,100%{opacity:0}}
+.stackfig .call{animation:down 3.2s ease-in-out infinite}
+.stackfig .ret{animation:up 3.2s ease-in-out infinite}
 @keyframes poll-ask{0%,8%{transform:translateX(0);opacity:0}12%{opacity:1}30%{transform:translateX(var(--run));opacity:1}34%{opacity:0}100%{opacity:0}}
 @keyframes poll-ans{0%,34%{transform:translateX(var(--run));opacity:0}38%{opacity:1}56%{transform:translateX(0);opacity:1}60%,100%{opacity:0}}
 @keyframes push-ev{0%{transform:translateX(var(--run));opacity:0}6%{opacity:1}44%{transform:translateX(0);opacity:1}50%,100%{opacity:0}}
@@ -62,6 +69,8 @@ export function learnSoftwarePage({ esc, shell, SITE, GH }) {
   // as the code you install.
   const stackFig = `
 <svg viewBox="0 0 620 210" role="img" class="stackfig">
+  <g class="call"><rect x="286" y="34" width="20" height="14" rx="3" fill="var(--accent)"/></g>
+  <g class="ret"><rect x="314" y="34" width="20" height="14" rx="3" fill="var(--ok)"/></g>
   <g class="layer">
     <rect x="40" y="18" width="540" height="46" rx="7" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.6"/>
     <text x="58" y="40" class="val" font-size="13" fill="var(--accent)">SDK</text>
@@ -86,6 +95,7 @@ export function learnSoftwarePage({ esc, shell, SITE, GH }) {
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / software</div>
+${learnNav(esc, 'software')}
 <div class="lhero">
   <h2>How software talks to software</h2>
   <p class="lede">"Does it have an API?" is the most common integration question on a show, and the words in it get used loosely enough that the answer often means nothing. Three terms, kept apart.</p>

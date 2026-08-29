@@ -13,7 +13,7 @@
  * The other thing it insists on is that a drawing is a contract between
  * departments rather than a picture of the show.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnDrawingsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -120,6 +120,7 @@ letter-spacing:.5px;margin-top:4px}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / drawings</div>
+${learnNav(esc, 'drawings')}
 <div class="lhero">
   <h2>Drawings, models and BIM</h2>
   <p class="lede">A show drawing is not a picture of the show. It is a contract between departments about where things are, what they weigh and who is responsible — and the reason modern entertainment CAD is worth its learning curve is that it stops the drawing and the paperwork from ever disagreeing.</p>

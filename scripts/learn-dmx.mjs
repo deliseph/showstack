@@ -14,7 +14,7 @@
  * about four seconds.
  */
 import { dmxLineBudget } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 const MATH_SRC = [dmxLineBudget].map((f) => f.toString()).join('\n\n')
 
@@ -22,6 +22,12 @@ export function learnDmxPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* the daisy chain, carrying data to a terminator that swallows it */
+@keyframes chain-run{0%{transform:translateX(0);opacity:0}6%{opacity:1}
+82%{transform:translateX(206px);opacity:1}94%,100%{opacity:0;transform:translateX(216px)}}
+.chainfig .pk{animation:chain-run 2.4s linear infinite}
+.chainfig .pk.p2{animation-delay:.8s}
+.chainfig .pk.p3{animation-delay:1.6s}
 /* The line, the pulse, and the pulse coming back. */
 @keyframes dmx-out{
   0%{transform:translateX(0);opacity:0}
@@ -95,12 +101,13 @@ font-family:var(--mono);font-size:13px;color:var(--ink);text-shadow:0 1px 3px rg
 
   // ---- figure: daisy chain vs star ---------------------------------------
   const topoFig = `
-<svg viewBox="-70 0 440 150" role="img">
+<svg viewBox="-70 0 440 150" role="img" class="chainfig">
   <rect x="8" y="60" width="46" height="30" rx="4" fill="var(--panel)" stroke="var(--line)"/>
   <text x="31" y="79" class="lbl" text-anchor="middle">DESK</text>
   <line x1="54" y1="75" x2="272" y2="75" stroke="var(--ok)" stroke-width="4" stroke-linecap="round"/>
   ${[0, 1, 2, 3].map((i) => `<rect x="${86 + i * 48}" y="62" width="26" height="26" rx="3" fill="var(--panel)" stroke="var(--line)"/>`).join('')}
   <rect x="272" y="64" width="18" height="22" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+  ${[0, 1, 2].map((i) => `<g class="pk p${i + 1}"><rect x="58" y="69" width="16" height="12" rx="2" fill="var(--ok)"/></g>`).join('')}
   <text x="150" y="126" class="lbl" text-anchor="middle" fill="var(--ok)">one line in, one line out, terminated once at the end</text>
 </svg>`
 
@@ -118,6 +125,7 @@ font-family:var(--mono);font-size:13px;color:var(--ink);text-shadow:0 1px 3px rg
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / dmx</div>
+${learnNav(esc, 'dmx')}
 <div class="lhero">
   <h2>DMX on the wire</h2>
   <p class="lede">DMX512 is a 250 kbit/s serial signal on an <a href="/signals/media/">RS-485</a> bus, and almost everything that goes wrong with it is electrical rather than logical. Three questions, answered properly.</p>

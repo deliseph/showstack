@@ -17,7 +17,7 @@
  * Both figures animate because both ideas are about *when* something is
  * computed, and that is not a thing a still picture can show.
  */
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 export function learnEnginesPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -120,6 +120,7 @@ color:var(--dim);font-weight:400}
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / engines</div>
+${learnNav(esc, 'engines')}
 <div class="lhero">
   <h2>Node graphs and game engines</h2>
   <p class="lede">Two ways of building show content that do not look like code, and that a lot of people use for years without being told what kind of thing they are working in. One is a patch bay. The other is a machine that draws a picture sixty times a second from a description of a world.</p>

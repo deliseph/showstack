@@ -9,7 +9,7 @@
  * one thing nobody checks until the content goes dark.
  */
 import { beamDiameter, illuminance, throwRatio } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
 
 const MATH_SRC = [beamDiameter, illuminance, throwRatio].map((f) => f.toString()).join('\n\n')
 
@@ -17,6 +17,15 @@ export function learnLightPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* A beam only reads as a beam when there is something in the air, and a blend
+   only reveals itself as the overlap is worked. Both animate for that reason
+   rather than for decoration. */
+@keyframes haze{0%{transform:translate(0,0);opacity:0}12%{opacity:.5}
+78%{transform:translate(var(--hx,150px),var(--hy,-18px));opacity:.5}92%,100%{opacity:0}}
+.beamfig .mote{animation:haze 5s linear infinite}
+${[...Array(7)].map((_, i) => `.beamfig .m${i}{animation-delay:${(i * 0.7).toFixed(1)}s}`).join('')}
+@keyframes ovbreathe{0%,100%{opacity:.22}50%{opacity:.5}}
+.blendfig .ovzone{animation:ovbreathe 3.4s ease-in-out infinite}
 .beamfig .cone{transition:d .2s ease}
 .blendfig .ovl{transition:opacity .3s ease}
 .blendfig.showblack .blackband{opacity:1}
@@ -26,6 +35,8 @@ export function learnLightPage({ esc, shell, SITE, GH }) {
   // ---- beam vs field angle ------------------------------------------------
   const angleFig = `
 <svg viewBox="0 0 620 240" role="img" class="beamfig">
+  ${[...Array(7)].map((_, i) => `<circle class="mote m${i}" cx="${110 + i * 62}" cy="${96 + (i % 3) * 26}" r="${1.8 + (i % 3) * 0.7}"
+    fill="var(--accent2)" style="--hx:${120 + i * 14}px;--hy:${-10 - (i % 4) * 9}px"/>`).join('')}
   <defs>
     <linearGradient id="beamgrad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="var(--accent2)" stop-opacity=".55"/>
@@ -53,6 +64,7 @@ export function learnLightPage({ esc, shell, SITE, GH }) {
   <rect x="30" y="24" width="26" height="34" rx="4" fill="var(--panel)" stroke="var(--line)" stroke-width="1.5"/>
   <rect x="564" y="24" width="26" height="34" rx="4" fill="var(--panel)" stroke="var(--line)" stroke-width="1.5"/>
   <path d="M56 41 L96 150 L392 150 L56 41 Z" fill="var(--accent)" opacity=".18"/>
+  <rect class="ovzone" x="240" y="150" width="164" height="60" fill="var(--accent2)"/>
   <path d="M564 41 L524 150 L228 150 L564 41 Z" fill="var(--dom-audio)" opacity=".18"/>
   <rect x="96" y="150" width="428" height="72" rx="3" fill="var(--panel)" stroke="var(--line)"/>
   <rect x="228" y="150" width="164" height="72" fill="var(--accent)" opacity=".14" class="ovl"/>
@@ -64,6 +76,7 @@ export function learnLightPage({ esc, shell, SITE, GH }) {
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/learn/">learn</a> / light</div>
+${learnNav(esc, 'light')}
 <div class="lhero">
   <h2>Estimating beams and blends</h2>
   <p class="lede">Two things get guessed on site that are cheap to work out beforehand: how big a beam will be when it lands, and whether two projectors can be made to look like one picture.</p>

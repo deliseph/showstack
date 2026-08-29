@@ -38,6 +38,17 @@ import { learnEnginesPage } from './learn-engines.mjs'
 import { learnDrawingsPage } from './learn-drawings.mjs'
 import { learnPerceptionPage } from './learn-perception.mjs'
 import { learnNeuroPage } from './learn-neuro.mjs'
+import { learnCommsPage } from './learn-comms.mjs'
+import { learnConnectorsPage } from './learn-connectors.mjs'
+import { learnTransducersPage } from './learn-transducers.mjs'
+import { learnBitsPage } from './learn-bits.mjs'
+import { learnEncodingPage } from './learn-encoding.mjs'
+import { learnReadingPage } from './learn-reading.mjs'
+import { learnAiPage } from './learn-ai.mjs'
+import { learnDevicesPage } from './learn-devices.mjs'
+import { learnEmotionPage } from './learn-emotion.mjs'
+import { learnPresencePage } from './learn-presence.mjs'
+import { learnExperiencePage } from './learn-experience.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -68,7 +79,7 @@ const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').t
 
 const CSS = `
 :root{color-scheme:dark;
---bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#6e7c94;
+--bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#7a889f;
 --accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
 --dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;--dom-safety:#ec7f66;--dom-control:#b98cf2;
 --glow:rgba(95,212,187,.06);--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
@@ -76,13 +87,13 @@ const CSS = `
 --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
 --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 :root[data-theme="light"]{color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
---accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
+--accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
 --dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
 --glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#67748b;
---accent:#0e8a72;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
+--bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
+--accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
 --dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
 --glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
@@ -126,6 +137,12 @@ flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
    the rail is masked rather than cut. */
 .rail{overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;
 overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+/* Above the phone breakpoint there is room for the whole nav, so let it wrap
+   rather than scroll - a clipped last item reads as a broken layout on a
+   desktop, where nothing suggests the rail is scrollable. */
+@media(min-width:861px){
+  header nav.rail{overflow:visible;flex-wrap:wrap;row-gap:4px;-webkit-mask-image:none;mask-image:none}
+}
 .rail::-webkit-scrollbar{display:none}
 .rail>*{scroll-snap-align:start}
 @media(max-width:1100px){
@@ -674,6 +691,17 @@ export function buildPages(db, dist) {
   write('learn/drawings', learnDrawingsPage(learnArgs));    urls.push(`${SITE}/learn/drawings/`)
   write('learn/perception', learnPerceptionPage(learnArgs)); urls.push(`${SITE}/learn/perception/`)
   write('learn/neuro', learnNeuroPage(learnArgs));          urls.push(`${SITE}/learn/neuro/`)
+  write('learn/comms', learnCommsPage(learnArgs));             urls.push(`${SITE}/learn/comms/`)
+  write('learn/connectors', learnConnectorsPage(learnArgs));   urls.push(`${SITE}/learn/connectors/`)
+  write('learn/transducers', learnTransducersPage(learnArgs));  urls.push(`${SITE}/learn/transducers/`)
+  write('learn/bits', learnBitsPage(learnArgs));               urls.push(`${SITE}/learn/bits/`)
+  write('learn/encoding', learnEncodingPage(learnArgs));       urls.push(`${SITE}/learn/encoding/`)
+  write('learn/reading', learnReadingPage(learnArgs));         urls.push(`${SITE}/learn/reading/`)
+  write('learn/ai', learnAiPage(learnArgs));                   urls.push(`${SITE}/learn/ai/`)
+  write('learn/devices', learnDevicesPage(learnArgs));         urls.push(`${SITE}/learn/devices/`)
+  write('learn/emotion', learnEmotionPage(learnArgs));         urls.push(`${SITE}/learn/emotion/`)
+  write('learn/presence', learnPresencePage(learnArgs));       urls.push(`${SITE}/learn/presence/`)
+  write('learn/experience', learnExperiencePage(learnArgs));   urls.push(`${SITE}/learn/experience/`)
 
   // Browsable index per collection. These used to 404.
   const INDEXES = [
