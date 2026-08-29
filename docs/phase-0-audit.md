@@ -1,5 +1,12 @@
 # Phase 0 — audit and report
 
+> **Status: superseded by phases 1–7.** This is the baseline as measured before
+> any refresh code was written, kept as the record of what was wrong and what
+> was already right. Where it says something is broken, it has since been
+> fixed; `design-system/showstack/MASTER.md` is the current state. Two of its
+> own claims were wrong and are corrected in §I below.
+
+
 Against `docs/ui-refresh-brief.md`. No refresh code written. One repair was made
 first and is declared in §J, because Phase 0 numbers measured against a broken
 file would have been wrong.
@@ -212,8 +219,8 @@ Horizontal scroll at 375 / 768 / 1024 / 1440, across 17 pages: **none** (after t
 
 | Brief item | Status |
 |---|---|
-| Worked-example default on `/interop/`, `/compare/`, `/ports/` | **0** examples, **0** chips, **0** default results on all three |
-| URL-addressable query state on the Answers pages | Absent |
+| Worked-example default on `/interop/`, `/compare/`, `/ports/` | **Corrected after Phase 3.** This line was measured with a crude grep and was wrong about two of the three. `/compare/` is an index of twelve worked comparison pages and `/ports/` is a full 50-port table — neither is the "two empty selects" the brief describes. `/interop/` did default to a pair and did write URL state; the pair was just alphabetical (7thSense Delta into Ableton Live), which answers a question nobody has. |
+| URL-addressable query state on the Answers pages | **Half present.** `/interop/` already wrote `?a=&b=` via `history.replaceState`; `/rf/` and `/ports/` did not. |
 | Human label map | **53 distinct machine values render as human headings** — `/protocols/` 12 (`audio-transport`, `timecode-sync`, `machinery-motion`…), `/software/` 14, `/hardware/` 15, `/glossary/` 12. Plus `open-free-registration` / `proprietary-closed` / `open-paid` on entry pages. |
 | `/tools/` filter, permalinks, copy-result, recently-used | Absent (a sticky category rail **does** already exist) |
 | One isolated answer per calculator | Absent — results and inputs are visually equal |
