@@ -35,7 +35,7 @@ export const TOOL_GROUPS = [
   ['Scenic & illusion', ['peppers', 'forced']],
   ['Access', ['flash', 'ada']],
   ['Content & timing', ['frame', 'pyro', 'storage']],
-  ['Networking', ['subnet', 'fibre', 'sdi']],
+  ['Networking', ['subnet', 'addrkind', 'netcmd', 'fibre', 'sdi']],
   ['Analogue & components', ['optical', 'rc', 'xfmr']],
   ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb']],
   ['RF', ['im', 'rf']],
@@ -52,6 +52,7 @@ import {
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor, RDM_OVERHEAD_BYTES,
+  ipAddressKind, IP_RANGES, NET_COMMANDS,
   opticalSpot, OPTICAL_FORMATS, rcFilter, transformer, waveHarmonics, WAVE_SHAPES,
   vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS, artnetDmx, artnetPoll, ARTNET_OPCODES,
@@ -84,6 +85,7 @@ const MATH_SRC = [
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective,
   dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor,
+  ipAddressKind,
   opticalSpot, rcFilter, transformer, waveHarmonics, vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
@@ -111,6 +113,8 @@ const MMC_COMMANDS = ${JSON.stringify(MMC_COMMANDS)};
 const SACN_ACN_ID = ${JSON.stringify(SACN_ACN_ID)};
 const OPTICAL_FORMATS = ${JSON.stringify(OPTICAL_FORMATS)};
 const WAVE_SHAPES = ${JSON.stringify(WAVE_SHAPES)};
+const IP_RANGES = ${JSON.stringify(IP_RANGES)};
+const NET_COMMANDS = ${JSON.stringify(NET_COMMANDS)};
 const enc = new TextEncoder();
 const toHex = (bytes) => [...bytes].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');`
 
@@ -1254,6 +1258,26 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="sb-out" role="status" aria-live="polite"></div>
   <div class="ttwrap"><table class="tt" id="sb-table"></table></div>
   <p class="note">The mask says how many of the 32 bits are the network; everything else follows from that. A /31 is a point-to-point link with both addresses usable (RFC 3021) and a /32 is a single host, which is why neither reserves a broadcast address. <a href="/learn/network/">How to calculate it by hand →</a></p>
+</div>
+<div class="tool wide" id="addrkind">
+  <h3>What kind of address is this?</h3>
+  <div class="row">
+    <div class="field"><label for="ak-ip">Address</label><input id="ak-ip" type="text" value="169.254.12.9" spellcheck="false" style="width:190px"></div>
+  </div>
+  <div class="out" id="ak-out" role="status" aria-live="polite"></div>
+  <p class="note">Every reserved range carries a diagnosis. <span class="mono">169.254.x.x</span> means DHCP failed and the device named itself &mdash; it can reach others that did the same, on the same wire, and nothing else. <span class="mono">127.x</span> never leaves the machine, so a service bound only there is unreachable however good the cable is. <span class="mono">239.255.x.x</span> is an sACN group rather than a host, and needs IGMP snooping to behave. And the private ranges are private because routers on the public internet <b>drop</b> them &mdash; which is why a show network lives in one, and why that is a security property you get for free by choosing the right numbers.</p>
+</div>
+<div class="tool wide" id="netcmd">
+  <h3>Terminal commands for a show network</h3>
+  <div class="row">
+    <div class="field"><label for="nc-os">Platform</label><select id="nc-os">
+      <option value="win">Windows</option><option value="mac">macOS</option><option value="linux" selected>Linux</option>
+    </select></div>
+    <div class="field"><label for="nc-q">Filter</label><input id="nc-q" type="text" placeholder="multicast, route, port&hellip;" spellcheck="false" style="width:190px"></div>
+  </div>
+  <div class="out" id="nc-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap"><table class="tt" id="nc-table"></table></div>
+  <p class="note">Nearly every network question on a show has a one-line answer from a terminal, and the reason people do not use them is that the command has a different name on every platform and the output is unlabelled. The third column is the part a cheat sheet usually leaves out: <b>what in the output actually answers the question</b>. Two of these are worth learning before the others &mdash; the route table, because a laptop with both wifi and a show network has two default routes and traffic vanishes into the wrong one; and the multicast joins, because a receiver that has not joined the group will never see it however correctly you send.</p>
 </div>
 <div class="tool wide" id="fibre">
   <h3>Fibre loss budget</h3>
@@ -2922,6 +2946,46 @@ function wfRender(){
 }
 ["#wf-sp","#wf-t"].forEach(id => $(id).addEventListener("input", wfRender));
 wfRender();
+
+/* ---- address classification --------------------------------------------- */
+function akRender(){
+  const r = ipAddressKind($("#ak-ip").value);
+  if(!r){ $("#ak-out").innerHTML = '<span class="err">That is not a dotted quad. Try 10.0.0.50.</span>'; return; }
+  const tone = r.showSafe ? "ok" : r.kind === "public" ? "warn" : "dim";
+  let html = '<b>' + r.label + '</b>'
+    + (r.cidr ? ' <span class="mono">' + r.cidr + '</span>' : '')
+    + (r.rfc ? ' <span class="dim">&middot; ' + r.rfc + '</span>' : '');
+  html += '<br>' + r.meaning;
+  if (r.sacnUniverse !== null) {
+    html += '<br><span class="ok">&#10003; sACN universe <b>' + r.sacnUniverse + '</b></span>';
+  }
+  html += '<br><span class="' + tone + '">'
+    + (r.showSafe ? '&#10003; Safe to use on a show network'
+      : r.kind === "public" ? '&#9679; Routable on the internet &mdash; not yours to assign'
+      : '&middot; Not a host address you would assign')
+    + '</span>';
+  $("#ak-out").innerHTML = html;
+}
+$("#ak-ip").addEventListener("input", akRender);
+akRender();
+
+/* ---- the command reference ---------------------------------------------- */
+function ncRender(){
+  const os = $("#nc-os").value;
+  const q = $("#nc-q").value.trim().toLowerCase();
+  const rows = NET_COMMANDS.filter(c =>
+    !q || (c.q + " " + c[os] + " " + c.look).toLowerCase().indexOf(q) > -1);
+  $("#nc-out").innerHTML = rows.length
+    ? "<b>" + rows.length + "</b> of " + NET_COMMANDS.length + ' &middot; <span class="dim">the third column is what to look for, which is the part usually missing</span>'
+    : '<span class="err">Nothing matches that.</span>';
+  $("#nc-table").innerHTML = rows.length
+    ? "<tr><th>To find out</th><th>Type</th><th>Look for</th></tr>" + rows.map(c =>
+        "<tr><td>" + c.q + '</td><td><span class="mono">' + c[os] + "</span></td><td>" + c.look + "</td></tr>").join("")
+    : "";
+}
+["#nc-os","#nc-q"].forEach(id => $(id).addEventListener("input", ncRender));
+$("#nc-os").addEventListener("change", ncRender);
+ncRender();
 
 /* ---- and the one that can actually leave the machine ---------------------
    Web MIDI is real output to real hardware, so it asks for permission and it

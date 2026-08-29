@@ -4423,3 +4423,166 @@ export function interauralDelay(angleDeg, opts = {}) {
     note: 'The ear resolves this down to about ten microseconds, finer than one sample at 44.1 kHz. Below the ambiguity frequency direction comes from timing; above it, from level.',
   }
 }
+
+/**
+ * What kind of address is this, and what does it mean on a show network?
+ *
+ * "Why is that device on 169.254 something" is probably the single most
+ * asked question on a production network, and the answer is diagnostic
+ * rather than cosmetic: it means DHCP failed and the device gave up and
+ * named itself. Every one of these ranges carries that kind of information.
+ *
+ * The public/private split is the one people meet first. Private ranges are
+ * reserved by RFC 1918 and are NOT routable on the public internet — routers
+ * on the way will drop them — which is exactly why show networks live in
+ * them. A private address cannot be reached from outside without something
+ * deliberately forwarding to it, and that is a security property you get for
+ * free by choosing the right numbers.
+ */
+export const IP_RANGES = [
+  { cidr: '0.0.0.0/8', kind: 'unspecified', rfc: 'RFC 1122', label: 'This network',
+    meaning: 'Not a usable host address. Seen as a source before a device has one.' },
+  { cidr: '10.0.0.0/8', kind: 'private', rfc: 'RFC 1918', label: 'Private, large',
+    meaning: 'Sixteen million addresses. The usual choice for a show network with room to grow, and for anything with VLANs in it.' },
+  { cidr: '127.0.0.0/8', kind: 'loopback', rfc: 'RFC 1122', label: 'Loopback',
+    meaning: 'The machine talking to itself. Never leaves the network card, so a service reachable only here is not reachable at all.' },
+  { cidr: '169.254.0.0/16', kind: 'link-local', rfc: 'RFC 3927', label: 'Link-local (APIPA)',
+    meaning: 'DHCP failed and the device named itself. It can reach others that did the same, on the same wire, and nothing else. This is a diagnosis, not a configuration.' },
+  { cidr: '172.16.0.0/12', kind: 'private', rfc: 'RFC 1918', label: 'Private, medium',
+    meaning: 'A million addresses. Less commonly used, which is occasionally a reason to pick it — fewer clashes when two networks meet.' },
+  { cidr: '192.168.0.0/16', kind: 'private', rfc: 'RFC 1918', label: 'Private, small',
+    meaning: 'Sixty-five thousand addresses, and the default on nearly every consumer router — which is why it is the range most likely to collide when a laptop brings its home network habits to site.' },
+  { cidr: '100.64.0.0/10', kind: 'cgnat', rfc: 'RFC 6598', label: 'Carrier-grade NAT',
+    meaning: 'Your internet provider is sharing one public address across many customers. It behaves like a private range and it is not yours to use on a local network.' },
+  { cidr: '224.0.0.0/4', kind: 'multicast', rfc: 'RFC 5771', label: 'Multicast',
+    meaning: 'A group rather than a host. Nothing is assigned this; devices subscribe to it. sACN uses 239.255.x.x, and this whole range needs IGMP snooping on the switch to behave.' },
+  { cidr: '240.0.0.0/4', kind: 'reserved', rfc: 'RFC 1112', label: 'Reserved',
+    meaning: 'Set aside and never allocated. If you see one, something is misconfigured or making it up.' },
+]
+
+export function ipAddressKind(ip) {
+  if (typeof ip !== 'string') return null
+  const parts = ip.trim().split('.')
+  if (parts.length !== 4) return null
+  const octets = parts.map((p) => {
+    if (!/^\d{1,3}$/.test(p)) return NaN
+    return Number(p)
+  })
+  if (octets.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null
+  const value = ((octets[0] << 24) >>> 0) + (octets[1] << 16) + (octets[2] << 8) + octets[3]
+
+  const inRange = (cidr) => {
+    const [base, bitsStr] = cidr.split('/')
+    const bits = Number(bitsStr)
+    const b = base.split('.').map(Number)
+    const baseVal = ((b[0] << 24) >>> 0) + (b[1] << 16) + (b[2] << 8) + b[3]
+    const mask = bits === 0 ? 0 : (0xffffffff << (32 - bits)) >>> 0
+    return (value & mask) >>> 0 === (baseVal & mask) >>> 0
+  }
+
+  // 255.255.255.255 is the limited broadcast and belongs to nothing else.
+  if (value === 0xffffffff) {
+    return { ip, kind: 'broadcast', label: 'Limited broadcast', rfc: 'RFC 919',
+      routable: false, showSafe: false,
+      meaning: 'Everything on this wire. Never a host address, and routers do not forward it.' }
+  }
+
+  const match = IP_RANGES.find((r) => inRange(r.cidr))
+  if (match) {
+    return {
+      ip,
+      kind: match.kind,
+      label: match.label,
+      cidr: match.cidr,
+      rfc: match.rfc,
+      meaning: match.meaning,
+      // Whether the public internet will carry it. Private ranges are
+      // dropped by routers on the way, which is the whole point of them.
+      routable: false,
+      showSafe: match.kind === 'private',
+      // The sACN group range sits inside multicast and is worth naming.
+      sacnUniverse: match.kind === 'multicast' && octets[0] === 239 && octets[1] === 255
+        ? octets[2] * 256 + octets[3]
+        : null,
+    }
+  }
+
+  return {
+    ip,
+    kind: 'public',
+    label: 'Public',
+    cidr: null,
+    rfc: null,
+    routable: true,
+    showSafe: false,
+    meaning: 'Routable on the public internet, and almost certainly belongs to somebody else. Using one on a private network works until the day you need to reach the real owner of that address.',
+    sacnUniverse: null,
+  }
+}
+
+/**
+ * The commands, and the equivalent on each platform.
+ *
+ * Nearly every network question on a show has a one-line answer from a
+ * terminal, and the reason people do not use them is that the command has a
+ * different name on every platform and the output is unlabelled. So: what
+ * you are trying to find out, what to type, and — the part usually missing —
+ * what in the output actually answers the question.
+ */
+export const NET_COMMANDS = [
+  {
+    q: 'What is my address?',
+    win: 'ipconfig /all', mac: 'ifconfig', linux: 'ip addr',
+    look: 'IPv4 address, subnet mask, default gateway. A 169.254 address means DHCP failed and the machine named itself.',
+  },
+  {
+    q: 'Can I reach that device?',
+    win: 'ping 10.0.0.50', mac: 'ping 10.0.0.50', linux: 'ping 10.0.0.50',
+    look: 'Replies with a time. "Destination host unreachable" is your machine giving up locally; a timeout means it left and nothing came back — different faults.',
+  },
+  {
+    q: 'Where does the traffic actually go?',
+    win: 'tracert 10.0.0.50', mac: 'traceroute 10.0.0.50', linux: 'traceroute 10.0.0.50',
+    look: 'Each hop with its time. A hop that suddenly jumps by tens of milliseconds is the one to ask about. Stars mean that hop declined to answer, not that it is broken.',
+  },
+  {
+    q: 'What is on this network?',
+    win: 'arp -a', mac: 'arp -a', linux: 'ip neigh',
+    look: 'Every address this machine has spoken to recently, with its MAC. The first three MAC pairs identify the manufacturer, which is often enough to name an unlabelled box.',
+  },
+  {
+    q: 'Which way out is it using?',
+    win: 'route print', mac: 'netstat -rn', linux: 'ip route',
+    look: 'The default route. Two default routes — a wired show network and wifi — is the classic reason traffic vanishes into the wrong interface.',
+  },
+  {
+    q: 'What is listening on this machine?',
+    win: 'netstat -ano', mac: 'netstat -an', linux: 'ss -tulnp',
+    look: 'Local address and port. 0.0.0.0 means every interface; 127.0.0.1 means loopback only, so nothing else can reach it however good the cable is.',
+  },
+  {
+    q: 'Is that port open on the far end?',
+    win: 'Test-NetConnection 10.0.0.50 -Port 5568', mac: 'nc -vz 10.0.0.50 5568', linux: 'nc -vz 10.0.0.50 5568',
+    look: 'Succeeded or refused. Refused means something answered and said no; a timeout means nothing answered at all, which usually means a firewall rather than a closed port.',
+  },
+  {
+    q: 'What multicast groups has this machine joined?',
+    win: 'netsh interface ipv4 show joins', mac: 'netstat -g', linux: 'ip maddr show',
+    look: 'sACN groups look like 239.255.x.x. If a receiver has not joined the group, no amount of correct sending will reach it.',
+  },
+  {
+    q: 'Is the name resolving?',
+    win: 'nslookup device.local', mac: 'dscacheutil -q host -a name device.local', linux: 'dig device.local',
+    look: 'The address it resolved to. On a show network with no DNS this is expected to fail — use the address.',
+  },
+  {
+    q: 'How much can this link carry?',
+    win: 'iperf3 -c 10.0.0.50', mac: 'iperf3 -c 10.0.0.50', linux: 'iperf3 -c 10.0.0.50',
+    look: 'Bitrate and retransmits. Retransmits on a supposedly quiet gigabit link mean a duplex mismatch or a failing cable, and they will ruin audio long before they ruin a file copy.',
+  },
+  {
+    q: 'What is actually on the wire?',
+    win: 'Wireshark', mac: 'sudo tcpdump -i en0 udp port 5568', linux: 'sudo tcpdump -i eth0 udp port 5568',
+    look: 'The packets themselves. Filter to the port you care about first — an unfiltered capture on a show network is unreadable within seconds.',
+  },
+]
