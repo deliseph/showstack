@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: running-status
+en: Running status
+zh_hant: 延續狀態
+domain: audio
+definition_en: A MIDI compression rule. If a status byte would be the same as the previous
+  one, it can be omitted and only the data bytes sent. It is why a dump of a busy MIDI stream
+  has long runs with no status byte visible, and why Note On at velocity 0 exists as a way of
+  saying Note Off — it lets a whole passage of notes share one status byte.
+definition_zh_hant: MIDI 的一種壓縮規則：若狀態位元組與前一個相同，可以省略，只傳資料位元組。這就是為什麼繁忙的 MIDI
+  資料流長段看不到狀態位元組，也是為什麼「力度為 0 的 Note On」被用來表示 Note Off —— 這讓整段音符共用同一個狀態位元組。
+regional_variants:
+- region: UK / US
+  term: Running status
+- region: HK / TW
+  term: 延續狀態 / 執行狀態
+false_friends:
+- Data bytes with no preceding status byte are not malformed. A receiver that cannot handle
+  running status will appear to work on a quiet stream and fail on a busy one.
+see_also:
+- quarter-frame
+- daisy-chain
+tags:
+- control
+- midi
+- protocol
+sources:
+- title: MIDI 1.0 Detailed Specification
+  url: https://midi.org/midi-1-0-core-specifications
+  publisher: MIDI Association
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

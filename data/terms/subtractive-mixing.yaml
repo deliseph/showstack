@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: subtractive-mixing
+en: Subtractive colour mixing
+zh_hant: 減色混合
+domain: lighting
+definition_en: Mixing by removing light. One white source passes through layers that each
+  remove part of the spectrum, and removal multiplies rather than adds, so you start at white
+  and take away. This is what gel does, what a CMY fixture's dichroic flags do, and what a
+  costume does to the light falling on it.
+definition_zh_hant: 以扣除光線來混色。單一白光穿過若干層，每層扣掉一部分光譜；扣除是相乘而非相加，因此起點是白，逐層減去。色紙、CMY
+  燈具的二向色濾片，以及打在服裝上的光，都是這樣運作。
+regional_variants:
+- region: UK / US
+  term: Subtractive mixing
+- region: HK / TW
+  term: 減色混合 / 減法混色
+false_friends:
+- On a subtractive fixture, saturation costs output; on an additive one it does not. Two
+  units set to the same picker value will not match, having taken different spectral routes.
+see_also:
+- additive-mixing
+- gel
+- dichroic
+tags:
+- lighting
+- colour
+sources:
+- title: CIE colorimetry and colour mixing fundamentals
+  url: https://cie.co.at/e-ilv
+  publisher: International Commission on Illumination
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -27,9 +27,9 @@ import { LEARN_TOPICS, LEARN_COUNT } from './learn-kit.mjs'
  * matches what the page actually renders, so the sentence cannot lie again.
  */
 export const TOOL_GROUPS = [
-  ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'tc', 'relay']],
+  ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'tc', 'midi', 'relay']],
   ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array']],
-  ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mired', 'stops']],
+  ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mix', 'whites', 'mired', 'stops']],
   ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'ohm', 'heat', 'battery']],
   ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
   ['Access', ['flash', 'ada']],
@@ -46,6 +46,8 @@ import {
   roomModes, lineArrayCoverage, stopsOfLight,
   windLoad, beaufort, dewPoint, flashRate, assistiveListening,
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
+  srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
+  channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -70,6 +72,8 @@ const MATH_SRC = [
   roomModes, lineArrayCoverage, stopsOfLight,
   windLoad, beaufort, dewPoint, flashRate, assistiveListening,
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
+  srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
+  channelDetail, sysexDetail,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
@@ -78,7 +82,12 @@ const MATH_TABLES = `const CORRECTION_GELS = ${JSON.stringify(CORRECTION_GELS)};
 const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};
 const BEAUFORT = ${JSON.stringify(BEAUFORT)};
 const BUNDLE_FACTORS = ${JSON.stringify(BUNDLE_FACTORS)};
-const SDI_RATES = ${JSON.stringify(SDI_RATES)};`
+const SDI_RATES = ${JSON.stringify(SDI_RATES)};
+const MIDI_CHANNEL = ${JSON.stringify(MIDI_CHANNEL)};
+const MIDI_SYSTEM = ${JSON.stringify(MIDI_SYSTEM)};
+const NOTE_NAMES = ${JSON.stringify(NOTE_NAMES)};
+const MSC_FORMATS = ${JSON.stringify(MSC_FORMATS)};
+const MSC_COMMANDS = ${JSON.stringify(MSC_COMMANDS)};`
 
 /**
  * Everything on this page that is the same for every calculator: the finder,
@@ -369,6 +378,12 @@ line-height:1.65;font-variant-numeric:tabular-nums;position:relative}
 display:inline-block;vertical-align:-1px}
 .out .err{color:var(--fail);font-weight:600}
 .out .warn{color:var(--warn);font-weight:600}
+.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));gap:10px;margin:14px 0 4px}
+.sw{border:1px solid var(--rule-strong);border-radius:var(--r-sm);overflow:hidden;background:var(--surface-raised)}
+.sw .chip{height:58px;display:block}
+.sw b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;
+color:var(--ink-faint);padding:8px 10px 2px}
+.sw em{display:block;font-style:normal;font-family:var(--mono);font-size:12.5px;color:var(--ink);padding:0 10px 9px}
 .fllist{margin:6px 0 8px;padding-left:18px}
 .fllist li{margin:3px 0;color:var(--ink-muted)}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
@@ -637,6 +652,16 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="out" id="tc-out" role="status" aria-live="polite"></div>
   <p class="note">Drop-frame skips frame labels 00 and 01 at the start of every minute except each tenth minute — labels, not time. Entering a label that does not exist (say 00:01:00;00 in DF) is reported as such rather than silently rounded. See <a href="/protocols/ltc/">LTC</a> and <a href="/protocols/mtc/">MTC</a>.</p>
 </div>
+<div class="tool wide" id="midi">
+  <h3>MIDI hex decoder</h3>
+  <div class="row">
+    <div class="field"><label for="md-in">Bytes (hex &mdash; spaces, commas or 0x all fine)</label>
+      <textarea id="md-in" spellcheck="false">90 3C 7F 3E 7F 3C 00 B0 07 64 F1 04 F0 7F 7F 02 01 01 31 00 F7</textarea></div>
+  </div>
+  <div class="out" id="md-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap"><table class="tt" id="md-table"></table></div>
+  <p class="note">One rule does all the framing: a <b>status byte has its top bit set</b> (80&ndash;FF), a data byte does not (00&ndash;7F). There is no header, no length field and no checksum, so a receiver joining mid-stream resynchronises on the next byte with the high bit set. For channel messages the high nibble is the command and the low nibble is the channel &mdash; zero-based on the wire, displayed one-based nearly everywhere, which is the off-by-one everybody meets once. <b>Running status</b> lets a repeated status byte be omitted, and it is why Note On at velocity 0 exists as a Note Off: a whole passage of notes shares one 9n byte. <a href="/learn/timecode/">How MTC and MSC sit on top of this &rarr;</a></p>
+</div>
 <div class="tool wide" id="relay">
   <h3>Relay logic matrix</h3>
   <div class="row">
@@ -804,6 +829,35 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="as-out" role="status" aria-live="polite"></div>
   <p class="note">Fit letterboxes and wastes surface; fill crops and loses content. The bar and crop figures are the numbers a designer needs, because that is the dead area to mask or design around. Scaling past 1:1 is flagged separately &mdash; that is the point where an LED wall starts to look soft, and no amount of processing puts the pixels back.</p>
+</div>
+<div class="tool wide" id="mix">
+  <h3>Colour mixing &amp; shadows</h3>
+  <div class="row">
+    <div class="field"><label for="cm-mode">Mixing</label><select id="cm-mode">
+      <option value="additive">additive &mdash; emitters, lamps, LED</option>
+      <option value="subtractive">subtractive &mdash; gel, CMY flags, a costume</option>
+    </select></div>
+    <div class="field"><label for="cm-c1">Source 1</label><input id="cm-c1" type="color" value="#ff8c28"></div>
+    <div class="field"><label for="cm-l1">at <span id="cm-l1v">100%</span></label><input id="cm-l1" type="range" min="0" max="100" value="100" style="width:110px"></div>
+    <div class="field"><label for="cm-c2">Source 2</label><input id="cm-c2" type="color" value="#285aff"></div>
+    <div class="field"><label for="cm-l2">at <span id="cm-l2v">100%</span></label><input id="cm-l2" type="range" min="0" max="100" value="100" style="width:110px"></div>
+    <div class="field"><label for="cm-c3">Source 3</label><input id="cm-c3" type="color" value="#000000"></div>
+    <div class="field"><label for="cm-l3">at <span id="cm-l3v">0%</span></label><input id="cm-l3" type="range" min="0" max="100" value="0" style="width:110px"></div>
+  </div>
+  <div class="swatches" id="cm-sw"></div>
+  <div class="out" id="cm-out" role="status" aria-live="polite"></div>
+  <p class="note">Two operations share the word mixing and they are opposites. <b>Additive</b> is emitters: each source contributes its own spectrum and they sum, so you start at black and add, and red plus green is yellow. <b>Subtractive</b> is gel, CMY flags and costume: each layer <em>removes</em> part of the spectrum, which is multiplication, so you start at white and take away, and a deep colour is always a dim one. All of it is computed in linear light, not in code values &mdash; two sources at 50% make 176, not 255. The shadow swatches are the answer to why shadows go coloured: a shadow is the light that still arrives, so blocking one of two sources leaves the other one&rsquo;s colour. <a href="/learn/mixing/">The whole mechanism &rarr;</a></p>
+</div>
+<div class="tool" id="whites">
+  <h3>Mixing colour temperatures</h3>
+  <div class="row">
+    <div class="field"><label for="cw-a">Source A (K)</label><input id="cw-a" type="number" min="1000" max="20000" step="100" value="3200" inputmode="numeric" style="width:120px"></div>
+    <div class="field"><label for="cw-al">at <span id="cw-alv">100%</span></label><input id="cw-al" type="range" min="0" max="100" value="100" style="width:110px"></div>
+    <div class="field"><label for="cw-b">Source B (K)</label><input id="cw-b" type="number" min="1000" max="20000" step="100" value="6500" inputmode="numeric" style="width:120px"></div>
+    <div class="field"><label for="cw-bl">at <span id="cw-blv">100%</span></label><input id="cw-bl" type="range" min="0" max="100" value="100" style="width:110px"></div>
+  </div>
+  <div class="out" id="cw-out" role="status" aria-live="polite"></div>
+  <p class="note">Colour temperature averages in <b>mireds</b>, not in kelvin, because that is the scale on which equal steps look equal and the scale gel shift values are printed on. Half 3200&nbsp;K and half 6500&nbsp;K is about 4290&nbsp;K, not 4850. The warning matters more than the number: two sources on the Planckian locus mix to a point <em>off</em> it, toward green, because mixing walks the straight line between two points on a curve. That is why a tungsten wash and a daylight LED read green on camera when both are individually clean, and why the fix is minus-green rather than a colour temperature change. <a href="/tools/#mired">Gel correction</a> works the same mired arithmetic.</p>
 </div>
 <div class="tool wide" id="mired">
   <h3>Colour temperature correction</h3>
@@ -2096,6 +2150,109 @@ function sdRender(){
 }
 ["#sd-att","#sd-f","#sd-eq","#sd-len"].forEach(id => $(id).addEventListener("input", sdRender));
 sdRender();
+
+/* ---- colour mixing and shadows ------------------------------------------ */
+function cmRender(){
+  const hexToRgb = (h) => ({ r: parseInt(h.slice(1,3),16), g: parseInt(h.slice(3,5),16), b: parseInt(h.slice(5,7),16) });
+  const mode = $("#cm-mode").value;
+  const src = [];
+  for (const n of [1,2,3]) {
+    const level = Number($("#cm-l"+n).value) / 100;
+    $("#cm-l"+n+"v").textContent = Math.round(level*100) + "%";
+    /* A source at zero is not in the rig. Keeping it in the list would make a
+       subtractive stack multiply by a filter that is not in the beam, and
+       would give a shadow for a lamp that is off. */
+    if (level > 0) src.push({ ...hexToRgb($("#cm-c"+n).value), level, name: "source " + n, index: n });
+  }
+  if (!src.length) {
+    $("#cm-sw").innerHTML = "";
+    $("#cm-out").innerHTML = '<span class="err">Everything is at zero. Bring a source up.</span>';
+    return;
+  }
+  const m = colourMix(src, mode);
+  if (!m) { $("#cm-out").innerHTML = '<span class="err">Check the levels.</span>'; return; }
+
+  let sw = '<div class="sw"><span class="chip" style="background:' + m.hex + '"></span>'
+    + "<b>the mix</b><em>" + m.hex + "</em></div>";
+  if (mode === "additive") {
+    src.forEach((s, i) => {
+      const sh = m.shadowOf(i);
+      if (!sh) return;
+      sw += '<div class="sw"><span class="chip" style="background:' + sh.hex + '"></span>'
+        + "<b>shadow of " + s.index + "</b><em>" + (sh.black ? "black" : sh.hex) + "</em></div>";
+    });
+  }
+  $("#cm-sw").innerHTML = sw;
+
+  let html = "Mix <b>" + m.hex + "</b> &middot; relative luminance " + m.luminance;
+  /* Headroom is an additive idea. A subtractive stack cannot clip - it only
+     ever removes - so reporting headroom there would be answering a question
+     nobody asked with a number that means nothing. */
+  if (mode === "additive") {
+    html += m.clipped
+      ? ' <span class="warn">&#9679; clipped &mdash; a channel is out of headroom, so pushing further shifts the hue rather than adding brightness</span>'
+      : ' <span class="dim">&middot; ' + Math.round(m.headroom*100) + "% headroom left</span>";
+  }
+  if (mode === "additive") {
+    const lit = src.length;
+    html += "<br>" + (lit > 1
+      ? "Each shadow is lit by every source the object does not block, so it takes those sources&rsquo; colour &mdash; not grey."
+      : "One source casts a genuinely black shadow: there is nothing else reaching the surface.");
+  } else {
+    html += "<br>Each layer multiplies what is left. " + (m.luminance < 0.15
+      ? "This stack is nearly closed &mdash; a deep colour is always a dim one."
+      : "Stack another and it gets deeper and dimmer together.");
+  }
+  $("#cm-out").innerHTML = html;
+}
+["#cm-mode","#cm-c1","#cm-c2","#cm-c3","#cm-l1","#cm-l2","#cm-l3"].forEach(id => $(id).addEventListener("input", cmRender));
+$("#cm-mode").addEventListener("change", cmRender);
+cmRender();
+
+/* ---- mixing colour temperatures ----------------------------------------- */
+function cwRender(){
+  const al = Number($("#cw-al").value)/100, bl = Number($("#cw-bl").value)/100;
+  $("#cw-alv").textContent = Math.round(al*100) + "%";
+  $("#cw-blv").textContent = Math.round(bl*100) + "%";
+  const r = mixWhites([{ cct: $("#cw-a").value, level: al }, { cct: $("#cw-b").value, level: bl }]);
+  if (!r) { $("#cw-out").innerHTML = '<span class="err">Colour temperatures are 1000 to 20000 K, and something has to be above zero.</span>'; return; }
+  let html = "<b>" + r.resultK.toLocaleString() + "</b> K &middot; " + r.resultMired + " mired";
+  if (r.kelvinErrorIfAveraged !== 0) {
+    html += '<br><span class="dim">Averaging the kelvin figures would have said ' + r.naiveKelvinAverage.toLocaleString()
+      + " K &mdash; out by " + Math.abs(r.kelvinErrorIfAveraged).toLocaleString() + " K.</span>";
+  }
+  html += "<br>" + r.miredSpread + " mired apart &middot; "
+    + (r.greenShift ? '<span class="warn">&#9679; ' : '<span class="ok">&#10003; ') + r.advice + "</span>";
+  $("#cw-out").innerHTML = html;
+}
+["#cw-a","#cw-b","#cw-al","#cw-bl"].forEach(id => $(id).addEventListener("input", cwRender));
+cwRender();
+
+/* ---- MIDI hex decoder ---------------------------------------------------- */
+function mdRender(){
+  const d = midiDecode($("#md-in").value);
+  if (!d) { $("#md-out").innerHTML = '<span class="err">Paste some hex bytes.</span>'; $("#md-table").innerHTML = ""; return; }
+  if (d.error) { $("#md-out").innerHTML = '<span class="err">' + d.error + "</span>"; $("#md-table").innerHTML = ""; return; }
+  if (!d.messages.length) { $("#md-out").innerHTML = '<span class="dim">Nothing to decode yet.</span>'; $("#md-table").innerHTML = ""; return; }
+  let rows = "<tr><th>Bytes</th><th>Message</th><th>Ch</th><th>What it means</th></tr>";
+  let bad = 0;
+  for (const m of d.messages) {
+    if (m.error) bad++;
+    rows += "<tr><td>" + m.raw.join(" ")
+      + (m.runningStatus ? ' <span class="dim">(running)</span>' : "")
+      + "</td><td>" + (m.error ? '<span class="err">' + m.name + "</span>" : m.name)
+      + "</td><td>" + (m.channel ?? "&mdash;")
+      + "</td><td>" + (m.detail ?? "&mdash;") + "</td></tr>";
+  }
+  $("#md-table").innerHTML = rows;
+  const running = d.messages.filter(m => m.runningStatus).length;
+  $("#md-out").innerHTML = "<b>" + d.messages.length + "</b> message" + (d.messages.length === 1 ? "" : "s")
+    + " from " + d.bytes + " bytes"
+    + (running ? ' &middot; <span class="dim">' + running + " using running status</span>" : "")
+    + (bad ? ' &middot; <span class="err">' + bad + " could not be parsed</span>" : "");
+}
+$("#md-in").addEventListener("input", mdRender);
+mdRender();
 
 /* ---- offline ------------------------------------------------------------
    The panel only appears once a controller is actually running. Until then

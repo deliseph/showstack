@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: biphase-mark
+en: Biphase mark encoding
+zh_hant: 雙相符號編碼
+domain: video
+definition_en: The line code LTC uses. There is a transition at every bit boundary, and a one
+  gets one extra transition in the middle of the bit. That gives a self-clocking, DC-free,
+  polarity-independent signal that decodes over a wide range of speeds — which is what lets
+  timecode survive an audio track and be read while shuttling backwards.
+definition_zh_hant: LTC 使用的線路編碼。每個位元邊界都有一次跳變，代表 1 的位元在中間再多一次跳變。這產生一個自帶時脈、無直流成分、與極性無關的訊號，並可在很寬的速度範圍內解碼
+  —— 這正是時碼能存活在音軌上、並能在倒帶時被讀取的原因。
+regional_variants:
+- region: UK / US
+  term: Biphase mark / BMC / FM encoding
+- region: HK / TW
+  term: 雙相符號編碼
+false_friends:
+- The encoding is polarity-independent, so a swapped pair on a timecode feed has no symptom
+  at all. A wiring fault that would break anything else stays hidden here.
+see_also:
+- drop-frame
+- frame-rate
+tags:
+- video
+- timecode
+- encoding
+sources:
+- title: SMPTE ST 12-1 Time and Control Code
+  url: https://www.smpte.org/standards
+  publisher: SMPTE
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

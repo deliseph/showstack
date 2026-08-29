@@ -20,6 +20,8 @@ import {
   roomModes, lineArrayCoverage, stopsOfLight,
   windLoad, beaufort, dewPoint, flashRate, assistiveListening,
   cableDerating, awgToMm2, mm2ToAwg, coaxReach, SDI_RATES,
+  srgbToLinear, linearToSrgb, colourMix, mixWhites,
+  ltcFrame, LTC_SYNC_WORD, mtcQuarterFrames, MTC_RATES, midiDecode, midiNoteName,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -1730,5 +1732,410 @@ describe('SDI reach', () => {
     assert.equal(coaxReach(20, 0), null)
     assert.equal(coaxReach(20, 1000, { equalisationDb: 0 }), null)
     assert.equal(coaxReach(20, 1000).canRun(50, 'not-a-rate'), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Colour mixing
+// ---------------------------------------------------------------------------
+
+describe('sRGB transfer function', () => {
+  test('the endpoints are exact and the middle is not half', () => {
+    assert.equal(srgbToLinear(0), 0)
+    assert.equal(srgbToLinear(255), 1)
+    assert.equal(linearToSrgb(0), 0)
+    assert.equal(linearToSrgb(1), 255)
+    // The whole point: code value 128 is about 21.6% of the light, not 50%.
+    assert.ok(Math.abs(srgbToLinear(128) - 0.216) < 0.002)
+    // And half the light encodes to 188, not 128.
+    assert.equal(linearToSrgb(0.5), 188)
+  })
+
+  test('it round-trips', () => {
+    for (const v of [0, 1, 17, 64, 128, 200, 254, 255]) {
+      assert.equal(linearToSrgb(srgbToLinear(v)), v)
+    }
+  })
+
+  test('out-of-range input is clamped rather than extrapolated', () => {
+    assert.equal(srgbToLinear(300), 1)
+    assert.equal(srgbToLinear(-10), 0)
+    assert.equal(linearToSrgb(2), 255)
+  })
+})
+
+describe('additive mixing', () => {
+  const R = { name: 'red', r: 255, g: 0, b: 0 }
+  const G = { name: 'green', r: 0, g: 255, b: 0 }
+  const B = { name: 'blue', r: 0, g: 0, b: 255 }
+
+  test('red plus green is yellow, which is the fact that breaks paint intuition', () => {
+    const m = colourMix([R, G], 'additive')
+    assert.equal(m.hex, '#ffff00')
+  })
+
+  test('all three primaries at full make white', () => {
+    const m = colourMix([R, G, B], 'additive')
+    assert.equal(m.hex, '#ffffff')
+    assert.equal(m.luminance, 1)
+  })
+
+  test('two sources at half do not make one at full, because the numbers are not linear', () => {
+    // Naive intuition: 128 + 128 = 255. In light it is 0.216 + 0.216 = 0.432,
+    // which encodes to 176 — visibly short of white.
+    const m = colourMix([{ r: 128, g: 128, b: 128 }, { r: 128, g: 128, b: 128 }], 'additive')
+    assert.equal(m.rgb[0], 176)
+    assert.equal(m.clipped, false)
+  })
+
+  test('clipping is reported, because it means the hue is now shifting rather than getting brighter', () => {
+    const m = colourMix([{ r: 255, g: 100, b: 0 }, { r: 255, g: 200, b: 0 }], 'additive')
+    assert.equal(m.clipped, true)
+    assert.equal(m.headroom, 0)
+  })
+
+  test('level scales in linear light, not in code values', () => {
+    const full = colourMix([{ r: 255, g: 255, b: 255, level: 1 }], 'additive')
+    const half = colourMix([{ r: 255, g: 255, b: 255, level: 0.5 }], 'additive')
+    assert.equal(full.luminance, 1)
+    assert.equal(half.luminance, 0.5)
+    // Half the light, encoded, is 188 — not 128.
+    assert.equal(half.rgb[0], 188)
+  })
+})
+
+describe('subtractive mixing', () => {
+  test('cyan and magenta filters give blue, by removing rather than adding', () => {
+    const m = colourMix([
+      { name: 'cyan', r: 0, g: 255, b: 255 },
+      { name: 'magenta', r: 255, g: 0, b: 255 },
+    ], 'subtractive')
+    // Cyan kills red, magenta kills green, blue survives both.
+    assert.equal(m.hex, '#0000ff')
+  })
+
+  test('stacking all three subtractive primaries goes to black', () => {
+    const m = colourMix([
+      { r: 0, g: 255, b: 255 }, { r: 255, g: 0, b: 255 }, { r: 255, g: 255, b: 0 },
+    ], 'subtractive')
+    assert.equal(m.hex, '#000000')
+  })
+
+  test('a deep subtractive colour is also a dim one, which is the trade', () => {
+    // Both filters pass red completely; the difference is what they do to the
+    // other two channels, and green is where the luminance lives. A pale red
+    // returns two thirds of the light, a deep red barely a fifth.
+    const light = colourMix([{ r: 255, g: 200, b: 200 }], 'subtractive')
+    const deep = colourMix([{ r: 255, g: 20, b: 20 }], 'subtractive')
+    assert.ok(light.luminance > 0.6, `pale red passed only ${light.luminance}`)
+    assert.ok(deep.luminance < 0.25, `deep red passed ${deep.luminance}`)
+    assert.ok(light.luminance / deep.luminance > 3)
+  })
+
+  test('a filter at level 0 is a filter out of the beam', () => {
+    const m = colourMix([{ r: 0, g: 255, b: 255, level: 0 }], 'subtractive')
+    assert.equal(m.hex, '#ffffff')
+  })
+
+  test('reflectance multiplies exactly like transmission: a red costume under green light', () => {
+    // A saturated green source has almost nothing where a red costume
+    // reflects, so the costume returns almost nothing. It does not go dark
+    // red — it goes black.
+    const m = colourMix([
+      { name: 'green source', r: 0, g: 255, b: 40 },
+      { name: 'red costume', r: 220, g: 20, b: 20 },
+    ], 'subtractive')
+    assert.ok(m.luminance < 0.02, `costume returned ${m.luminance}`)
+  })
+})
+
+describe('coloured shadows', () => {
+  const warm = { name: 'warm key', r: 255, g: 140, b: 40 }
+  const blue = { name: 'blue side', r: 40, g: 90, b: 255 }
+
+  test('the shadow of one source is the colour of the other', () => {
+    const m = colourMix([warm, blue], 'additive')
+    const s0 = m.shadowOf(0)
+    const s1 = m.shadowOf(1)
+    // Block the warm source and what is left IS the blue source, exactly.
+    assert.equal(s0.hex, '#285aff')
+    assert.equal(s0.blocked, 'warm key')
+    assert.equal(s1.hex, '#ff8c28')
+    assert.equal(s1.blocked, 'blue side')
+    assert.equal(s0.black, false)
+    assert.equal(s1.black, false)
+  })
+
+  test('one source alone casts a genuinely black shadow', () => {
+    const m = colourMix([warm], 'additive')
+    assert.equal(m.shadowOf(0).black, true)
+    assert.equal(m.shadowOf(0).hex, '#000000')
+  })
+
+  test('with three sources, blocking one leaves the sum of the other two', () => {
+    const m = colourMix([
+      { name: 'a', r: 255, g: 0, b: 0 },
+      { name: 'b', r: 0, g: 255, b: 0 },
+      { name: 'c', r: 0, g: 0, b: 255 },
+    ], 'additive')
+    assert.equal(m.shadowOf(0).hex, '#00ffff')
+    assert.equal(m.shadowOf(1).hex, '#ff00ff')
+    assert.equal(m.shadowOf(2).hex, '#ffff00')
+  })
+
+  test('shadows are an additive question and subtractive mode declines to answer', () => {
+    const m = colourMix([{ r: 0, g: 255, b: 255 }], 'subtractive')
+    assert.equal(m.shadowOf(0), null)
+    assert.equal(colourMix([warm], 'additive').shadowOf(5), null)
+  })
+
+  test('colour mixing rejects nonsense', () => {
+    assert.equal(colourMix([], 'additive'), null)
+    assert.equal(colourMix([warm], 'neither'), null)
+    assert.equal(colourMix([{ r: 0, g: 0, b: 0, level: 2 }], 'additive'), null)
+  })
+})
+
+describe('mixing white sources', () => {
+  test('colour temperature averages in mireds, not in kelvin', () => {
+    // 3200 K is 312.5 mired, 6500 K is 153.8. The mean is 233.2 mired,
+    // which is 4289 K — not the 4850 K a kelvin average would give.
+    const m = mixWhites([{ cct: 3200 }, { cct: 6500 }])
+    assert.equal(m.resultK, 4289)
+    assert.equal(m.naiveKelvinAverage, 4850)
+    assert.equal(m.kelvinErrorIfAveraged, 561)
+  })
+
+  test('level weights the mix', () => {
+    const mostlyTungsten = mixWhites([{ cct: 3200, level: 1 }, { cct: 6500, level: 0.1 }])
+    assert.ok(mostlyTungsten.resultK < 3600)
+    const one = mixWhites([{ cct: 5600, level: 1 }, { cct: 3200, level: 0 }])
+    assert.equal(one.resultK, 5600)
+  })
+
+  test('far-apart sources are flagged for the green shift, which is the real warning', () => {
+    const far = mixWhites([{ cct: 2700 }, { cct: 6500 }])
+    assert.ok(far.miredSpread > 100)
+    assert.equal(far.greenShift, true)
+    assert.match(far.advice, /minus-green/)
+    const close = mixWhites([{ cct: 5000 }, { cct: 5600 }])
+    assert.equal(close.greenShift, false)
+    assert.equal(close.miredSpread, 21)
+  })
+
+  test('a single source mixes to itself with no shift', () => {
+    const m = mixWhites([{ cct: 5600 }])
+    assert.equal(m.resultK, 5600)
+    assert.equal(m.miredSpread, 0)
+    assert.equal(m.greenShift, false)
+  })
+
+  test('white mixing rejects nonsense', () => {
+    assert.equal(mixWhites([]), null)
+    assert.equal(mixWhites([{ cct: 100 }]), null)
+    assert.equal(mixWhites([{ cct: 5600, level: 0 }]), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// What is inside a timecode frame
+// ---------------------------------------------------------------------------
+
+describe('LTC frame structure', () => {
+  test('80 bits, of which only 26 are the time', () => {
+    const f = ltcFrame(10, 30, 45, 12)
+    assert.equal(f.bits.length, 80)
+    assert.equal(f.totalBits, 80)
+    assert.equal(f.timeBits, 26)
+    assert.equal(f.userBits, 32)
+  })
+
+  test('the digits are BCD, each in its own field, LSB first', () => {
+    // 12 frames: units 2 in bits 0-3, tens 1 in bits 8-9.
+    const f = ltcFrame(0, 0, 0, 12)
+    assert.deepEqual(f.bits.slice(0, 4), [0, 1, 0, 0], 'frame units should be 2, LSB first')
+    assert.deepEqual(f.bits.slice(8, 10), [1, 0], 'frame tens should be 1')
+    // 45 seconds: units 5, tens 4.
+    const g = ltcFrame(0, 0, 45, 0)
+    assert.deepEqual(g.bits.slice(16, 20), [1, 0, 1, 0], 'second units should be 5')
+    assert.deepEqual(g.bits.slice(24, 27), [0, 0, 1], 'second tens should be 4')
+    // 23 hours: units 3, tens 2.
+    const h = ltcFrame(23, 0, 0, 0)
+    assert.deepEqual(h.bits.slice(48, 52), [1, 1, 0, 0], 'hour units should be 3')
+    assert.deepEqual(h.bits.slice(56, 58), [0, 1], 'hour tens should be 2')
+  })
+
+  test('the sync word is fixed, and its twelve consecutive ones are the point', () => {
+    const f = ltcFrame(1, 2, 3, 4)
+    assert.equal(f.bits.slice(64).join(''), LTC_SYNC_WORD)
+    assert.equal(LTC_SYNC_WORD, '0011111111111101')
+    // Twelve ones in a row appear nowhere else in a frame: the longest run in
+    // the first 64 bits has to be shorter, or a reader could false-sync.
+    const body = f.bits.slice(0, 64).join('')
+    const longest = Math.max(...body.split('0').map((r) => r.length))
+    assert.ok(longest < 12, `a run of ${longest} ones in the data could be mistaken for sync`)
+    // And it is not a palindrome, which is how a reader knows tape direction.
+    assert.notEqual(LTC_SYNC_WORD, [...LTC_SYNC_WORD].reverse().join(''))
+  })
+
+  test('the drop-frame flag is one bit, and it is bit 10', () => {
+    assert.equal(ltcFrame(0, 0, 0, 0, { dropFrame: true }).bits[10], 1)
+    assert.equal(ltcFrame(0, 0, 0, 0).bits[10], 0)
+    assert.equal(ltcFrame(0, 0, 0, 0, { colourFrame: true }).bits[11], 1)
+  })
+
+  test('80 bits a frame is what makes it an audio signal', () => {
+    const f = ltcFrame(0, 0, 0, 0)
+    assert.equal(f.bitRateAt(30), 2400)
+    assert.equal(f.bitRateAt(25), 2000)
+    assert.equal(f.bitRateAt(0), null)
+  })
+
+  test('LTC rejects impossible times', () => {
+    assert.equal(ltcFrame(24, 0, 0, 0), null)
+    assert.equal(ltcFrame(0, 60, 0, 0), null)
+    assert.equal(ltcFrame(0, 0, 0, 30), null)
+    assert.equal(ltcFrame(0, 0, 0, 1.5), null)
+  })
+})
+
+describe('MTC quarter frames', () => {
+  test('eight pieces of four bits, and they take two frames to arrive', () => {
+    const q = mtcQuarterFrames(1, 2, 3, 4, '25')
+    assert.equal(q.messages.length, 8)
+    assert.equal(q.piecesPerFrame, 4)
+    assert.equal(q.framesToComplete, 2)
+  })
+
+  test('each piece is F1 followed by the piece index and its nibble', () => {
+    // 4 frames: low nibble 4 in piece 0, high nibble 0 in piece 1.
+    const q = mtcQuarterFrames(1, 2, 3, 4, '25')
+    assert.equal(q.messages[0].hex, 'F1 04')
+    assert.equal(q.messages[1].hex, 'F1 10')
+    // 3 seconds: low nibble 3 -> piece 2 carries 0x23.
+    assert.equal(q.messages[2].hex, 'F1 23')
+    // 2 minutes -> piece 4 carries 0x42.
+    assert.equal(q.messages[4].hex, 'F1 42')
+    // 1 hour, rate 25 (code 1): piece 7 = (1 << 1) | 0 = 2, so 0x72.
+    assert.equal(q.messages[6].hex, 'F1 61')
+    assert.equal(q.messages[7].hex, 'F1 72')
+  })
+
+  test('piece 7 carries the frame rate, so the rate is only known at the end', () => {
+    assert.equal(mtcQuarterFrames(0, 0, 0, 0, '24').messages[7].hex, 'F1 70')
+    assert.equal(mtcQuarterFrames(0, 0, 0, 0, '25').messages[7].hex, 'F1 72')
+    assert.equal(mtcQuarterFrames(0, 0, 0, 0, '29.97df').messages[7].hex, 'F1 74')
+    assert.equal(mtcQuarterFrames(0, 0, 0, 0, '30').messages[7].hex, 'F1 76')
+    // Hours above 15 need a fifth bit, and it rides in piece 7 beside the rate.
+    assert.equal(mtcQuarterFrames(23, 0, 0, 0, '30').messages[7].hex, 'F1 77')
+    assert.equal(mtcQuarterFrames(23, 0, 0, 0, '30').messages[6].hex, 'F1 67')
+  })
+
+  test('the full-frame message exists because a stopped transport has nothing to lag behind', () => {
+    const q = mtcQuarterFrames(1, 2, 3, 4, '30')
+    assert.equal(q.fullFrame, 'F0 7F 7F 01 01 61 02 03 04 F7')
+  })
+
+  test('MTC rejects an unknown rate and impossible times', () => {
+    assert.equal(mtcQuarterFrames(0, 0, 0, 0, '23.976'), null)
+    assert.equal(mtcQuarterFrames(0, 0, 0, 30, '30'), null)
+    assert.equal(Object.keys(MTC_RATES).length, 4)
+  })
+})
+
+describe('reading MIDI as hex', () => {
+  test('the whole framing rule: a status byte has its top bit set', () => {
+    const d = midiDecode('90 3C 7F')
+    assert.equal(d.messages.length, 1)
+    assert.equal(d.messages[0].name, 'Note On')
+    assert.equal(d.messages[0].channel, 1)
+    assert.match(d.messages[0].detail, /C3 \(60\)/)
+    assert.match(d.messages[0].detail, /velocity 127/)
+  })
+
+  test('the low nibble is the channel, zero-based on the wire', () => {
+    assert.equal(midiDecode('90 3C 40').messages[0].channel, 1)
+    assert.equal(midiDecode('9F 3C 40').messages[0].channel, 16)
+    assert.equal(midiDecode('B0 07 64').messages[0].channel, 1)
+  })
+
+  test('running status: repeated data bytes with the status left out', () => {
+    const d = midiDecode('90 3C 7F 3E 7F 40 7F')
+    assert.equal(d.messages.length, 3)
+    assert.equal(d.messages[0].runningStatus, false)
+    assert.equal(d.messages[1].runningStatus, true)
+    assert.equal(d.messages[2].runningStatus, true)
+    assert.ok(d.messages.every((m) => m.name === 'Note On'))
+  })
+
+  test('note on at velocity zero is a note off, which is what makes running status pay', () => {
+    const d = midiDecode('90 3C 7F 3C 00')
+    assert.equal(d.messages[1].name, 'Note On')
+    assert.match(d.messages[1].detail, /is a Note Off/)
+  })
+
+  test('14-bit values are LSB first', () => {
+    // Pitch bend centre is 8192 = 0x2000, sent as LSB 00, MSB 40.
+    assert.match(midiDecode('E0 00 40').messages[0].detail, /8192 of 16383/)
+    assert.match(midiDecode('F2 08 00').messages[0].detail, /position 8 /)
+  })
+
+  test('an MTC quarter frame decodes to its piece and nibble', () => {
+    const d = midiDecode('F1 04')
+    assert.equal(d.messages[0].name, 'MTC Quarter Frame')
+    assert.match(d.messages[0].detail, /piece 0 of 8/)
+    assert.match(d.messages[0].detail, /frame low/)
+    assert.match(midiDecode('F1 72').messages[0].detail, /hour high \+ rate/)
+  })
+
+  test('SysEx runs until F7, and MSC and MTC full frame are recognised', () => {
+    const msc = midiDecode('F0 7F 7F 02 01 01 31 00 F7')
+    assert.equal(msc.messages[0].name, 'System Exclusive')
+    assert.match(msc.messages[0].detail, /MIDI Show Control/)
+    // Only the values this repository has a source for get named; anything
+    // else decodes as its raw number rather than being guessed at.
+    assert.match(msc.messages[0].detail, /GO to Lighting \(General\)/)
+    assert.match(msc.messages[0].detail, /all-call/)
+    assert.match(msc.messages[0].detail, /Cue 1\./)
+    // Cue number, list and path are ASCII digits split on 0x00.
+    const withList = midiDecode('F0 7F 01 02 01 01 31 32 00 33 00 F7')
+    assert.match(withList.messages[0].detail, /Cue 12 in list 3/)
+    assert.match(withList.messages[0].detail, /device 1/)
+    // An unsourced command number is printed, not invented.
+    assert.match(midiDecode('F0 7F 7F 02 01 14 F7').messages[0].detail, /command 0x14/)
+    const full = midiDecode('F0 7F 7F 01 01 61 02 03 04 F7')
+    assert.match(full.messages[0].detail, /full frame/)
+  })
+
+  test('realtime bytes do not disturb running status, which is why they can interleave', () => {
+    // A clock byte arriving between two running-status notes must not break
+    // the run. This is exactly what a real stream looks like.
+    const d = midiDecode('90 3C 7F F8 3E 7F')
+    const notes = d.messages.filter((m) => m.name === 'Note On')
+    assert.equal(notes.length, 2)
+    assert.equal(notes[1].runningStatus, true)
+    assert.equal(d.messages[1].name, 'Timing Clock')
+  })
+
+  test('a truncated or orphaned stream is reported rather than guessed at', () => {
+    assert.equal(midiDecode('90 3C').messages[0].error, true)
+    assert.match(midiDecode('90 3C').messages[0].detail, /Truncated/)
+    assert.equal(midiDecode('3C 7F').messages[0].name, 'orphan data byte')
+    assert.equal(midiDecode('F0 7E 01').messages[0].error, true)
+    assert.match(midiDecode('zz').error, /not a hex byte/)
+  })
+
+  test('separators and 0x prefixes are all accepted, because people paste from anywhere', () => {
+    for (const form of ['90 3C 7F', '90,3C,7F', '0x90 0x3C 0x7F', '90:3c:7f', '90\n3C\n7F']) {
+      assert.equal(midiDecode(form).messages[0].name, 'Note On', `failed on "${form}"`)
+    }
+    assert.deepEqual(midiDecode('').messages, [])
+  })
+
+  test('note numbers name themselves, with middle C at 60', () => {
+    assert.equal(midiNoteName(60), 'C3')
+    assert.equal(midiNoteName(0), 'C-2')
+    assert.equal(midiNoteName(127), 'G8')
+    assert.equal(midiNoteName(128), null)
   })
 })
