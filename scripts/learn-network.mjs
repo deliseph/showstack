@@ -197,6 +197,51 @@ ${rule('Multicast needs <b>IGMP snooping plus a querier</b>. Snooping alone, wit
 
 ${xnote('QoS is protecting a latency figure, and that figure was chosen because of a human being. A late clock becomes drifting audio, which becomes a mouth and a voice on opposite sides of the <b>audiovisual binding window</b> — the point at which sight and sound stop being one event. Nobody in the room will say "the network is congested"; they will say it felt off.')}
 
+${S('First principles', 'Two addresses, because two different jobs',
+  ['Everything above assumed you already knew what an address is, which is the kind of assumption that leaves people quietly stuck. So, plainly: every device on a network has <strong>two</strong> addresses, and the reason is that they answer two different questions.',
+   'A <strong>MAC address</strong> is burned into the network interface at the factory. Forty-eight bits, written as six hex pairs like <span class="mono">00:1D:C1:AA:BB:CC</span>, and the first three pairs identify the manufacturer. It never changes and it means nothing about where the device is &mdash; it is a name, not a location. It only works within one local network segment, because the way anything finds a MAC address is by shouting on the local wire and waiting for an answer, and shouting does not cross a router.',
+   'An <strong>IP address</strong> is assigned, not born, and it encodes <em>where</em>. That is the whole reason it exists: because it has structure, a router can look at an address it has never seen and know which direction to send it. A MAC address gives you no such clue &mdash; there is no way to look at one and work out which continent it is on.',
+   'So the two work as a pair, at different scales. IP gets a packet across the world to the right network. MAC gets it across the last stretch of copper to the right socket. On every hop the MAC addresses are rewritten and the IP addresses are not, which is the single most useful thing to know when reading a packet capture.'])}
+
+${rule('IP says <b>where</b>, MAC says <b>who</b>. IP survives the whole journey; MAC is rewritten at every hop.')}
+
+${S('Four numbers, or eight groups', 'IPv4, IPv6, and why anybody bothered',
+  ['IPv4 is the familiar one: four numbers 0&ndash;255, which is 32 bits, which is about 4.3 billion addresses. That sounded limitless in 1981 and ran out around 2011, which is the entire reason IPv6 exists.',
+   'IPv6 is 128 bits, written as eight groups of four hex digits &mdash; <span class="mono">2001:0db8:0000:0000:0000:ff00:0042:8329</span> &mdash; with runs of zeros collapsed to <span class="mono">::</span> once per address, so that becomes <span class="mono">2001:db8::ff00:42:8329</span>. The address space is not four times bigger, it is 2<sup>96</sup> times bigger, which is a number with no useful comparison.',
+   'What changes in practice is smaller than the address length suggests. There is no broadcast in IPv6 &mdash; its jobs are done by multicast, which is tidier. Devices can configure their own addresses from the router&rsquo;s advertisements without a DHCP server. Fragmentation is the sender&rsquo;s problem rather than the router&rsquo;s. And a device commonly holds several IPv6 addresses at once, including a link-local one starting <span class="mono">fe80::</span> that always exists and never leaves the segment.',
+   'For show networks the honest position is that IPv4 is what nearly all entertainment protocols assume. sACN, Art-Net, Dante and most of the rest are specified and deployed on IPv4, several of them with multicast group addresses written into the standard. Turning IPv6 on alongside is usually harmless and occasionally useful; expecting it to replace IPv4 on a show network is not yet a plan.'])}
+
+${S('One cable, several networks', 'What a VLAN actually does',
+  ['A VLAN splits one physical switch into several logical ones. Ports in VLAN 10 can talk to each other and cannot reach ports in VLAN 20, even though they are in the same box on the same rack.',
+   'Mechanically it is four extra bytes. A tagged frame carries a 12-bit VLAN ID inserted into the Ethernet header &mdash; 802.1Q &mdash; so 4094 usable VLANs, and the switch reads the tag to decide where the frame is allowed to go. A port is either an <strong>access</strong> port, which belongs to one VLAN and sends untagged frames to a device that knows nothing about any of this, or a <strong>trunk</strong>, which carries several VLANs tagged and is how you get more than one network down a single cable between switches.',
+   'Why it matters on a show is that broadcast and multicast traffic stays inside its VLAN. Put lighting, audio and production on one flat network and every sACN packet reaches the audio gear, every Dante flow reaches the lighting nodes, and a single misconfigured device can flood all of it. Separate them and each one only has to survive its own traffic. It is also the cheapest form of security available: a laptop plugged into the wrong socket lands somewhere that cannot reach the show control network at all.',
+   'The catch is that VLANs cannot talk to each other without a router, and about half of all show-network confusion is somebody discovering this at exactly the wrong moment. If the console is in VLAN 10 and the media server is in VLAN 20, they are on different networks, and no amount of correct IP configuration will change that until something routes between them.'])}
+
+${bites([
+  '<b>The native VLAN.</b> A trunk carries one VLAN untagged by default. Devices that disagree about which one that is produce a fault that looks intermittent and is not.',
+  '<b>Multicast across VLANs.</b> sACN and Dante multicast does not cross a VLAN boundary on its own. That needs routing plus a multicast router, and it is a much bigger job than adding a VLAN.',
+  '<b>VLAN 1.</b> Most switches ship with everything in VLAN 1 and use it for their own management traffic. Leaving show traffic there works and mixes your control plane with your data plane.',
+  '<b>One cable, two consoles, no trunk.</b> If the link between switches is an access port, only one VLAN crosses it and the rest silently do not.',
+])}
+
+${S('Two cables, one link', 'Aggregation, and what it does not do',
+  ['Link aggregation &mdash; LAG, port channel, bonding, LACP, all roughly the same thing &mdash; makes several physical cables behave as one logical link. Two gigabit ports become a two-gigabit trunk with automatic failover if one cable is pulled.',
+   'The failover half is genuinely valuable and works as advertised. The bandwidth half needs a caveat that catches people out: aggregation does <strong>not</strong> give a single conversation more bandwidth. The switch chooses which physical link to use by hashing something about each flow &mdash; source and destination MAC, or IP, or port numbers &mdash; and every packet of one flow follows the same link, so packet order is preserved. A single 1.4 Gbit/s video stream across two 1 Gbit/s links does not work. It picks one link and drops the excess.',
+   'So aggregation buys you resilience always, and throughput only when the traffic is many independent flows. On a show network that is often exactly what you have &mdash; dozens of Dante flows, many sACN universes &mdash; and it is occasionally the opposite, which is when somebody discovers the hash. Most switches let you choose what to hash on, and moving from MAC-based to IP-and-port-based hashing is the usual fix for traffic that has all piled onto one link.'])}
+
+${rule('Aggregation is <b>resilience always, bandwidth sometimes</b>. One flow gets one cable, however many you bonded.')}
+
+${S('Watching and reaching', 'TAPs, mirrors and VPNs',
+  ['Three more pieces of vocabulary that get used as though everyone already knows them.',
+   'A <strong>network TAP</strong> is a passive device spliced into a link that copies everything passing through it to a monitoring port. Passive is the point: it has no configuration, cannot drop traffic, and keeps working if it loses power, so it does not become the thing that broke the show. A <strong>port mirror</strong> or SPAN does the same job in software on the switch, which costs nothing and is fine for diagnosis &mdash; but a busy switch drops mirrored frames before it drops real ones, so a mirror can lie about exactly the congestion you are trying to investigate. If you are proving a timing problem, use a TAP.',
+   'A <strong>VPN</strong> builds an encrypted tunnel across a network you do not trust, so two things far apart behave as though they are on the same local network. On a show that usually means remote support: somebody at home reaching a console or a media server on site. It is the right tool for that and the wrong tool for anything time-critical, because a tunnel across the public internet inherits the internet&rsquo;s latency and jitter, and no amount of QoS at your end governs what happens in the middle. Remote programming over VPN: yes. Live show traffic over VPN: no.'])}
+
+${bites([
+  '<b>A mirror port as evidence.</b> The frames a congested switch drops from a mirror are precisely the ones you needed to see.',
+  '<b>A VPN carrying anything with a clock in it.</b> PTP, timecode and live media over a tunnel you do not control is a problem waiting for an audience.',
+  '<b>Leaving remote access on after the fit-up.</b> A tunnel into the show network that outlives its reason is somebody else&rsquo;s way in.',
+])}
+
 <div class="cta"><strong>Now do it with your own numbers.</strong>
 <p>The <a href="/tools/#subnet">subnet calculator</a> and <a href="/network/#qos">QoS priority planner</a> take real inputs, and the <a href="/network/#fill">link fill estimator</a> checks whether the traffic actually fits before you commit to a single gigabit uplink.</p></div>
 `

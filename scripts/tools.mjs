@@ -27,10 +27,10 @@ import { LEARN_TOPICS, LEARN_COUNT } from './learn-kit.mjs'
  * matches what the page actually renders, so the sentence cannot lie again.
  */
 export const TOOL_GROUPS = [
-  ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'tc', 'midi', 'relay']],
+  ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'dmxrate', 'uid', 'tc', 'midi', 'relay']],
   ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array']],
   ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mix', 'whites', 'mired', 'stops']],
-  ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'ohm', 'heat', 'battery']],
+  ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'thd', 'ohm', 'heat', 'battery']],
   ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
   ['Scenic & illusion', ['peppers', 'forced']],
   ['Access', ['flash', 'ada']],
@@ -49,6 +49,7 @@ import {
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
+  dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor, RDM_OVERHEAD_BYTES,
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
@@ -76,6 +77,7 @@ const MATH_SRC = [
   cableDerating, awgToMm2, mm2ToAwg, coaxReach,
   srgbToLinear, linearToSrgb, colourMix, mixWhites, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective,
+  dmxFrameTime, rdmOverhead, rdmUid, thd, crestFactor,
   channelDetail, sysexDetail,
 ].map((f) => f.toString()).join('\n\n')
 
@@ -91,7 +93,8 @@ const MIDI_SYSTEM = ${JSON.stringify(MIDI_SYSTEM)};
 const NOTE_NAMES = ${JSON.stringify(NOTE_NAMES)};
 const MSC_FORMATS = ${JSON.stringify(MSC_FORMATS)};
 const MSC_COMMANDS = ${JSON.stringify(MSC_COMMANDS)};
-const STEREO_LIMIT_M = ${JSON.stringify(STEREO_LIMIT_M)};`
+const STEREO_LIMIT_M = ${JSON.stringify(STEREO_LIMIT_M)};
+const RDM_OVERHEAD_BYTES = ${JSON.stringify(RDM_OVERHEAD_BYTES)};`
 
 /**
  * Everything on this page that is the same for every calculator: the finder,
@@ -477,17 +480,34 @@ padding:0 6px;border-radius:var(--r-sm);margin:-10px 0}
 .tlink[data-done]{color:var(--verified);opacity:1}
 @media(hover:none){.tlink{opacity:1}}
 .tool:target{border-color:var(--signal);box-shadow:0 0 0 3px color-mix(in srgb,var(--signal) 18%,transparent)}
-.dips{display:flex;gap:6px;margin:10px 0 4px;overflow-x:auto;overflow-y:visible;
-scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
-.dips::-webkit-scrollbar{display:none}
-.dip{width:44px;height:56px;flex:0 0 auto;border:1px solid var(--rule-strong);border-radius:5px;
+/* The bank wraps rather than scrolls, and the numbers live INSIDE the
+   buttons. Both of those are fixes for the same mistake.
+   
+   It used to be a horizontal scroller with overflow-x:auto and
+   overflow-y:visible, and the second of those is not a thing CSS will do:
+   when one axis is not visible the other computes to auto as well. So the
+   switch numbers, positioned at top:-18px outside the button, were clipped
+   by a scroll container at every width. And because the scrollbar was
+   deliberately hidden, switches 8 and 9 sat outside the box with nothing on
+   screen to say they existed. Nine switches at 44px need 444px and the
+   column is about 325px, so that was every visit, not an edge case. */
+.dips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.dip{width:44px;height:64px;flex:0 0 auto;border:1px solid var(--rule-strong);border-radius:5px;
 background:var(--panel2);position:relative;cursor:pointer;padding:0}
 .dip:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.dip::after{content:"";position:absolute;left:7px;right:7px;height:22px;border-radius:3px;
-background:var(--dimmer);bottom:5px;transition:all .12s}
-.dip[aria-pressed="true"]::after{top:5px;bottom:auto;background:var(--signal)}
-.dip .n{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--dimmer)}
-.dips-wrap{padding-top:18px}
+.dip::after{content:"";position:absolute;left:7px;right:7px;height:19px;border-radius:3px;
+background:var(--dimmer);bottom:4px;transition:all .12s}
+.dip[aria-pressed="true"]::after{top:19px;bottom:auto;background:var(--signal)}
+.dip .n{position:absolute;top:3px;left:0;right:0;text-align:center;font-family:var(--mono);
+font-size:10px;color:var(--dimmer);line-height:1.2}
+.dip[aria-pressed="true"] .n{color:var(--signal)}
+/* Which way is on. A real DIP block prints this on the housing, and without
+   it the up/down convention is something you have to already know. */
+.dips-wrap{display:flex;align-items:flex-start;gap:9px;margin-top:2px}
+.dipkey{flex:0 0 auto;width:26px;height:64px;margin-top:10px;position:relative;
+font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;color:var(--ink-faint)}
+.dipkey b{position:absolute;top:17px;right:0;font-weight:400;color:var(--signal)}
+.dipkey i{position:absolute;bottom:5px;right:0;font-style:normal}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
 .note a{color:var(--accent)}
 label.inline{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--dim);
@@ -635,10 +655,28 @@ if the calculation you need is missing, it is one pull request.</p>
   <div class="row">
     <div class="field"><label for="dip-a">Address</label><input id="dip-a" type="number" min="1" max="512" value="1" inputmode="numeric"></div>
   </div>
-  <div class="dips-wrap"><div class="dips" id="dip-bank" aria-label="DIP switch bank"></div></div>
+  <div class="dips-wrap"><div class="dipkey" aria-hidden="true"><b>ON</b><i>off</i></div><div class="dips" id="dip-bank" aria-label="DIP switch bank"></div></div>
   <div class="out" id="dip-out" role="status" aria-live="polite"></div>
   <label class="inline"><input type="checkbox" id="dip-minus"> This fixture uses the (address − 1) convention</label>
   <p class="note">Most fixtures read the switches as plain binary of the address: switch 1 is value 1, switch 9 is value 256, so address 1 = switch 1 ON. Some older gear encodes address − 1 (address 1 = all OFF) — check the fixture manual before trusting either. Click switches to go the other way.</p>
+</div>
+<div class="tool wide" id="dmxrate">
+  <h3>DMX refresh &amp; what RDM costs</h3>
+  <div class="row">
+    <div class="field"><label for="dr-slots">Slots sent</label><input id="dr-slots" type="number" min="1" max="512" step="1" value="512" inputmode="numeric" style="width:120px"></div>
+    <div class="field"><label for="dr-tx">RDM transactions/sec</label><input id="dr-tx" type="number" min="0" max="400" step="1" value="0" inputmode="numeric" style="width:170px"></div>
+    <div class="field"><label for="dr-pdl">Response data bytes</label><input id="dr-pdl" type="number" min="0" max="231" step="1" value="8" inputmode="numeric" style="width:170px"></div>
+  </div>
+  <div class="out" id="dr-out" role="status" aria-live="polite"></div>
+  <p class="note">DMX refresh is not a setting, it is arithmetic. 250&nbsp;kbit/s with eleven bits per slot is <b>44&nbsp;&micro;s a slot</b>, and a full 513-slot frame plus break and mark comes to 22.7&nbsp;ms &mdash; the familiar 44&nbsp;Hz ceiling. The only lever is sending fewer slots. RDM shares the same pair by taking turns on it, so every transaction is time the transmitter is not sending levels: an RDM packet is <b>25 bytes before it carries anything</b>, and a request plus a response plus two line turnarounds is a few milliseconds each. That is why heavy discovery or continuous sensor polling really does make a rig sluggish. <a href="/learn/dmx/">How RDM answers back on a one-way wire &rarr;</a></p>
+</div>
+<div class="tool" id="uid">
+  <h3>RDM UID</h3>
+  <div class="row">
+    <div class="field"><label for="ru-in">UID</label><input id="ru-in" type="text" value="4C55:12345678" spellcheck="false" style="width:190px"></div>
+  </div>
+  <div class="out" id="ru-out" role="status" aria-live="polite"></div>
+  <p class="note">Forty-eight bits: a 16-bit ESTA manufacturer ID and a 32-bit device ID. Devices are addressed by this rather than by DMX address, which is the point &mdash; a fixture can be found and interrogated before anybody knows what address it is on, or when two are sitting on the same one. <span class="mono">FFFF:FFFFFFFF</span> is broadcast to everything and <span class="mono">mmmm:FFFFFFFF</span> to one manufacturer&rsquo;s devices. Manufacturer IDs from <span class="mono">8000h</span> up are reserved for E1.33 dynamic UIDs and name nobody, so the <a href="https://tsp.esta.org/tsp/working_groups/CP/mfctrIDs.php" rel="noopener nofollow">ESTA registry</a> lookup does not apply to them.</p>
 </div>
 <div class="tool wide" id="tc">
   <h3>Timecode</h3>
@@ -943,6 +981,18 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="out" id="ph-out" role="status" aria-live="polite"></div>
   <div class="bars" id="ph-bars" aria-hidden="true"></div>
   <p class="note">Balanced legs cancel in the neutral; one leg alone puts its whole current there. The distro is sized by its <em>worst</em> leg, never by the total divided by three. This is the linear-load figure: LED drivers and switch-mode supplies inject triplen harmonics that add rather than cancel in the neutral, so a rig full of them can exceed this with the legs looking even.</p>
+</div>
+<div class="tool wide" id="thd">
+  <h3>Harmonics &amp; the neutral</h3>
+  <div class="row">
+    <div class="field"><label for="hd-a">Fundamental per phase (A)</label><input id="hd-a" type="number" min="0" step="1" value="30" inputmode="numeric" style="width:180px"></div>
+    <div class="field"><label for="hd-3">3rd <span id="hd-3v">70%</span></label><input id="hd-3" type="range" min="0" max="100" value="70" style="width:120px"></div>
+    <div class="field"><label for="hd-5">5th <span id="hd-5v">40%</span></label><input id="hd-5" type="range" min="0" max="100" value="40" style="width:110px"></div>
+    <div class="field"><label for="hd-7">7th <span id="hd-7v">25%</span></label><input id="hd-7" type="range" min="0" max="100" value="25" style="width:110px"></div>
+    <div class="field"><label for="hd-9">9th <span id="hd-9v">15%</span></label><input id="hd-9" type="range" min="0" max="100" value="15" style="width:110px"></div>
+  </div>
+  <div class="out" id="hd-out" role="status" aria-live="polite"></div>
+  <p class="note">A perfect load draws a sine. Nothing on a rig does &mdash; switch-mode supplies draw in spikes near the voltage peak, and a spiky current is a sine plus harmonics at multiples of the mains frequency. On three phases the fundamentals cancel in the neutral, but the <b>triplens</b> (3rd, 9th, 15th) arrive in phase on all three legs and <b>add</b> there instead. So a perfectly balanced rig can put more current down the neutral than any phase is carrying, and the neutral is the one conductor with no breaker in it. THD-F and THD-R are both in use and are different numbers, which is why a meter and a datasheet can disagree while both are right. <a href="/learn/power/">Why three phases cancel, and what stops them &rarr;</a></p>
 </div>
 <div class="tool" id="ohm">
   <h3>Ohm's law</h3>
@@ -2325,6 +2375,66 @@ function fpRender(){
 }
 ["#fp-s","#fp-d1","#fp-d2"].forEach(id => $(id).addEventListener("input", fpRender));
 fpRender();
+
+/* ---- DMX refresh, and what RDM costs ------------------------------------ */
+function drRender(){
+  const slots = Number($("#dr-slots").value);
+  const r = rdmOverhead($("#dr-tx").value, { slots, responsePdl: Number($("#dr-pdl").value) });
+  if(!r){ $("#dr-out").innerHTML = '<span class="err">Slots are 1&ndash;512 and response data tops out at 231 bytes.</span>'; return; }
+  if (r.saturated) {
+    $("#dr-out").innerHTML = '<span class="err">&#9888; The wire is full of RDM. There is no room left for level data at all &mdash; which is what a runaway discovery looks like from the fixture&rsquo;s end.</span>';
+    return;
+  }
+  let html = "<b>" + r.refreshHz + "</b> Hz with " + slots + " slots"
+    + (r.transactionsPerSecond > 0
+      ? " and " + r.transactionsPerSecond + " RDM transactions a second"
+      : ' <span class="dim">and no RDM traffic</span>');
+  if (r.transactionsPerSecond > 0) {
+    html += "<br>Each transaction is <b>" + r.transactionMs + "</b> ms of wire time &mdash; "
+      + r.wirePercent + "% of the second &mdash; costing <b>" + r.lostHz + "</b> Hz off "
+      + r.baseRefreshHz + ".";
+  } else {
+    html += '<br><span class="dim">A full frame is break + mark + 513 slots at 44 &micro;s. Sending fewer slots is the only way to go faster.</span>';
+  }
+  $("#dr-out").innerHTML = html;
+}
+["#dr-slots","#dr-tx","#dr-pdl"].forEach(id => $(id).addEventListener("input", drRender));
+drRender();
+
+/* ---- RDM UID ------------------------------------------------------------- */
+function ruRender(){
+  const u = rdmUid($("#ru-in").value);
+  if(!u){ $("#ru-out").innerHTML = '<span class="err">A UID is 48 bits: four hex digits, then eight. Try 4C55:12345678.</span>'; return; }
+  let html = "<b>" + u.uid + "</b> &middot; manufacturer <b>" + u.manufacturerHex
+    + "</b>, device <b>" + u.deviceHex + "</b>";
+  html += "<br>Addresses <b>" + u.scope + "</b>";
+  html += '<br><span class="dim">' + u.note + "</span>";
+  $("#ru-out").innerHTML = html;
+}
+$("#ru-in").addEventListener("input", ruRender);
+ruRender();
+
+/* ---- harmonics and the neutral ------------------------------------------- */
+function hdRender(){
+  const pct = (id) => { const v = Number($(id).value); $(id + "v").textContent = v + "%"; return v / 100; };
+  /* Index 0 is the 2nd harmonic, so the odd orders land at 1, 3, 5, 7. */
+  const harmonics = [0, pct("#hd-3"), 0, pct("#hd-5"), 0, pct("#hd-7"), 0, pct("#hd-9")];
+  const r = thd(harmonics, { fundamentalAmps: Number($("#hd-a").value) });
+  if(!r){ $("#hd-out").innerHTML = '<span class="err">Check the current and the harmonic levels.</span>'; return; }
+  let html = "THD-F <b>" + r.thdF + "%</b> &middot; THD-R " + r.thdR
+    + "% &middot; distortion power factor <b>" + r.distortionPowerFactor + "</b>";
+  if (r.neutral) {
+    html += "<br>Each phase carries <b>" + r.neutral.phaseAmps + "</b> A; the neutral carries <b>"
+      + r.neutral.neutralAmps + "</b> A";
+    html += r.neutral.exceedsPhase
+      ? ' <span class="err">&#9888; more than any phase, on a perfectly balanced rig, with nothing protecting that conductor</span>'
+      : ' <span class="ok">&#10003; inside the phase current</span>';
+  }
+  html += '<br><span class="dim">Triplens are ' + r.triplenShare + "% of the fundamental &mdash; those are the ones that add. " + r.verdict + ".</span>";
+  $("#hd-out").innerHTML = html;
+}
+["#hd-a","#hd-3","#hd-5","#hd-7","#hd-9"].forEach(id => $(id).addEventListener("input", hdRender));
+hdRender();
 
 /* ---- offline ------------------------------------------------------------
    The panel only appears once a controller is actually running. Until then

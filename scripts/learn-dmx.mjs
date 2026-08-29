@@ -193,8 +193,37 @@ ${xnote('An intermittent fixture is not read by an audience as a technical fault
 
 ${rule('Branch with an <b>opto-splitter</b>, not a Y-cable. Each splitter output is a new segment: new unit-load budget, new terminator.')}
 
+${S('Question four', 'How does a one-way wire carry an answer back?',
+  ['DMX512 has no return path. One transmitter drives the pair, every receiver listens, and nothing a fixture might want to say has anywhere to go. Which makes RDM &mdash; ANSI E1.20 &mdash; look impossible until you see the trick, which is that it does not add a return path. It <strong>takes turns</strong>.',
+   'The controller sends a packet and then stops driving the line, and while it is quiet a responder drives the same pair back the other way. Half duplex on one differential pair, arbitrated entirely by timing. That is the whole idea, and everything awkward about RDM in the field follows from it: the wire is now bidirectional in a rig full of equipment that was built on the assumption that it never would be.',
+   'RDM packets are told apart from level data by their <strong>start code</strong>. Ordinary DMX carries start code 0x00; RDM uses 0xCC. A fixture that checks start codes ignores anything that is not 0x00 and never notices RDM exists. A fixture that does not check will treat 0xCC packets as if they were levels, which is why switching RDM on for the first time in an old rig can produce flicker or jumps that look exactly like a data fault and are not.'])}
+
+${rule('RDM does not add a wire. It <b>borrows the one that is there</b>, by having the controller shut up long enough for a fixture to answer.')}
+
+${S('Question five', 'Why does discovery find nothing through a perfectly good splitter?',
+  ['Because a splitter is a one-way amplifier unless somebody designed it not to be. It takes the incoming pair, buffers it, and drives several outgoing pairs. DMX passes through beautifully. A response coming back the other way meets the output of a buffer and stops there, silently.',
+   'So the rig looks completely healthy &mdash; every fixture responding to levels, no errors anywhere &mdash; and discovery finds nothing at all, which is a confusing failure to sit in front of. An RDM-aware splitter has to detect the quiet window and turn its buffers around inside it, and then turn them back before the controller starts transmitting again. That is real work, done to a tight timing budget, and it is why RDM-aware splitters cost more and why one non-aware unit anywhere in a chain removes RDM from everything downstream of it.',
+   'The same applies to anything else in the path: opto-isolators, buffers, DMX-over-Ethernet gateways, and cheap USB dongles that turn their transceiver around too slowly. Every one of them has to be in on it. And because a long line, a missing terminator or a marginal cable all eat into the same timing budget, RDM tends to fail intermittently on exactly the lines that were already marginal for DMX &mdash; which makes it a rather good, if annoying, test of a rig you thought was fine.'])}
+
+${S('Question six', 'How does a controller find devices it has never met?',
+  ['Every RDM device has a 48-bit UID: a 16-bit manufacturer ID from the ESTA registry, and a 32-bit device ID. That is 281 trillion possible addresses and a controller cannot ask them one at a time.',
+   'So it plays a binary search, out loud, with collisions as the signal. It broadcasts <span class="mono">DISC_UNIQUE_BRANCH</span> over a range of UIDs, meaning roughly &ldquo;anybody in this range, speak now&rdquo;. If nothing is in the range, silence. If exactly one device is, it answers cleanly and gets found. If several are, they all answer at once, the responses collide into garbage &mdash; and that garbage is itself the answer, because it says the range contains more than one device. The controller splits the range in half and asks both halves. Each device it finds is told to be quiet, and the search continues until nothing answers anywhere.',
+   'Two consequences. It takes a while, and on a big or marginal line it takes minutes, which is why a console can sit there apparently doing nothing after you press discover. And it can miss devices, because a collision that happens to look like a valid response, or a response that arrives fractionally late, sends the search down the wrong branch. Running discovery twice and comparing the count is not superstition.'])}
+
+${bites([
+  '<b>One non-RDM splitter kills everything behind it.</b> DMX passes, responses do not, and nothing about the symptom points at the splitter.',
+  '<b>Two controllers on one universe.</b> Both own the line, both transmit into each other&rsquo;s quiet windows, and responses get attributed to the wrong device. The resulting patch data is confidently wrong, which is worse than empty.',
+  '<b>Polling with the show up.</b> RDM shares the wire with levels, so continuous sensor polling measurably drops the refresh rate. Turn it down before doors &mdash; <a href="/tools/#dmxrate">the calculator</a> puts a number on it.',
+  '<b>Trusting the UID to name a manufacturer.</b> IDs from 8000h up are reserved for E1.33 dynamic UIDs and belong to nobody. <a href="/tools/#uid">The decoder</a> flags them.',
+  '<b>Old fixtures that do not check start codes.</b> They act on 0xCC as if it were level data. If enabling RDM introduces flicker, that is what happened, and the fix is upstream of the fixture.',
+])}
+
+${S('And then', 'RDMnet is a different animal',
+  ['E1.33, RDMnet, carries the same RDM message set over IP instead of over the DMX pair. That removes the turnaround timing problem entirely &mdash; a network is already bidirectional &mdash; and replaces it with a broker, a discovery mechanism built on DNS-SD, and all the ordinary questions of a show network.',
+   'It is genuinely a different thing rather than a faster version of the same thing, and the two coexist: RDMnet to a gateway, plain RDM from the gateway down the DMX line to the fixtures. Which means the splitter problem is still yours, it has just moved further from the console.'])}
+
 <div class="cta"><strong>Want the numbers rather than the explanation?</strong>
-<p>The <a href="/tools/#dmxload">unit-load budget calculator</a> and the <a href="/tools/#dmx">DMX address / universe tool</a> are on the field tools page, and work offline once loaded. Protocol detail lives on <a href="/protocols/dmx512/">DMX512</a> and <a href="/protocols/rdm/">RDM</a>.</p></div>
+<p>The <a href="/tools/#dmxload">unit-load budget calculator</a>, the <a href="/tools/#dmx">DMX address tool</a>, the <a href="/tools/#dmxrate">refresh-rate and RDM cost calculator</a> and the <a href="/tools/#uid">RDM UID decoder</a> are on the field tools page, and work offline once loaded. Protocol detail lives on <a href="/protocols/dmx512/">DMX512</a>, <a href="/protocols/rdm/">RDM</a> and <a href="/protocols/rdmnet/">RDMnet</a>.</p></div>
 `
 
   const script = `

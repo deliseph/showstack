@@ -23,6 +23,7 @@ import {
   srgbToLinear, linearToSrgb, colourMix, mixWhites,
   ltcFrame, LTC_SYNC_WORD, mtcQuarterFrames, MTC_RATES, midiDecode, midiNoteName,
   peppersGhost, forcedPerspective, STEREO_LIMIT_M,
+  dmxFrameTime, rdmOverhead, rdmUid, RDM_OVERHEAD_BYTES, thd, crestFactor,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -2228,5 +2229,194 @@ describe('forced perspective', () => {
     assert.equal(forcedPerspective(1.8, 0, 20), null)
     assert.equal(forcedPerspective(1.8, 4, -20), null)
     assert.equal(forcedPerspective(1.8, 4, 20, { stereoLimitM: -1 }), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// DMX timing, RDM, and what sharing the wire costs
+// ---------------------------------------------------------------------------
+
+describe('DMX frame timing', () => {
+  test('the refresh rate is arithmetic, not a setting', () => {
+    // 250 kbit/s, 11 bits a slot = 44 us. 513 slots plus break and MAB comes
+    // to 22.68 ms, which is the familiar ~44 Hz ceiling.
+    const f = dmxFrameTime(512)
+    assert.equal(f.slotUs, 44)
+    assert.equal(f.frameMs, 22.68)
+    assert.equal(f.refreshHz, 44.1)
+  })
+
+  test('the start code is a slot, which is why 512 channels is 513 slots', () => {
+    const one = dmxFrameTime(1)
+    // break + MAB + 2 slots
+    assert.equal(one.frameUs, 92 + 12 + 2 * 44)
+  })
+
+  test('sending fewer slots is the only lever there is', () => {
+    const f = dmxFrameTime(512)
+    const short = f.atSlots(24)
+    assert.ok(short.refreshHz > 800)
+    assert.ok(short.refreshHz > f.refreshHz * 18)
+    assert.equal(f.atSlots(513), null)
+  })
+
+  test('frame timing rejects impossible frames', () => {
+    assert.equal(dmxFrameTime(513), null)
+    assert.equal(dmxFrameTime(-1), null)
+    assert.equal(dmxFrameTime(512, { bitRate: 0 }), null)
+  })
+})
+
+describe('what RDM costs the refresh rate', () => {
+  test('an RDM packet is 25 bytes before it carries anything', () => {
+    assert.equal(RDM_OVERHEAD_BYTES, 25)
+    const r = rdmOverhead(1, { requestPdl: 0, responsePdl: 0, turnaroundUs: 0 })
+    // 25 bytes each way at 44 us.
+    assert.equal(r.requestUs, 25 * 44)
+    assert.equal(r.responseUs, 25 * 44)
+  })
+
+  test('polling really does slow the rig down, and this is the subtraction', () => {
+    const idle = rdmOverhead(0)
+    assert.equal(idle.refreshHz, idle.baseRefreshHz)
+    assert.equal(idle.lostHz, 0)
+    const busy = rdmOverhead(20)
+    assert.ok(busy.refreshHz < busy.baseRefreshHz)
+    assert.ok(busy.wirePercent > 5 && busy.wirePercent < 10)
+    assert.ok(busy.lostHz > 2)
+  })
+
+  test('enough traffic and there is no room for levels at all', () => {
+    const runaway = rdmOverhead(400)
+    assert.equal(runaway.saturated, true)
+    assert.equal(runaway.refreshHz, 0)
+  })
+
+  test('parameter data cannot exceed what the packet can hold', () => {
+    assert.equal(rdmOverhead(10, { responsePdl: 232 }), null)
+    assert.equal(rdmOverhead(-1), null)
+  })
+})
+
+describe('RDM UIDs', () => {
+  test('48 bits: a 16-bit manufacturer and a 32-bit device', () => {
+    const u = rdmUid('4C55:12345678')
+    assert.equal(u.manufacturerHex, '4C55')
+    assert.equal(u.deviceHex, '12345678')
+    assert.equal(u.deviceId, 0x12345678)
+    assert.equal(u.scope, 'a single device')
+    assert.equal(u.broadcast, false)
+  })
+
+  test('the two broadcast forms are recognised as broadcasts', () => {
+    assert.equal(rdmUid('FFFF:FFFFFFFF').scope, 'all devices, all manufacturers')
+    assert.equal(rdmUid('4C55:FFFFFFFF').scope, 'all devices from manufacturer 4C55')
+    assert.equal(rdmUid('4C55:FFFFFFFF').broadcast, true)
+  })
+
+  test('manufacturer IDs from 8000h up name nobody', () => {
+    // Reserved for E1.33 dynamic UIDs, which the protocol entry documents.
+    const dyn = rdmUid('8001:00000001')
+    assert.equal(dyn.dynamicUid, true)
+    assert.equal(dyn.identifiableByManufacturer, false)
+    assert.match(dyn.note, /RDMnet dynamic UIDs/)
+    const real = rdmUid('7FFF:00000001')
+    assert.equal(real.dynamicUid, false)
+    assert.equal(real.identifiableByManufacturer, true)
+  })
+
+  test('the separator is optional and the case does not matter', () => {
+    for (const form of ['4C55:12345678', '4c55:12345678', '4C5512345678', '4C55-12345678', ' 4C55:1234 5678 ']) {
+      assert.equal(rdmUid(form).uid, '4C55:12345678', `failed on "${form}"`)
+    }
+  })
+
+  test('a UID that is not 48 bits is not a UID', () => {
+    assert.equal(rdmUid('4C55:1234'), null)
+    assert.equal(rdmUid('nonsense'), null)
+    assert.equal(rdmUid(''), null)
+    assert.equal(rdmUid(null), null)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Harmonic distortion
+// ---------------------------------------------------------------------------
+
+describe('total harmonic distortion', () => {
+  test('a pure sine has none', () => {
+    const r = thd([0, 0, 0, 0])
+    assert.equal(r.thdF, 0)
+    assert.equal(r.thdR, 0)
+    assert.equal(r.distortionPowerFactor, 1)
+    assert.equal(r.verdict, 'clean')
+  })
+
+  test('THD-F and THD-R are different numbers and both are right', () => {
+    // A single 3rd harmonic at 50% of the fundamental.
+    const r = thd([0, 0.5])
+    assert.equal(r.thdF, 50)
+    // Referenced to the total RMS instead: 0.5 / sqrt(1.25) = 44.7%.
+    assert.equal(r.thdR, 44.72)
+    // THD-R can never reach 100%; THD-F is unbounded.
+    assert.ok(thd([0, 5]).thdF > 100)
+    assert.ok(thd([0, 5]).thdR < 100)
+  })
+
+  test('distortion alone drags the power factor down, with nothing inductive present', () => {
+    const r = thd([0, 0.5])
+    // 1/sqrt(1 + 0.25) = 0.894
+    assert.equal(r.distortionPowerFactor, 0.894)
+    assert.ok(thd([0, 0.7, 0, 0.4]).distortionPowerFactor < 0.85)
+  })
+
+  test('triplens are the ones that add in the neutral', () => {
+    // A 5th harmonic is not a triplen and does not stack in the neutral.
+    assert.equal(thd([0, 0, 0, 0.4]).triplenShare, 0)
+    // A 3rd is, and so is a 9th.
+    assert.equal(thd([0, 0.4]).triplenShare, 40)
+    assert.equal(thd([0, 0, 0, 0, 0, 0, 0, 0.3]).triplenShare, 30)
+  })
+
+  test('the neutral can carry more than any phase, on a perfectly balanced rig', () => {
+    // 30 A of fundamental per phase with a 70% third harmonic.
+    const r = thd([0, 0.7, 0, 0.4, 0, 0.25], { fundamentalAmps: 30 })
+    assert.equal(r.neutral.phaseAmps, 39.26)
+    assert.equal(r.neutral.neutralAmps, 63)
+    assert.equal(r.neutral.exceedsPhase, true)
+    // Without triplens the neutral is quiet even at high THD.
+    const noTriplen = thd([0, 0, 0, 0.6], { fundamentalAmps: 30 })
+    assert.equal(noTriplen.neutral.neutralAmps, 0)
+    assert.equal(noTriplen.neutral.exceedsPhase, false)
+  })
+
+  test('no fundamental current means no neutral figure rather than a wrong one', () => {
+    assert.equal(thd([0, 0.5]).neutral, null)
+  })
+
+  test('THD rejects nonsense', () => {
+    assert.equal(thd([]), null)
+    assert.equal(thd([0, -0.5]), null)
+    assert.equal(thd('not an array'), null)
+  })
+})
+
+describe('crest factor', () => {
+  test('a pure sine is the square root of two', () => {
+    const r = crestFactor(Math.SQRT2, 1)
+    assert.equal(r.crestFactor, 1.414)
+    assert.equal(r.peakLimited, false)
+  })
+
+  test('a spiky load is sized by its peaks, not its average', () => {
+    const r = crestFactor(4.2, 1.5)
+    assert.equal(r.crestFactor, 2.8)
+    assert.equal(r.peakLimited, true)
+    assert.match(r.note, /clip these/)
+  })
+
+  test('crest factor rejects a zero RMS', () => {
+    assert.equal(crestFactor(4, 0), null)
+    assert.equal(crestFactor(-1, 1), null)
   })
 })
