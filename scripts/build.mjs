@@ -11,7 +11,7 @@
 import { mkdirSync, writeFileSync, readFileSync, cpSync, existsSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { COLLECTIONS, loadCollection, ROOT } from './lib/load.mjs'
-import { buildPages, TOKENS, SHELL_CSS, navBar } from './pages.mjs'
+import { buildPages, TOKENS, BASE_CSS, SHELL_CSS, navBar } from './pages.mjs'
 import { LABEL_MAPS } from './labels.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -119,6 +119,7 @@ const searchTpl = readFileSync(join(ROOT, 'site', 'search.html'), 'utf8')
 mkdirSync(join(DIST, 'search'), { recursive: true })
 writeFileSync(join(DIST, 'search', 'index.html'), searchTpl
   .replace('/*__SHOWSTACK_TOKENS__*/', TOKENS)
+  .replace('/*__SHOWSTACK_BASE__*/', BASE_CSS)
   .replace('/*__SHOWSTACK_SHELL__*/', SHELL_CSS)
   .replace('/*__SHOWSTACK_NAV__*/', navBar('/search/'))
   .replace('/*__SHOWSTACK_LABELS__*/null', JSON.stringify(LABEL_MAPS))

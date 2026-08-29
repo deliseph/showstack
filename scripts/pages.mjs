@@ -86,6 +86,34 @@ const jsonForScript = (obj) =>
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
 /**
+ * The reset, the control defaults that carry the 3:1 and 44px rules, the
+ * focus ring and the base type. Exported for the same reason as TOKENS:
+ * site/search.html lost all of it when its copy of the palette was removed,
+ * which left that one page with a transparent body and no focus ring.
+ */
+export const BASE_CSS = `
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+/* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
+   at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
+input,select,textarea,button,summary,.tab,[role="tab"]{border-color:var(--rule-strong)}
+input,select,textarea{background:var(--surface-raised);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:var(--r-sm);font-family:var(--mono)}
+/* SC 2.5.8: 44px minimum on anything you tap. */
+input,select,textarea,button{min-height:44px}
+input[type="checkbox"],input[type="radio"]{min-height:0;width:20px;height:20px;
+flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
+/* A checkbox is tapped on its label, so the label carries the target size. */
+label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
+display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+`
+
+/**
  * Header, nav rail and the two header controls. Exported for the same reason
  * as TOKENS: site/search.html used to carry its own copy, which is how the two
  * headers drifted to different heights and different touch-target sizes.
@@ -274,25 +302,7 @@ unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304
 `
 
 const CSS = RELATED_CSS + TOKENS + `
-*{box-sizing:border-box}html,body{margin:0;padding:0}
-/* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
-   at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
-input,select,textarea,button,summary,.tab,[role="tab"]{border-color:var(--rule-strong)}
-input,select,textarea{background:var(--surface-raised);color:var(--ink);
-border:1px solid var(--rule-strong);border-radius:var(--r-sm);font-family:var(--mono)}
-/* SC 2.5.8: 44px minimum on anything you tap. */
-input,select,textarea,button{min-height:44px}
-input[type="checkbox"],input[type="radio"]{min-height:0;width:20px;height:20px;
-flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
-/* A checkbox is tapped on its label, so the label carries the target size. */
-label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
-display:inline-flex;align-items:center;gap:10px;cursor:pointer}
-
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
--webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
-:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+${BASE_CSS}
 .wrap{max-width:800px;margin:0 auto;padding:0 20px}
 ${SHELL_CSS}
 /* A keyboard user should not have to tab through 17 nav items to reach the
