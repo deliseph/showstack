@@ -69,7 +69,7 @@ const contributors = [...credits.entries()]
 // Fields we know are missing. This list is the contributor backlog, generated
 // rather than hand-maintained, so it can never go stale.
 const WANTED = {
-  protocols: ['default_ports', 'first_published', 'implementations', 'gotchas', 'spec_url'],
+  protocols: ['default_ports', 'first_published', 'implementations', 'gotchas', 'spec_url', 'media'],
   software: ['speaks', 'platforms', 'price_model', 'gotchas', 'repo'],
   hardware: ['speaks', 'physical_ports', 'released', 'gotchas'],
   standards: ['year', 'scope', 'free_to_read', 'access_url'],
@@ -100,6 +100,10 @@ const APPLICABLE = {
     // vendor does publish one the field is filled in; where they do not, it is
     // not a gap somebody can close with research.
     spec_url: (e) => e.openness !== 'proprietary-closed',
+    // Sample rates and resolutions are only a question for something that
+    // carries audio or video. Asking sACN for its bit depth is noise, and
+    // noise in the backlog is what stops people trusting the backlog.
+    media: (e) => e.category === 'audio-transport' || e.category === 'video-transport',
   },
 }
 
