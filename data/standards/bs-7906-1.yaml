@@ -1,0 +1,38 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: bs-7906-1
+designation: BS 7906-1
+title: Lifting equipment for performance, broadcast and similar applications — Code of practice
+  for the selection, use and maintenance of lifting equipment for production purposes
+body: BSI
+domain: rigging-structural
+year: 2021
+status: current
+free_to_read: false
+scope: >-
+  UK code of practice for lifting equipment used in performance and broadcast: selection, use, inspection
+  and maintenance, including the distinction between lifting loads and suspending loads above people.
+access_url:
+  url: https://knowledge.bsigroup.com/
+  label: BSI Knowledge
+jurisdiction:
+- GB
+notes: >-
+  The UK reference where a German site would reach for DGUV and an American one for the ANSI E1.6
+  family. All three are answering the same question and none of them uses the others’ words for
+  it.
+tags:
+- rigging
+- hoists
+- lifting
+- uk
+sources:
+- title: BS 7906-1
+  url: https://knowledge.bsigroup.com/
+  publisher: BSI
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

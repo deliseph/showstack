@@ -1,0 +1,40 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: dguv-vorschrift-17
+designation: DGUV Vorschrift 17/18
+title: Veranstaltungs- und Produktionsstätten für szenische Darstellung
+body: DGUV
+domain: machinery
+year: 2021
+status: current
+free_to_read: true
+scope: >-
+  The German accident-prevention regulation for venues and production sites used for scenic presentation.
+  Covers stage machinery, suspension of loads, inspection intervals and the qualification of the
+  people operating and checking them.
+access_url:
+  url: https://publikationen.dguv.de/
+  label: DGUV publications (free)
+jurisdiction:
+- DE
+notes: >-
+  Formerly BGV C1, and still universally called that. This is where the D8, D8 Plus and C1 shorthand
+  used across Europe comes from — a German regulation that became the international vocabulary for
+  what a hoist may be used for.
+tags:
+- rigging
+- hoists
+- machinery
+- germany
+- d8
+- c1
+sources:
+- title: DGUV Vorschrift 17
+  url: https://publikationen.dguv.de/
+  publisher: Deutsche Gesetzliche Unfallversicherung
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

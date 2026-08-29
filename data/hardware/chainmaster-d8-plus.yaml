@@ -1,0 +1,41 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: chainmaster-d8-plus
+name: ChainMaster D8 Plus chain hoist
+vendor: ChainMaster
+category: motion-control
+status: current
+summary: >-
+  Electric chain hoist built to the D8 Plus classification: a second, independent brake so that
+  a single brake failure does not drop the load. That permits a static load to be suspended above
+  people — and does not permit it to be moved while they are there.
+physical_ports:
+- Power and control multipin
+- Chain
+form_factor: Electric chain hoist
+homepage:
+  url: https://www.chainmaster.de/
+  label: ChainMaster
+gotchas:
+- D8 Plus is about holding, not moving. Suspending a static load over people is permitted; moving
+  it with people underneath is not.
+- The classification is a property of the whole system — hoist, controller and the way it is rigged
+  — not a sticker on the motor.
+- Inspection intervals and the qualification of the person doing them are part of the classification,
+  not an optional extra.
+tags:
+- hoist
+- rigging
+- d8-plus
+- machinery
+- chainmaster
+sources:
+- title: ChainMaster
+  url: https://www.chainmaster.de/
+  publisher: ChainMaster
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

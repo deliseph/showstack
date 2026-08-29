@@ -1,0 +1,43 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: pilz-pnoz-safety-relay
+name: Pilz PNOZ safety relay
+vendor: Pilz
+category: motion-control
+status: current
+summary: >-
+  The monitored safety relay that made two-channel emergency stop circuits ordinary. It watches
+  both channels of the button, detects a discrepancy or a cross-fault between them, reads back the
+  mirror contacts of the downstream contactors, and refuses to reset if any of it disagrees — which
+  is the difference between a stop button and a safety function.
+physical_ports:
+- Dual-channel input terminals
+- Positively guided output contacts
+- Feedback loop
+form_factor: DIN-rail safety relay
+homepage:
+  url: https://www.pilz.com/
+  label: Pilz
+gotchas:
+- A safety relay is not a rating on its own. The Performance Level belongs to the whole function
+  — button, wiring, logic, contactors and the mechanics they switch.
+- The feedback loop is not optional wiring. Without it a welded contactor is invisible and the redundancy
+  is theatre.
+- A monitored reset needs a rising and a falling edge, which is why a taped-down reset button cannot
+  arm the system.
+tags:
+- safety-relay
+- e-stop
+- functional-safety
+- machinery
+- pilz
+sources:
+- title: Pilz
+  url: https://www.pilz.com/
+  publisher: Pilz
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

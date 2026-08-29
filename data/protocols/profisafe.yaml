@@ -1,0 +1,52 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: profisafe
+name: PROFIsafe
+category: machinery-motion
+status: current
+openness: published-paid
+transport:
+- ethernet-l2
+- udp
+summary: >-
+  Functional safety carried over an ordinary PROFINET or PROFIBUS network. The trick is the black
+  channel: the safety layer adds its own sequence numbers, timeouts, identifiers and CRC on top
+  of whatever the network does, so the network itself never has to be safety-rated. Corruption,
+  loss, delay, repetition and misdirection of a safety message are all detected by the layer above.
+multicast:
+  used: false
+  note: Safety relationships are point to point between a safety controller and a safe device.
+spec_url:
+  url: https://www.profibus.com/technologies/profisafe
+  label: PI (PROFIBUS & PROFINET International)
+standards:
+- iec-61508
+- iec-62061
+steward: PROFIBUS & PROFINET International
+first_published: 1999
+typical_use:
+- Emergency stop, guard monitoring and safe motion on stage machinery
+- Carrying a safety function across the same cable as ordinary control data
+- Safe torque off and safely limited speed commands to a drive
+gotchas:
+- The black channel means the network needs no safety rating — and the watchdog timeout still becomes
+  part of the total stopping time, which becomes millimetres of safety distance.
+- A safety address is configured per device and a duplicated one is a commissioning fault that has
+  to be found before anybody relies on it.
+- 'It carries the safety function. It does not carry the responsibility: the assessment is still
+  ISO 13849-1 or IEC 62061 across the whole chain.'
+tags:
+- functional-safety
+- machinery
+- profinet
+- black-channel
+sources:
+- title: PROFIsafe
+  url: https://www.profibus.com/technologies/profisafe
+  publisher: PROFIBUS & PROFINET International
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,38 @@
+# showstack entry — standard
+# Schema: ../../schema/standard.schema.json
+
+id: iec-62061
+designation: IEC 62061
+title: Safety of machinery — Functional safety of safety-related control systems
+body: IEC
+domain: machinery
+year: 2021
+status: current
+free_to_read: false
+scope: >-
+  The machinery-sector application of IEC 61508. Expresses the required risk reduction as Safety
+  Integrity Levels and gives the methods for designing and verifying a safety-related control function
+  against one.
+access_url:
+  url: https://webstore.iec.ch/publication/59927
+  label: IEC Webstore
+related_protocols:
+- ethercat
+- profinet
+notes: >-
+  The sibling of ISO 13849-1: the same problem approached through SIL rather than Performance Level.
+  Either route is acceptable, and a specification that quotes both without saying which was assessed
+  is quoting a marketing claim.
+tags:
+- functional-safety
+- sil
+- machinery
+sources:
+- title: IEC 62061
+  url: https://webstore.iec.ch/publication/59927
+  publisher: International Electrotechnical Commission
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
