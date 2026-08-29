@@ -14,7 +14,7 @@
  * programmer. The jitter figure carries it — a bar chart of cycle times says
  * nothing; the same cycle stuttering says everything.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnCodePage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -222,6 +222,16 @@ ${S('The word that matters', 'Determinism, and why it disqualifies almost everyt
   'A <b>real-time</b> system inverts the priority. It is not necessarily fast; it is <em>predictable</em>. The cycle happens every cycle, on time, and if it cannot, the system faults rather than quietly running late. That guarantee is the entire reason PLC platforms exist, and it is why show automation runs on them instead of on the laptop that is already sitting there.',
 ])}
 
+<div class="dial">
+  <div class="d"><label for="jm-p">cycle period <b id="jm-pv">10 ms</b></label>
+    <input id="jm-p" type="range" min="1" max="50" step="1" value="10"></div>
+  <div class="d"><label for="jm-n">work per cycle <b id="jm-nv">6 ms</b></label>
+    <input id="jm-n" type="range" min="1" max="50" step="1" value="6"></div>
+  <div class="d"><label for="jm-j">worst-case jitter <b id="jm-jv">2 ms</b></label>
+    <input id="jm-j" type="range" min="0" max="30" step="1" value="2"></div>
+</div>
+<div class="verdict" id="jm-out"></div>
+
 ${fig(detFig, 'The top row averages fine and misses cycles. The bottom row makes a promise and faults if it cannot keep it.')}
 
 ${S('The platform', 'What TwinCAT actually is', [
@@ -258,6 +268,8 @@ ${fig(scanFig, 'The scan cycle: inputs, logic, outputs, every cycle. Its regular
   <div><dt>SFC — Sequential Function Chart</dt><dd>Steps and transitions. Good for a machine that moves through defined states.</dd></div>
 </div>
 
+${xnote('Determinism is why an audience trusts a machine. A move that is smooth every night reads as intent; a move that varies reads as <em>something going on backstage</em>, and attention leaves the fiction and goes to the mechanism. <b>Predictability is the aesthetic property</b>, not speed.')}
+
 ${rule('A PLC language is chosen for how easily a <b>second person</b> can audit it, not for how quickly the first person can write it. That is the opposite of the trade-off you make when writing show glue, and it is not a criticism of either.')}
 
 ${S('The boundary', 'Where custom code is allowed to be, and where it is not', [
@@ -283,6 +295,27 @@ ${S('If you are starting', 'What is actually worth learning first', [
 
 <div class="cta"><strong>Building glue on top of the index?</strong>
 <p>Every collection here is plain JSON at a fixed URL with permissive CORS — no key, no rate limit — so it is a reasonable thing to hang a script off. Start at <a href="/api/v1/index.json">/api/v1/index.json</a>, and see <a href="/learn/software/">how software talks to software</a> for the protocol-versus-API-versus-SDK distinction that decides most integration questions.</p></div>
+
+<script>
+(function(){
+  var p=document.getElementById('jm-p'); if(!p) return;
+  var n=document.getElementById('jm-n'), j=document.getElementById('jm-j'),
+      pv=document.getElementById('jm-pv'), nv=document.getElementById('jm-nv'),
+      jv=document.getElementById('jm-jv'), out=document.getElementById('jm-out');
+  function draw(){
+    var P=Number(p.value), N=Number(n.value), J=Number(j.value);
+    pv.textContent=P+' ms'; nv.textContent=N+' ms'; jv.textContent=J+' ms';
+    var worst=N+J, margin=P-worst, avg=(N/P)*100, wpc=(worst/P)*100;
+    out.innerHTML='Average load <b>'+avg.toFixed(0)+'%</b> of the period. Worst case <b>'+worst+' ms</b> against a '+P+
+      ' ms deadline \u2014 '+(margin>=0
+        ? '<span class="ok">'+margin.toFixed(1)+' ms of margin.</span> The guarantee holds.'
+        : '<span class="err">over by '+Math.abs(margin).toFixed(1)+' ms.</span> This misses cycles, and an average that looks healthy is exactly how it hides.')
+      +' A loop that meets its deadline on average and misses it one cycle in a thousand <b>has missed it</b>.';
+  }
+  for (var el of [p,n,j]) el.addEventListener('input',draw);
+  draw();
+})();
+</script>
 `
 
   return shell({

@@ -13,7 +13,7 @@
  * ground loops and isolation are not four topics, they are one, and the hum
  * everybody has chased at 2 a.m. is the thing they all explain.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnTransducersPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -211,6 +211,21 @@ ${bites([
   '<b>Optical isolation is the same idea for data.</b> A DMX opto-splitter converts to light and back, so the two sides share no conductor at all — which is why it survives a fixture that puts mains on its data line.',
 ])}
 
+${S('', 'Where the noise floor puts the ceiling', [
+  'A transducer\'s output level and its self-noise together decide how much of the range downstream is actually usable. Change the source level and watch what is left.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="gs-spl">source level at the capsule <b id="gs-splv">94 dB SPL</b></label>
+    <input id="gs-spl" type="range" min="30" max="140" step="1" value="94"></div>
+  <div class="d"><label for="gs-sens">sensitivity <b id="gs-sensv">-40 dBV/Pa</b></label>
+    <input id="gs-sens" type="range" min="-60" max="-20" step="1" value="-40"></div>
+  <div class="d"><label for="gs-noise">self-noise <b id="gs-noisev">14 dB-A</b></label>
+    <input id="gs-noise" type="range" min="5" max="40" step="1" value="14"></div>
+</div>
+<div class="verdict" id="gs-out"></div>
+<p style="color:var(--dimmer);font-size:12.5px;font-family:var(--mono);margin-top:6px">Illustrative: 94 dB SPL is 1 Pa by definition, so output level follows directly from sensitivity. Real headroom also depends on the preamp and the converter.</p>
+
 ${S('Sensing position', 'Two kinds of encoder, and why the difference is a safety question', [
   'An encoder turns rotation into numbers, and there are two families that answer completely different questions.',
   'An <b>incremental</b> encoder produces pulses as it turns. Two channels, A and B, are offset a quarter cycle from each other, so which one leads tells you the direction and counting the edges tells you how far. It is cheap, precise and — crucially — it only knows <em>change</em>. Power it down and it has no idea where anything is. Power it back up and it starts counting from wherever it happens to be, believing that to be zero.',
@@ -221,6 +236,8 @@ ${S('Sensing position', 'Two kinds of encoder, and why the difference is a safet
 ${fig(encFig, 'Left: pulses, and a count that starts at zero every time. Right: a code that is true the instant it powers up.')}
 
 ${rule('An incremental encoder knows <b>how far it moved</b>. An absolute encoder knows <b>where it is</b>. Anything that can hurt somebody should be told by the second kind.')}
+
+${xnote('Everything downstream is limited by what this step captured. A noise floor, a saturation point and a failure mode set the ceiling on what any amount of processing can deliver — and <b>the audience meets the weakest link, not the average</b>.')}
 
 ${S('The family', 'Everything else is the same idea again', [
   'Once the pattern is visible, the rest of the sensor world stops needing memorising.',
@@ -239,6 +256,31 @@ ${bites([
 
 <div class="cta"><strong>Chasing a hum right now?</strong>
 <p>Work outward: is it there with the input unplugged, with the cable in but the source off, with the source on. Each answer eliminates a section. And if the fix you are reaching for is a mains earth, stop — the <a href="/standards/">standards index</a> has the electrical safety documents, and this is the one place on this site where the shortcut is the dangerous one.</p></div>
+
+<script>
+(function(){
+  var spl=document.getElementById('gs-spl'); if(!spl) return;
+  var sens=document.getElementById('gs-sens'), noise=document.getElementById('gs-noise'),
+      sv=document.getElementById('gs-splv'), nv=document.getElementById('gs-sensv'),
+      zv=document.getElementById('gs-noisev'), out=document.getElementById('gs-out');
+  function draw(){
+    var L=Number(spl.value), S=Number(sens.value), N=Number(noise.value);
+    sv.textContent=L+' dB SPL'; nv.textContent=S+' dBV/Pa'; zv.textContent=N+' dB-A';
+    // 94 dB SPL = 1 Pa, so output = sensitivity + (L - 94)
+    var outDbv = S + (L - 94);
+    var mv = Math.pow(10, outDbv/20) * 1000;
+    var snr = L - N;
+    var verdict = snr>70 ? '<span class="ok">Plenty of signal above the floor.</span>'
+      : snr>45 ? 'Usable, and the floor is audible in the quiet passages.'
+      : '<span class="err">The source is close to the self-noise of the microphone.</span> No preamp fixes this \u2014 the noise was generated before the preamp.';
+    out.innerHTML='Output <b>'+outDbv.toFixed(1)+' dBV</b> ('+(mv<1?mv.toFixed(2):mv.toFixed(1))+
+      ' mV). Signal to noise at the capsule: <b>'+snr+' dB</b>. '+verdict+
+      ' Everything downstream is capped by this \u2014 <b>the audience meets the weakest link, not the average</b>.';
+  }
+  for (var el of [spl,sens,noise]) el.addEventListener('input',draw);
+  draw();
+})();
+</script>
 `
 
   return shell({

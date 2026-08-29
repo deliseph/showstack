@@ -1,0 +1,66 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: home-assistant
+name: Home Assistant
+vendor: Open Home Foundation
+category: show-control
+license: Apache-2.0
+price_model: open-source
+status: current
+platforms:
+- linux
+- embedded
+summary: >-
+  Open-source local control for connected devices, with an unusually large set of integrations.
+  Relevant here because it is the most practical way to bring consumer and building devices into
+  a venue system without handing control to a vendor cloud.
+speaks:
+- protocol: mqtt
+  direction: bidirectional
+  note: First-class.
+  confidence: reported
+- protocol: matter
+  direction: bidirectional
+  note: Supported.
+  confidence: reported
+- protocol: thread
+  direction: bidirectional
+  note: Via a border router.
+  confidence: reported
+- protocol: zigbee
+  direction: bidirectional
+  note: Via a coordinator.
+  confidence: reported
+- protocol: knx
+  direction: bidirectional
+  note: Integration available.
+  confidence: unverified
+- protocol: dmx512
+  direction: out
+  note: Through integrations, and not a substitute for a lighting control system.
+  confidence: unverified
+homepage:
+  url: https://www.home-assistant.io/
+  label: Home Assistant
+typical_use:
+- Local control of building and consumer devices in an installation
+- Keeping a venue working when a vendor cloud is not
+- Scheduling and automation around a space
+gotchas:
+- It is building automation, not show control. Nothing a cue depends on belongs here.
+- Updates are frequent and occasionally breaking. Pin a version on anything installed.
+tags:
+- iot
+- automation
+- local-control
+- open-source
+sources:
+- title: Home Assistant
+  url: https://www.home-assistant.io/
+  publisher: Open Home Foundation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

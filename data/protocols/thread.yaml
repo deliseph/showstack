@@ -1,0 +1,45 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: thread
+name: Thread
+category: network-transport
+status: current
+openness: open-free-registration
+transport:
+- wireless-rf
+summary: >-
+  A low-power IPv6 mesh network on 802.15.4 radio. Every device gets a real IP address and routes
+  to its neighbours, so there is no translating hub in the middle and the mesh heals around a node
+  that dies. The transport Matter was designed for.
+multicast:
+  used: true
+  note: IPv6 multicast across the mesh.
+spec_url:
+  url: https://www.threadgroup.org/
+  label: Thread Group
+steward: Thread Group
+first_published: 2014
+typical_use:
+- Battery sensors and controls across an installation, with no mains at the device.
+- Anything that must survive a single node failing.
+gotchas:
+- Mesh is resilient and not quick — every hop adds latency and jitter. Fine for a sensor, wrong
+  for a cue.
+- It needs a border router to reach the rest of the network, and that border router is the thing
+  that fails.
+- Shares the 2.4 GHz band with Wi-Fi and everything else. See the RF map before assuming it is quiet.
+tags:
+- iot
+- mesh
+- ipv6
+- low-power
+sources:
+- title: Thread
+  url: https://www.threadgroup.org/
+  publisher: Thread Group
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

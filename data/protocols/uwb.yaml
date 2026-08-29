@@ -1,0 +1,46 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: uwb
+name: UWB
+aka:
+- Ultra-wideband
+- IEEE 802.15.4z
+category: tracking-position
+status: current
+openness: published-paid
+transport:
+- wireless-rf
+summary: >-
+  A radio that is poor at carrying data and superb at measuring distance. Very short pulses across
+  a wide band give a precise time of arrival, and time of arrival is range — which makes it the
+  basis of most centimetre-class performer and object tracking.
+multicast:
+  used: false
+spec_url:
+  url: https://standards.ieee.org/
+  label: IEEE 802.15.4z
+steward: IEEE
+first_published: 2020
+typical_use:
+- Performer and prop tracking feeding lighting and object audio, usually output as PSN or RTTrPM.
+- Precise indoor positioning where GNSS cannot reach.
+gotchas:
+- Anchors have to be surveyed, and the tracking is only as correct as that survey.
+- Metal and dense structure produce reflections; a position built from a reflected path looks like
+  a valid position.
+- A tag behind a body loses line of sight, which is why systems fuse it with an inertial sensor.
+tags:
+- tracking
+- positioning
+- uwb
+- rtls
+sources:
+- title: IEEE 802.15.4z
+  url: https://standards.ieee.org/
+  publisher: IEEE
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

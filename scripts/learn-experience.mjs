@@ -179,7 +179,7 @@ ${S('The technical decisions that are actually experience decisions', 'Where the
   '<b>Darkness</b> is a resource with a recovery time. <a href="/learn/perception/">Dark adaptation</a> takes twenty to thirty minutes and any bright cue spends it. The blackout in act two is not the same blackout as the one in act one.',
   '<b>Sightlines and seams</b> are attention. Anything with contrast takes the spotlight, so a visible edge, a spill, or a technician crossing upstage is competing directly with whatever you were pointing at.',
   '<b>Comfort</b> is not hospitality, it is capacity. Cold, cramped, needing the toilet, unable to see — every one consumes attention that the piece needed.',
-  '<b>Level</b> is arousal <em>and</em> exposure. Both at once, always. Check it against the <a href="/tools/#dose">dose tool</a>.',
+  '<b>Level</b> is arousal <em>and</em> exposure. Both at once, always. Check it against the <a href="/tools/#dose">dose tool</a> and <a href="/standards/din-15905-5/">DIN 15905-5</a>.',
 ])}
 
 ${S('Designing for it going wrong', 'Graceful degradation is an experience discipline', [
@@ -192,7 +192,7 @@ ${fig(degFig, 'Four rungs. Each is a decision made in advance, or one that panic
 
 ${S('Everyone, not most people', 'Accessibility as architecture', [
   'Treated as compliance, accessibility is a set of things bolted on in week eleven that satisfy a checklist and delight nobody. Treated as architecture, it is the same design problem as everything else on this page: <b>deliver the experience through a channel the person actually has</b> — which is precisely the <a href="/learn/neuro/">sensory substitution</a> argument.',
-  'Captions and surtitles are not a transcript; they are the text design of the piece, and where they sit decides whether somebody watches the show or watches the words. Audio description is dramaturgy — somebody is deciding what matters in each moment. Haptic vests and tactile transducers deliver a mix through the body rather than the ear, and are increasingly used by hearing audiences too because they are simply good. Relaxed performances change the arousal design, not the content. And the sightline from the wheelchair space is a design decision that gets made by whoever puts the desk in, deliberately or not.',
+  'Hearing loops are specified by <a href="/standards/iec-60118-4/">IEC 60118-4</a> and venue obligations by legislation such as the <a href="/standards/ada-standards-2010/">ADA standards</a>. Captions and surtitles are not a transcript; they are the text design of the piece, and where they sit decides whether somebody watches the show or watches the words. Audio description is dramaturgy — somebody is deciding what matters in each moment. Haptic vests and tactile transducers deliver a mix through the body rather than the ear, and are increasingly used by hearing audiences too because they are simply good. Relaxed performances change the arousal design, not the content. And the sightline from the wheelchair space is a design decision that gets made by whoever puts the desk in, deliberately or not.',
   'Done early it is cheap and it improves the piece for everyone. Done late it is expensive and it feels like an apology.',
 ])}
 

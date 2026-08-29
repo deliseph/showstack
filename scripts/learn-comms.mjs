@@ -11,7 +11,7 @@
  * So the interactive here is a latency dial, and it drives a picture of two
  * people's speech colliding. That is the number doing the arguing.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnCommsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -125,10 +125,10 @@ ${S('The shape of it', 'Four ways to build a talkback system', [
 <table class="sys">
   <thead><tr><th>System</th><th>Duplex</th><th>How it works</th><th>What it costs you</th></tr></thead>
   <tbody>
-    ${R('Partyline (2-wire)', 'full', 'One balanced pair carries DC power and audio to every beltpack on the line. Everyone hears everyone, all the time, summed together.', 'No routing at all, and noise adds with every pack. Clear-Com and RTS use different conventions and do not simply interconnect.')}
+    ${R('Partyline (2-wire)', 'full', 'One balanced pair carries DC power and audio to every beltpack on the line. Everyone hears everyone, all the time, summed together. <a href="/hardware/green-go-beltpack/">Green-GO</a> is the networked equivalent.', 'No routing at all, and noise adds with every pack. Clear-Com and RTS use different conventions and do not simply interconnect.')}
     ${R('4-wire', 'full', 'Separate send and return pairs, so a circuit is genuinely point to point rather than a shared bus.', 'More cable and no inherent "everyone hears everyone". It is a building block, not a system.')}
-    ${R('Matrix', 'full', 'A central router. Every panel gets its own configurable set of keys, so the stage manager hears the departments they need and nothing else.', 'It has to be programmed, and the programming is a design job with opinions in it.')}
-    ${R('Wireless beltpack', 'full', 'DECT at 1.9 GHz is the modern default; older systems sit in UHF or fight for 2.4 GHz. Roams between antennas as the user walks.', 'Antenna coverage is a survey problem, and every wireless link adds latency the wired system did not have.')}
+    ${R('Matrix', 'full', 'A central router — an <a href="/hardware/rts-adam/">RTS ADAM</a> or equivalent. Every panel gets its own configurable set of keys, so the stage manager hears the departments they need and nothing else.', 'It has to be programmed, and the programming is a design job with opinions in it.')}
+    ${R('Wireless beltpack', 'full', '<a href="/protocols/dect/">DECT</a> at 1.9 GHz is the modern default — <a href="/hardware/clear-com-freespeak-ii/">FreeSpeak II</a>, <a href="/hardware/riedel-bolero/">Bolero</a>. Older systems sit in UHF or fight for 2.4 GHz.', 'Antenna coverage is a survey problem, and every wireless link adds latency the wired system did not have.')}
     ${R('Two-way radio', 'half', 'One channel, one person at a time, push to talk. Cheap, instantly deployable, and everybody already knows how to use one.', 'Half duplex, hands occupied, and no simultaneity. This is not an intercom and it does not become one.')}
   </tbody>
 </table>
@@ -152,7 +152,7 @@ ${fig(pttFig, 'Push to talk: the channel belongs to one person, and the reply ca
 
 ${S('The number that decides how it feels', 'Latency, and conversational turn-taking', [
   'Human conversation is timed far more precisely than it feels. Turn-taking in ordinary speech has gaps measured in a couple of hundred milliseconds, and people begin planning their reply <em>while the other person is still speaking</em>. That is a reflex, and it does not adapt to a system that is late.',
-  'An analogue partyline is effectively instantaneous. A digital matrix adds a few milliseconds. Audio over a network adds its packet time and buffer. A wireless beltpack adds its own coding delay, and a system that goes wireless to a bridge to a network to another wireless system adds all of them together.',
+  'An analogue partyline is effectively instantaneous. A digital matrix adds a few milliseconds. Audio over a network — <a href="/protocols/dante/">Dante</a> or <a href="/protocols/aes67/">AES67</a> — adds its packet time and buffer. A wireless beltpack adds its own coding delay, and a system that goes wireless to a bridge to a network to another wireless system adds all of them together.',
   'Once the round trip gets long enough, something specific happens: two people start a sentence at the same moment, both stop, both restart. It is not that the audio is bad. It is that the timing cue everyone relies on has been moved.',
   'Drag the dial and watch what the same two people do to each other.',
 ])}
@@ -190,9 +190,11 @@ ${S('The other pieces', 'IFB, program, and who should hear what', [
 ${S('Licensing', 'The question that surfaces when a show travels', [
   'Wired comms is a cable and nobody\'s business but yours. Everything wireless sits in spectrum, and spectrum is national.',
   'Licence-exempt bands exist for radios — PMR446 in Europe, FRS in the United States, and the equivalent low-power allocations elsewhere — and they come with power limits and no protection from anybody else using them. Licensed channels cost money and give you a channel that is meant to be yours.',
-  'DECT-based intercom sits in a band reserved for it in many jurisdictions, which is a large part of why it became the default: it is not competing with the venue\'s Wi-Fi.',
+  '<a href="/protocols/dect/">DECT</a>-based intercom sits in a band reserved for it in many jurisdictions, which is a large part of why it became the default: it is not competing with the venue\'s Wi-Fi.',
   'The rule for a touring show is unglamorous. Check the band before the freight leaves, not on arrival, and treat every country as a separate answer. The <a href="/rf/">frequency map</a> is the starting point for the ones this site covers.',
 ])}
+
+${xnote('Comms never reaches the audience directly and shapes everything they see. A crew talking over each other calls cues late, hedges, and stops using the channel — so the show gets more cautious. <b>Latency in comms shows up on stage as timidity</b>, which is not a fault anybody thinks to look for.')}
 
 ${rule('Comms is judged by a person mid-sentence, not by a spec sheet. <b>Total round trip and who hears whom</b> are the only two numbers that decide whether it feels right.')}
 

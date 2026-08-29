@@ -149,6 +149,19 @@ text-transform:uppercase;color:var(--dimmer);padding:0 6px 0 10px;border-left:1p
 margin-left:5px;white-space:nowrap}
 .lnav .gsep:first-child{border-left:none;margin-left:0;padding-left:0}
 
+/* ---- the experience note --------------------------------------------
+   One per page, always in the same place, always the same shape: what this
+   mechanism does to a person. Visually distinct from .rule because it is a
+   different kind of claim - a rule is about the equipment, this is about the
+   room. */
+.xnote{margin:26px 0;padding:18px 20px;border:1px solid color-mix(in srgb,var(--accent2) 32%,var(--line));
+border-radius:var(--r-md);background:color-mix(in srgb,var(--accent2) 6%,transparent)}
+.xnote .xk{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;
+color:var(--accent2);margin-bottom:9px}
+.xnote p{margin:0;color:var(--ink);font-size:15.2px;line-height:1.65;max-width:64ch}
+.xnote p b{color:var(--accent2)}
+.xnote .xl{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--accent2)}
+
 /* ---- hub cards ------------------------------------------------------ */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px;margin-top:24px}
 .lcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;
@@ -182,6 +195,22 @@ export const rule = (html) =>
 /** What goes wrong. Each item is HTML. */
 export const bites = (items) =>
   `<ul class="bites">${items.map((i) => `<li>${i}</li>`).join('')}</ul>`
+
+/**
+ * The experience note.
+ *
+ * Every page on this site is engineering in service of something that happens
+ * to a person, and that link is usually left implicit. This makes it explicit
+ * once per page, in the same place, in the same voice - a single paragraph
+ * saying what this page's mechanism does to somebody in the room, pointing at
+ * the practice page that treats it as a design material.
+ *
+ * It is deliberately short. The moment it becomes a second essay it stops
+ * being read.
+ */
+export const xnote = (html) =>
+  `<aside class="xnote"><span class="xk">In experience terms</span><p>${html}</p>
+  <a class="xl" href="/learn/experience/">Experience architecture &rarr;</a></aside>`
 
 /** A figure with an optional caption underneath. */
 export const fig = (svg, caption = '', id = '') =>

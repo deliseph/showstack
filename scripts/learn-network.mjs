@@ -12,7 +12,7 @@
  * host halves change. Dragging the prefix is what makes /20 stop being magic.
  */
 import { subnetCidr } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 const MATH_SRC = [subnetCidr].map((f) => f.toString()).join('\n\n')
 
@@ -140,6 +140,8 @@ ${S('Question three', 'Why does multicast need the switch’s help?', [
 ${fig(mcastFig, 'One sender, five ports, two subscribers. Green paths are wanted; red paths are the flood.')}
 
 ${rule('Multicast needs <b>IGMP snooping plus a querier</b>. Snooping alone, with nothing prompting devices to report, degrades back to flooding.')}
+
+${xnote('QoS is protecting a latency figure, and that figure was chosen because of a human being. A late clock becomes drifting audio, which becomes a mouth and a voice on opposite sides of the <b>audiovisual binding window</b> — the point at which sight and sound stop being one event. Nobody in the room will say "the network is congested"; they will say it felt off.')}
 
 <div class="cta"><strong>Now do it with your own numbers.</strong>
 <p>The <a href="/tools/#subnet">subnet calculator</a> and <a href="/network/#qos">QoS priority planner</a> take real inputs, and the <a href="/network/#fill">link fill estimator</a> checks whether the traffic actually fits before you commit to a single gigabit uplink.</p></div>

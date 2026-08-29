@@ -1,0 +1,54 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: open-stage-control
+name: Open Stage Control
+vendor: Jean-Emmanuel Doucet
+category: show-control
+license: GPL-3.0
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+- web
+summary: >-
+  Build a custom control surface in a browser and drive anything that speaks OSC or MIDI with it.
+  Free, scriptable, and the standard answer when a show needs a bespoke tablet panel that no vendor
+  sells.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+homepage:
+  url: https://openstagecontrol.ammd.net/
+  label: Open Stage Control
+typical_use:
+- Custom tablet and phone control surfaces
+- Simplified panels for non-technical operators
+- A remote for software that has an OSC interface and a bad one of its own
+gotchas:
+- It is a server plus a browser client. The browser is the surface, so the network between them
+  is show-critical.
+- A panel that only its author understands is a handover risk. Document the layout with the show
+  file.
+tags:
+- osc
+- control-surface
+- open-source
+- remote
+sources:
+- title: Open Stage Control
+  url: https://openstagecontrol.ammd.net/
+  publisher: Jean-Emmanuel Doucet
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -1,0 +1,55 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: processing
+name: Processing
+vendor: Processing Foundation
+category: content-creation
+license: LGPL / GPL
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+summary: >-
+  A sketching environment for visual programming, and the tool a very large number of people in
+  this industry first wrote code in. Java underneath, deliberately small surface area, and still
+  an excellent way to get from an idea to something on a screen in an evening.
+speaks:
+- protocol: osc
+  direction: bidirectional
+  note: Through the widely used oscP5 library.
+  confidence: reported
+- protocol: midi
+  direction: bidirectional
+  note: Through libraries.
+  confidence: reported
+- protocol: art-net
+  direction: out
+  note: Through community libraries.
+  confidence: unverified
+homepage:
+  url: https://processing.org/
+  label: Processing
+typical_use:
+- Prototyping generative content
+- Teaching
+- Small bespoke tools and visualisers
+gotchas:
+- Excellent for a sketch and not built to be a show-critical playback machine. Move a piece that
+  survives into something designed to run unattended.
+tags:
+- creative-coding
+- generative
+- open-source
+- teaching
+sources:
+- title: Processing
+  url: https://processing.org/
+  publisher: Processing Foundation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

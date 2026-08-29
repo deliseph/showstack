@@ -16,7 +16,7 @@
  * WCAG 2.3.1), uses low contrast, and refuses to run under
  * prefers-reduced-motion. Do not make it bigger or brighter.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnPerceptionPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -152,7 +152,7 @@ ${S('The reframe', 'Specifications are measurements of people', [
     ${T('Flicker with a moving eye or object', 'kHz territory', 'Move your eye, or move the fixture, and the light lands on different photoreceptors — the "phantom array". This is why PWM frequency matters far above fusion.')}
     ${T('Echo becomes audible', 'about 35–50 ms', 'Depends enormously on material. Speech forgives; a percussive transient does not.')}
     ${T('Audio/video felt as simultaneous', 'about +45 to −125 ms', 'Asymmetric: sound arriving late is natural and tolerated, sound arriving early is not. Nature never does it.')}
-    ${T('Loudness integration', 'about 100–200 ms', 'A very short transient sounds quieter than its peak level, which is exactly why peak, RMS and time-weighted averages disagree.')}
+    ${T('Loudness integration', 'about 100–200 ms', 'A very short transient sounds quieter than its peak, which is why peak, RMS and the time weightings in <a href="/standards/iec-61672-1/">IEC 61672-1</a> disagree.')}
     ${T('Full dark adaptation', '20–30 minutes', 'Any bright cue resets a large part of it. The audience is never as dark-adapted as the plot assumes.')}
   </tbody>
 </table>
@@ -161,7 +161,7 @@ ${S('The reframe', 'Specifications are measurements of people', [
 
 ${S('Light', 'Fusion, phantom arrays, and why the eye is not a camera', [
   'Present a light that switches on and off fast enough and it stops looking like flashing and starts looking steady. That point — <b>flicker fusion</b> — is not fixed. It rises with brightness and contrast, and it is markedly higher in your peripheral vision than in the centre of your gaze, which is why a flickering fixture is so often noticed out of the corner of an eye and disappears when you look straight at it.',
-  'The bigger trap is movement. Fusion assumes the image stays on the same photoreceptors. Move your eye across a PWM-driven light, or move the fixture, and each flash lands somewhere different on the retina — so instead of a smear you see a dotted line, a <em>phantom array</em>. This is why a moving-light manufacturer quoting a PWM frequency in the low hundreds of hertz is not making a claim about your eye being slow; it is making a claim you can disprove by turning your head.',
+  'The bigger trap is movement. Fusion assumes the image stays on the same photoreceptors. Move your eye across a PWM-driven light, or move the fixture, and each flash lands somewhere different on the retina — so instead of a smear you see a dotted line, a <em>phantom array</em>. Flicker and its health effects are the subject of <a href="/standards/ieee-1789/">IEEE 1789</a>. This is why a moving-light manufacturer quoting a PWM frequency in the low hundreds of hertz is not making a claim about your eye being slow; it is making a claim you can disprove by turning your head.',
   'And a camera is a different observer again. It samples with a shutter, so it has its own beat frequencies with the light — the subject of <a href="/learn/systems/">genlock and LED walls</a> — and it will photograph flicker that nobody in the room can see.',
 ])}
 
@@ -215,7 +215,7 @@ ${S('Both at once', 'The window in which sight and sound are the same event', [
 ${S('Colour', 'Two lights that match, and a camera that disagrees', [
   'Human colour vision has three channels. That means a very large number of physically different spectra map onto the same three responses — and any two of them will look identical to you. This is <b>metamerism</b>, and it is not a defect; it is what makes colour reproduction possible at all.',
   'It is also a trap, because a camera also has three channels and they are not the same three. An LED fixture tuned by eye to match a tungsten source can photograph noticeably different — often greener, or with skin tones that will not correct cleanly. Nothing has failed. The two observers simply disagree, and the one holding the camera is the one the audience at home is using.',
-  'CRI and the newer TM-30 measures exist to put a number on this, and both are summaries: a single figure standing in for a whole spectrum. Use them to reject bad sources, not to promise a match.',
+  'CRI and the newer TM-30 measures exist to put a number on this, and both are summaries: a single figure standing in for a whole spectrum. Colour spaces such as <a href="/standards/itu-r-bt-709/">BT.709</a> and <a href="/standards/itu-r-bt-2020/">BT.2020</a> are the other half of the agreement — what a camera and a display consider a colour to be. Use them to reject bad sources, not to promise a match.',
   'One more asymmetry worth knowing: at low light levels sensitivity shifts toward the blue end as rod vision takes over — the Purkinje shift. A deep blue night state reads brighter, and a deep red one darker, than a meter says. Designers have exploited that for a century without needing the name for it.',
 ])}
 
@@ -248,10 +248,12 @@ ${rule('Chills need a <b>before</b>. Nothing can be violated that was not first 
 ${bites([
   '<b>An hour at full is an hour with no peak.</b> Constant maximum intensity removes the contrast that the effect depends on. The reason the finale lands is the ninety minutes that were not the finale.',
   '<b>Silence and darkness are effects.</b> They are also the only ones that cost nothing and cannot be over-specified.',
-  '<b>Loudness produces real arousal — and real damage.</b> The physiological response to high SPL is not imaginary, and neither is the exposure. Use the <a href="/tools/#dose">noise dose tool</a> and treat the two as the same conversation.',
+  '<b>Loudness produces real arousal — and real damage.</b> The physiological response to high SPL is not imaginary, and neither is the exposure — see <a href="/standards/din-15905-5/">DIN 15905-5</a> and <a href="/standards/eu-directive-2003-10-ec/">the EU noise directive</a>. Use the <a href="/tools/#dose">noise dose tool</a> and treat the two as the same conversation.',
   '<b>Low frequency is felt before it is heard.</b> Below roughly 20 Hz it stops being a pitch and becomes a sensation in the chest, which is a different design lever from level.',
   '<b>Latency makes people ill, not just annoyed.</b> In a headset, motion-to-photon delay conflicts with the vestibular system, and nausea follows. That is a hard limit, not a quality setting.',
 ])}
+
+${xnote('This page is the parts list for the previous sentence in every other one. Thresholds tell you where you have room and where you have none — and <b>knowing which human limit a number is protecting</b> is the difference between engineering to a spec and engineering to an effect.')}
 
 ${S('Bringing it back', 'Why this page is the floor of the site', [
   'Every other page here is about getting a signal accurately from one place to another. This one is about the only reason that matters.',

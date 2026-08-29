@@ -1,0 +1,48 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: bome-midi-translator
+name: Bome MIDI Translator Pro
+vendor: Bome Software
+category: show-control
+license: Proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+- macos
+summary: >-
+  Turns any MIDI, keystroke, serial or timer event into any other. Unglamorous and enormously useful:
+  the tool that makes an arbitrary controller drive software that was never expecting it.
+speaks:
+- protocol: midi
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+- protocol: midi-show-control
+  direction: bidirectional
+  note: MSC messages can be constructed and parsed.
+  confidence: unverified
+homepage:
+  url: https://www.bome.com/
+  label: Bome Software
+typical_use:
+- Mapping a cheap controller onto software with no learn function
+- Translating between MIDI dialects
+- Turning a keystroke into a cue and back
+gotchas:
+- Rule order matters and a large ruleset becomes hard to reason about. Comment it.
+- It sits in the middle of the chain, so it is also a place latency and confusion accumulate.
+tags:
+- midi
+- translation
+- glue
+sources:
+- title: Bome MIDI Translator
+  url: https://www.bome.com/
+  publisher: Bome Software
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

@@ -17,7 +17,7 @@
  * Both figures animate because both ideas are about *when* something is
  * computed, and that is not a thing a still picture can show.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnEnginesPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -172,6 +172,27 @@ ${fig(rtFig, 'Playback cannot answer the camera. A scene can, because it has not
 <div class="budgetbar" aria-hidden="true"><i></i></div>
 <p style="color:var(--dimmer);font-family:var(--mono);font-size:11.5px;margin-top:0">At 60 fps the whole budget is 16.7 ms — geometry, lighting, effects, post and output. Everything you add spends part of the same bar.</p>
 
+${xnote('A dropped frame is felt before it is seen. Real-time content that stutters breaks the sense that the world is responding to you, which is the specific illusion the whole apparatus exists to create — see <a href="/learn/presence/">presence</a>. <b>Frame budget is presence budget.</b>')}
+
+${S('', 'Spend the budget and watch it run out', [])}
+
+<div class="dial">
+  <div class="d"><label for="fb2-fps">target rate <b id="fb2-fpsv">60 fps</b></label>
+    <input id="fb2-fps" type="range" min="24" max="120" step="1" value="60"></div>
+  <div class="d"><label for="fb2-geo">geometry <b id="fb2-geov">4.0 ms</b></label>
+    <input id="fb2-geo" type="range" min="0" max="200" step="1" value="40"></div>
+  <div class="d"><label for="fb2-lig">lighting <b id="fb2-ligv">5.0 ms</b></label>
+    <input id="fb2-lig" type="range" min="0" max="200" step="1" value="50"></div>
+  <div class="d"><label for="fb2-fx">effects <b id="fb2-fxv">3.0 ms</b></label>
+    <input id="fb2-fx" type="range" min="0" max="200" step="1" value="30"></div>
+  <div class="d"><label for="fb2-post">post + output <b id="fb2-postv">2.0 ms</b></label>
+    <input id="fb2-post" type="range" min="0" max="200" step="1" value="20"></div>
+</div>
+<div class="fig" data-driven="dial" style="padding:14px">
+  <div id="fb2-bar" style="display:flex;height:34px;border:1px solid var(--line);border-radius:7px;overflow:hidden"></div>
+</div>
+<div class="verdict" id="fb2-out"></div>
+
 ${rule('The question is never "is it good enough to look at". It is <b>can it produce the next frame in time, every time</b> — which makes a real-time engine a determinism problem, exactly like the one on the <a href="/learn/code/">code</a> page.')}
 
 ${S('The three', 'Unreal, Unity and Godot', [])}
@@ -234,6 +255,42 @@ ${S('Where to start', 'If you want to learn one of these', [
 
 <div class="cta"><strong>Using one of these on shows?</strong>
 <p>The <a href="/software/">software index</a> lists what each tool speaks, and that is the field most often wrong or missing. If your version of one of these has an integration the entry does not mention, <a href="${GH}/issues/new?labels=data&amp;title=software%3A+">open an issue</a> — that is the single most useful correction anyone sends.</p></div>
+
+<script>
+(function(){
+  var fps=document.getElementById('fb2-fps'); if(!fps) return;
+  var ids=['geo','lig','fx','post'], names=['geometry','lighting','effects','post + output'],
+      cols=['var(--dom-control)','var(--accent2)','var(--dom-network)','var(--dom-visual)'],
+      bar=document.getElementById('fb2-bar'), out=document.getElementById('fb2-out');
+  function draw(){
+    var f=Number(fps.value), period=1000/f;
+    document.getElementById('fb2-fpsv').textContent=f+' fps';
+    var used=0, parts=[];
+    ids.forEach(function(id,i){
+      var ms=Number(document.getElementById('fb2-'+id).value)/10;
+      document.getElementById('fb2-'+id+'v').textContent=ms.toFixed(1)+' ms';
+      used+=ms; parts.push(ms);
+    });
+    var html='';
+    parts.forEach(function(ms,i){
+      var w=Math.min(100,(ms/period)*100);
+      if(w>0.5) html+='<div style="width:'+w+'%;background:'+cols[i]+';color:var(--bg);font-family:var(--mono);'
+        +'font-size:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap">'+names[i]+'</div>';
+    });
+    if(used<period) html+='<div style="flex:1;background:var(--panel2)"></div>';
+    bar.innerHTML=html;
+    var can=used>0?Math.min(f,1000/used):f;
+    out.innerHTML='A frame at '+f+' fps is <b>'+period.toFixed(2)+' ms</b>. Using <b>'+used.toFixed(1)+' ms</b> ('
+      +((used/period)*100).toFixed(0)+'%). '+(used<=period
+        ? '<span class="ok">'+(period-used).toFixed(2)+' ms of headroom.</span>'
+        : '<span class="err">Over by '+(used-period).toFixed(2)+' ms \u2014 this drops frames.</span>')
+      +' Achievable rate with this work: <b>'+can.toFixed(1)+' fps</b>.';
+  }
+  fps.addEventListener('input',draw);
+  ids.forEach(function(id){document.getElementById('fb2-'+id).addEventListener('input',draw)});
+  draw();
+})();
+</script>
 `
 
   return shell({

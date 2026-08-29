@@ -10,7 +10,7 @@
  * between polling and subscribing is a difference in *timing*, and timing is
  * the one thing a static diagram cannot show.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnSoftwarePage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -130,6 +130,18 @@ ${S('The other question to ask', 'Does it poll, or does it push?', [
   ${fig(`<svg viewBox="0 0 460 132" role="img">${pushFig}</svg>`, 'Push — subscribe once, hear about it when it happens.')}
 </div>
 
+${xnote('An integration is invisible when it works and is an experience decision when it does not. Polling a media server to find out whether a clip ended is how a cue lands late — and a cue landing late is not a technical event to an audience, it is <b>a moment that did not quite work</b>, with no explanation available to them.')}
+
+${S('', 'What polling actually costs')}
+
+<div class="dial">
+  <div class="d"><label for="pc-int">poll interval <b id="pc-intv">500 ms</b></label>
+    <input id="pc-int" type="range" min="50" max="5000" step="50" value="500"></div>
+  <div class="d"><label for="pc-h">over <b id="pc-hv">3 hours</b></label>
+    <input id="pc-h" type="range" min="1" max="12" step="1" value="3"></div>
+</div>
+<div class="verdict" id="pc-out"></div>
+
 ${rule('Poll for state you can afford to be stale about. <b>Push for anything a cue waits on.</b>')}
 
 ${S('A worked example', 'What showstack\'s own API looks like', [
@@ -152,6 +164,27 @@ ${bites([
 
 <div class="cta"><strong>Use it.</strong>
 <p>The full dataset is at <a href="/api/v1/index.json">/api/v1/index.json</a> under CC BY 4.0 — no key, no rate limit. If you build something on it, <a href="${GH}/issues/new?labels=tooling&amp;title=built+with+showstack%3A+">say so on the repo</a> and it goes on the list.</p></div>
+
+<script>
+(function(){
+  var i=document.getElementById('pc-int'); if(!i) return;
+  var h=document.getElementById('pc-h'), iv=document.getElementById('pc-intv'),
+      hv=document.getElementById('pc-hv'), out=document.getElementById('pc-out');
+  function draw(){
+    var ms=Number(i.value), hrs=Number(h.value);
+    iv.textContent=ms+' ms'; hv.textContent=hrs+(hrs===1?' hour':' hours');
+    var perHour=Math.round(3600000/ms), total=perHour*hrs, mean=ms/2, framesLate=ms/40;
+    var verdict = ms<=100 ? '<span class="err">Very chatty.</span> This is push, done badly and expensively.'
+      : ms<=500 ? 'Workable for status. <span class="err">Not for anything a cue waits on</span> \u2014 the worst case is already '+framesLate.toFixed(0)+' frames late.'
+      : ms<=2000 ? 'Fine for slow state \u2014 device health, battery, temperature.'
+      : '<span class="ok">Cheap</span>, and the answer can be seconds old. Only for things that change on a human timescale.';
+    out.innerHTML='<b>'+perHour.toLocaleString()+'</b> requests an hour, <b>'+total.toLocaleString()+'</b> over '+hrs+
+      (hrs===1?' hour':' hours')+'. Mean staleness <b>'+mean+' ms</b>, worst case <b>'+ms+' ms</b> ('+framesLate.toFixed(1)+
+      ' frames at 25 fps). A push subscription has <b>none</b> of this. '+verdict;
+  }
+  i.addEventListener('input',draw); h.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

@@ -15,7 +15,7 @@
  * Both interactives are quantisers, because seeing the staircase appear as
  * you drop the bits is the single most convincing thing on the page.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnBitsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -114,8 +114,8 @@ ${learnNav(esc, 'bits')}
 </div>
 
 ${S('First', 'Sampling, and the one rule about it', [
-  'A microphone produces a continuously varying voltage. A converter measures it at fixed intervals and writes down a number each time. Everything digital that follows is operations on that list of numbers.',
-  'The rule is <b>Nyquist</b>: to represent a frequency you must sample at more than twice it. 44.1 kHz gets you just past 22 kHz, which is past the top of human hearing, which is why that number exists. Sample below twice a frequency and it does not simply vanish — it comes back as a <em>different, lower</em> frequency that was never in the original. That is aliasing, it is unrecoverable once it has happened, and it is why every converter has a filter in front of it removing anything above half the sample rate before it gets a chance.',
+  'A microphone produces a continuously varying voltage — see <a href="/learn/transducers/">transducers</a>. A converter measures it at fixed intervals and writes down a number each time. Everything digital that follows is operations on that list of numbers.',
+  'The rule is <b>Nyquist</b>: to represent a frequency you must sample at more than twice it. 44.1 kHz — the rate <a href="/standards/aes3/">AES3</a> and consumer digital audio were built around — gets you just past 22 kHz, which is past the top of human hearing, which is why that number exists. Sample below twice a frequency and it does not simply vanish — it comes back as a <em>different, lower</em> frequency that was never in the original. That is aliasing, it is unrecoverable once it has happened, and it is why every converter has a filter in front of it removing anything above half the sample rate before it gets a chance.',
   'Higher sample rates buy headroom above hearing, gentler filters, and less latency in block-based processing. They do not buy detail inside the audible band that 48 kHz was missing.',
 ])}
 
@@ -141,7 +141,7 @@ ${S('The one that matters more', 'Bit depth is resolution, and 6 dB per bit', [
 <div class="verdict" id="bt-out"></div>
 
 ${S('The same idea, other side of the building', 'Why a moving light has a fine channel', [
-  'DMX gives each channel <b>8 bits</b> — 256 steps. On a dimmer that is mostly acceptable and visibly not enough at the bottom of a slow fade, which is why fixtures apply dimming curves and better ones dim in 16 bits.',
+  '<a href="/protocols/dmx512/">DMX</a> gives each channel <b>8 bits</b> — 256 steps. On a dimmer that is mostly acceptable and visibly not enough at the bottom of a slow fade, which is why fixtures apply dimming curves and better ones dim in 16 bits.',
   'On a moving head it is a real problem. A fixture that pans through 540° over 256 steps moves about <b>2.1° per step</b>. At the end of a long throw that is a beam jumping across the stage in visible increments, and no amount of console smoothing invents positions that the protocol cannot express.',
   'So fixtures offer 16-bit control: two channels for one parameter, a <em>coarse</em> and a <em>fine</em>, combined as <code>coarse × 256 + fine</code>. 65,536 steps, and the same 540° now resolves to about 0.008° — below anything an audience could see.',
   'It costs you a channel per parameter, which is why a fixture\'s extended mode has a much larger footprint. And it introduces a failure everyone meets once: if coarse and fine arrive from different sources, or one is patched and the other is not, the light jitters — because the fine channel is chasing a coarse value that keeps changing underneath it.',
@@ -162,7 +162,7 @@ ${rule('Bit depth is resolution, everywhere. <b>24-bit audio and 16-bit pan are 
 
 ${S('The one that confuses people', 'What 32-bit float actually buys', [
   'Fixed-point formats have a hard ceiling. Reach the largest number the format holds and there is nothing above it, so the waveform is cut flat — clipping, permanently, in the data.',
-  '<b>32-bit floating point</b> stores a value and a separate exponent, so the <em>scale</em> moves with the signal. There is no fixed ceiling in any practical sense. Inside a mixing engine that means an internal gain stage can go far above nominal and come back down with nothing lost, which is why every modern DAW and digital desk works in float internally.',
+  '<b>32-bit floating point</b> stores a value and a separate exponent, so the <em>scale</em> moves with the signal. There is no fixed ceiling in any practical sense. Inside a mixing engine that means an internal gain stage can go far above nominal and come back down with nothing lost, which is why every modern DAW and digital desk works in float internally, whatever <a href="/protocols/dante/">Dante</a> or <a href="/protocols/madi/">MADI</a> is carrying between them.',
   'What it does <b>not</b> do is protect the input. The converter in front of it is fixed-point and has a real, physical ceiling. Overload that and it clips before the number is ever created — and no float format downstream can invent back a peak that was never captured.',
   'A 32-bit float <em>recorder</em> is a slightly different claim: those use two converters at different gains and combine them, so the recorder genuinely does have enormous usable range. That is a hardware trick, not a property of the number format, and worth knowing which one a spec sheet is selling you.',
 ])}
@@ -197,6 +197,8 @@ ${bites([
   '<b>Dither is not noise you are adding by mistake.</b> Reducing bit depth without it turns quantisation error into distortion correlated with the signal; a tiny bit of noise turns it back into ordinary hiss, which is far less audible.',
   '<b>16-bit fixture control needs both channels from the same source.</b> Coarse from a console and fine from anywhere else is a fixture that jitters and an afternoon lost.',
 ])}
+
+${xnote('Resolution is only worth buying up to the point where a person stops being able to tell, and past that it is storage. But the failures are visible: a stepped fade and a jittering mover are both <b>the audience noticing the machinery</b>, which is the only quantisation error that costs anything.')}
 
 ${S('The through line', 'Why this page sits where it does', [
   'A sensor turns the world into a voltage — that is the <a href="/learn/transducers/">previous page</a>. A converter turns that voltage into numbers. Everything after it, in every department, is arithmetic on numbers: a filter, a delay, a fade, a pan value, a pixel.',

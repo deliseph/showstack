@@ -1,0 +1,49 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: dect
+name: DECT
+aka:
+- DECT wireless intercom
+- 1.9 GHz
+category: audio-transport
+status: current
+openness: published-paid
+transport:
+- wireless-rf
+summary: >-
+  The radio behind most modern wireless intercom beltpacks. It sits in a band reserved for it in
+  many jurisdictions, which is the main reason it displaced 2.4 GHz systems on show sites: it is
+  not competing with the venue's Wi-Fi. Full duplex, digital, and it roams between antennas as a
+  user walks.
+multicast:
+  used: false
+spec_url:
+  url: https://www.etsi.org/technologies/dect
+  label: ETSI DECT
+steward: ETSI
+first_published: 1992
+typical_use:
+- Wireless intercom beltpacks on theatre, broadcast and touring shows.
+- Any wireless comms where the 2.4 GHz band is already full.
+gotchas:
+- Band allocation is national. 1.88–1.90 GHz in Europe and elsewhere; North America uses a different
+  slice, so packs are not always portable between regions.
+- Antenna coverage is a survey problem, and handover between antennas is where a system reveals
+  whether it was designed or hoped.
+- Every wireless link adds latency the wired partyline did not have — see the comms explainer for
+  what that does to a conversation.
+tags:
+- intercom
+- comms
+- wireless
+- dect
+sources:
+- title: ETSI DECT
+  url: https://www.etsi.org/technologies/dect
+  publisher: ETSI
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

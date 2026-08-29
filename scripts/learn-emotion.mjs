@@ -18,7 +18,7 @@
  * exciting" into two independent dials, which is the single most useful
  * reframe on the page.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnEmotionPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -187,7 +187,7 @@ ${S('Getting concrete', 'Actual recipes, and what each one is really doing', [
   <div>
     <h4>Excitement · anticipation</h4>
     <p class="ra">rising arousal · valence held open</p>
-    <p><b>Raise:</b> accelerating tempo, accumulating layers, narrowing focus, a repeated figure that has not resolved, increasing low-frequency energy.</p>
+    <p><b>Raise:</b> accelerating tempo, accumulating layers, narrowing focus, a repeated figure that has not resolved, increasing low-frequency energy — and, on a large show, an <a href="/hardware/db-ds100/">object audio processor</a> tightening the image as it builds.</p>
     <p><b>Label it:</b> deliberately do not, yet. Excitement lives in the gap before the answer.</p>
     <p><b>The mechanism:</b> this is the dopaminergic build described above — the anticipation phase <em>is</em> part of the reward. Which is why holding it a beat longer than comfortable works, and why resolving early costs you the moment.</p>
   </div>
@@ -263,11 +263,13 @@ ${rule('Design the <b>peak</b> and the <b>ending</b> deliberately, and spend the
 
 ${bites([
   '<b>"Make it more emotional" is not actionable. "Raise arousal and change the valence cue" is.</b> Splitting the two is most of the craft.',
-  '<b>Loudness produces arousal and also damage.</b> The physiological response is real and so is the exposure — use the <a href="/tools/#dose">noise dose tool</a> and treat it as the same conversation.',
+  '<b>Loudness produces arousal and also damage.</b> The physiological response is real and so is the exposure — use the <a href="/tools/#dose">noise dose tool</a>, check it against <a href="/standards/din-15905-5/">DIN 15905-5</a>, and treat it as the same conversation.',
   '<b>Culture is not a detail.</b> What a colour, a gesture, a silence or a piece of harmony means is learned. A cue that lands in one city can read as something else entirely in another.',
   '<b>Novelty decays across a run.</b> A moment built entirely on surprise works on press night and is inert by week three, for the crew if not for the audience.',
   '<b>Be careful with arousal you cannot resolve.</b> Sustained tension with no release does not produce catharsis, it produces exhaustion — and for some people, genuine distress.',
 ])}
+
+${xnote('This is the material the practice page treats as a design surface. Arousal, valence and expectation are the three things you can actually move, and <b>contrast is what makes any of them readable</b>. A show that never comes down has nowhere to go up to.')}
 
 ${S('The honest limits', 'What this does not give you', [
   'None of this is deterministic and nobody should sell it as such. These are population tendencies with wide individual variation, heavily shaped by culture, mood on the night, who somebody came with, and what happened to them on the way in.',

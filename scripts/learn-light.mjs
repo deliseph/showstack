@@ -9,7 +9,7 @@
  * one thing nobody checks until the content goes dark.
  */
 import { beamDiameter, illuminance, throwRatio } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 const MATH_SRC = [beamDiameter, illuminance, throwRatio].map((f) => f.toString()).join('\n\n')
 
@@ -137,6 +137,8 @@ ${bites([
 ])}
 
 ${rule('A blend hides a <b>seam in brightness</b>, not a difference in black level, colour or geometry. Fix those first — the ramp is the last step, not the fix.')}
+
+${xnote('Beam and field are an attention specification. A hard edge says <em>look here</em>; a soft one says <em>this is a place</em>. Getting it wrong does not read as a lighting error, it reads as the audience looking at the wrong thing — and <b>attention is the one resource a show cannot buy more of</b>.')}
 
 <div class="cta"><strong>Run the numbers.</strong>
 <p><a href="/tools/#beam">Beam &amp; throw</a> for diameter and lux, <a href="/tools/#throw">projector throw ratio</a>, <a href="/tools/#screen">screen brightness</a> and the <a href="/tools/#led">LED wall resolution</a> tool are on the field tools page. Fixture safety standards are indexed under <a href="/standards/iec-60598-2-17/">IEC 60598-2-17</a> and <a href="/standards/ul-1573/">UL 1573</a>.</p></div>

@@ -1,0 +1,52 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: matter
+name: Matter
+aka:
+- CHIP
+- Connected Home over IP
+category: device-management
+status: current
+openness: open-published
+transport:
+- udp
+- tcp
+summary: >-
+  An application layer that gives connected devices a shared vocabulary: a light is a light, a lock
+  is a lock, and any controller can drive one without a vendor-specific integration. Runs over Thread,
+  Wi-Fi and Ethernet, and is the first serious attempt to make the smart-device world interoperable
+  rather than a set of walled gardens.
+multicast:
+  used: true
+  note: Uses IPv6 multicast for discovery via mDNS.
+spec_url:
+  url: https://csa-iot.org/all-solutions/matter/
+  label: Connectivity Standards Alliance
+steward: Connectivity Standards Alliance
+first_published: 2022
+typical_use:
+- Installed and architectural control where devices come from several vendors.
+- Anything that must keep working without a vendor cloud.
+- Bridging consumer devices into a venue control system.
+gotchas:
+- Matter standardises the common device types. The features that made you choose a particular product
+  are usually outside it.
+- Commissioning a device onto a Matter fabric is its own workflow, and moving it between ecosystems
+  is not always painless.
+- It is an application layer, not a radio. What it runs over decides the range, latency and power
+  behaviour.
+tags:
+- iot
+- smart-home
+- interoperability
+- install
+sources:
+- title: Matter
+  url: https://csa-iot.org/all-solutions/matter/
+  publisher: Connectivity Standards Alliance
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

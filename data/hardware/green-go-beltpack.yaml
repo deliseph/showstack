@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: green-go-beltpack
+name: Green-GO Digital Intercom
+vendor: Green-GO (ELC)
+category: io-interface
+status: current
+summary: >-
+  Fully networked intercom in which every device is an equal peer on a standard ethernet network
+  with no central matrix at all — the configuration lives in the devices. Powered over ethernet,
+  and priced so a small venue can own a real intercom system.
+speaks:
+- protocol: aes67
+  direction: bidirectional
+  note: Depending on model and firmware.
+  confidence: unverified
+- protocol: dante
+  direction: bidirectional
+  note: On specific interface models.
+  confidence: unverified
+physical_ports:
+- etherCON or RJ45 with PoE
+- Headset connector
+form_factor: Beltpacks, wall panels and rack interfaces
+homepage:
+  url: https://www.greengodigital.com/
+  label: Green-GO
+gotchas:
+- It is a real network load. Give it a properly configured switch with PoE budget, not a desk hub.
+- Peer-to-peer configuration means the settings are distributed. Back up the configuration file
+  before a show, not after.
+tags:
+- intercom
+- comms
+- network
+- poe
+- green-go
+sources:
+- title: Green-GO Digital
+  url: https://www.greengodigital.com/
+  publisher: Green-GO
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

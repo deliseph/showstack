@@ -9,7 +9,7 @@
  * GNSS is here for a reason people find surprising: on a show it is far more
  * often used as a clock than as a position.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnConnectivityPage({ esc, shell, jsonForScript, SITE, GH }) {
   const S = sec(esc)
@@ -121,6 +121,8 @@ ${S('The one everyone underestimates', 'GNSS is a clock that happens to know whe
 ${fig(gnssFig, 'Each satellite sends its own time and position. The receiver solves for four unknowns at once — and the fourth is the clock.')}
 
 ${rule('Ask what a GNSS antenna is for before you assume. On a show site it is usually feeding a <b>clock</b>, not a map.')}
+
+${xnote('Picking a radio is picking a failure mode, and the audience meets the failure mode rather than the spec sheet. A sensor that reports a minute late is invisible; a control path that stutters is a beat landing wrong. <b>Match the radio to how much lateness the moment can absorb</b>, which is an experience question before it is an RF one.')}
 
 <div class="cta"><strong>The radios that carry a show.</strong>
 <p>Legal frequencies by country are on the <a href="/rf/">RF map</a>, wireless DMX and mic hardware is under <a href="/hardware/">hardware</a>, and how several signals share one band is on <a href="/learn/wireless/">sharing the airwaves</a>.</p></div>

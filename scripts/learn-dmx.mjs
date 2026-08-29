@@ -14,7 +14,7 @@
  * about four seconds.
  */
 import { dmxLineBudget } from './toolmath.mjs'
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 const MATH_SRC = [dmxLineBudget].map((f) => f.toString()).join('\n\n')
 
@@ -188,6 +188,8 @@ ${S('Topology', 'Daisy chain, never a Y-split', [
   ${fig(topoFig, 'Daisy chain — one segment, one terminator.')}
   ${fig(starFig, 'Passive Y-split — three stubs, three reflections.')}
 </div>
+
+${xnote('An intermittent fixture is not read by an audience as a technical fault. It is read as <b>the show being slightly wrong</b> — attention goes to the flicker instead of the thing you pointed at, and it costs you the moment whether or not anybody could name what happened. Termination is an attention problem wearing an impedance problem\u2019s clothes.')}
 
 ${rule('Branch with an <b>opto-splitter</b>, not a Y-cable. Each splitter output is a new segment: new unit-load budget, new terminator.')}
 

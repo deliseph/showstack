@@ -1,0 +1,62 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: vmix
+name: vMix
+vendor: StudioCoast
+category: video-playback
+license: Proprietary
+price_model: one-off-purchase
+status: current
+platforms:
+- windows
+summary: >-
+  Software video production: switching, titles, playback, streaming and recording on one Windows
+  machine. The workhorse of small broadcast and corporate work, and increasingly of hybrid events.
+speaks:
+- protocol: ndi
+  direction: bidirectional
+  note: Core.
+  confidence: reported
+- protocol: srt
+  direction: bidirectional
+  note: Contribution and distribution.
+  confidence: reported
+- protocol: rtmp
+  direction: out
+  note: Streaming.
+  confidence: reported
+- protocol: osc
+  direction: in
+  note: Control, depending on version.
+  confidence: unverified
+- protocol: smpte-st-2110
+  direction: bidirectional
+  note: On higher tiers with suitable hardware.
+  confidence: unverified
+homepage:
+  url: https://www.vmix.com/
+  label: vMix
+typical_use:
+- Live streaming and hybrid events
+- Small-scale broadcast switching
+- Playback and titling on one machine
+gotchas:
+- One machine doing everything is one machine that can fail. Plan the fallback before the show,
+  not during it.
+- Feature availability is tiered — confirm the licence covers the inputs and outputs the design
+  assumes.
+tags:
+- video
+- streaming
+- switching
+- broadcast
+sources:
+- title: vMix
+  url: https://www.vmix.com/
+  publisher: StudioCoast
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

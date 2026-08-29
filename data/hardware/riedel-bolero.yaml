@@ -1,0 +1,47 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: riedel-bolero
+name: Riedel Bolero
+vendor: Riedel Communications
+category: io-interface
+status: current
+summary: >-
+  Wireless intercom on DECT with antennas fed over a standard network, and beltpacks that can be
+  used as walkie-talkies away from the antenna coverage. Integrates into Riedel's matrix rather
+  than standing alone.
+speaks:
+- protocol: dect
+  direction: bidirectional
+  note: Radio link to beltpacks.
+  confidence: reported
+- protocol: aes67
+  direction: bidirectional
+  note: Networked audio.
+  confidence: reported
+- protocol: dante
+  direction: bidirectional
+  note: Depending on configuration.
+  confidence: unverified
+form_factor: Antennas, beltpacks and matrix integration
+homepage:
+  url: https://www.riedel.net/
+  label: Riedel Communications
+gotchas:
+- It is designed around a matrix. Deploying it standalone gives up most of the reason to buy it.
+- Antenna count and placement decide coverage; adding packs later can mean adding antennas.
+tags:
+- intercom
+- comms
+- wireless
+- dect
+- riedel
+sources:
+- title: Riedel Communications
+  url: https://www.riedel.net/
+  publisher: Riedel Communications
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

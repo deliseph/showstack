@@ -17,7 +17,7 @@
  *
  * Nothing here is medical advice and the page says so.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnNeuroPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -202,6 +202,20 @@ ${S('The condition', 'Why it only works if the person can move', [
   'It is also a warning about every "just feed it into the brain" pitch. The bandwidth is the easy part. The closed loop, the consistency of the mapping, and the months of use are the hard parts, and they are not optional.',
 ])}
 
+${S('', 'What a channel count actually removes', [
+  'A healthy cochlea has thousands of hair cells; an implant has a couple of dozen electrodes whose fields overlap. Drag the channel count and watch a spectrum collapse into what actually gets delivered.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="ci-ch">channels <b id="ci-chv">22</b></label>
+    <input id="ci-ch" type="range" min="4" max="64" step="1" value="22"></div>
+</div>
+<div class="fig" data-driven="dial" style="padding:16px">
+  <div id="ci-bars" style="display:flex;gap:2px;align-items:flex-end;height:110px"></div>
+  <div class="cap" style="text-align:left;margin-top:10px">An illustration. The grey outline is a detailed spectrum; the bars are what survives being reduced to the selected number of bands. Speech is redundant enough to come through this; music, which needs fine pitch resolution, is not.</div>
+</div>
+<div class="verdict" id="ci-out"></div>
+
 ${S('The scale', 'What these channels actually carry', [
   'Rough figures, chosen to be comparable rather than precise. They are the reason the field is difficult and the reason the successes are impressive.',
 ])}
@@ -234,11 +248,11 @@ ${S('The synthesis', 'The same block diagram, twice', [
 
 ${S('Why this belongs on a show-technology site', 'Three concrete reasons', [
   '<b>Because the audience is the last device in the signal chain.</b> Everything else here is about getting a signal accurately to a person; this is the specification of the person. The thresholds on the <a href="/learn/perception/">perception</a> page are that device\'s data sheet, and the mechanisms here are why the data sheet reads the way it does.',
-  '<b>Because accessibility is a substitution problem, and it is a design problem.</b> Haptic vests that turn a mix into patterns on the body for deaf audience members, audio description, captioning, sign interpretation, seat-level tactile transducers: every one of those is the same idea — deliver the information through a channel the person has. Treating that as an engineering layer of the show, budgeted and designed, produces something far better than treating it as a compliance item bolted on in week eleven.',
+  '<b>Because accessibility is a substitution problem, and it is a design problem.</b> Haptic vests that turn a mix into patterns on the body for deaf audience members, hearing loops built to <a href="/standards/iec-60118-4/">IEC 60118-4</a>, audio description, captioning, sign interpretation, seat-level tactile transducers: every one of those is the same idea — deliver the information through a channel the person has. Treating that as an engineering layer of the show, budgeted and designed, produces something far better than treating it as a compliance item bolted on in week eleven.',
   '<b>Because biometric input into shows is real and is usually oversold.</b> Heart rate, skin conductance, breathing and EEG can all drive content, and all of them are low-bandwidth and noisy. Designed well — as a slow, aggregate influence on a system that looks good regardless — they add something genuine. Designed as a direct control path, they produce a show that depends on the least reliable signal in the building.',
 ])}
 
-<div class="caveat"><b>Scope, stated plainly.</b> This page describes how these systems work at a signal level, for people who build show technology. It is not medical advice, it is not a guide to any device, and it does not describe anything a person should attempt on themselves or on anybody else. Neural data is also personal data of the most sensitive kind: if a project ever captures it from an audience, that is a consent-and-retention question before it is a technical one.</div>
+<div class="caveat"><b>Scope, stated plainly.</b> This page describes how these systems work at a signal level, for people who build show technology. It is not medical advice, it is not a guide to any device, and it does not describe anything a person should attempt on themselves or on anybody else. Venue-side accessibility obligations sit in legislation such as the <a href="/standards/ada-standards-2010/">ADA standards</a>. Neural data is also personal data of the most sensitive kind: if a project ever captures it from an audience, that is a consent-and-retention question before it is a technical one.</div>
 
 ${bites([
   '<b>Bandwidth is never the whole story.</b> A cochlear implant carries a fraction of one percent of the channels an ear has and restores conversation, because speech is redundant and brains adapt. Ask what the signal has to carry before asking how much of it you can carry.',
@@ -247,6 +261,8 @@ ${bites([
   '<b>A device somebody depends on cannot be discontinued.</b> The Argus II story is the one to remember before shipping anything a person will rely on.',
 ])}
 
+${xnote('Two things follow directly. Accessibility is a substitution problem and therefore a design layer rather than a compliance item. And biometric input into a show is genuinely available and genuinely low-bandwidth — <b>design it as a slow influence on something that already looks good</b>, never as a control path.')}
+
 ${S('Where to go next', 'This page is one half of a pair', [
   'The <a href="/learn/perception/">perception page</a> is the thresholds — what a person can detect, and under what conditions. This one is the mechanism underneath those thresholds, and what happens when you interfere with it deliberately.',
   'Everything else on this site is the chain in between: <a href="/learn/dmx/">how a signal survives a wire</a>, <a href="/learn/network/">how it survives a network</a>, <a href="/learn/wireless/">how it survives the air</a>, and <a href="/learn/systems/">how several of them agree with each other</a>. It ends here, at the only receiver that matters.',
@@ -254,6 +270,38 @@ ${S('Where to go next', 'This page is one half of a pair', [
 
 <div class="cta"><strong>Work in this field?</strong>
 <p>This page is written for show technologists from public research and clinical literature, and it simplifies aggressively. If something here is out of date or overstated — particularly the numbers — <a href="${GH}/issues/new?labels=tooling&amp;title=neuro%3A+">open an issue</a>. Corrections from people who do this work are worth more than any amount of rewriting from outside it.</p></div>
+
+<script>
+(function(){
+  var ch=document.getElementById('ci-ch'); if(!ch) return;
+  var chv=document.getElementById('ci-chv'), bars=document.getElementById('ci-bars'),
+      out=document.getElementById('ci-out'), N=64;
+  var src=[]; for(var i=0;i<N;i++) src.push(0.25+0.7*Math.abs(Math.sin(i*0.37)*Math.cos(i*0.11)));
+  function draw(){
+    var n=Number(ch.value); chv.textContent=n;
+    var per=N/n, html='';
+    for(var i=0;i<N;i++){
+      var band=Math.floor(i/per);
+      var lo=Math.ceil(band*per), hi=Math.min(N,Math.ceil((band+1)*per));
+      var sum=0; for(var k=lo;k<hi;k++) sum+=src[k];
+      var v=sum/Math.max(1,hi-lo);
+      html+='<div style="flex:1;position:relative;height:100%">'
+        +'<div style="position:absolute;bottom:0;left:0;right:0;height:'+(src[i]*100).toFixed(0)+'%;'
+        +'border-top:1px solid var(--dimmer);opacity:.5"></div>'
+        +'<div style="position:absolute;bottom:0;left:0;right:0;height:'+(v*100).toFixed(0)+'%;'
+        +'background:var(--accent);border-radius:2px 2px 0 0"></div></div>';
+    }
+    bars.innerHTML=html;
+    var verdict = n>=40 ? 'More than any implant delivers, and still a fraction of a healthy cochlea.'
+      : n>=20 ? 'About what a current implant provides. <span class="ok">Speech survives this</span> because speech is redundant; melody largely does not.'
+      : n>=10 ? 'Coarse. Speech in quiet is possible with training; speech in noise becomes very hard.'
+      : '<span class="err">Almost nothing of the spectrum is left.</span> The bands are wider than the distinctions that carry meaning.';
+    out.innerHTML='<b>'+n+'</b> channels standing in for thousands of hair cells. '+verdict+
+      ' It works at all because <b>the brain learns to read it</b> \u2014 over months.';
+  }
+  ch.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

@@ -13,7 +13,7 @@
  * distinction is as useful for a set and a room as it is for a headset,
  * which is why this page is not filed under XR.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnPresencePage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -184,9 +184,9 @@ ${S('Causing things', 'The sense of agency, and why latency destroys it', [
 
 ${S('Breaking it', 'What actually ends presence', [
   'Presence is experienced as binary — you are either in the place or you are in a room with equipment in it — while its causes are continuous. A break in presence is usually one cue crossing a threshold, and the same short list is responsible almost every time.',
-  '<b>Latency and mismatch.</b> The world lagging behind your head, or moving when you did not move it. The special case is a conflict your body cannot resolve: eyes reporting motion while the vestibular system reports stillness. That is not confusing, it is <em>nauseating</em> — a hard physiological limit rather than a quality setting.',
+  '<b>Latency and mismatch.</b> The world lagging behind your head, or moving when you did not move it. The special case is a conflict your body cannot resolve: eyes reporting motion while the vestibular system reports stillness. Camera and performer position reach a render engine over <a href="/protocols/freed/">FreeD</a>, <a href="/protocols/psn/">PSN</a> and <a href="/protocols/rttrpm/">RTTrPM</a>, and the latency of that path is the thing being described here. That is not confusing, it is <em>nauseating</em> — a hard physiological limit rather than a quality setting.',
   '<b>A visible seam.</b> The edge of a projection, the join in an LED wall, a masking gap, a light spilling from a doorway, a technician crossing upstage. Attention is drawn by contrast, so any seam becomes the most interesting thing in the frame.',
-  '<b>Sound from the wrong place.</b> Sound localisation is fast, accurate and involuntary. A voice that comes from a PA rather than a body is one of the strongest presence-breaking cues there is, which is exactly what the <a href="/learn/systems/">object audio</a> work exists to fix.',
+  '<b>Sound from the wrong place.</b> Sound localisation is fast, accurate and involuntary. A voice that comes from a PA rather than a body is one of the strongest presence-breaking cues there is, which is exactly what <a href="/learn/systems/">object audio</a> — a <a href="/hardware/db-ds100/">DS100</a>, an <a href="/software/l-isa-controller/">L-ISA</a> system — exists to fix.',
   '<b>A world that does not notice you.</b> The plausibility failure — the thing you cannot touch, the character who looks through you, the state that visibly resets.',
   '<b>The real world getting in.</b> A phone, a draught from the wrong direction, a queue visible past the set, the smell of the foyer. Presence is a whole-body agreement, and it only takes one dissenter.',
 ])}
@@ -195,6 +195,18 @@ ${S('Breaking it', 'What actually ends presence', [
   ${fig(conFig, 'Eyes and balance disagreeing. The body\'s answer to that is not confusion, it is nausea.')}
   ${fig(brkFig, 'One wrong cue, and it is a room with equipment in it again.')}
 </div>
+
+${S('', 'How much delay before the world stops being yours?', [
+  'Motion-to-photon is the time between your head moving and the light for that new viewpoint reaching your eye. Everything on this page has a threshold somewhere along it.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="mp-l">motion-to-photon <b id="mp-lv">18 ms</b></label>
+    <input id="mp-l" type="range" min="2" max="160" step="1" value="18"></div>
+  <div class="d"><label for="mp-r">refresh rate <b id="mp-rv">90 Hz</b></label>
+    <input id="mp-r" type="range" min="30" max="144" step="6" value="90"></div>
+</div>
+<div class="verdict" id="mp-out"></div>
 
 ${S('Building it', 'What actually helps', [
   '<b>Get the head right first.</b> Tracking quality and motion-to-photon latency buy more presence per pound than resolution does, every time. A lower-fidelity world that responds correctly beats a beautiful one that lags.',
@@ -212,6 +224,8 @@ ${bites([
   '<b>Adaptation is real and asymmetric.</b> People acclimatise across a session, so the version that feels fine to a team who have been in it for six weeks may not be the version an audience meets cold.',
 ])}
 
+${xnote('Presence is the precondition for everything else. An audience that has not accepted the place cannot be moved by what happens in it, which is why the <b>threshold and the first two minutes</b> are worth more design attention than they usually get.')}
+
 ${S('Why this page is here', 'A set and a headset are the same problem', [
   'It would be easy to file all of this under virtual reality. That would be a mistake, because everything on it applies to a black box, an arena and a promenade piece.',
   'A set convinces because the sightlines hold from every seat, the sound comes from where the thing is, nothing visible contradicts the fiction, and the world reacts. A headset convinces for exactly the same reasons, using exactly the same senses, with tighter tolerances because it has taken responsibility for more of the signal.',
@@ -220,6 +234,29 @@ ${S('Why this page is here', 'A set and a headset are the same problem', [
 
 <div class="cta"><strong>Work in immersive or XR?</strong>
 <p>Field practice here is far ahead of what is written down, particularly the comfort mitigations that actually survive contact with a public audience. If you have hard-won knowledge about what breaks presence in a real venue, <a href="${GH}/issues/new?labels=tooling&amp;title=presence%3A+">open an issue</a>.</p></div>
+
+<script>
+(function(){
+  var l=document.getElementById('mp-l'); if(!l) return;
+  var r=document.getElementById('mp-r'), lv=document.getElementById('mp-lv'),
+      rv=document.getElementById('mp-rv'), out=document.getElementById('mp-out');
+  function draw(){
+    var ms=Number(l.value), hz=Number(r.value), frame=1000/hz;
+    lv.textContent=ms+' ms'; rv.textContent=hz+' Hz';
+    var frames=ms/frame;
+    var verdict = ms<=20
+      ? '<span class="ok">Inside the usual comfort target.</span> The world moves when you do, and place illusion holds.'
+      : ms<=40
+      ? 'Detectable. Presence survives sitting still and starts to fray on fast head movement.'
+      : ms<=80
+      ? '<span class="err">Agency is going.</span> You still know you moved; it stops feeling like you caused what happened.'
+      : '<span class="err">Sensory conflict.</span> At this delay the eyes and the vestibular system are telling different stories, and the answer a body gives to that is nausea.';
+    out.innerHTML='<b>'+ms+' ms</b> is <b>'+frames.toFixed(1)+'</b> frames at '+hz+' Hz ('+frame.toFixed(1)+
+      ' ms each). '+verdict+' Note that refresh rate does not fix latency \u2014 <b>90 Hz says frames arrive often, not that they are recent</b>.';
+  }
+  l.addEventListener('input',draw); r.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({

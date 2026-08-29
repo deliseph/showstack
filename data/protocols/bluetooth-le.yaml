@@ -1,0 +1,47 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: bluetooth-le
+name: Bluetooth LE
+aka:
+- BLE
+- Bluetooth Low Energy
+category: device-management
+status: current
+openness: open-free-registration
+transport:
+- wireless-rf
+summary: >-
+  Short-range, low-power radio built around small structured attributes rather than a data stream.
+  On a show it is mostly a configuration and sensing channel — a phone setting up a fixture, a beltpack
+  reporting battery, a beacon advertising its presence — rather than anything a cue depends on.
+multicast:
+  used: false
+  note: Advertising packets are broadcast, which is how beacons work; connections are point to point.
+spec_url:
+  url: https://www.bluetooth.com/
+  label: Bluetooth SIG
+steward: Bluetooth SIG
+first_published: 2010
+typical_use:
+- Configuring a device from a phone without a network.
+- Beacons for proximity and wayfinding in a venue.
+- Sensor and battery telemetry from worn or portable equipment.
+gotchas:
+- 2.4 GHz, in the same band as Wi-Fi and a great many other things, in a room full of phones.
+- Range is short by design and highly dependent on bodies, which absorb 2.4 GHz well.
+- Pairing and bonding state lives on both devices and is a common cause of "it worked yesterday".
+tags:
+- bluetooth
+- wireless
+- low-power
+- config
+sources:
+- title: Bluetooth Low Energy
+  url: https://www.bluetooth.com/
+  publisher: Bluetooth SIG
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

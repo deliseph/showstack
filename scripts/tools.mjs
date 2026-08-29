@@ -85,6 +85,17 @@ label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(
    row-height-mismatch gap this layout exists to avoid. Scoping the columns
    per group keeps that resync cheap — it only has to balance 2-4 cards,
    not the whole page. */
+.toolearn{margin:36px 0 22px;padding-top:26px;border-top:1px solid var(--line)}
+.toolearn h3{font-family:var(--sans);font-size:19px;letter-spacing:-.2px;text-transform:none;margin:0 0 6px;
+color:var(--ink);font-weight:650}
+.toolearn > p{color:var(--dim);font-size:14.5px;margin:0 0 16px;max-width:66ch}
+.tlgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:10px}
+.tlgrid a{display:block;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+color:inherit;text-decoration:none;transition:border-color .18s,transform .16s}
+.tlgrid a:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));transform:translateY(-2px);
+text-decoration:none}
+.tlgrid b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px;font-weight:600}
+.tlgrid em{display:block;font-style:normal;color:var(--dimmer);font-family:var(--mono);font-size:11px;line-height:1.5}
 .toolgroup{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.6px;
 color:var(--dimmer);margin:28px 0 10px}
 .toolgroup:first-of-type{margin-top:0}
@@ -493,6 +504,22 @@ HORN = GO &amp; (A | B)</textarea></div>
 
 </div>
 
+<div class="toolearn">
+  <h3>Where these numbers come from</h3>
+  <p>Every calculator here is the arithmetic from an explainer, embedded verbatim from the test file so the page cannot drift from the tests. If a number surprises you, the mechanism is one click away.</p>
+  <div class="tlgrid">
+    <a href="/learn/dmx/"><b>DMX on the wire</b><em>unit loads, termination, reflections</em></a>
+    <a href="/learn/network/"><b>Show networks</b><em>subnetting, QoS, multicast</em></a>
+    <a href="/learn/sound/"><b>Measuring and aligning sound</b><em>delay, inverse square law, arrays</em></a>
+    <a href="/learn/light/"><b>Beams and blends</b><em>beam angle, throw, illuminance</em></a>
+    <a href="/learn/wireless/"><b>Sharing the airwaves</b><em>intermod, duplex, WMAS</em></a>
+    <a href="/learn/bits/"><b>Numbers that stand for signals</b><em>bit depth, sample rate, DSP</em></a>
+    <a href="/learn/engines/"><b>Node graphs and game engines</b><em>the frame budget</em></a>
+    <a href="/learn/aerial/"><b>Drone shows and pyro</b><em>lift time, prefire, timecode</em></a>
+    <a href="/learn/"><b>All 25 explainers &rarr;</b><em>arranged as one chain</em></a>
+  </div>
+</div>
+
 <div class="cta"><strong>A calculation your crew does daily that is missing here?</strong>
 <p><a href="${GH}/issues/new?labels=tooling&amp;title=tools%3A+">Name it</a> — if the arithmetic can be written down and tested, it belongs on this page. The one piece of rigging maths here is labelled as a geometry explainer for a reason: point loads and real bridle design belong with a qualified rigger and the <a href="/standards/">governing standards</a>, not a web form.</p></div>
 `
@@ -654,7 +681,7 @@ function drawBeam() {
     '<line x1="' + fx + '" y1="' + fy + '" x2="' + (W - 30) + '" y2="' + (fy + half) + '" stroke="var(--accent2)" stroke-width="1.5"/>' +
     '<rect x="6" y="' + (fy - 8) + '" width="14" height="16" rx="3" fill="var(--dim)"/>' +
     '<line x1="' + (W - 30) + '" y1="' + (fy - half) + '" x2="' + (W - 30) + '" y2="' + (fy + half) + '" stroke="var(--accent)" stroke-width="2"/>' +
-    '<text x="' + (W - 24) + '" y="' + (fy + 4) + '" fill="var(--dim)" font-size="11" font-family="monospace">' + b.diameter + 'm</text>' +
+    '<text x="' + (W - 6) + '" y="' + (fy + 4) + '" text-anchor="end" fill="var(--dim)" font-size="11" font-family="monospace">' + b.diameter + 'm</text>' +
     '</svg>';
 }
 function drawPowerMeter() {

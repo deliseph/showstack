@@ -17,7 +17,7 @@
  * genuinely useful: it will not speed up your render, and it does have a real
  * near-term consequence, which is cryptographic.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnAiPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -171,6 +171,20 @@ ${S('Language', 'A model that only ever predicts the next token', [
   <div class="cap" style="text-align:left;margin-top:10px">Continuing “the console sends the cue to the …”. At low temperature the top token wins almost always. Raise it and the tail gets a real chance — which is where both creativity and nonsense come from, because the model cannot tell them apart.</div>
 </div>
 
+${S('', 'What inference actually costs you', [
+  'Two numbers decide whether a generative step fits into a working session: how many denoising steps you asked for, and how fast each one is on the machine you have.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="ic-steps">denoising steps <b id="ic-stepsv">30</b></label>
+    <input id="ic-steps" type="range" min="4" max="150" step="1" value="30"></div>
+  <div class="d"><label for="ic-ms">per step on this machine <b id="ic-msv">120 ms</b></label>
+    <input id="ic-ms" type="range" min="5" max="600" step="5" value="120"></div>
+  <div class="d"><label for="ic-n">variations wanted <b id="ic-nv">8</b></label>
+    <input id="ic-n" type="range" min="1" max="64" step="1" value="8"></div>
+</div>
+<div class="verdict" id="ic-out"></div>
+
 ${S('On a show', 'Where it earns its place, and where it does not', [])}
 
 <div class="usefor">
@@ -179,9 +193,9 @@ ${S('On a show', 'Where it earns its place, and where it does not', [])}
     <ul>
       <li><b>Transcription and captioning</b> — speech to text is now good enough to be a real accessibility tool rather than a demo, with a human check.</li>
       <li><b>Translation drafts</b> for multilingual signage and surtitles, reviewed by somebody who speaks the language.</li>
-      <li><b>Content and mood exploration</b> — dozens of looks before anyone models anything, as a conversation with a designer.</li>
+      <li><b>Content and mood exploration</b> — dozens of looks before anyone opens <a href="/software/blender/">Blender</a> or <a href="/software/touchdesigner/">TouchDesigner</a>, as a conversation with a designer.</li>
       <li><b>Upscaling, denoising, rotoscoping and stem separation</b> — narrow, well-defined jobs with a human judging the result.</li>
-      <li><b>Search across your own documents</b> — riders, manuals, patch sheets — where the model retrieves and you verify.</li>
+      <li><b>Search across your own documents</b> — riders, manuals, patch sheets — where the model retrieves and you verify. This site&rsquo;s own <a href="/api/v1/index.json">JSON API</a> is a reasonable thing to point one at.</li>
       <li><b>Anomaly spotting in monitoring data</b>, as an alert to look, never as a decision.</li>
     </ul>
   </div>
@@ -191,7 +205,7 @@ ${S('On a show', 'Where it earns its place, and where it does not', [])}
       <li><b>Anything in a safety chain.</b> Non-deterministic by construction. See <a href="/learn/code/">determinism</a>.</li>
       <li><b>Anything that must be identical every night.</b> A show is a repeatable artefact; a sampled distribution is not.</li>
       <li><b>Anything you cannot check.</b> If verifying the output is harder than doing the work, you have added risk, not capacity.</li>
-      <li><b>Specifications and numbers presented as fact.</b> A model will produce a plausible DMX footprint or a plausible standard number with total confidence. Check it against the <a href="/protocols/">index</a>.</li>
+      <li><b>Specifications and numbers presented as fact.</b> A model will produce a plausible DMX footprint or a plausible standard number with total confidence. Check it against the <a href="/protocols/">protocol index</a> or the <a href="/standards/">standards</a>, both of which cite a source on every claim.</li>
       <li><b>Anything on the critical path with no fallback.</b> A cloud service is a dependency; treat it like any other single point of failure.</li>
     </ul>
   </div>
@@ -219,6 +233,8 @@ ${S('', 'So what does it mean for you', [
 ])}
 
 ${rule('Quantum computing is not a faster computer. It is a <b>different machine for a small set of problems</b>, and the one that touches this industry is cryptography rather than performance.')}
+
+${xnote('These tools change how fast an idea becomes something you can look at, which is real and worth having. What they cannot do is decide whether it belongs — and <b>the deciding is the design</b>. Used for exploration they widen the search; used for delivery they make a show that is average by construction.')}
 
 ${S('Keeping it in its place', 'A tool, aimed at a person', [
   'Everything on this page is a machine doing a version of something the <a href="/learn/perception/">previous stage</a> describes a person doing: taking in a signal, finding structure, deciding what it means. A network of weights is a crude imitation of a network of neurons, and a very good one for narrow jobs.',
@@ -279,6 +295,28 @@ ${S('Keeping it in its place', 'A tool, aimed at a person', [
     }
     tp.addEventListener('input',draw); draw();
   }
+})();
+</script>
+
+<script>
+(function(){
+  var st=document.getElementById('ic-steps'); if(!st) return;
+  var ms=document.getElementById('ic-ms'), n=document.getElementById('ic-n'),
+      sv=document.getElementById('ic-stepsv'), mv=document.getElementById('ic-msv'),
+      nv=document.getElementById('ic-nv'), out=document.getElementById('ic-out');
+  function human(s){ return s<90 ? s.toFixed(1)+' s' : s<5400 ? (s/60).toFixed(1)+' min' : (s/3600).toFixed(1)+' hours' }
+  function draw(){
+    var S=Number(st.value), M=Number(ms.value), N=Number(n.value);
+    sv.textContent=S; mv.textContent=M+' ms'; nv.textContent=N;
+    var one=(S*M)/1000, all=one*N;
+    var verdict = one<2 ? '<span class="ok">Fast enough to iterate in conversation.</span> This is where it is actually useful \u2014 a designer changes a word and looks again.'
+      : one<15 ? 'Slow enough that you stop iterating and start waiting. Usable, and it changes how you work.'
+      : '<span class="err">A batch job, not a conversation.</span> Set it running and go and do something else.';
+    out.innerHTML='<b>'+human(one)+'</b> per image, <b>'+human(all)+'</b> for '+N+
+      '. '+verdict+' More steps buys diminishing quality: past roughly 30&ndash;50 the difference is usually smaller than the difference between two seeds.';
+  }
+  for (var el of [st,ms,n]) el.addEventListener('input',draw);
+  draw();
 })();
 </script>
 `

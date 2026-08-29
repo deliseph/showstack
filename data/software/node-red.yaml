@@ -1,0 +1,62 @@
+# showstack entry — software
+# Schema: ../../schema/software.schema.json
+
+id: node-red
+name: Node-RED
+vendor: OpenJS Foundation
+category: show-control
+license: Apache-2.0
+price_model: open-source
+status: current
+platforms:
+- windows
+- macos
+- linux
+- embedded
+summary: >-
+  Browser-based flow programming: drag nodes onto a canvas, wire them together, and a message travels
+  the wires. Built for exactly the glue problem — something arrives on one protocol and has to leave
+  on another — and it runs happily on a small machine in a rack for years.
+speaks:
+- protocol: mqtt
+  direction: bidirectional
+  note: First-class, and the reason many people install it.
+  confidence: reported
+- protocol: osc
+  direction: bidirectional
+  note: Via community nodes.
+  confidence: reported
+- protocol: art-net
+  direction: bidirectional
+  note: Via community nodes.
+  confidence: unverified
+- protocol: midi
+  direction: bidirectional
+  note: Via community nodes.
+  confidence: unverified
+homepage:
+  url: https://nodered.org/
+  label: Node-RED
+typical_use:
+- Translating between two systems that will never support each other
+- Installed automation and scheduling
+- Prototyping an integration before writing it properly
+gotchas:
+- A flow is easy to build and hard to review — the same problem as any patching environment. Export
+  and version it.
+- Community nodes vary in maintenance. Freeze the set a production depends on.
+tags:
+- integration
+- flow
+- glue
+- mqtt
+- open-source
+sources:
+- title: Node-RED
+  url: https://nodered.org/
+  publisher: OpenJS Foundation
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

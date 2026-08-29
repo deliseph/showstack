@@ -16,7 +16,7 @@
  * static diagram of drift is just two boxes; drift *moving* is immediately
  * obvious, which is the whole point.
  */
-import { LEARN_CSS, sec, rule, bites, fig, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, sec, rule, bites, fig, learnNav, xnote } from './learn-kit.mjs'
 
 export function learnSystemsPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
@@ -227,7 +227,21 @@ ${S('The first shared fact', 'A clock everything reads', [
 ])}
 
 <div class="figrow">
-  ${fig(driftFig, 'Free-running: everything is right, nothing agrees.')}
+  ${S('', 'How far apart do two free-running clocks actually get?', [
+  'Crystals are specified in parts per million, which sounds negligible and is not. Two devices at opposite ends of their tolerance drift apart at the sum of their errors, and the number that matters is not the ppm — it is how many frames apart they are by the curtain call.',
+])}
+
+<div class="dial">
+  <div class="d"><label for="cd-ppm">combined clock error <b id="cd-ppmv">50 ppm</b></label>
+    <input id="cd-ppm" type="range" min="0" max="200" step="1" value="50"></div>
+  <div class="d"><label for="cd-min">running time <b id="cd-minv">120 min</b></label>
+    <input id="cd-min" type="range" min="5" max="300" step="5" value="120"></div>
+  <div class="d"><label for="cd-fps">frame rate <b id="cd-fpsv">25 fps</b></label>
+    <input id="cd-fps" type="range" min="24" max="60" step="1" value="25"></div>
+</div>
+<div class="verdict" id="cd-out"></div>
+
+${fig(driftFig, 'Free-running: everything is right, nothing agrees.')}
   ${fig(lockFig, 'Locked: one reference, one edge.')}
 </div>
 
@@ -311,6 +325,8 @@ ${S('Showcase four', 'The spine that holds a stadium show together', [
 
 ${fig(spineFig, 'One running time, read independently by every department. A glitch costs a frame, not the show.')}
 
+${xnote('Synchronisation is not a technical virtue, it is the whole reason a large show reads as one thing rather than several. The moment two departments disagree about time, an audience stops perceiving <em>an event</em> and starts perceiving <em>machinery</em> — and once that has happened it is very hard to get them back. <b>A shared clock is what buys coherence.</b>')}
+
 ${rule('Trigger chains fail closed and never recover. <b>A shared clock fails open and re-joins.</b> That is the whole reason big shows run on timecode instead of on cue-to-cue triggers.')}
 
 ${S('Putting it back together', 'The two questions worth asking at the start of any integration', [
@@ -322,6 +338,30 @@ ${S('Putting it back together', 'The two questions worth asking at the start of 
 
 <div class="cta"><strong>Worked on an integration that fits this pattern?</strong>
 <p>The chains on this page are deliberately generic so they stay true across vendors. If your version of one differs in a way that matters, <a href="${GH}/issues/new?labels=tooling&amp;title=systems%3A+">open an issue</a> — showcases are the hardest part of this site to get right from the outside.</p></div>
+
+<script>
+(function(){
+  var ppm=document.getElementById('cd-ppm'); if(!ppm) return;
+  var min=document.getElementById('cd-min'), fps=document.getElementById('cd-fps'),
+      pv=document.getElementById('cd-ppmv'), mv=document.getElementById('cd-minv'),
+      fv=document.getElementById('cd-fpsv'), out=document.getElementById('cd-out');
+  function draw(){
+    var p=Number(ppm.value), m=Number(min.value), f=Number(fps.value);
+    pv.textContent=p+' ppm'; mv.textContent=m+' min'; fv.textContent=f+' fps';
+    var ms=(p/1e6)*m*60*1000, frames=ms/(1000/f), samples=Math.round((ms/1000)*48000);
+    var perFrame = p===0 ? null : (1000/f)/((p/1e6)*1000);
+    if(p===0){ out.innerHTML='<span class="ok">Two perfect clocks.</span> They never drift, and nothing on earth has them \u2014 which is why the reference is distributed instead.'; return; }
+    var verdict = frames < 0.5 ? '<span class="ok">Below half a frame.</span> Nobody will see this.'
+      : frames < 2 ? 'Detectable on a hard sync point by the end of the show.'
+      : frames < 10 ? '<span class="err">Visible lip sync error.</span> This is the state people describe as "it drifted".'
+      : '<span class="err">Well past usable.</span> Departments are now telling different stories about where the show is.';
+    out.innerHTML='After '+m+' minutes: <b>'+ms.toFixed(0)+' ms</b> apart \u2014 <b>'+frames.toFixed(1)
+      +'</b> frames at '+f+' fps, or '+samples.toLocaleString()+' samples at 48 kHz. '
+      +'A whole frame of error accumulates every <b>'+(perFrame>60?(perFrame/60).toFixed(1)+' minutes':perFrame.toFixed(0)+' seconds')+'</b>. '+verdict;
+  }
+  ppm.addEventListener('input',draw); min.addEventListener('input',draw); fps.addEventListener('input',draw); draw();
+})();
+</script>
 `
 
   return shell({
