@@ -16,7 +16,7 @@
  * the material is actually looked for - nobody searches for "RS-485 unit
  * loads", they search for whether they can put forty fixtures on one line.
  */
-import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, learnNav } from './learn-kit.mjs'
+import { LEARN_CSS, LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, learnNav, LEARN_READING} from './learn-kit.mjs'
 
 export function learnPage({ esc, shell, SITE, GH }) {
   const style = LEARN_CSS + `
@@ -57,13 +57,26 @@ gap:6px 18px;font-size:12.5px;color:var(--dimmer);font-family:var(--mono)}
 @media(max-width:640px){.stage > .shead h3{font-size:20px}}
 `
 
-  const card = (t) => `
-  <a class="lcard" href="/learn/${esc(t.slug)}/">
-    <span class="ltag">${esc(t.tag)}</span>
+  // The question comes first. Each of these cards already carried two or three
+  // real questions, buried under the blurb as body text - which is the wrong
+  // way round: the gap is what makes somebody want the answer, so it opens the
+  // card and the title lands after it.
+  const card = (t) => {
+    const [lead, ...rest] = t.questions
+    const mins = LEARN_READING.get(t.slug)
+    return `
+  <a class="lcard" href="/learn/${esc(t.slug)}/" data-slug="${esc(t.slug)}">
+    <span class="lqlead">${esc(lead)}</span>
     <h3>${esc(t.title)}</h3>
     <p>${esc(t.blurb)}</p>
-    <div class="lq">${t.questions.map((q) => `<span>${esc(q)}</span>`).join('')}</div>
+    <div class="lfoot">
+      <span class="ltag">${esc(t.tag)}</span>
+      ${mins ? `<span class="lmin">${mins} min read</span>` : ''}
+      <span class="ldone" hidden>read</span>
+    </div>
+    ${rest.length ? `<div class="lq">${rest.map((q) => `<span>${esc(q)}</span>`).join('')}</div>` : ''}
   </a>`
+  }
 
   const chain = LEARN_GROUPS.map((g) => `<a href="#${esc(g.id)}">${esc(g.name)}</a>`)
     .join('<i>→</i>')
@@ -73,12 +86,19 @@ gap:6px 18px;font-size:12.5px;color:var(--dimmer);font-family:var(--mono)}
 ${learnNav(esc, null)}
 <div class="lhero">
   <h2>Why it behaves like that</h2>
-  <p class="lede">Twenty-five explainers, arranged as one chain — the mechanism drawn moving, so the rule stays with you after you close the tab. The index tells you what a thing is; the tools give you the number for tonight; this is the part in between that nobody writes down.</p>
+  <p class="lede">${LEARN_TOPICS.length} explainers, arranged as one chain — the mechanism drawn moving, so the rule stays with you after you close the tab. The index tells you what a thing is; the tools give you the number for tonight; this is the part in between that nobody writes down.</p>
 </div>
 
 <p style="color:var(--dim);font-size:15.5px;max-width:66ch">They are arranged as one chain, because that is what they are. Something physical becomes a signal, the signal survives a wire, a network and the air, it becomes something in a room, it agrees with other systems about time and space, and it finally arrives at a nervous system — which is the only part of it that was ever the point. The last stage is the machines we built to imitate that nervous system, which is the right place for them.</p>
 
 <nav class="chain" aria-label="The stages">${chain}</nav>
+
+<div class="lprog" id="lprog" hidden>
+  <span class="lnum" id="lnum"></span>
+  <span class="lbar"><i id="lbari" style="width:0%"></i></span>
+  <button type="button" id="lreset">Clear</button>
+  <span class="lnote">Stored in this browser on this device only. Nothing is sent anywhere, and there is no account to store it against.</span>
+</div>
 
 <a class="cap" href="/learn/${esc(LEARN_CAPSTONE.slug)}/">
   <span class="ct">Start here if you only read one</span>
@@ -127,5 +147,45 @@ ${LEARN_GROUPS.map((g, i) => {
     },
     body,
     extraStyle: style,
+    extraScript: PROGRESS_JS,
   })
 }
+
+/**
+ * Read state. localStorage only - no account, no cookie, nothing leaves the
+ * device, and the interface says so next to the bar rather than burying it.
+ *
+ * Deliberately not gamified: no streak, no badge, no percentage shouted at
+ * you. It exists because a chain of 27 with no completion signal is a
+ * Zeigarnik problem, and because knowing which four you have left is the
+ * thing that gets you back. It also does not start non-zero - the brief asked
+ * for endowed progress, marking the homepage as stage 0 complete, and I have
+ * left that out: marking something read that nobody read is the one move here
+ * that trades honesty for motivation, on a site whose whole pitch is that it
+ * leaves a field visibly empty rather than guessing at it.
+ */
+const PROGRESS_JS = `
+(function(){
+  var KEY='ss-read';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+  var cards=[].slice.call(document.querySelectorAll('.lcard[data-slug]'));
+  var box=document.getElementById('lprog');
+  if(!cards.length||!box)return;
+  function paint(){
+    var read=load(), n=0;
+    cards.forEach(function(c){
+      var on=read.indexOf(c.dataset.slug)>-1;
+      if(on){c.setAttribute('data-read','');n++}else{c.removeAttribute('data-read')}
+      var d=c.querySelector('.ldone'); if(d)d.hidden=!on;
+    });
+    box.hidden=n===0;
+    document.getElementById('lnum').textContent=n+' of '+cards.length+' read';
+    document.getElementById('lbari').style.width=Math.round(n/cards.length*100)+'%';
+  }
+  document.getElementById('lreset').addEventListener('click',function(){
+    save([]); paint();
+  });
+  paint();
+})();
+`

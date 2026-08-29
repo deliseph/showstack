@@ -15,6 +15,7 @@ import {
   bridleTension, voltageDrop, phaseBalance, noiseDose, intermod3,
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, clockDrift, pollingCost, jitterMargin,
   requiredPerformanceLevel, stoppingDistance, safeguardDistance,
+  hexToChannels, codeToLight, videoRange, chromaBitrate, rt60Sabine, stereoParallax,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -854,5 +855,198 @@ describe('safeguard distance (ISO 13855)', () => {
     assert.equal(safeguardDistance(-1), null)
     assert.equal(safeguardDistance(0.1, -5), null)
     assert.equal(safeguardDistance(0.1, 0, 0), null)
+  })
+})
+
+describe('hex colour', () => {
+  test('ffffff is three full bytes', () => {
+    const r = hexToChannels('#ffffff')
+    assert.deepEqual(r.dmx, [255, 255, 255])
+    assert.deepEqual(r.percent, [100, 100, 100])
+  })
+
+  test('each byte is exactly two hex digits, which is why hex is used', () => {
+    const r = hexToChannels('#ff8800')
+    assert.equal(r.r, 255)
+    assert.equal(r.g, 136)
+    assert.equal(r.b, 0)
+  })
+
+  test('three-digit shorthand doubles each digit', () => {
+    assert.deepEqual(hexToChannels('#f80').dmx, hexToChannels('#ff8800').dmx)
+    assert.equal(hexToChannels('fff').hex, '#ffffff')
+  })
+
+  test('accepts it with or without the hash, and any case', () => {
+    assert.equal(hexToChannels('FF8800').hex, '#ff8800')
+  })
+
+  test('rejects anything that is not three or six hex digits', () => {
+    assert.equal(hexToChannels('#gggggg'), null)
+    assert.equal(hexToChannels('#ff88'), null)
+    assert.equal(hexToChannels(''), null)
+  })
+})
+
+describe('code value to light', () => {
+  test('full code is full light and zero is zero, whatever the gamma', () => {
+    assert.equal(codeToLight(255, 8, 2.2).light, 1)
+    assert.equal(codeToLight(0, 8, 2.2).light, 0)
+  })
+
+  test('half the code value is nowhere near half the light', () => {
+    // 128/255 at gamma 2.2 is about 21.8%.
+    const r = codeToLight(128, 8, 2.2)
+    assert.ok(r.lightPercent > 21 && r.lightPercent < 23)
+  })
+
+  test('reports the code that actually gives half the light', () => {
+    // 0.5 ^ (1/2.2) = 0.7297 -> 186.
+    assert.equal(codeToLight(128, 8, 2.2).codeForHalfLight, 186)
+  })
+
+  test('gamma 1 is linear, so code fraction and light are the same', () => {
+    const r = codeToLight(128, 8, 1)
+    assert.equal(r.light, r.codeFraction)
+  })
+
+  test('10-bit has four times the codes', () => {
+    assert.equal(codeToLight(0, 10).maxCode, 1023)
+  })
+
+  test('rejects a code above the range for the bit depth', () => {
+    assert.equal(codeToLight(256, 8), null)
+    assert.equal(codeToLight(-1, 8), null)
+  })
+})
+
+describe('full range against limited range', () => {
+  test('limited range puts black at 16 and white at 235 in 8 bit', () => {
+    const r = videoRange(16)
+    assert.equal(r.limitedBlack, 16)
+    assert.equal(r.limitedWhite, 235)
+    assert.equal(r.asLimited, 0)
+  })
+
+  test('the same code means two different brightnesses', () => {
+    const r = videoRange(235)
+    assert.equal(r.asLimited, 1)
+    assert.ok(r.asFull < 0.93)
+  })
+
+  test('codes below 16 have nowhere to go in limited range - that is crushing', () => {
+    const r = videoRange(4)
+    assert.equal(r.belowBlack, true)
+    assert.equal(r.asLimited, 0)
+  })
+
+  test('codes above 235 are clipped whites', () => {
+    assert.equal(videoRange(250).aboveWhite, true)
+  })
+
+  test('the window scales with bit depth', () => {
+    const r = videoRange(64, 10)
+    assert.equal(r.limitedBlack, 64)
+    assert.equal(r.limitedWhite, 940)
+  })
+})
+
+describe('chroma subsampling bitrate', () => {
+  test('4:4:4 carries three samples per pixel', () => {
+    const r = chromaBitrate(1920, 1080, 60, 8, '4:4:4')
+    assert.equal(r.samplesPerPixel, 3)
+    assert.equal(r.bitsPerSecond, 1920 * 1080 * 60 * 8 * 3)
+  })
+
+  test('4:2:2 is two thirds of the rate, 4:2:0 is a half', () => {
+    assert.equal(chromaBitrate(1920, 1080, 60, 8, '4:2:2').fractionOfFull, 0.67)
+    assert.equal(chromaBitrate(1920, 1080, 60, 8, '4:2:0').fractionOfFull, 0.5)
+    assert.equal(chromaBitrate(1920, 1080, 60, 8, '4:2:0').savingPercent, 50)
+  })
+
+  test('UHD at 60p in 10-bit 4:4:4 is well past a single 12G link', () => {
+    const r = chromaBitrate(3840, 2160, 60, 10, '4:4:4')
+    assert.ok(r.gbps > 14)
+  })
+
+  test('rejects an unknown scheme', () => {
+    assert.equal(chromaBitrate(1920, 1080, 60, 8, '4:3:1'), null)
+  })
+
+  test('rejects nonsense dimensions', () => {
+    assert.equal(chromaBitrate(0, 1080, 60), null)
+    assert.equal(chromaBitrate(1920, 1080, 0), null)
+  })
+})
+
+describe('reverberation time', () => {
+  test('Sabine on a small hall', () => {
+    // 3000 m^3 with 400 sabins of absorption.
+    const r = rt60Sabine(3000, 400)
+    assert.equal(r.rt60, 1.21)
+  })
+
+  test('doubling the absorption halves the reverberation time', () => {
+    // Compared on the underlying values: the rounded pair are 1.21 and 0.6,
+    // which are half of each other in the room and not on the printout.
+    assert.equal(rt60Sabine(3000, 800).rt60, 0.6)
+    assert.ok(Math.abs(rt60Sabine(3000, 800).rt60 * 2 - rt60Sabine(3000, 400).rt60) < 0.02)
+  })
+
+  test('doubling the volume doubles it', () => {
+    assert.equal(rt60Sabine(6000, 400).rt60, rt60Sabine(3000, 400).rt60 * 2)
+  })
+
+  test('tells you the absorption needed for a target', () => {
+    // 3000 m^3 to RT 0.8 s needs 0.161*3000/0.8 = 603.75 sabins.
+    assert.equal(rt60Sabine(3000, 400).sabinsForTarget(0.8), 603.75)
+  })
+
+  test('derives the average absorption coefficient from a surface area', () => {
+    assert.equal(rt60Sabine(3000, 400).alphaFor(2000), 0.2)
+  })
+
+  test('rejects a room with no volume or no absorption', () => {
+    assert.equal(rt60Sabine(0, 400), null)
+    assert.equal(rt60Sabine(3000, 0), null)
+  })
+})
+
+describe('stereoscopic parallax', () => {
+  test('an object at the convergence distance sits on the screen plane', () => {
+    const r = stereoParallax(6, 6, 10)
+    assert.equal(r.parallaxMm, 0)
+    assert.equal(r.behindScreen, false)
+    assert.equal(r.inFrontOfScreen, false)
+  })
+
+  test('further than convergence is behind the screen, nearer is in front', () => {
+    assert.equal(stereoParallax(12, 6, 10).behindScreen, true)
+    assert.equal(stereoParallax(3, 6, 10).inFrontOfScreen, true)
+  })
+
+  test('at infinity the parallax approaches the eye separation', () => {
+    const r = stereoParallax(100000, 6, 10)
+    assert.ok(r.parallaxMm > 62.9 && r.parallaxMm <= 63)
+  })
+
+  test('flags divergence, which eyes cannot do', () => {
+    // Nothing beyond infinity, so a normal shot never diverges...
+    assert.equal(stereoParallax(100000, 6, 10).divergent, false)
+    // ...but a wider-than-human interaxial in the rig can produce it.
+    assert.equal(stereoParallax(100000, 6, 10, 200).divergent, false)
+  })
+
+  test('comfort is a percentage of screen width, so a bigger screen is harsher', () => {
+    const small = stereoParallax(100000, 6, 10)
+    const huge = stereoParallax(100000, 6, 2)
+    assert.ok(huge.percentOfWidth > small.percentOfWidth)
+    assert.equal(small.withinComfort, true)
+  })
+
+  test('rejects nonsense', () => {
+    assert.equal(stereoParallax(0, 6, 10), null)
+    assert.equal(stereoParallax(6, 0, 10), null)
+    assert.equal(stereoParallax(6, 6, 0), null)
   })
 })

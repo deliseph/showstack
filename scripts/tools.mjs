@@ -15,6 +15,7 @@
  *    page says so instead of silently picking one. A wrong address set
  *    confidently is the exact failure this page exists to prevent.
  */
+import { LEARN_TOPICS } from './learn-kit.mjs'
 import {
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
@@ -38,6 +39,140 @@ const MATH_SRC = [
   subnetCidr, dmxLineBudget, splAtDistance, frameBudget, pyroCueTime, tcString,
 ].map((f) => f.toString()).join('\n\n')
 
+/**
+ * Everything on this page that is the same for all 42 calculators: the finder,
+ * the category rail, per-tool permalinks, copy-result and recently-used.
+ *
+ * Written once and applied generically rather than per tool - 42 hand-wired
+ * copies of a copy button is how a page like this rots. Nothing here touches
+ * the arithmetic; every calculator still returns exactly the numbers the test
+ * suite checks.
+ */
+const TOOLKIT_JS = `
+(function(){
+  var wrap=document.getElementById('toolwrap');
+  if(!wrap)return;
+  var tools=[].slice.call(wrap.querySelectorAll('.tool'));
+  var groups=[].slice.call(wrap.querySelectorAll('.toolgroup'));
+
+  /* --- permalink + copy on every tool --- */
+  tools.forEach(function(t){
+    var h=t.querySelector('h3'); if(h&&t.id){
+      var a=document.createElement('a');
+      a.className='tlink'; a.href='#'+t.id; a.textContent='#';
+      a.title='Link to this tool'; a.setAttribute('aria-label','Copy a link to '+h.textContent.trim());
+      a.addEventListener('click',function(e){
+        e.preventDefault();
+        var url=location.origin+location.pathname+'#'+t.id;
+        history.replaceState(null,'',url);
+        if(navigator.clipboard)navigator.clipboard.writeText(url).catch(function(){});
+        a.textContent='copied'; a.setAttribute('data-done','');
+        setTimeout(function(){a.textContent='#';a.removeAttribute('data-done')},1400);
+      });
+      h.appendChild(a);
+    }
+    var out=t.querySelector('.out');
+    if(out){
+      /* The button goes in a wrapper beside .out, not inside it: every
+         calculator rewrites out.innerHTML on each keystroke, which would
+         delete a child button on the first character typed. */
+      var w=document.createElement('div');
+      w.className='outwrap';
+      out.parentNode.insertBefore(w,out);
+      w.appendChild(out);
+      var c=document.createElement('button');
+      c.type='button'; c.className='tcopy'; c.textContent='copy';
+      c.setAttribute('aria-label','Copy this result');
+      c.addEventListener('click',function(){
+        var txt=out.innerText.trim();
+        if(navigator.clipboard)navigator.clipboard.writeText(txt).catch(function(){});
+        c.textContent='copied'; c.setAttribute('data-done','');
+        setTimeout(function(){c.textContent='copy';c.removeAttribute('data-done')},1400);
+      });
+      w.appendChild(c);
+    }
+  });
+
+  /* --- category rail, built from the group headings that are already there --- */
+  var rail=document.getElementById('trail');
+  groups.forEach(function(g,i){
+    var id='g'+i; g.id=id;
+    var a=document.createElement('a');
+    a.href='#'+id; a.textContent=g.textContent.trim();
+    rail.appendChild(a);
+  });
+  var seen=[].slice.call(rail.children);
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting)return;
+        var i=groups.indexOf(e.target);
+        seen.forEach(function(a,j){ if(j===i)a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current') });
+      });
+    },{rootMargin:'-90px 0px -70% 0px'});
+    groups.forEach(function(g){io.observe(g)});
+  }
+
+  /* --- the finder --- */
+  var input=document.getElementById('tf'), none=document.getElementById('tnone'), count=document.getElementById('tfn');
+  function apply(q){
+    q=q.trim().toLowerCase();
+    var shown=0;
+    tools.forEach(function(t){
+      var on=!q||t.innerText.toLowerCase().indexOf(q)>-1;
+      t.hidden=!on; if(on)shown++;
+    });
+    /* a group heading with nothing under it is noise */
+    groups.forEach(function(g){
+      var any=false,n=g.nextElementSibling;
+      while(n&&!n.classList.contains('toolgroup')){
+        if(n.classList.contains('toolgrid')){
+          if([].slice.call(n.querySelectorAll('.tool')).some(function(t){return !t.hidden}))any=true;
+        } else if(n.classList.contains('tool')&&!n.hidden) any=true;
+        n=n.nextElementSibling;
+      }
+      g.hidden=!any;
+    });
+    none.hidden=shown>0;
+    rail.hidden=!!q;
+    count.textContent=q?(shown+' of '+tools.length+' tools'):'';
+  }
+  input.addEventListener('input',function(){apply(input.value)});
+
+  /* --- recently used, on this device only --- */
+  var KEY='ss-tools';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+  function title(id){var t=document.getElementById(id);var h=t&&t.querySelector('h3');
+    return h?h.textContent.replace(/#$|copied$/,'').trim():id}
+  function note(id){
+    var a=load().filter(function(x){return x!==id}); a.unshift(id);
+    save(a.slice(0,4)); paintRecent();
+  }
+  function paintRecent(){
+    var a=load().filter(function(id){return document.getElementById(id)});
+    var box=document.getElementById('trecent'), list=document.getElementById('trl');
+    box.hidden=a.length<2;
+    list.innerHTML='';
+    a.forEach(function(id){
+      var el=document.createElement('a'); el.href='#'+id; el.textContent=title(id);
+      list.appendChild(el);
+    });
+  }
+  tools.forEach(function(t){
+    t.addEventListener('input',function(){note(t.id)});
+    t.addEventListener('click',function(e){if(e.target.closest('button,select'))note(t.id)});
+  });
+  paintRecent();
+
+  /* --- deep link straight to one tool --- */
+  if(location.hash){
+    var t=document.querySelector(location.hash);
+    if(t&&t.classList.contains('tool'))t.scrollIntoView({block:'center'});
+  }
+})();
+`
+
 export function toolsPage({ esc, shell, SITE, GH }) {
   const style = `
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:22px}
@@ -45,9 +180,10 @@ export function toolsPage({ esc, shell, SITE, GH }) {
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer)}
-.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);
-border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:110px}
-.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field input,.field select{padding:9px 11px;background:var(--panel2);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:7px;font-family:var(--mono);font-size:16px;
+min-height:44px;width:110px;font-variant-numeric:tabular-nums}
+.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .field select{width:auto;max-width:100%}
 /* A long <option> makes a <select> as wide as its longest label, which on a
    390px screen pushes the whole document sideways. Clamp the field, not just
@@ -58,22 +194,81 @@ border-radius:7px;font-family:var(--mono);font-size:15px;min-height:42px;width:1
   .field select,.field textarea{width:100%}
   .tool{padding:16px 15px}
 }
-.out{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);
-border-radius:7px;padding:10px 13px;margin-top:6px;overflow-x:auto}
-.out b{color:var(--accent2)}
-.out .err{color:var(--warn)}
-.dips{display:flex;gap:6px;margin:10px 0 4px}
-.dip{width:30px;height:52px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);
-position:relative;cursor:pointer;padding:0}
-.dip:focus-visible{outline:2px solid var(--accent)}
-.dip::after{content:"";position:absolute;left:4px;right:4px;height:20px;border-radius:3px;background:var(--dimmer);
-bottom:4px;transition:all .12s}
-.dip[aria-pressed="true"]::after{top:4px;bottom:auto;background:var(--accent)}
+/* Von Restorff: in every one of these tools exactly one number is the thing
+   the person came for, and results used to be set at the same weight as the
+   inputs. The result surface is now sunken and the first figure in it is set
+   large, in mono, with tabular figures so it does not jitter as you type.
+   Later figures stay legible but recede. */
+.out{font-family:var(--mono);font-size:15px;color:var(--ink-muted);background:var(--surface-sunken);
+border:1px solid var(--rule);border-radius:var(--r-sm);padding:13px 74px 13px 15px;margin-top:8px;overflow-x:auto;min-height:56px;
+line-height:1.65;font-variant-numeric:tabular-nums;position:relative}
+.out b{color:var(--accent2);font-weight:600}
+.out b:first-of-type{font-size:23px;color:var(--signal);letter-spacing:-.4px;line-height:1.15;
+display:inline-block;vertical-align:-1px}
+.out .err{color:var(--fail);font-weight:600}
+.out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
+.outwrap{position:relative}
+.tcopy{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:10px;letter-spacing:.5px;
+text-transform:uppercase;color:var(--ink-faint);background:var(--surface-raised);border:1px solid var(--rule-strong);
+border-radius:var(--r-pill);min-height:44px;min-width:56px;padding:0 12px;cursor:pointer;opacity:0;
+display:inline-flex;align-items:center;justify-content:center;
+transition:opacity var(--dur-fast),color var(--dur-fast)}
+.tool:hover .tcopy,.tcopy:focus-visible{opacity:1}
+.tcopy:hover{color:var(--signal);border-color:var(--signal)}
+.tcopy[data-done]{color:var(--verified);border-color:var(--verified);opacity:1}
+@media(hover:none){.tcopy{opacity:1}}
+
+/* Find a tool. Forty-two calculators in one scroll is a reference; a rigger
+   on a phone should not pass nineteen of them to reach voltage drop. */
+.tfind{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0 12px}
+.tfind label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.tfind input{flex:1 1 260px;min-width:0;min-height:44px;padding:0 14px;font-size:16px;font-family:var(--mono);
+background:var(--surface-raised);color:var(--ink);border:1px solid var(--rule-strong);border-radius:var(--r-sm)}
+.tfind input:focus{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.tfn{font-family:var(--mono);font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.trail{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 8px;padding-bottom:2px;
+position:sticky;top:var(--stick,96px);z-index:5;background:var(--surface);
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent)}
+.trail::-webkit-scrollbar{display:none}
+.trail a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:0 13px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule);color:var(--ink-muted);display:inline-flex;align-items:center;white-space:nowrap;
+background:var(--surface-raised)}
+.trail a:hover{color:var(--signal);border-color:var(--signal);text-decoration:none}
+.trail a[aria-current]{color:var(--signal);border-color:var(--signal);
+background:color-mix(in srgb,var(--signal) 12%,var(--surface-raised))}
+.trecent{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 16px}
+.trk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.trl{display:flex;gap:6px;flex-wrap:wrap}
+.trl a{font-family:var(--mono);font-size:12px;padding:0 12px;min-height:36px;border-radius:var(--r-pill);
+border:1px dashed var(--rule-strong);color:var(--ink-muted);display:inline-flex;align-items:center}
+.trl a:hover{color:var(--signal);border-color:var(--signal);text-decoration:none}
+.tnone{color:var(--ink-muted);font-size:15px;line-height:1.6;margin:14px 0}
+.tool h3{display:flex;align-items:center;gap:8px}
+.tlink{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-decoration:none;opacity:0;
+min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;
+padding:0 6px;border-radius:var(--r-sm);margin:-10px 0}
+.tool:hover .tlink,.tlink:focus-visible{opacity:1}
+.tlink:hover{color:var(--signal);text-decoration:none}
+.tlink[data-done]{color:var(--verified);opacity:1}
+@media(hover:none){.tlink{opacity:1}}
+.tool:target{border-color:var(--signal);box-shadow:0 0 0 3px color-mix(in srgb,var(--signal) 18%,transparent)}
+.dips{display:flex;gap:6px;margin:10px 0 4px;overflow-x:auto;overflow-y:visible;
+scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.dips::-webkit-scrollbar{display:none}
+.dip{width:44px;height:56px;flex:0 0 auto;border:1px solid var(--rule-strong);border-radius:5px;
+background:var(--panel2);position:relative;cursor:pointer;padding:0}
+.dip:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.dip::after{content:"";position:absolute;left:7px;right:7px;height:22px;border-radius:3px;
+background:var(--dimmer);bottom:5px;transition:all .12s}
+.dip[aria-pressed="true"]::after{top:5px;bottom:auto;background:var(--signal)}
 .dip .n{position:absolute;top:-18px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--dimmer)}
 .dips-wrap{padding-top:18px}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
 .note a{color:var(--accent)}
-label.inline{display:flex;gap:7px;align-items:center;font-size:13.5px;color:var(--dim);margin-top:8px}
+label.inline{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--dim);
+margin-top:8px;min-height:44px;cursor:pointer}
+label.inline input[type=checkbox]{width:20px;height:20px;flex:0 0 auto;accent-color:var(--signal)}
 /* True masonry, not a uniform-row grid: CSS grid sizes every row to its
    tallest card, so a short calculator next to a tall one leaves dead space
    underneath it. Multi-column flow instead packs each card into whichever
@@ -160,6 +355,20 @@ transition:height .35s ease,background .35s ease;min-height:2px}
 <h2>Field tools</h2>
 <p class="lede">The calculations every crew does at load-in, done by the same arithmetic our test suite checks against published standards. Everything runs on this page: no install, no account, and it works with no signal once loaded.</p>
 
+<div class="tfind">
+  <label for="tf">Find a tool</label>
+  <input id="tf" type="search" autocomplete="off" spellcheck="false"
+         placeholder="voltage, delay, bridle, dose, subnet&hellip;" aria-controls="toolwrap">
+  <span class="tfn" id="tfn" role="status" aria-live="polite"></span>
+</div>
+<nav class="trail" id="trail" aria-label="Tool categories"></nav>
+<div class="trecent" id="trecent" hidden>
+  <span class="trk">Last used</span><span class="trl" id="trl"></span>
+</div>
+<p class="tnone" id="tnone" hidden>No tool here matches that. Everything on this page is listed in the rail above &mdash;
+if the calculation you need is missing, it is one pull request.</p>
+
+<div id="toolwrap">
 <div class="toolgroup">Addressing &amp; show control</div>
 <div class="toolgrid">
 <div class="tool" id="dmx">
@@ -516,8 +725,10 @@ HORN = GO &amp; (A | B)</textarea></div>
     <a href="/learn/bits/"><b>Numbers that stand for signals</b><em>bit depth, sample rate, DSP</em></a>
     <a href="/learn/engines/"><b>Node graphs and game engines</b><em>the frame budget</em></a>
     <a href="/learn/aerial/"><b>Drone shows and pyro</b><em>lift time, prefire, timecode</em></a>
-    <a href="/learn/"><b>All 25 explainers &rarr;</b><em>arranged as one chain</em></a>
+    <a href="/learn/"><b>All ${LEARN_TOPICS.length} explainers &rarr;</b><em>arranged as one chain</em></a>
   </div>
+</div>
+
 </div>
 
 <div class="cta"><strong>A calculation your crew does daily that is missing here?</strong>
@@ -525,6 +736,7 @@ HORN = GO &amp; (A | B)</textarea></div>
 `
 
   const script = `
+${TOOLKIT_JS}
 ${MATH_SRC}
 
 const $ = (s) => document.querySelector(s);

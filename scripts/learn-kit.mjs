@@ -70,9 +70,9 @@ background:var(--warn)}
 .tryit input,.tryit select{padding:8px 10px;background:var(--panel);color:var(--ink);border:1px solid var(--line);
 border-radius:7px;font-family:var(--mono);font-size:14px;min-height:40px;max-width:100%}
 .tryit input[type=range]{accent-color:var(--accent);min-width:150px;padding:0}
-.tryit .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tryit .seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden}
 .tryit .seg button{background:var(--panel);color:var(--dim);border:0;border-right:1px solid var(--line);
-font-family:var(--mono);font-size:12.5px;padding:9px 13px;cursor:pointer;min-height:40px}
+font-family:var(--mono);font-size:12.5px;padding:0 14px;cursor:pointer;min-height:44px}
 .tryit .seg button:last-child{border-right:0}
 .tryit .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:var(--accent)}
 .readout{font-family:var(--mono);font-size:14.5px;color:var(--ink);background:var(--panel);
@@ -117,9 +117,9 @@ padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-ra
 color:var(--dimmer);display:flex;justify-content:space-between;gap:10px}
 .dial label b{color:var(--accent2);font-weight:600;text-transform:none;letter-spacing:0;font-size:12.5px}
 .dial input[type=range]{accent-color:var(--accent);width:100%;min-width:0;height:22px}
-.dial .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-end}
+.dial .seg{display:inline-flex;border:1px solid var(--rule-strong);border-radius:8px;overflow:hidden;align-self:flex-end}
 .dial .seg button{background:var(--panel2);color:var(--dim);border:0;border-right:1px solid var(--line);
-font-family:var(--mono);font-size:12px;padding:9px 12px;cursor:pointer;min-height:40px}
+font-family:var(--mono);font-size:12px;padding:0 13px;cursor:pointer;min-height:44px}
 .dial .seg button:last-child{border-right:0}
 .dial .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 18%,var(--panel));color:var(--accent)}
 .verdict{font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--panel2);
@@ -139,7 +139,8 @@ scrollbar-width:none;padding-bottom:2px;
 -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
 mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
 .lnav .lrail::-webkit-scrollbar{display:none}
-.lnav a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:7px;
+.lnav a{flex:0 0 auto;font-family:var(--mono);font-size:12px;padding:0 12px;border-radius:7px;
+display:inline-flex;align-items:center;min-height:44px;
 color:var(--dim);border:1px solid transparent;white-space:nowrap;text-decoration:none}
 .lnav a:hover{color:var(--accent);background:var(--panel);text-decoration:none}
 .lnav a.active{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);
@@ -162,20 +163,58 @@ color:var(--accent2);margin-bottom:9px}
 .xnote p b{color:var(--accent2)}
 .xnote .xl{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--accent2)}
 
+/* Position in the chain, on every explainer. */
+.cpos{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin:-8px 0 24px;
+font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.2px}
+.cpos a{color:var(--ink-faint);display:inline-flex;align-items:center;gap:6px;min-height:32px}
+.cpos a b{color:var(--signal);font-weight:600}
+.cpos a:hover{color:var(--ink-muted);text-decoration:none}
+.cpos a:hover b{text-decoration:underline}
+.cpos > span{position:relative;padding-left:15px}
+.cpos > span::before{content:"";position:absolute;left:0;top:50%;width:5px;height:5px;margin-top:-2.5px;
+border-radius:50%;background:var(--rule-strong)}
+.cpos .cread{color:var(--verified)}
+.cpos .cread::before{background:var(--verified)}
+
 /* ---- hub cards ------------------------------------------------------ */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px;margin-top:24px}
 .lcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;
 display:block;color:inherit;transition:border-color .18s,transform .18s}
 .lcard:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateY(-2px);
 text-decoration:none}
-.lcard .ltag{display:inline-block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
-letter-spacing:.6px;padding:3px 9px;border-radius:999px;margin-bottom:13px;border:1px solid var(--line);color:var(--dimmer)}
-.lcard h3{margin:0 0 8px;font-size:18.5px;font-family:var(--sans);text-transform:none;letter-spacing:-.2px;
-color:var(--ink);font-weight:650}
+/* The question opens the card. It is set as a question, in the accent, above
+   a quieter title - a gap first, the label second. */
+.lcard .lqlead{display:block;font-size:15px;line-height:1.4;color:var(--signal);font-weight:600;
+margin-bottom:9px;letter-spacing:-.1px}
+.lcard h3{margin:0 0 8px;font-size:17px;font-family:var(--sans);text-transform:none;letter-spacing:-.2px;
+color:var(--ink);font-weight:600}
 .lcard p{margin:0;color:var(--dim);font-size:14px;line-height:1.55}
-.lcard .lq{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;
+.lcard .lfoot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.lcard .ltag{display:inline-block;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;
+letter-spacing:.6px;padding:3px 9px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-faint)}
+.lcard .lmin{font-family:var(--mono);font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.lcard .ldone{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.7px;
+color:var(--verified);border:1px solid color-mix(in srgb,var(--verified) 45%,transparent);
+border-radius:999px;padding:3px 9px;margin-left:auto}
+.lcard[data-read] .lqlead{color:var(--ink-muted)}
+.lcard[data-read]{border-color:color-mix(in srgb,var(--verified) 26%,var(--rule))}
+.lcard .lq{margin-top:13px;padding-top:12px;border-top:1px solid var(--rule);font-size:12.5px;
 color:var(--dimmer);line-height:1.75}
 .lcard .lq span{display:block}
+/* Progress. Stored on this device only, and said so in the interface rather
+   than in a policy page. */
+.lprog{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 0;padding:14px 16px;
+border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface-raised)}
+.lprog .lbar{flex:1 1 180px;height:6px;border-radius:3px;background:var(--surface-sunken);overflow:hidden;
+min-width:120px}
+.lprog .lbar i{display:block;height:100%;background:var(--verified);border-radius:3px;
+transition:width var(--dur-slow) var(--ease-out)}
+.lprog .lnum{font-family:var(--mono);font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums;
+flex:0 0 auto}
+.lprog .lnote{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);flex:1 1 100%;line-height:1.5}
+.lprog button{font-family:var(--mono);font-size:11.5px;padding:0 13px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink-muted);cursor:pointer;flex:0 0 auto}
+.lprog button:hover{color:var(--signal);border-color:var(--signal)}
 @media(max-width:640px){
   .lsec h3{font-size:19px}
   .fig{padding:11px}
@@ -274,6 +313,14 @@ export const LEARN_CAPSTONE = {
   questions: ['How do I structure a running order?', 'What actually gets remembered?', 'How should it fail?'],
 }
 
+/**
+ * Measured reading time per explainer slug, filled in by buildPages() after
+ * the explainers render and before the /learn/ index does. Empty during tests
+ * that import this module on its own, which is why every read is guarded.
+ */
+export let LEARN_READING = new Map()
+export function setLearnReading(m) { LEARN_READING = m }
+
 export const LEARN_TOPICS = [
   {
     slug: 'transducers',
@@ -290,6 +337,14 @@ export const LEARN_TOPICS = [
     title: 'Numbers that stand for signals',
     blurb: 'Sample rate, bit depth and 6 dB per bit — the same fact that explains 24-bit audio and 16-bit fixture control. Then the short list of arithmetic behind every delay, reverb, filter and distortion you have ever used.',
     questions: ['What does 24-bit buy me?', 'Why does a mover step?', 'How does reverb work?'],
+  },
+  {
+    slug: 'colour',
+    group: 'foundation',
+    tag: 'Colour & video',
+    title: 'How a colour becomes a number',
+    blurb: 'What #ffffff actually is and why colours are written in base 16, why 128 is not half the light, what a colour space adds that the numbers cannot, and the round trip from photons to code values and back to photons.',
+    questions: ['What is a hex code?', 'Why is 128 not half brightness?', 'What is 4:2:0 costing me?'],
   },
   {
     slug: 'encoding',
@@ -420,6 +475,14 @@ export const LEARN_TOPICS = [
     questions: ['How do I read a patch?', 'Pre-rendered or real-time?', 'Unreal, Unity or Godot?'],
   },
   {
+    slug: 'senses',
+    group: 'person',
+    tag: 'The channels',
+    title: 'How each sense tells things apart',
+    blurb: 'Two ears turning a 700-microsecond delay into a direction. Three overlapping cones making a colour that is not in the light. A receptor that cannot tell chilli from heat. None of it is measurement — all of it is inference from a pattern.',
+    questions: ['How do we hear direction?', 'How do eyes see colour?', 'Why does chilli feel hot?'],
+  },
+  {
     slug: 'perception',
     group: 'person',
     tag: 'Human factors',
@@ -497,5 +560,28 @@ export const learnNav = (esc, currentSlug) => {
   return `<nav class="lnav" aria-label="Explainers"><div class="lrail">` +
     `<a href="/learn/"${currentSlug ? '' : ' class="active" aria-current="page"'}>All</a>` +
     `<a href="/learn/${esc(LEARN_CAPSTONE.slug)}/"${cap ? ' class="active" aria-current="page"' : ''}>` +
-    `${esc(LEARN_CAPSTONE.title)}</a>${html}</div></nav>`
+    `${esc(LEARN_CAPSTONE.title)}</a>${html}</div></nav>` + chainPosition(esc, currentSlug)
+}
+
+/**
+ * Where this page sits in the chain of 27.
+ *
+ * A reader who arrives from a search engine has no idea any of this is
+ * ordered. Two numbers - which stage, and where inside it - plus the reading
+ * time, is enough to place the page without a sidebar or a progress widget.
+ */
+export function chainPosition(esc, slug) {
+  const t = LEARN_TOPICS.find((x) => x.slug === slug)
+  if (!t) return ''
+  const gi = LEARN_GROUPS.findIndex((g) => g.id === t.group)
+  const g = LEARN_GROUPS[gi]
+  const within = LEARN_TOPICS.filter((x) => x.group === t.group)
+  const n = within.findIndex((x) => x.slug === slug) + 1
+  // A page cannot know its own reading time while it is being rendered, so
+  // this leaves a token that buildPages fills in once the page exists.
+  return `<div class="cpos">` +
+    `<a href="/learn/#${esc(g.id)}"><b>Stage ${gi + 1} of ${LEARN_GROUPS.length}</b> &middot; ${esc(g.name)}</a>` +
+    `<span>${n} of ${within.length} in this stage</span>` +
+    `<span class="cmin">__READMIN__ min read</span>` +
+    `<span class="cread" data-slug="${esc(slug)}" hidden>read</span></div>`
 }

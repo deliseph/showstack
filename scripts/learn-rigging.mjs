@@ -233,6 +233,23 @@ ${bites([
   '<b>"Over people" includes the crew.</b> The exclusion zone is not an audience-only concept, and load-in is when most of the exposure actually happens.',
 ])}
 
+${S('The two letters everybody swaps', 'WLL, SWL, and the design factor underneath both', [
+  'These get used interchangeably in conversation and they are not interchangeable, and the difference is exactly the kind of thing that decides an argument on a loading dock.',
+  '<b>WLL — Working Load Limit.</b> A property of the <em>equipment</em>, assigned by the manufacturer and marked on the item. It is derived from the minimum breaking load divided by a design factor, and it does not change with how you use the thing. A shackle stamped 3.25 t has a WLL of 3.25 t on Monday and on Friday.',
+  '<b>SWL — Safe Working Load.</b> Historically, the maximum load in a <em>particular configuration and application</em>, as assessed by a competent person. It can be — and often is — <b>lower</b> than the WLL: a sling at an angle, a beam clamp near an edge, a shackle side-loaded, an unusual environment.',
+  'The important part is what happened to the term. <b>SWL has been largely retired from modern standards and legislation</b>, because it implied a guarantee that could not be given and because it blurred a manufacturer\'s rating with a situational judgement. Current equipment standards and UK lifting legislation use WLL. Plenty of people still say SWL out of habit, and that is fine — as long as everybody in the conversation knows which of the two things is being claimed.',
+  'Underneath both sits the <b>design factor</b>: WLL is the minimum breaking load divided by it. Entertainment work commonly uses higher factors than general industry, because a load is over people and because the equipment lives in a truck.',
+])}
+
+${rule('<b>WLL is stamped on the item.</b> SWL, where it is still used at all, is what a competent person says this arrangement may do today — and it is frequently the smaller number. Never assume the marking is the answer to the question you are asking.')}
+
+${bites([
+  '<b>Angle eats capacity.</b> A two-leg sling does not share the load evenly at any angle other than vertical, and a wide included angle multiplies the tension in each leg dramatically. The <a href="/tools/#bridle">bridle geometry tool</a> shows the shape of it; the actual selection belongs to a rigger.',
+  '<b>A rating is for the intended loading direction.</b> A shackle side-loaded, a hook tip-loaded or an eyebolt pulled at an angle is outside what the marking describes.',
+  '<b>The weakest component sets the assembly.</b> A 3.25 t shackle on a 1 t sling is a 1 t assembly, and the shackle marking is the number people will quote.',
+  '<b>Unmarked is unusable.</b> If the marking is illegible the item has no rating you may rely on, whatever it looks like.',
+])}
+
 ${S('The bit nobody explains', 'What a safety relay does that a stop button does not', [
   'This is the single most useful thing on the page, because once you have seen it you can never again read "emergency stop fitted" as a specification.',
   'A <b>plain stop circuit</b> is one wire through one button to one contactor. Press it and the circuit opens and the machine stops. It works — right up until one of three things happens. The button\'s contact welds shut. A cable chafes and shorts the two sides together. Or the contactor itself welds, which is what contactors do at the end of their lives.',

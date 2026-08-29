@@ -50,9 +50,14 @@ import { learnEmotionPage } from './learn-emotion.mjs'
 import { learnPresencePage } from './learn-presence.mjs'
 import { learnExperiencePage } from './learn-experience.mjs'
 import { learnRiggingPage } from './learn-rigging.mjs'
-import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE } from './learn-kit.mjs'
-import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS } from './related.mjs'
+import { learnColourPage } from './learn-colour.mjs'
+import { learnSensesPage } from './learn-senses.mjs'
+import { buildPage } from './build-page.mjs'
+import { homePage } from './home.mjs'
+import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
+import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
+import { label as human, labelList } from './labels.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
 const REPO = process.env.SHOWSTACK_REPO ?? 'deliseph/showstack'
@@ -80,58 +85,70 @@ const jsonForScript = (obj) =>
 
 const trunc = (s, n = 155) => { const t = String(s ?? '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t }
 
-const CSS = RELATED_CSS + `
-:root{color-scheme:dark;
---bg:#0b0e14;--panel:#121722;--panel2:#19212f;--line:#242f42;--ink:#e9edf4;--dim:#9aa8bc;--dimmer:#7a889f;
---accent:#5fd4bb;--accent2:#f0b866;--warn:#ec7f66;--ok:#8cc96a;
---dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;--dom-safety:#ec7f66;--dom-control:#b98cf2;
---glow:rgba(95,212,187,.06);--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
---r-sm:8px;--r-md:12px;--r-lg:16px;
---mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
---sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-:root[data-theme="light"]{color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
---accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
---dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
---glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
---bg:#f6f7f9;--panel:#ffffff;--panel2:#edf0f4;--line:#dbe1ea;--ink:#141922;--dim:#46536a;--dimmer:#5f6b80;
---accent:#0b7561;--accent2:#8f6110;--warn:#b6462e;--ok:#3a7a22;
---dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;--dom-safety:#b6462e;--dom-control:#7440ab;
---glow:transparent;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07)}}
+/**
+ * The reset, the control defaults that carry the 3:1 and 44px rules, the
+ * focus ring and the base type. Exported for the same reason as TOKENS:
+ * site/search.html lost all of it when its copy of the palette was removed,
+ * which left that one page with a transparent body and no focus ring.
+ */
+export const BASE_CSS = `
 *{box-sizing:border-box}html,body{margin:0;padding:0}
+/* SC 1.4.11: a control's boundary has to be visible. --rule stays decorative
+   at 1.23:1; anything a person operates gets --rule-strong at >= 3:1. */
+input,select,textarea,button,summary,.tab,[role="tab"]{border-color:var(--rule-strong)}
+input,select,textarea{background:var(--surface-raised);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:var(--r-sm);font-family:var(--mono)}
+/* SC 2.5.8: 44px minimum on anything you tap. */
+input,select,textarea,button{min-height:44px}
+input[type="checkbox"],input[type="radio"]{min-height:0;width:20px;height:20px;
+flex:0 0 auto;accent-color:var(--signal);cursor:pointer}
+/* A checkbox is tapped on its label, so the label carries the target size. */
+label:has(> input[type="checkbox"]),label:has(> input[type="radio"]){min-height:44px;
+display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
 -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:800px;margin:0 auto;padding:0 20px}
+`
+
+/**
+ * Header, nav rail and the two header controls. Exported for the same reason
+ * as TOKENS: site/search.html used to carry its own copy, which is how the two
+ * headers drifted to different heights and different touch-target sizes.
+ */
+export const SHELL_CSS = `
 /* The header is sticky, so every pixel it occupies is a pixel of the page the
    reader never gets back. On a 390px phone the old one wrapped the nav onto
    three or four rows and ate half the viewport. Now it is at most two rows:
    an identity bar, and a nav that scrolls sideways instead of wrapping. */
-header{border-bottom:1px solid var(--line);padding:10px 0;position:sticky;top:0;z-index:30;
+header{border-bottom:1px solid var(--line);padding:6px 0;position:sticky;top:0;z-index:30;
 background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 header::after{content:"";position:absolute;inset:auto 0 -1px 0;height:1px;
 background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 35%,transparent),transparent)}
 header .wrap{max-width:1120px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .hbar{display:flex;align-items:center;gap:10px;flex:0 0 auto}
 header h1{font-family:var(--mono);font-size:17px;margin:0;letter-spacing:-.3px;white-space:nowrap}
+header h1 a{display:inline-flex;align-items:center;min-height:44px}
 header h1 span{color:var(--accent)}
 header nav{margin-left:auto;display:flex;gap:3px;align-items:center;min-width:0;justify-content:flex-start}
-header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:8px 12px;border-radius:999px;
+header nav a{color:var(--dim);font-family:var(--mono);font-size:12.5px;padding:0 13px;border-radius:999px;
+min-height:44px;min-width:44px;justify-content:center;
 border:1px solid transparent;display:inline-flex;align-items:center;line-height:1;white-space:nowrap;flex:0 0 auto;
 transition:color .15s,background .15s,border-color .15s}
 header nav a:hover{color:var(--ink);background:var(--panel2);border-color:var(--line);text-decoration:none}
 header nav a.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);
 border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+header nav .ncl{font-family:var(--mono);font-size:9px;letter-spacing:.9px;text-transform:uppercase;
+color:var(--ink-faint);padding:0 6px 0 0;white-space:nowrap;flex:0 0 auto;align-self:center}
 header nav .navgroup{display:flex;gap:3px;align-items:center;padding-left:8px;margin-left:5px;
 border-left:1px solid var(--line);flex:0 0 auto}
-.ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
-padding:6px 10px;border-radius:999px;white-space:nowrap}
+.ghlink{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule-strong);
+padding:0 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 .ghlink:hover{color:var(--ink);border-color:var(--dim);text-decoration:none}
-.themebtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
-border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
+.themebtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;
+border-radius:999px;border:1px solid var(--rule-strong);background:var(--panel2);color:var(--dim);cursor:pointer;padding:0;
 flex:0 0 auto;transition:color .15s,border-color .15s,transform .15s}
 .themebtn:hover{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent);transform:translateY(-1px)}
 .themebtn svg{display:block}
@@ -153,16 +170,164 @@ overscroll-behavior-x:contain;scroll-snap-type:x proximity}
     mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
 }
 @media(max-width:860px){
-  header{padding:8px 0}
+  header{padding:4px 0}
   header .wrap{gap:6px}
   .hbar{width:100%}
   .hbar .themebtn{margin-left:auto}
   header nav{margin-left:0;width:100%;padding-bottom:2px;
     -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
     mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
-  header nav a{padding:7px 11px}
+  header nav a{padding:0 11px}
   header nav .navgroup{padding-left:6px;margin-left:3px}
 }
+`
+
+/**
+ * The token layer, exported so site/search.html can inline the same source
+ * instead of keeping its own drifting copy of the palette.
+ */
+export const TOKENS = `
+/* ---- TOKEN LAYER -------------------------------------------------------
+   Semantic tokens are the source of truth. The older presentational names
+   (--bg, --panel, --line, --accent...) are kept as aliases so the 40 page
+   modules that use them keep working; new work should use the semantic name.
+   Every colour pair below has a measured contrast ratio in the comment.
+   The full rationale lives in design-system/showstack/MASTER.md.
+
+   Light is the base palette and dark is the override, so a browser that
+   expresses no preference lands on light - the real usage context is a phone
+   in a loading dock in daylight. The OS preference is still honoured, and an
+   explicit choice via [data-theme] beats the OS in both directions. */
+:root{
+color-scheme:light;
+/* surfaces */
+--surface:#f6f7f9;--surface-raised:#ffffff;--surface-sunken:#edf0f4;
+/* text - every one of these measured >= 4.5:1 on all three surfaces */
+--ink:#141922;          /* 16.44 / 17.62 / 15.41 */
+--ink-muted:#46536a;    /*  7.24 /  7.76 /  6.79 */
+--ink-faint:#5f6b80;    /*  5.02 /  5.38 /  4.71 - labels only, never body */
+/* boundaries. --rule is decorative and deliberately quiet; --rule-strong is
+   for anything whose boundary a person needs to see to operate it, and is the
+   only one of the two that clears SC 1.4.11's 3:1. */
+--rule:#dbe1ea;         /*  1.23 - decorative only */
+--rule-strong:#7f8288;  /*  3.59 /  3.85 /  3.37 - controls */
+/* the one accent */
+--signal:#0b7561;       /*  5.25 /  5.63 /  4.92 */
+--signal-ink:#ffffff;   /*  5.63 on --signal */
+--focus:#0b7561;        /*  5.25 - clears 3:1 on every surface it lands on */
+/* reserved. Never decorative: green means "this fact is sourced", amber means
+   a real caution, red means a real failure. */
+--verified:#3a7a22;     /*  4.91 */
+--warn:#b6462e;         /*  5.02 */
+--fail:#b6462e;
+/* domain hues, used to identify a domain and nothing else */
+--dom-visual:#8f5a10;--dom-audio:#116e93;--dom-network:#22579e;
+--dom-safety:#b6462e;--dom-control:#7440ab;
+--glow:transparent;
+--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 16px rgba(16,24,40,.07);
+/* legacy aliases - do not use in new code */
+--bg:var(--surface);--panel:var(--surface-raised);--panel2:var(--surface-sunken);
+--line:var(--rule);--dim:var(--ink-muted);--dimmer:var(--ink-faint);
+--accent:var(--signal);--accent2:#8f6110;--ok:var(--verified);
+}
+/* --- type scale, 1.2 minor third off a 16px base ------------------------ */
+:root{
+--text-xs:11px;--text-sm:13px;--text-base:16px;--text-md:17px;--text-lg:20px;
+--text-xl:24px;--text-2xl:29px;--text-3xl:35px;--text-display:clamp(30px,5.2vw,50px);
+--leading-tight:1.25;--leading-normal:1.5;--leading-prose:1.65;
+--measure:68ch;
+/* --- 4px spacing scale --- */
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;
+/* --- radius --- */
+--r-sm:8px;--r-md:12px;--r-lg:16px;--r-pill:999px;
+/* --- motion. Standard tier: nothing choreographed. --- */
+--dur-fast:150ms;--dur-base:250ms;--dur-slow:400ms;
+--ease-out:cubic-bezier(.22,.61,.36,1);--ease-in-out:cubic-bezier(.65,.05,.36,1);
+/* --- families --- */
+--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+--sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--serif:"Newsreader",Georgia,"Times New Roman",serif}
+
+/* Dark. Same token names, re-measured values. Not an inverted light palette:
+   the accent had to be lightened to hold its ratio on a dark ground, and the
+   reserved colours were re-picked rather than flipped. */
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+color-scheme:dark;
+--surface:#0b0e14;--surface-raised:#121722;--surface-sunken:#19212f;
+--ink:#e9edf4;          /* 16.45 / 15.27 / 13.76 */
+--ink-muted:#9aa8bc;    /*  8.00 /  7.43 /  6.69 */
+--ink-faint:#7a889f;    /*  5.38 /  4.99 /  4.50 */
+--rule:#242f42;         /*  1.44 - decorative only */
+--rule-strong:#556e9b;  /*  3.76 /  3.49 /  3.15 - controls */
+--signal:#5fd4bb;       /* 10.69 /  9.92 /  8.94 */
+--signal-ink:#0b0e14;   /* 10.69 on --signal */
+--focus:#5fd4bb;
+--verified:#8cc96a;     /*  9.82 */
+--warn:#ec7f66;         /*  7.17 */
+--fail:#ec7f66;
+--dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
+--dom-safety:#ec7f66;--dom-control:#b98cf2;
+--glow:rgba(95,212,187,.06);
+--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+--accent2:#f0b866}}
+:root[data-theme="dark"]{
+color-scheme:dark;
+--surface:#0b0e14;--surface-raised:#121722;--surface-sunken:#19212f;
+--ink:#e9edf4;--ink-muted:#9aa8bc;--ink-faint:#7a889f;
+--rule:#242f42;--rule-strong:#556e9b;
+--signal:#5fd4bb;--signal-ink:#0b0e14;--focus:#5fd4bb;
+--verified:#8cc96a;--warn:#ec7f66;--fail:#ec7f66;
+--dom-visual:#ffb454;--dom-audio:#4fd1ff;--dom-network:#6ea8fe;
+--dom-safety:#ec7f66;--dom-control:#b98cf2;
+--glow:rgba(95,212,187,.06);
+--shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.28);
+--accent2:#f0b866}
+/* Self-hosted, same origin. Two variable files per family cover 400-700, and
+   unicode-range means latin-ext only downloads on a page that needs it. The
+   CDN version of this was render-blocking and third-party: when that request
+   hung behind a venue firewall, mobile LCP went from 316ms to 12812ms. */
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/plex-sans-latin.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/plex-sans-latin-ext.woff2) format("woff2");
+unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/jetbrains-mono-latin.woff2) format("woff2");
+unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:400 700;font-display:swap;
+src:url(/assets/fonts/jetbrains-mono-latin-ext.woff2) format("woff2");
+unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+`
+
+const CSS = RELATED_CSS + TOKENS + `
+${BASE_CSS}
+.wrap{max-width:800px;margin:0 auto;padding:0 20px}
+${SHELL_CSS}
+/* A keyboard user should not have to tab through 17 nav items to reach the
+   page. Hidden until focused, then it sits over the sticky header. */
+.skip{position:absolute;left:-9999px;top:0;z-index:60;background:var(--signal);color:var(--signal-ink);
+font-family:var(--mono);font-size:13px;padding:12px 18px;border-radius:0 0 var(--r-sm) 0;
+text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.skip:focus{left:0}
+/* "Free, no account, no tracking" was one line of small text at the bottom of
+   two pages. It is a real reason people trust this and it now sits under the
+   header on every page - one line, always there, not a banner and not a badge. */
+.trust{border-bottom:1px solid var(--line);background:var(--surface-sunken)}
+.trust .wrap{max-width:1120px;display:flex;align-items:center;gap:7px;flex-wrap:nowrap;
+padding-top:6px;padding-bottom:6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+letter-spacing:.2px;white-space:nowrap;overflow-x:auto;scrollbar-width:none;
+-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent);
+mask-image:linear-gradient(90deg,#000 calc(100% - 20px),transparent)}
+.trust .wrap::-webkit-scrollbar{display:none}
+.trust .wrap > *{flex:0 0 auto}
+.trust b{color:var(--ink-muted);font-weight:500}
+.trust svg{flex:0 0 auto;color:var(--verified)}
+.trust a{color:var(--ink-muted);text-decoration:underline;text-underline-offset:2px}
+.trust a:hover{color:var(--signal)}
+@media(max-width:520px){.trust .wrap{font-size:10.5px;gap:6px;
+-webkit-mask-image:none;mask-image:none}}
 main{padding:36px 0 72px;background:
 radial-gradient(600px 220px at 50% -60px,var(--glow),transparent)}
 h2{font-size:28px;margin:0 0 6px;line-height:1.25;letter-spacing:-.4px}
@@ -254,10 +419,15 @@ const THEME_JS = `
     if(btn)btn.addEventListener('click',function(){var o=['auto','light','dark'];apply(o[(o.indexOf(mode())+1)%3])});
     apply(mode());
     /* The nav is a sideways rail on a phone, so the page you are actually on
-       can start off-screen to the right. Bring it into view without moving the
-       page itself. */
-    var cur=document.querySelector('header nav a.active');
-    if(cur&&cur.scrollIntoView){try{cur.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
+       can start off-screen to the right. Scroll the rail itself rather than
+       calling scrollIntoView on the link: scrollIntoView sets the sequential
+       focus navigation starting point, which made the first Tab land in the
+       middle of the nav and skip the skip link entirely. */
+    var nav=document.querySelector('header nav.rail');
+    var cur=nav&&nav.querySelector('a.active');
+    if(nav&&cur&&nav.scrollWidth>nav.clientWidth+1){
+      nav.scrollLeft=Math.max(0,cur.offsetLeft-(nav.clientWidth-cur.offsetWidth)/2);
+    }
   });
 })();
 `
@@ -269,16 +439,27 @@ const THEME_JS = `
  * derived from the canonical URL so no page has to declare it and none can
  * forget to.
  */
-function navBar(canonical) {
+export function navBar(canonical) {
   const path = String(canonical ?? '').replace(/^https?:\/\/[^/]+/, '')
   const link = (href, label) => {
     const active = href === '/' ? path === '/' || path === '' : path.startsWith(href)
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
   }
-  const search = link('/', 'Search')
-  const tools = ['/tools/', '/network/', '/rf/'].map((h, i) => link(h, ['Tools', 'Network', 'RF'][i])).join('')
-  const views = ['/learn/', '/interop/', '/compare/', '/ports/', '/signals/'].map((h, i) => link(h, ['Learn', 'Interop', 'Compare', 'Ports', 'Signals'][i])).join('')
-  return `<nav class="rail" aria-label="Site">${search}<span class="navgroup">${tools}</span><span class="navgroup">${views}</span></nav>`
+  const home = link('/', 'Home')
+  const main = ['/learn/', '/search/', '/tools/', '/build/']
+    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Build'][i])).join('')
+  const index = ['/protocols/', '/standards/', '/software/', '/hardware/', '/glossary/']
+    .map((h, i) => link(h, ['Protocols', 'Standards', 'Software', 'Hardware', 'Glossary'][i])).join('')
+  const views = ['/interop/', '/compare/', '/ports/', '/signals/', '/network/', '/rf/']
+    .map((h, i) => link(h, ['Interop', 'Compare', 'Ports', 'Signals', 'Network', 'RF'][i])).join('')
+  // The three clusters carry visible labels. Sixteen undifferentiated pills
+  // ask the reader to reconstruct the grouping from a thin border; naming the
+  // runs is what turns the rail into a model of the site. The labels scroll
+  // with the rail, so on a phone you can always see which cluster you are in.
+  return `<nav class="rail" aria-label="Site">${home}` +
+    `<span class="navgroup">${main}</span>` +
+    `<span class="navgroup"><span class="ncl">The index</span>${index}</span>` +
+    `<span class="navgroup"><span class="ncl">Answers</span>${views}</span></nav>`
 }
 
 function shell({ title, description, canonical, jsonld, body, h1extra = '', extraStyle = '', extraScript = '' }) {
@@ -295,14 +476,14 @@ function shell({ title, description, canonical, jsonld, body, h1extra = '', extr
 <meta property="og:type" content="article">
 <meta property="og:url" content="${esc(canonical)}">
 <meta name="twitter:card" content="summary">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="preload" href="/assets/fonts/plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>${THEME_JS}</script>
 ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>` : ''}
 <style>${CSS}${extraStyle}</style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap">
   <div class="hbar">
     <h1><a href="/" style="color:inherit">show<span>stack</span></a></h1>
@@ -312,7 +493,12 @@ ${jsonld ? `<script type="application/ld+json">${jsonForScript(jsonld)}</script>
   ${navBar(canonical)}
   ${h1extra}
 </div></header>
-<main><div class="wrap">${body}</div></main>
+<div class="trust"><div class="wrap">
+  <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <b>Free forever</b><span>&middot;</span><span>no account, no tracking, no third-party requests</span>
+  <span>&middot;</span><a href="/build/">open data, free API</a>
+</div></div>
+<main id="main" tabindex="-1"><div class="wrap">${body}</div></main>
 ${extraScript ? `<script>${extraScript}</script>` : ''}
 <footer><div class="wrap">
   Data <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT.
@@ -336,8 +522,30 @@ function relatedLearn(kind, entry) {
   return learnBox(esc, learnFor(BACKLINKS, kind, entry))
 }
 
+/**
+ * Who maintained this entry.
+ *
+ * "Your handle goes on the entry" was a promise in a paragraph nobody read.
+ * Showing it on the entry itself is the half that turns a reader into a
+ * maintainer - and it is why the block renders nothing rather than an empty
+ * shell when there is no one to credit yet.
+ */
+function creditLine(entry) {
+  const who = entry.contributed_by ?? []
+  if (!who.length) return ''
+  return `<p class="credit"><span>Maintained by</span>` +
+    who.map((h) => `<a href="https://github.com/${esc(String(h).replace(/^@/, ''))}" rel="noopener">@${esc(String(h).replace(/^@/, ''))}</a>`).join('') +
+    (entry.updated ? `<span class="credit-when">updated ${esc(String(entry.updated).slice(0, 10))}</span>` : '') +
+    `</p>`
+}
+
 function contributeBox(collection, id, gap) {
-  const missing = gap ? `<p>Known gaps on this entry: <code>${esc(gap.missing.join('</code>, <code>'))}</code>. If you can source one of them, that is a ten minute pull request.</p>` : ''
+  // esc() has to run per field name, not over the joined string - joining
+  // first meant the <code> separators were escaped too and the reader saw
+  // literal markup in the middle of the sentence.
+  const missing = gap
+    ? `<p>Known gaps on this entry: ${gap.missing.map((f) => `<code>${esc(f)}</code>`).join(', ')}. If you can source one of them, that is a ten minute pull request.</p>`
+    : ''
   return `<div class="cta">
     <strong>Something wrong, or missing?</strong>
     ${missing || '<p>Every entry here is maintained by people who run shows.</p>'}
@@ -365,12 +573,13 @@ function protocolPage(p, gap) {
   b += `<p class="lede">${esc(p.summary)}</p>`
 
   b += `<div class="meta">`
-  b += `<span class="pill dom-${superDomain(p.category)}">${esc(p.category)}</span>`
-  if (p.openness) b += `<span class="pill">${esc(p.openness)}</span>`
+  b += `<span class="pill dom-${superDomain(p.category)}" data-value="${esc(p.category)}">${esc(human('category', p.category))}</span>`
+  if (p.openness) b += `<span class="pill" data-value="${esc(p.openness)}" title="${esc(p.openness)}">${esc(human('openness-short', p.openness))}</span>`
   if (p.steward) b += `<span class="pill">${esc(p.steward)}</span>`
-  if (p.confidence) b += `<span class="pill ${esc(p.confidence)}">${esc(p.confidence)}</span>`
-  if (p.status && p.status !== 'current') b += `<span class="pill">${esc(p.status)}</span>`
+  if (p.confidence) b += `<span class="pill ${esc(p.confidence)}" data-value="${esc(p.confidence)}" title="${esc(human('confidence', p.confidence))}">${esc(p.confidence === 'verified' ? 'Verified' : 'Reported')}</span>`
+  if (p.status && p.status !== 'current') b += `<span class="pill" data-value="${esc(p.status)}">${esc(human('status', p.status))}</span>`
   b += `</div>`
+  b += creditLine(p)
 
   if (ports.length) {
     b += `<h3>Ports</h3>`
@@ -519,14 +728,15 @@ function productPage(kind, e, gap) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / ${kind} / ${esc(e.id)}</div>`
   b += `<h2>${esc(e.name)}</h2><p class="lede">${esc(e.summary)}</p>`
-  b += `<div class="meta"><span class="pill dom-${superDomain(e.category)}">${esc(e.category)}</span>`
+  b += `<div class="meta"><span class="pill dom-${superDomain(e.category)}" data-value="${esc(e.category)}">${esc(human('category', e.category))}</span>`
   if (e.vendor) b += `<span class="pill">${esc(e.vendor)}</span>`
   if (e.license) b += `<span class="pill">${esc(e.license)}</span>`
-  if (e.price_model) b += `<span class="pill">${esc(e.price_model)}</span>`
-  for (const pf of e.platforms ?? []) b += `<span class="pill">${esc(pf)}</span>`
-  if (e.confidence) b += `<span class="pill ${esc(e.confidence)}">${esc(e.confidence)}</span>`
-  if (e.status && e.status !== 'current') b += `<span class="pill">${esc(e.status)}</span>`
+  if (e.price_model) b += `<span class="pill" data-value="${esc(e.price_model)}">${esc(human('price_model', e.price_model))}</span>`
+  for (const pf of e.platforms ?? []) b += `<span class="pill" data-value="${esc(pf)}">${esc(human('platforms', pf))}</span>`
+  if (e.confidence) b += `<span class="pill ${esc(e.confidence)}" data-value="${esc(e.confidence)}" title="${esc(human('confidence', e.confidence))}">${esc(e.confidence === 'verified' ? 'Verified' : 'Reported')}</span>`
+  if (e.status && e.status !== 'current') b += `<span class="pill" data-value="${esc(e.status)}">${esc(human('status', e.status))}</span>`
   b += `</div>`
+  b += creditLine(e)
 
   if (e.speaks?.length) {
     b += `<h3>Protocols it speaks</h3><table><tr><th>Protocol</th><th>Direction</th><th>Notes</th></tr>` +
@@ -593,11 +803,15 @@ function collectionIndex(kind, entries, { title, lede, group, label, sub }) {
 
   let b = `<div class="crumb"><a href="/">showstack</a> / ${esc(kind)}</div>`
   b += `<h2>${esc(title)}</h2><p class="lede">${lede}</p>`
+  // The anchor keeps the machine value so existing deep links still resolve;
+  // only what a person reads is mapped. The raw key stays on the element for
+  // anyone working against the API.
+  const groupField = kind === 'glossary' || kind === 'standards' ? 'domain' : 'category'
   b += `<p class="idxjump">` + ordered.map(([g, list]) =>
-    `<a href="#g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <b>${list.length}</b></a>`).join('') + `</p>`
+    `<a href="#g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}" data-value="${esc(g)}">${esc(human(groupField, g))} <b>${list.length}</b></a>`).join('') + `</p>`
 
   for (const [g, list] of ordered) {
-    b += `<h3 id="g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}">${esc(g)} <span class="idxn">${list.length}</span></h3><div class="idxlist">`
+    b += `<h3 id="g-${esc(g.replace(/[^a-z0-9]+/gi, '-'))}" data-value="${esc(g)}">${esc(human(groupField, g))} <span class="idxn">${list.length}</span></h3><div class="idxlist">`
     for (const e of [...list].sort((x, y) => String(label(x)).localeCompare(String(label(y))))) {
       b += `<a class="idxrow" href="/${esc(kind)}/${esc(e.id)}/">
         <span class="idxname">${esc(label(e))}</span>
@@ -609,6 +823,12 @@ function collectionIndex(kind, entries, { title, lede, group, label, sub }) {
 }
 
 const INDEX_CSS = `
+.credit{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-14px 0 24px;
+font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
+.credit a{color:var(--signal);border:1px solid color-mix(in srgb,var(--signal) 35%,transparent);
+border-radius:var(--r-pill);padding:0 11px;min-height:32px;display:inline-flex;align-items:center}
+.credit a:hover{border-color:var(--signal);text-decoration:none}
+.credit-when{color:var(--ink-faint)}
 .idxjump{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 30px;padding:0}
 .idxjump a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--line);
 background:var(--panel);border-radius:999px;padding:6px 12px}
@@ -624,6 +844,69 @@ border-radius:var(--r-sm);background:var(--panel);transition:border-color .15s,t
 `
 
 // ------------------------------------------------------------------- driver
+/* Fifty ports in one table is a reference, not an answer. A person arrives
+   here having seen a number in a packet capture or a firewall log; the filter
+   is what turns the page into a lookup. Rows are matched on their whole text
+   so "sACN", "udp" and "timecode" work as well as "5568". */
+const PORTS_CSS = `
+.pfilter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.pfilter label{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;
+color:var(--ink-faint)}
+.pfilter input{flex:1 1 240px;min-width:0;min-height:44px;padding:0 14px;font-size:16px;
+font-family:var(--mono);background:var(--surface-raised);color:var(--ink);
+border:1px solid var(--rule-strong);border-radius:var(--r-sm)}
+.pfilter input:focus{outline:none;border-color:var(--focus);
+box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 22%,transparent)}
+.pfn{font-family:var(--mono);font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.egs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 18px}
+.egk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint)}
+.egs button{font-family:var(--mono);font-size:12.5px;padding:0 14px;min-height:44px;border-radius:var(--r-pill);
+border:1px solid var(--rule-strong);background:var(--surface-raised);color:var(--ink-muted);cursor:pointer;
+display:inline-flex;align-items:center;white-space:nowrap}
+.egs button:hover{color:var(--signal);border-color:var(--signal)}
+.egs button[aria-pressed="true"]{color:var(--signal);border-color:var(--signal);
+background:color-mix(in srgb,var(--signal) 12%,var(--surface-raised))}
+.pnone{color:var(--ink-muted);font-size:15px;line-height:1.6;margin:18px 0 0}
+`
+
+const PORTS_JS = `
+(function(){
+  var input=document.getElementById('pf'), tab=document.getElementById('ptab');
+  if(!input||!tab)return;
+  var none=document.getElementById('pnone'), count=document.getElementById('pfn');
+  var rows=[].slice.call(tab.rows,1);
+  // A port cell spans its protocol rows, so a row without one belongs to the
+  // last port seen. Filtering has to keep those groups intact or the rowspan
+  // leaves orphaned cells under the wrong number.
+  var groups=[],cur=null;
+  rows.forEach(function(r){
+    if(r.cells[0]&&r.cells[0].rowSpan>=1&&r.cells.length===4){cur={rows:[r],text:r.innerText};groups.push(cur)}
+    else if(cur){cur.rows.push(r);cur.text+=' '+r.innerText}
+  });
+  function apply(q){
+    q=q.trim().toLowerCase();
+    var shown=0;
+    groups.forEach(function(g){
+      var on=!q||g.text.toLowerCase().indexOf(q)>-1;
+      g.rows.forEach(function(r){r.hidden=!on});
+      if(on)shown++;
+    });
+    none.hidden=shown>0;
+    count.textContent=q?(shown+' of '+groups.length+' ports'):'';
+    for(var i=0;i<chips.length;i++)chips[i].setAttribute('aria-pressed',String(chips[i].dataset.q.toLowerCase()===q));
+    var url=new URL(location.href);
+    if(q)url.searchParams.set('q',input.value.trim());else url.searchParams.delete('q');
+    history.replaceState(null,'',url);
+  }
+  var chips=[].slice.call(document.querySelectorAll('.egs button'));
+  chips.forEach(function(b){b.addEventListener('click',function(){input.value=b.dataset.q;apply(b.dataset.q)})});
+  input.addEventListener('input',function(){apply(input.value)});
+  var q0=new URLSearchParams(location.search).get('q');
+  if(q0){input.value=q0}
+  apply(input.value);
+})();
+`
+
 export function buildPages(db, dist) {
   const gapOf = (col, id) => (db.gaps ?? []).find((g) => g.collection === col && g.id === id)
   const urls = [`${SITE}/`]
@@ -649,12 +932,14 @@ export function buildPages(db, dist) {
     ['engines', () => learnEnginesPage(learnArgs)],
     ['drawings', () => learnDrawingsPage(learnArgs)],
     ['rigging', () => learnRiggingPage(learnArgs)],
+    ['senses', () => learnSensesPage(learnArgs)],
     ['perception', () => learnPerceptionPage(learnArgs)],
     ['neuro', () => learnNeuroPage(learnArgs)],
     ['comms', () => learnCommsPage(learnArgs)],
     ['connectors', () => learnConnectorsPage(learnArgs)],
     ['transducers', () => learnTransducersPage(learnArgs)],
     ['bits', () => learnBitsPage(learnArgs)],
+    ['colour', () => learnColourPage(learnArgs)],
     ['encoding', () => learnEncodingPage(learnArgs)],
     ['reading', () => learnReadingPage(learnArgs)],
     ['ai', () => learnAiPage(learnArgs)],
@@ -664,7 +949,27 @@ export function buildPages(db, dist) {
     ['experience', () => learnExperiencePage(learnArgs)],
   ]
   const learnHtml = new Map()
-  for (const [slug, render] of LEARN_PAGES) learnHtml.set(slug, render())
+  // The explainers render before the /learn/ index, so the index can report a
+  // real reading time per card instead of an estimate. The hub is rendered
+  // last for the same reason - it needs the numbers the others produce.
+  const hub = LEARN_PAGES.find(([slug]) => slug === '')
+  for (const [slug, render] of LEARN_PAGES) if (slug) learnHtml.set(slug, render())
+  const readingMinutes = new Map()
+  for (const [slug, html] of learnHtml) {
+    const main = html.slice(html.indexOf('<main'), html.lastIndexOf('</main>'))
+    const words = main.replace(/<(script|style|svg)[\s\S]*?<\/\1>/g, ' ')
+      .replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;|&#\d+;/g, ' ')
+      .split(/\s+/).filter((w) => /[a-z0-9]/i.test(w)).length
+    // 200 wpm, and never rounded down to zero. These pages are read slowly -
+    // the figures are the point - so this is deliberately the low estimate.
+    readingMinutes.set(slug, Math.max(1, Math.round(words / 200)))
+  }
+  // Fill the token now that each page's own length is known.
+  for (const [slug, html] of learnHtml) {
+    learnHtml.set(slug, html.replace('__READMIN__', String(readingMinutes.get(slug))))
+  }
+  setLearnReading(readingMinutes)
+  if (hub) learnHtml.set('', hub[1]())
   BACKLINKS = buildBacklinks(new Map([...learnHtml].filter(([k]) => k)))
 
   for (const p of db.protocols) { write(`protocols/${p.id}`, protocolPage(p, gapOf('protocols', p.id))); urls.push(`${SITE}/protocols/${p.id}/`) }
@@ -703,6 +1008,13 @@ export function buildPages(db, dist) {
 
   // The field-tool calculators. Market-validated daily utilities: DMX/DIP
   // addressing, speaker delay, timecode. Same arithmetic the test suite runs.
+  write('build', buildPage({ esc, shell, SITE, GH, db }))
+  urls.push(`${SITE}/build/`)
+
+  // The front door. Generated through the same shell as everything else so
+  // the header, nav rail, tokens and footer cannot drift; `${SITE}/` is
+  // already the first entry in `urls`.
+  write('', homePage({ esc, shell, SITE, GH, db }))
   write('tools', toolsPage({ esc, shell, SITE, GH }))
   urls.push(`${SITE}/tools/`)
 
@@ -737,7 +1049,10 @@ export function buildPages(db, dist) {
     const foot = slug
       ? learnFooter(esc, { slug, html, db, groups: LEARN_GROUPS, topics: LEARN_TOPICS, capstone: LEARN_CAPSTONE })
       : ''
-    write(dir, foot ? html.replace('</div></main>', `${foot}</div></main>`) : html)
+    write(dir, foot
+      ? html.replace('</div></main>', `${foot}</div></main>`)
+             .replace('</body>', `<script>${READ_JS}</script></body>`)
+      : html)
     urls.push(`${SITE}/learn/${slug ? slug + '/' : ''}`)
   }
 
@@ -746,12 +1061,12 @@ export function buildPages(db, dist) {
     ['protocols', db.protocols, {
       title: 'Protocols', lede: 'Every wire protocol in the index, grouped by what it carries. Ports, addressing, gotchas and a citation on each.',
       group: (e) => e.category, label: (e) => e.name,
-      sub: (e) => (e.default_ports ?? []).map((x) => `${x.transport}/${x.number}`).join(' · ') || e.openness,
+      sub: (e) => (e.default_ports ?? []).map((x) => `${x.transport}/${x.number}`).join(' · ') || human('openness-short', e.openness),
     }],
     ['standards', db.standards, {
       title: 'Standards', lede: 'Technical and safety standards that govern how live entertainment systems are built and operated, grouped by publishing body. Where a document is free to read, it says so.',
       group: (e) => e.body, label: (e) => e.designation,
-      sub: (e) => `${e.domain}${e.free_to_read ? ' · free to read' : ''}`,
+      sub: (e) => `${human('domain', e.domain)}${e.free_to_read ? ' · free to read' : ''}`,
     }],
     ['glossary', db.terms, {
       title: 'Glossary', lede: 'Bilingual EN / 繁中 vocabulary, grouped by department, with the regional variants and false friends that cause real confusion on headset.',
@@ -761,7 +1076,7 @@ export function buildPages(db, dist) {
     ['software', db.software, {
       title: 'Software', lede: 'Control, playback, design and diagnostic software, grouped by what it does — and crucially which protocols each one speaks.',
       group: (e) => e.category, label: (e) => e.name,
-      sub: (e) => [e.vendor, e.price_model].filter(Boolean).join(' · '),
+      sub: (e) => [e.vendor, e.price_model && human('price_model', e.price_model)].filter(Boolean).join(' · '),
     }],
     ['hardware', db.hardware, {
       title: 'Hardware', lede: 'Consoles, servers, processors, gateways, switches and the rest of the rack, grouped by category, with what each one speaks.',
@@ -804,9 +1119,26 @@ export function buildPages(db, dist) {
     title: 'Port numbers used in live entertainment systems | showstack',
     description: 'Every UDP and TCP port used by lighting, audio, video, tracking and show control protocols, with sources.',
     canonical: `${SITE}/ports/`,
+    extraStyle: PORTS_CSS,
+    extraScript: PORTS_JS,
     body: `<div class="crumb"><a href="/">showstack</a> / ports</div><h2>Ports</h2>
       <p class="lede">Every port number indexed so far, and what listens on it. ${byPort.size} ports across ${db.protocols.length} protocols.</p>
-      <table><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
+      <div class="pfilter">
+        <label for="pf">Filter</label>
+        <input id="pf" type="search" inputmode="numeric" autocomplete="off" spellcheck="false"
+               placeholder="5568, sACN, udp, timecode&hellip;" aria-controls="ptab">
+        <span class="pfn" id="pfn" role="status" aria-live="polite"></span>
+      </div>
+      <div class="egs">
+        <span class="egk">Common</span>
+        <button type="button" data-q="5568">5568</button>
+        <button type="button" data-q="6454">6454</button>
+        <button type="button" data-q="4455">4455</button>
+        <button type="button" data-q="319">PTP</button>
+        <button type="button" data-q="udp">everything on UDP</button>
+      </div>
+      <table id="ptab"><tr><th>Port</th><th>Transport</th><th>Used by</th><th>What it does</th></tr>${rows}</table>
+      <p class="pnone" id="pnone" hidden>Nothing here matches that. Ports we could not source are left blank rather than guessed &mdash; if you know one, it is a ten minute pull request.</p>
       <div class="cta"><strong>Missing one?</strong><p>Ports we could not source are deliberately left blank rather than guessed.
       <a href="${GH}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">Open gaps are here.</a></p></div>`,
   }))
