@@ -1,0 +1,35 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: network-tap
+en: Network TAP
+zh_hant: 網路分接器
+domain: networking
+definition_en: A passive device spliced into a link that copies everything passing through it
+  to a monitoring port. Passive is the point. It has no configuration, cannot drop traffic,
+  and keeps working if it loses power, so it never becomes the thing that broke the show.
+definition_zh_hant: 串接在線路中的被動裝置，把通過的所有流量複製到監看埠。被動正是重點：它沒有設定、不會丟棄流量，斷電後仍能導通，因此絕不會變成把演出弄壞的那個環節。
+regional_variants:
+- region: UK / US
+  term: TAP / network tap
+- region: HK / TW
+  term: 網路分接器 / 分光器
+false_friends:
+- A port mirror or SPAN does the same job in software and costs nothing, but a busy switch
+  drops mirrored frames before real ones. For proving a timing problem, use a TAP.
+see_also:
+- vlan
+- qos
+- link-aggregation
+tags:
+- networking
+- diagnostics
+sources:
+- title: IETF RFC 7011 — traffic capture and monitoring concepts
+  url: https://www.rfc-editor.org/rfc/rfc7011
+  publisher: IETF
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'

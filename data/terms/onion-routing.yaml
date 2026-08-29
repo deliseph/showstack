@@ -1,0 +1,37 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: onion-routing
+en: Onion routing
+zh_hant: 洋蔥路由
+domain: networking
+definition_en: Sending traffic through several relays in layers of encryption, so no single
+  relay knows both ends. The first knows who you are but not where you are going; the last
+  knows where you are going but not who you are. Tor is the well-known implementation. It
+  protects metadata rather than content, and the cost is very high and variable latency.
+definition_zh_hant: 讓流量經過多個中繼節點，並以多層加密包覆，使任何單一節點都無法同時得知兩端。第一個節點知道你是誰但不知道你去哪裡，最後一個知道去向卻不知道來源。Tor
+  是最著名的實作。它保護的是中繼資料而非內容，代價是延遲極高且變動很大。
+regional_variants:
+- region: UK / US
+  term: Onion routing / Tor
+- region: HK / TW
+  term: 洋蔥路由
+false_friends:
+- A VPN moves trust to its operator, who can see both ends. Onion routing splits trust so
+  nobody holds both. Neither hides what you do once you have logged in to something.
+see_also:
+- vlan
+- qos
+tags:
+- networking
+- privacy
+- security
+sources:
+- title: Tor Project — how Tor works
+  url: https://community.torproject.org/onion-services/overview/
+  publisher: The Tor Project
+  accessed: '2026-08-29'
+  primary: true
+confidence: reported
+contributed_by: []
+updated: '2026-08-29'
