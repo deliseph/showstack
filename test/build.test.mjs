@@ -512,6 +512,38 @@ describe('search page chrome is in the markup', () => {
   })
 })
 
+describe('the offline panel does not arrive after first paint', () => {
+  // It is hidden in the markup and revealed only where service workers exist,
+  // which is the right promise to make. It used to be revealed by awaiting
+  // serviceWorker.ready, which resolves long after paint and dropped a 379px
+  // panel into the top of the page: 0.15 CLS on a throttled phone, on the most
+  // used page here. It was invisible to the audit for as long as the audit's
+  // own server refused to serve sw.js as JavaScript, so no worker ever
+  // registered under test.
+  const html = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+
+  test('the panel ships hidden, so a browser without service workers is promised nothing', () => {
+    assert.match(html, /<div class="offline" id="offline" hidden>/)
+  })
+
+  test('and is revealed during parsing, not after a promise resolves', () => {
+    // The inline script has to come after the element and before anything is
+    // painted, which means immediately after the panel's own closing tag.
+    const panelEnd = html.indexOf('id="off-note"')
+    assert.ok(panelEnd > 0, 'offline panel not found')
+    const after = html.slice(panelEnd, panelEnd + 900)
+    assert.match(after, /<script>[\s\S]*serviceWorker" in navigator[\s\S]*offline"\)\.hidden = false/,
+      'the panel is not unhidden synchronously right after its markup')
+  })
+
+  test('nothing later toggles it back, which would reintroduce the shift', () => {
+    // show() may update the status text; it must not touch the box.
+    const m = html.match(/function show\(on\)\{[\s\S]{0,400}?\n\s*\}/)
+    assert.ok(m, 'show() not found in the page script')
+    assert.doesNotMatch(m[0], /box\.hidden/, 'show() still moves the panel')
+  })
+})
+
 describe('the reading serif', () => {
   // The brief asks for a reading serif on explainer prose and nowhere else.
   // Both halves matter: a serif that leaks into a calculator readout or a

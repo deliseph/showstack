@@ -485,7 +485,16 @@ font-family:var(--mono);font-size:11.5px;color:var(--ink-faint)}
 .ask button:hover{color:var(--ink-muted);text-decoration:underline}
 .offline{border:1px solid var(--rule);border-radius:var(--r-lg);background:var(--surface-raised);
 padding:18px 20px;margin:22px 0 4px}
-.offhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+/* The status text is replaced with a longer one once a worker is active,
+   and at narrow widths that rewraps and moves everything under it. The row
+   is reserved for the wrapped case so the swap cannot reflow the page. */
+/* The status text is replaced with a longer one once a worker is active.
+   At narrow widths the longer one wraps onto its own line and the row grows
+   from 32 to 44px, moving everything under it. Giving the status its own
+   line from the start makes both states the same height, so the swap is a
+   text change and nothing else. */
+.offhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;min-height:32px}
+@media(max-width:560px){.offhead{gap:4px}.offhead .offstate{flex:0 0 100%}}
 .offk{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--signal)}
 .offstate{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
 .offstate[data-on]{color:var(--verified)}
@@ -663,6 +672,18 @@ transition:height .35s ease,background .35s ease;min-height:2px}
   </div>
   <p class="offnote" id="off-note">Stored by your browser on this device. Nothing is sent anywhere, and you can clear it from your browser&rsquo;s site settings.</p>
 </div>
+<script>
+/* Inline and immediately after the panel, so this runs during parsing and the
+   panel is either present or absent at first paint - never revealed later.
+   It used to wait for serviceWorker.ready, which resolves well after paint and
+   dropped a 379px panel into the top of the page, shoving everything down:
+   0.15 CLS on a throttled phone, on the most-used page here. Support is a
+   synchronous fact, so it can be settled before anything is drawn; whether a
+   worker is active yet only changes the status text, which is a swap inside a
+   fixed row. The honesty rule is unchanged - no service worker support means
+   no panel and no promise. */
+if ("serviceWorker" in navigator) document.getElementById("offline").hidden = false;
+</script>
 
 <div class="tfind">
   <label for="tf">Find a tool</label>
@@ -3247,8 +3268,9 @@ ncRender();
   var LEARN_URLS=${JSON.stringify(['/learn/', ...LEARN_TOPICS.map((t) => `/learn/${t.slug}/`), '/learn/experience/', '/assets/fonts/newsreader-latin.woff2', '/assets/fonts/newsreader-latin-italic.woff2'])};
   var INDEX_URLS=['/search/','/showstack.json'];
 
+  /* Only the status text. The panel's presence was already decided during
+     parsing; changing it here is what caused the shift. */
   function show(on){
-    box.hidden=!on;
     if(on){state.textContent='ready — this site works with no signal';state.setAttribute('data-on','')}
   }
   navigator.serviceWorker.ready.then(function(){show(true)}).catch(function(){});
