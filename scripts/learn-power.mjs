@@ -26,6 +26,17 @@ export function learnPowerPage({ esc, shell, SITE, GH }) {
    first figure rotates rather than sitting still: the sum of three balanced
    sinusoids really is zero, and watching it is more convincing than the
    assertion. */
+@keyframes rot-fwd{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes rot-rev{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes rot-hook{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}
+@keyframes rot-hookdn{0%,100%{transform:translateY(-30px)}50%{transform:translateY(0)}}
+@keyframes rot-warn{0%,100%{opacity:.35}50%{opacity:1}}
+.rotfig .fwd{animation:rot-fwd 3.4s linear infinite;transform-origin:118px 96px}
+.rotfig .rev{animation:rot-rev 3.4s linear infinite;transform-origin:392px 96px}
+.rotfig .hookA{animation:rot-hook 3.4s ease-in-out infinite}
+.rotfig .hookB{animation:rot-hookdn 3.4s ease-in-out infinite}
+.rotfig .warn{animation:rot-warn 1.6s ease-in-out infinite}
+.rotfig .swap{stroke-dasharray:5 4}
 @keyframes ph-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .phfig .rotor{animation:ph-sweep 6s linear infinite;transform-origin:150px 120px}
 .phfig .vec{transform-origin:150px 120px}
@@ -50,6 +61,59 @@ text-transform:uppercase;color:var(--ink-faint);padding:0 12px 9px 0;border-bott
 `
 
   // ---- three phases, and why the neutral is usually quiet -----------------
+
+  const rotFig = `
+<svg viewBox="0 0 560 266" role="img" class="rotfig">
+  <text x="118" y="20" class="lbl" text-anchor="middle">L1 &rarr; L2 &rarr; L3</text>
+  <text x="392" y="20" class="lbl" text-anchor="middle">L1 &rarr; L3 &rarr; L2 &mdash; two swapped</text>
+
+  <circle cx="118" cy="96" r="62" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+  <g class="fwd">
+    <line x1="118" y1="96" x2="180" y2="96" stroke="var(--dom-safety)" stroke-width="3"/>
+    <line x1="118" y1="96" x2="87" y2="42" stroke="var(--accent2)" stroke-width="3"/>
+    <line x1="118" y1="96" x2="87" y2="150" stroke="var(--dom-network)" stroke-width="3"/>
+    <circle cx="180" cy="96" r="4.5" fill="var(--dom-safety)"/>
+    <circle cx="87" cy="42" r="4.5" fill="var(--accent2)"/>
+    <circle cx="87" cy="150" r="4.5" fill="var(--dom-network)"/>
+  </g>
+  <circle cx="118" cy="96" r="3.5" fill="var(--ink-faint)"/>
+  <path d="M150 44 a44 44 0 0 1 14 26" fill="none" stroke="var(--ok)" stroke-width="2"/>
+  <path d="M160 62 l6 10 l-11 2 z" fill="var(--ok)"/>
+
+  <circle cx="392" cy="96" r="62" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+  <g class="rev">
+    <line x1="392" y1="96" x2="454" y2="96" stroke="var(--dom-safety)" stroke-width="3"/>
+    <line x1="392" y1="96" x2="361" y2="42" stroke="var(--dom-network)" stroke-width="3"/>
+    <line x1="392" y1="96" x2="361" y2="150" stroke="var(--accent2)" stroke-width="3"/>
+    <circle cx="454" cy="96" r="4.5" fill="var(--dom-safety)"/>
+    <circle cx="361" cy="42" r="4.5" fill="var(--dom-network)"/>
+    <circle cx="361" cy="150" r="4.5" fill="var(--accent2)"/>
+  </g>
+  <circle cx="392" cy="96" r="3.5" fill="var(--ink-faint)"/>
+  <path d="M360 44 a44 44 0 0 0 -14 26" fill="none" stroke="var(--fail)" stroke-width="2"/>
+  <path d="M350 62 l-6 10 l11 2 z" fill="var(--fail)"/>
+
+  <line class="swap" x1="200" y1="96" x2="310" y2="96" stroke="var(--rule-strong)" stroke-width="1.5"/>
+  <text x="255" y="88" class="lbl" text-anchor="middle">swap any two</text>
+
+  <line x1="118" y1="176" x2="118" y2="222" stroke="var(--rule)" stroke-width="1.5"/>
+  <line x1="392" y1="176" x2="392" y2="222" stroke="var(--rule)" stroke-width="1.5"/>
+  <line x1="92" y1="176" x2="144" y2="176" stroke="var(--rule-strong)" stroke-width="2"/>
+  <line x1="366" y1="176" x2="418" y2="176" stroke="var(--rule-strong)" stroke-width="2"/>
+
+  <g class="hookA">
+    <rect x="105" y="204" width="26" height="18" rx="3" fill="var(--panel2)" stroke="var(--ok)" stroke-width="2"/>
+    <path d="M118 196 l-5 7 h10 z" fill="var(--ok)"/>
+  </g>
+  <g class="hookB">
+    <rect x="379" y="204" width="26" height="18" rx="3" fill="var(--panel2)" stroke="var(--fail)" stroke-width="2"/>
+    <path d="M392 230 l-5 -7 h10 z" fill="var(--fail)"/>
+  </g>
+
+  <text x="118" y="252" class="lbl" text-anchor="middle" style="fill:var(--ok)">up button, goes up</text>
+  <text x="392" y="252" class="lbl warn" text-anchor="middle" style="fill:var(--fail)">up button, goes down</text>
+</svg>`
+
   const phaseFig = `
 <svg viewBox="0 0 620 250" role="img" class="phfig">
   <circle cx="150" cy="120" r="84" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
@@ -174,6 +238,8 @@ ${S('Phase rotation', 'The one wiring fault that makes a hoist go the wrong way'
    'A three-phase motor is not so relaxed. It turns in the direction the field rotates, and the field rotates in whatever order the phases arrive, so a motor on a reversed supply runs backwards. That is the whole fault, and on a touring rig it is attached to chain hoists. <strong>Up is down.</strong> The controller is fine, the pendant is fine, the labelling is fine, and the load goes the wrong way when somebody presses the button. This is why a rotation check is the first thing done on arrival at an unfamiliar supply, before anything is plugged into it, and why a phase rotation meter is in the electrician&rsquo;s bag rather than in a drawer at the shop.',
    'Two things make it likelier than it sounds. Generators and temporary supplies get terminated by hand, and a hand is what swaps two cores. And adaptors are a genuine hazard, because a badly made one, or a legitimately made crossover, changes rotation invisibly &mdash; the connector fits, the pins are live, the order is different. Which is also why some hoist controllers include phase reversal detection or an automatic rotation corrector, and why the ones that do not put the responsibility exactly where it was already.',
    'The connectors themselves try to help. On a Powerlock or a camlock set the sequence is fixed by the colours and by the order they are terminated; on a 16&nbsp;A or 32&nbsp;A three-phase CEE connector it is fixed by the pin positions, and some carry a rotatable insert specifically so a wrong rotation can be corrected at the plug with a screwdriver rather than by re-terminating a tail. None of that helps if the supply upstream is wrong, which is the case the meter exists for.'])}
+
+${fig(rotFig, 'The field turns whichever way the phases arrive. Swap two and it turns the other way &mdash; and so does everything bolted to it. Nothing else in the rig notices.')}
 
 ${bites([
   '<b>Every load except the motors is happy on reversed rotation.</b> Nothing else in the rig will tell you, so the check has to be deliberate.',

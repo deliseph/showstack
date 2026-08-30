@@ -512,6 +512,52 @@ describe('search page chrome is in the markup', () => {
   })
 })
 
+describe('animated figures', () => {
+  // The explainers teach through motion as much as prose, so a figure that
+  // silently stops animating is a silent loss of content.
+  const FIGURES = [
+    ['power', 'rotfig', 'rot-fwd', 'phase rotation'],
+    ['analogue', 'thyfig', 'thy-slide', 'thyristor dimming'],
+    ['space', 'adsrfig', 'adsr-draw', 'the ADSR envelope'],
+    ['timecode', 'jamfig', 'jam-sweep', 'jam sync drift'],
+  ]
+
+  for (const [page, cls, keyframe, what] of FIGURES) {
+    test(`${what} is drawn and its keyframes ship with it`, () => {
+      const html = readFileSync(join(DIST, 'learn', page, 'index.html'), 'utf8')
+      assert.match(html, new RegExp(`class="${cls}"`), `${what} figure is missing from /learn/${page}/`)
+      assert.match(html, new RegExp(`@keyframes ${keyframe}\\b`),
+        `${what} references ${keyframe} but the keyframes are not in the page`)
+      assert.match(html, new RegExp(`\\.${cls} [^{]*\\{[^}]*animation:`),
+        `${what} has no element actually animating`)
+    })
+  }
+
+  test('no element carries two class attributes', () => {
+    // The second silently replaces the first, so an element keeps its styling
+    // and quietly loses its animation. It shipped once in the ADSR figure and
+    // nothing caught it but a screenshot.
+    const pages = []
+    const walk = (dir) => {
+      for (const name of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, name.name)
+        if (name.isDirectory()) walk(full)
+        else if (name.name.endsWith('.html')) pages.push(full)
+      }
+    }
+    walk(DIST)
+    assert.ok(pages.length > 100, `only found ${pages.length} pages to check`)
+    const bad = []
+    for (const f of pages) {
+      const html = readFileSync(f, 'utf8')
+      for (const tag of html.match(/<[a-zA-Z][^>]*>/g) ?? []) {
+        if ((tag.match(/\sclass=/g) ?? []).length > 1) bad.push(`${f.replace(DIST, '')}: ${tag.slice(0, 90)}`)
+      }
+    }
+    assert.deepEqual(bad, [], 'elements with a duplicated class attribute')
+  })
+})
+
 describe('the offline panel does not arrive after first paint', () => {
   // It is hidden in the markup and revealed only where service workers exist,
   // which is the right promise to make. It used to be revealed by awaiting

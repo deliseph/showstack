@@ -48,6 +48,15 @@ font-size:9px;border-radius:2px;color:var(--surface);background:var(--rule-stron
 .bitkey i{width:11px;height:11px;border-radius:2px;display:inline-block}
 /* Biphase mark: a transition every bit boundary, and one extra mid-bit for a
    one. Drawn as a stepped path so the rule is visible rather than described. */
+/* Three readers, one master that stops. The whole figure is legible frozen -
+   the drift is drawn, not animated - because under prefers-reduced-motion
+   every animation on this site is switched off, and a figure whose meaning
+   only exists mid-keyframe teaches nothing to the reader who needs it most.
+   The sweep is emphasis on top of a diagram that already stands still. */
+@keyframes jam-sweep{0%{transform:translateX(0)}100%{transform:translateX(438px)}}
+@keyframes jam-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.jamfig .head{animation:jam-sweep 6s linear infinite}
+.jamfig .pulse{animation:jam-pulse 2.4s ease-in-out infinite}
 @keyframes bp-run{to{stroke-dashoffset:-40}}
 .bpfig .clockline{stroke-dasharray:3 5;animation:bp-run 2.2s linear infinite}
 .qftable{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
@@ -63,6 +72,27 @@ color:var(--ink-faint);padding:0 10px 8px 0;border-bottom:1px solid var(--rule);
 .tblscroll{overflow-x:auto;margin:14px 0}
 .mono{font-family:var(--mono)}
 `
+
+  const jamFig = `
+<svg viewBox="0 0 560 208" role="img" class="jamfig">
+  <text x="8" y="30" class="lbl">master</text>
+  <text x="8" y="86" class="lbl">freewheel</text>
+  <text x="8" y="142" class="lbl">jam sync</text>
+
+  <line x1="302" y1="8" x2="302" y2="160" stroke="var(--fail)" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="262" y="176" class="lbl" style="fill:var(--fail)">code stops here</text>
+
+  <rect x="92" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="119" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="146" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="173" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="200" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="227" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="254" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="281" y="18" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/>
+
+  <rect x="92" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="119" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="146" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="173" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="200" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="227" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="254" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="281" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="308" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".16"/><rect x="335" y="74" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".16"/>
+  <text class="pulse lbl" x="368" y="86" style="fill:var(--fail)">lost &mdash; and it says so</text>
+
+  <rect x="92" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="119" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="146" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="173" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="200" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="227" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="254" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="281" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="311" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="343" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="376" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="410" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/><rect x="445" y="130" width="16" height="14" rx="2" fill="var(--accent)" fill-opacity=".55"/>
+  <text class="lbl" x="477" y="130" style="fill:var(--warn)">drifting</text>
+
+  <g class="head"><line x1="86" y1="8" x2="86" y2="160" stroke="var(--ink-faint)" stroke-width="1.5"/></g>
+  <text x="8" y="198" class="lbl">the one that fails loudly is the safe one &mdash; the other still looks right</text>
+</svg>`
 
   const biphaseFig = `
 <svg viewBox="0 0 620 200" role="img" class="bpfig">
@@ -167,6 +197,8 @@ ${S('When the code stops', 'Freewheel, jam sync, and what a device does with sil
    '<strong>Freewheel</strong> is how many frames a reader will keep counting after the incoming code disappears, using its own clock, before it declares the code lost. A short freewheel means a momentary dropout stops the show; a long one means the show carries on for a second or two into a genuine failure. The right value is a judgement about which mistake is cheaper on that particular job, and the default is almost never it.',
    '<strong>Jam sync</strong> is the same idea taken further. A device jams to incoming code &mdash; matches its internal generator to what it is receiving &mdash; and then keeps generating, in step, indefinitely, whether the incoming code continues or not. There are two flavours and confusing them is the classic fault. <em>Continuous jam</em> keeps correcting to the incoming code as long as it is there, so it tracks and it stays honest. <em>One-time jam</em> takes the value once, at the moment it is armed, and then free-runs on its own crystal for the rest of the day. One-time is what you want on a camera that must keep sensible code after it is unplugged from the master; it is emphatically not what you want on a device you assumed was following the master, because from the moment it jammed it has been drifting.',
    'Which is why the useful discipline is to know, for every device in the chain, whether it is <em>reading</em>, <em>freewheeling</em>, or <em>generating</em>. Two devices generating look identical to two devices reading, right up until they disagree, and a rig with an accidental second master drifts apart at a rate nobody notices in rehearsal and everybody notices on the third night.'])}
+
+${fig(jamFig, 'A reader that loses code eventually admits it. A generator that jammed once never will &mdash; it keeps producing perfectly formed timecode that agrees with nothing.')}
 
 ${bites([
   '<b>Every generator in the building drifts.</b> Crystals differ by parts per million, which is frames per hour. Jammed at lunch is not still in sync at curtain.',

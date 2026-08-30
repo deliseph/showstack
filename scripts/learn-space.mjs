@@ -39,6 +39,17 @@ export function learnSpacePage({ esc, shell, SITE, GH }) {
 /* Polarity is a mirror; phase is a slide. Drawing both makes the difference
    visible in a way two paragraphs do not. */
 .polfig .wave{transition:d .25s ease}
+/* The envelope, drawn as a note is held and let go. The point the figure has
+   to make is that sustain is a level and the other three are times, so the
+   sustain segment is the one that stretches while the others keep their
+   width, and the level is marked with a line rather than a duration. */
+@keyframes adsr-draw{0%{stroke-dashoffset:520}18%,100%{stroke-dashoffset:0}}
+@keyframes adsr-key{0%,6%{opacity:.25}10%,74%{opacity:1}80%,100%{opacity:.25}}
+@keyframes adsr-head{0%{offset-distance:0%}100%{offset-distance:100%}}
+@keyframes adsr-hold{0%,20%{opacity:0}28%,72%{opacity:1}80%,100%{opacity:0}}
+.adsrfig .env{stroke-dasharray:520;animation:adsr-draw 5.4s ease-out infinite}
+.adsrfig .key{animation:adsr-key 5.4s steps(1,end) infinite}
+.adsrfig .hold{animation:adsr-hold 5.4s ease-in-out infinite}
 @keyframes pol-slide{0%,100%{transform:translateX(0)}50%{transform:translateX(46px)}}
 .polfig .sliding{animation:pol-slide 4s ease-in-out infinite}
 .harm{display:flex;align-items:flex-end;gap:3px;height:96px;margin:14px 0 0;padding-bottom:4px;
@@ -54,6 +65,39 @@ text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
 .spcard p:last-child{margin-bottom:0}
 .spcard .fail{color:var(--warn);font-size:13px}
 `
+
+  const adsrFig = `
+<svg viewBox="0 0 560 216" role="img" class="adsrfig">
+  <line x1="52" y1="160" x2="520" y2="160" stroke="var(--rule)" stroke-width="1.5"/>
+  <line x1="52" y1="40" x2="52" y2="160" stroke="var(--rule)" stroke-width="1.5"/>
+  <text x="46" y="44" class="lbl" text-anchor="end">full</text>
+  <text x="46" y="164" class="lbl" text-anchor="end">off</text>
+
+  <line class="hold" x1="52" y1="104" x2="512" y2="104"
+        stroke="var(--ok)" stroke-width="1.5" stroke-dasharray="4 5"/>
+  <!-- one class attribute, not two: a second one silently replaces the first,
+       which is how this label lost its animation the first time round -->
+  <text class="hold lbl" x="512" y="96" text-anchor="end" style="fill:var(--ok)">sustain is a level, not a time</text>
+
+  <path class="env" d="M52 160 L128 40 L204 104 L392 104 L468 160"
+        fill="none" stroke="var(--accent)" stroke-width="3"
+        stroke-linejoin="round" stroke-linecap="round"/>
+
+  <g stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="128" y1="40" x2="128" y2="176"/>
+    <line x1="204" y1="104" x2="204" y2="176"/>
+    <line x1="392" y1="104" x2="392" y2="176"/>
+    <line x1="468" y1="160" x2="468" y2="176"/>
+  </g>
+  <text x="90" y="192" class="lbl" text-anchor="middle">attack</text>
+  <text x="166" y="192" class="lbl" text-anchor="middle">decay</text>
+  <text x="298" y="192" class="lbl" text-anchor="middle" style="fill:var(--ok)">sustain</text>
+  <text x="430" y="192" class="lbl" text-anchor="middle">release</text>
+  <text x="298" y="208" class="lbl" text-anchor="middle">held &mdash; for as long as you hold it</text>
+
+  <rect class="key" x="52" y="20" width="340" height="7" rx="3" fill="var(--accent2)"/>
+  <text x="400" y="27" class="lbl">key down</text>
+</svg>`
 
   const polFig = `
 <svg viewBox="0 0 620 250" role="img" class="polfig">
@@ -130,6 +174,8 @@ ${S('The two knobs', 'What an envelope and a filter are actually doing',
    'The <strong>envelope</strong> describes how something changes from the moment a key goes down to after it comes up, and the standard four stages are attack, decay, sustain and release &mdash; <strong>ADSR</strong>, which is what the four knobs are labelled on almost every instrument ever made. Three of those are times and one is not: <strong>sustain is a level.</strong> Attack is how long to reach full, decay is how long to fall from full to the sustain level, sustain is the level it holds at while the key is held, and release is how long to fall from wherever it is to silence once the key is let go. Almost every confused synth patch is somebody turning sustain expecting a duration. A plucked sound is a fast attack, a short decay and a sustain of zero &mdash; the note ends while your finger is still down, and it is the sustain level that ends it.',
    'The <strong>filter</strong> is usually a low-pass with two controls. <em>Cutoff</em> is the frequency above which it starts removing, and it is the single most expressive control on the instrument because moving it changes every harmonic at once in a way the ear reads as a sound opening or closing. <em>Resonance</em> is feedback around the filter that boosts a narrow band right at the cutoff, which makes the sweep audible as a distinct tone travelling through the sound rather than as a dulling. Turn it far enough and the loop sustains itself: the filter oscillates with no input, which is a sine source you get for free and a very effective way to make an unpleasant noise at full level.',
    'Then the two are joined, and that join is the whole instrument: an envelope routed to the filter cutoff rather than to volume. Now the sound is bright at its start and darkens as it decays, which is what nearly every struck or plucked physical object does, and it is why that patch sounds like something happened rather than like a tone was switched on.'])}
+
+${fig(adsrFig, 'Three of the four are durations. Sustain is the height the note sits at while the key is down, which is why turning it up never makes a note last longer.')}
 
 ${bites([
   '<b>Sustain is a level, the other three are times.</b> If a sound will not stop while the key is down, you want sustain at zero and a decay, not a shorter release.',
