@@ -27,13 +27,13 @@ export function signalsPage({ esc, shell, SITE, GH }) {
   const body = `
 <div class="crumb"><a href="/">showstack</a> / signals</div>
 <h2>Signal &amp; connector reference</h2>
-<p class="lede">Why two cables both rated "8 Ω", or two ports both called "HDMI", or two runs both called "Cat6", can behave completely differently. Pick the question you actually have:</p>
+<p class="lede">Why two cables both rated &ldquo;8&nbsp;&Omega;&rdquo;, or two ports both called &ldquo;HDMI&rdquo;, or two runs both called &ldquo;Cat6&rdquo;, can behave completely differently. This section is for <em>looking something up</em> &mdash; the tables, the version numbers, the pinouts. When you want to know <em>why</em> rather than <em>which</em>, <a href="/learn/">the explainers</a> have the same subjects at length, with the figures. Pick the question you actually have:</p>
 
 <div class="hubgrid">
   <a class="hubcard" href="/signals/data/">
     <span class="hubtag dom-network">Concepts</span>
     <h3>Data &amp; networking fundamentals</h3>
-    <p>Start here if the question is <em>how data moves</em>, not which cable to pull. Serial vs parallel, the OSI model, analog vs digital and what that costs each department, why EtherCAT beats plain Ethernet on cycle time.</p>
+    <p>The layer model as a table, so you can see where each thing indexed here sits and what that lets it do. Signalling rates for USB, Thunderbolt, PCIe and Ethernet. And where analogue and digital fail differently, department by department.</p>
     <div class="hubtopics">Serial/parallel · OSI · analog/digital · EtherCAT</div>
   </a>
   <a class="hubcard" href="/signals/media/">

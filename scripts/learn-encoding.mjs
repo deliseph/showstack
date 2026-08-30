@@ -22,6 +22,24 @@ export function learnEncodingPage({ esc, shell, SITE, GH }) {
   const style = LEARN_CSS + `
 /* A read-head sweeping the waveform. The receiver is doing exactly this, and
    the point of a line code is whether it can stay in step while it does. */
+/* Moved here from the signals reference. It is an illustrated idea about
+   how a bit travels, which is this page's subject; the reference section
+   keeps the lookup tables and points here for the why. */
+/* serial vs parallel flow */
+.flowviz{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:14px 0}
+.flowlane{margin-bottom:16px}
+.flowlane:last-child{margin-bottom:0}
+.flowlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer);display:block;margin-bottom:9px}
+.wires{display:flex;flex-direction:column;gap:7px}
+.wire{position:relative;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bit{position:absolute;top:50%;left:-8px;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--accent);animation:flowmove 1.8s linear infinite}
+@keyframes flowmove{from{left:-8px}to{left:100%}}
+.flowcaption{font-size:12px;color:var(--dimmer);margin-top:2px}
+.flowcaption b{color:var(--warn)}
+.bit{left:40%}
+.wire.wide{height:11px}
+.wire.skew .bit{background:var(--warn);animation-duration:2.15s}
+.wire.wide .bit{width:7px;height:7px;margin-top:-3.5px;background:var(--accent2);animation:flowmove .6s linear infinite}
 @keyframes scan{0%{transform:translateX(0)}100%{transform:translateX(580px)}}
 #lc-head{animation:scan 4s linear infinite}
 @keyframes edgeglow{0%,100%{stroke-opacity:.25}50%{stroke-opacity:.75}}
@@ -138,6 +156,35 @@ ${S('The problem', 'A wire carries voltage, not bits', [
   </svg>
 </div>
 <div class="verdict" id="lc-out"></div>
+
+${S('Before any of that', 'One wire at a time beats many wires at once, past a certain speed',
+  ['A wire carries voltage, and the last section asked how a one gets onto it. There is a prior question: how many wires should there be at all.',
+   'A <strong>parallel</strong> bus sends many bits at once, one per wire, and relies on every wire arriving in step. GPIB, SCSI, PATA, the old Centronics printer port, even VGA&rsquo;s separate red, green, blue and sync lines are parallel in spirit. It is simple while the clock is slow. Push the clock up and the wires stop matching each other: propagation delays differ, so bits that left together arrive apart. That is <em>skew</em>, and crosstalk between neighbouring conductors gets worse as you add more of them, not better.',
+   'A <strong>serial</strong> link sends one bit at a time down far fewer conductors, usually a single differential pair per lane. There is no wire-to-wire alignment to keep because there is only one wire, so the entire skew problem disappears and the clock can go enormously higher. That is the trade, and it is why almost everything fast is serial: USB, SATA, PCIe, Ethernet, DMX512 on RS-485, and the TMDS lanes inside HDMI and DisplayPort. Several fast serial lanes beat one wide slow parallel bus once you are past a few tens of megahertz.'])}
+
+<div class="flowviz">
+    <div class="flowlane">
+      <span class="flowlabel">Parallel — 4 wires, one bit each, in step</span>
+      <div class="wires">
+        <div class="wire"><i class="bit"></i></div>
+        <div class="wire"><i class="bit"></i></div>
+        <div class="wire skew"><i class="bit"></i></div>
+        <div class="wire"><i class="bit"></i></div>
+      </div>
+      <p class="flowcaption">All four should land together. The <b>orange</b> wire is running the same distance slower — that gap between wires is skew, and it only gets worse as you push the clock higher or add more wires.</p>
+    </div>
+    <div class="flowlane">
+      <span class="flowlabel">Serial — 1 differential pair, bits back-to-back</span>
+      <div class="wires">
+        <div class="wire wide"><i class="bit"></i><i class="bit" style="animation-delay:.15s"></i><i class="bit" style="animation-delay:.3s"></i><i class="bit" style="animation-delay:.45s"></i></div>
+      </div>
+      <p class="flowcaption">No wire-to-wire alignment to keep — there's only one lane, so nothing can drift relative to anything else. That's the trade: fewer conductors, much higher clock, no skew budget to manage.</p>
+    </div>
+  </div>
+
+${rule('Parallel spends conductors to avoid speed. Serial spends speed to avoid conductors &mdash; and past a few tens of MHz, <b>conductors are the expensive one</b>.')}
+
+${xnote('Rates for the serial buses named above &mdash; USB, Thunderbolt, PCIe, Ethernet &mdash; are tabulated in <a href="/signals/data/">the signal reference</a>, along with which cable category carries which of them how far.')}
 
 ${S('The famous one', 'Why Manchester puts a transition in every bit', [
   'Manchester coding takes the guarantee to its logical conclusion: <b>every single bit has a transition in the middle of it</b>. A one is a change one way, a zero is a change the other way. Which direction means which depends on the convention and both are in use, which has confused people since the 1970s.',

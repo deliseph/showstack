@@ -149,26 +149,17 @@ table + p.note{margin-top:12px}
 </div>
 
 <div class="tool">
-  <h3>RS-485, DMX512, and what a "unit load" is</h3>
-  <p><a href="/protocols/dmx512/">DMX512</a>'s electrical layer is EIA/TIA-485 (RS-485): a differential, half-duplex, multi-drop bus — one driver, many listeners on a single twisted pair, daisy-chained and terminated with a 120 Ω resistor at the far end. What limits how many fixtures can share one line is not a fixture count but <b>unit loads</b> (also called device load): RS-485 defines a unit load as the current a standard reference receiver draws, roughly a 12 kΩ input impedance, and caps a single segment at 32 unit loads. A fixture's DMX input does not have to present a full unit load — many modern receiver chips are designed as a fraction of one (1/4 UL, 1/8 UL is common), which is how a line can carry well over 32 physical fixtures before it needs an opto-splitter. Check the fixture's manual for its unit-load figure rather than just counting boxes.</p>
-  <div class="topodiagram">
-    <div class="topo-good">
-      <span class="topo-tag ok">Correct — daisy chain</span>
-      <div class="topo-chain">
-        <div class="topo-box">Console</div><div class="topo-box">Fixture</div><div class="topo-box">Fixture</div><div class="topo-box">Fixture</div><div class="topo-box term">120 Ω</div>
-      </div>
-      <p>One line in, one line out, per device, in a straight chain. Terminate the far end and nowhere else.</p>
-    </div>
-    <div class="topo-bad">
-      <span class="topo-tag bad">Wrong — star / hub-and-spoke</span>
-      <div class="topo-star">
-        <div class="topo-box">Console</div>
-        <div class="topo-spokes"><div class="topo-box">Fixture</div><div class="topo-box">Fixture</div><div class="topo-box">Fixture</div></div>
-      </div>
-      <p>Splitting one line to several fixtures from a single point creates stub reflections and no clean far end to terminate. Use a proper opto-splitter to branch, not a Y-cable.</p>
-    </div>
-  </div>
-  <p class="note">Termination and topology gotchas — no error checking on the data itself, the difference between a splitter and a splice — are covered in more depth on the <a href="/protocols/dmx512/">DMX512 entry</a>. Per ANSI E1.11 (USITT DMX512-A) and EIA/TIA-485.</p>
+  <h3>RS-485 and DMX512, as numbers</h3>
+  <p>The electrical limits, for when the question is whether a run is legal rather than why. <a href="/learn/dmx/">The DMX explainer</a> covers what a unit load actually is, why the line needs terminating, and why an unterminated rig often works anyway.</p>
+  <table>
+    <tr><th>Property</th><th>Limit</th><th>What bites</th></tr>
+    <tr><td>Devices per line</td><td>32 unit loads</td><td>A fixture is not necessarily one unit load; some draw two or a half. The count that matters is unit loads, not boxes.</td></tr>
+    <tr><td>Cable length</td><td>Up to 1200 m at low rates</td><td>DMX runs at 250 kbit/s, so the practical figure quoted is around 300 m before a splitter &mdash; and marginal lines fail RDM long before they fail DMX.</td></tr>
+    <tr><td>Characteristic impedance</td><td>120 &Omega;</td><td>Microphone cable is 45&ndash;75 &Omega;. It works until it does not, and the failure looks like flicker rather than a fault.</td></tr>
+    <tr><td>Terminator</td><td>120 &Omega; at the far end</td><td>One, at the end of the line. Two, or one in the middle, is worse than none.</td></tr>
+    <tr><td>Differential voltage</td><td>&plusmn;1.5 V minimum at the receiver</td><td>What long or thin cable eats into, which is why the symptom is distance-dependent.</td></tr>
+    <tr><td>Slots per universe</td><td>512</td><td>Plus the start code, which is slot zero and is not a channel. <a href="/tools/#dmxrate">Frame time depends on how many you actually send.</a></td></tr>
+  </table>
 </div>
 
 <div class="tool">

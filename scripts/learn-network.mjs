@@ -21,6 +21,47 @@ export function learnNetworkPage({ esc, shell, SITE, GH }) {
 
   const style = LEARN_CSS + `
 /* queue animation: a small clock packet stuck behind a big file transfer */
+/* Moved here from the signals reference. Both are illustrated ideas about
+   how a network behaves, which is this page's subject; the reference
+   section keeps the lookup tables and points here for the why. */
+/* OSI stack */
+.osistack{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin:14px 0}
+.osilayer{display:grid;grid-template-columns:40px 1.1fr 1.3fr;gap:14px;align-items:center;padding:11px 16px;
+  border-bottom:1px solid var(--line);background:var(--panel)}
+.osilayer:last-child{border-bottom:none}
+.osilayer:nth-child(odd){background:var(--panel2)}
+.osilayer.dim{opacity:.6}
+.osinum{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--accent);text-align:center}
+.osiname{font-weight:600;font-size:14.5px}
+.osiname small{display:block;font-weight:400;color:var(--dim);font-size:12.5px;margin-top:2px}
+.osilayer{grid-template-columns:30px 1fr}
+.ecatrow{margin-bottom:20px}
+.ecatrow:last-child{margin-bottom:0}
+.ecatlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer);display:block;margin-bottom:12px}
+.ecattrack{position:relative;display:flex;justify-content:space-between;align-items:center;height:26px;padding:0 11px}
+.ecattrack::before{content:"";position:absolute;left:11px;right:11px;top:50%;height:2px;background:var(--line);transform:translateY(-50%)}
+.ecatdev{position:relative;z-index:1;width:22px;height:22px;border-radius:5px;background:var(--panel);border:2px solid var(--line)}
+.ecatframe{position:absolute;top:50%;left:11px;width:14px;height:14px;margin-top:-7px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent);z-index:2}
+.ecat-flow .ecatframe{animation:ecatflow 2s linear infinite}
+@keyframes ecatflow{from{left:11px}to{left:calc(100% - 25px)}}
+@keyframes ecatstep{0%,12%{left:11px}25%,37%{left:calc(33% - 6px)}50%,62%{left:calc(66% - 6px)}75%,100%{left:calc(100% - 25px)}}
+.ecat-flow .ecatdev:nth-child(1){animation:ecatpulse 2s ease-in-out infinite 0s}
+.ecat-flow .ecatdev:nth-child(2){animation:ecatpulse 2s ease-in-out infinite .5s}
+.ecat-flow .ecatdev:nth-child(3){animation:ecatpulse 2s ease-in-out infinite 1s}
+.ecat-flow .ecatdev:nth-child(4){animation:ecatpulse 2s ease-in-out infinite 1.5s}
+@keyframes ecatpulse{0%,80%,100%{border-color:var(--line);background:var(--panel)}15%,45%{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--panel))}}
+@keyframes ecatpulselong{0%,24%,100%{border-color:var(--line);background:var(--panel)}2%,22%{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 22%,var(--panel))}}
+.osiex{font-family:var(--mono);font-size:12px;color:var(--dimmer)}
+.osiex{grid-column:1 / -1;margin-top:4px}
+/* EtherCAT frame flow */
+.ecatviz{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:14px 0}
+.ecat-stepped .ecatframe{animation:ecatstep 4s steps(1,end) infinite}
+.ecat-stepped .ecatdev:nth-child(1){animation:ecatpulselong 4s steps(1,end) infinite 0s}
+.ecat-stepped .ecatdev:nth-child(2){animation:ecatpulselong 4s steps(1,end) infinite 1s}
+.ecat-stepped .ecatdev:nth-child(3){animation:ecatpulselong 4s steps(1,end) infinite 2s}
+.ecat-stepped .ecatdev:nth-child(4){animation:ecatpulselong 4s steps(1,end) infinite 3s}
+.oicon,.ecatframe,.ecatdev{animation:none!important}
+@media(prefers-reduced-motion:reduce){.oicon,.ecatframe,.ecatdev{animation:none!important}}
 @keyframes q-march{from{transform:translateX(0)}to{transform:translateX(var(--march))}}
 /* CSS rather than SMIL, deliberately: the site's reduced-motion guarantee is
    one global rule that kills CSS animation, and SMIL would walk straight
@@ -210,6 +251,46 @@ ${S('Four numbers, or eight groups', 'IPv4, IPv6, and why anybody bothered',
    'IPv6 is 128 bits, written as eight groups of four hex digits &mdash; <span class="mono">2001:0db8:0000:0000:0000:ff00:0042:8329</span> &mdash; with runs of zeros collapsed to <span class="mono">::</span> once per address, so that becomes <span class="mono">2001:db8::ff00:42:8329</span>. The address space is not four times bigger, it is 2<sup>96</sup> times bigger, which is a number with no useful comparison.',
    'What changes in practice is smaller than the address length suggests. There is no broadcast in IPv6 &mdash; its jobs are done by multicast, which is tidier. Devices can configure their own addresses from the router&rsquo;s advertisements without a DHCP server. Fragmentation is the sender&rsquo;s problem rather than the router&rsquo;s. And a device commonly holds several IPv6 addresses at once, including a link-local one starting <span class="mono">fe80::</span> that always exists and never leaves the segment.',
    'For show networks the honest position is that IPv4 is what nearly all entertainment protocols assume. sACN, Art-Net, Dante and most of the rest are specified and deployed on IPv4, several of them with multicast group addresses written into the standard. Turning IPv6 on alongside is usually harmless and occasionally useful; expecting it to replace IPv4 on a show network is not yet a plan.'])}
+
+${S('Seven layers', 'Where each thing on this site actually sits',
+  ['Every protocol indexed here lives somewhere in a stack, and knowing where saves a lot of pointless debugging. Physical wire at the bottom, meaning at the top.'])}
+
+<p>Seven layers, physical wire at the bottom, meaning at the top. Most protocols indexed on this site live at layer 7, riding on layer 3/4 (IP/UDP) or, for DMX512, straight on layer 1/2 (RS-485).</p>
+  <div class="osistack">
+    <div class="osilayer"><span class="osinum">7</span><span class="osiname">Application<small>What the data actually means</small></span><span class="osiex">DMX512 channel data, an OSC message, an NDI video frame</span></div>
+    <div class="osilayer dim"><span class="osinum">6</span><span class="osiname">Presentation<small>Encoding/encryption of the payload</small></span><span class="osiex">Rarely a distinct layer in show protocols</span></div>
+    <div class="osilayer dim"><span class="osinum">5</span><span class="osiname">Session<small>Setting up and tearing down a conversation</small></span><span class="osiex">Rarely distinct here either</span></div>
+    <div class="osilayer"><span class="osinum">4</span><span class="osiname">Transport<small>Delivery: ordered/reliable or not</small></span><span class="osiex">sACN and Art-Net both ride UDP; RDMnet uses TCP for some traffic</span></div>
+    <div class="osilayer"><span class="osinum">3</span><span class="osiname">Network<small>Addressing and routing between networks</small></span><span class="osiex">IP addressing, sACN's multicast group</span></div>
+    <div class="osilayer"><span class="osinum">2</span><span class="osiname">Data link<small>Framing and addressing on one local segment</small></span><span class="osiex">Ethernet frames and MAC addresses; EtherCAT operates almost entirely here</span></div>
+    <div class="osilayer"><span class="osinum">1</span><span class="osiname">Physical<small>The actual bits on the wire</small></span><span class="osiex">Cat6 copper, RS-485 differential signalling, OM3 fibre</span></div>
+  </div>
+  <p class="note">Per ISO/IEC 7498-1. Layers 5 and 6 are dimmed above because almost nothing on a show network implements them as a separate step — most show protocols go straight from application data to a transport/network layer that already handles session and encoding concerns, or skips them entirely.</p>
+
+${S('One frame, read on the fly', 'Why EtherCAT is fast, and why it is not Ethernet as you know it',
+  ['Ordinary Ethernet addresses one device at a time: a frame goes out, a device answers, the next frame goes out. EtherCAT sends a single frame past every device in the chain and each one reads its own slice and writes its reply <em>as the frame passes through it</em>, without stopping it. One frame serves the whole chain in one pass, which is why cycle times land in the tens of microseconds rather than the milliseconds.',
+   'The cost is that this is not a network in the ordinary sense. The devices are a chain, the order matters, and a standard switch in the middle breaks the mechanism entirely &mdash; which is the same bargain <a href="/learn/dmx/">DMX</a> makes, arrived at from the opposite direction.'])}
+
+<p>EtherCAT does not use faster wiring — it still runs over ordinary 100BASE-TX Ethernet cable. The speed comes from how each device handles the frame. Standard Ethernet/IP devices are store-and-forward: receive a whole frame, process it, generate a fresh reply frame. EtherCAT devices instead read and write their own slice of data <b>as the frame passes through them</b>, in dedicated hardware, without ever fully buffering it — "processing on the fly."</p>
+  <div class="ecatviz">
+    <div class="ecatrow">
+      <span class="ecatlabel">Standard Ethernet/IP — store &amp; forward, one device polled at a time</span>
+      <div class="ecattrack ecat-stepped">
+        <div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div>
+        <div class="ecatframe"></div>
+      </div>
+    </div>
+    <div class="ecatrow">
+      <span class="ecatlabel">EtherCAT — processed on the fly, one pass updates every device</span>
+      <div class="ecattrack ecat-flow">
+        <div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div>
+        <div class="ecatframe"></div>
+      </div>
+    </div>
+  </div>
+  <p class="note">One frame does a complete loop through every device on the segment and returns with every device's data updated in a single pass, instead of the controller polling each device one at a time. That is what gets automation systems into sub-millisecond, deterministic cycle times. In entertainment it shows up in automated rigging, winch and moving-scenery control, where motion needs to be tightly synchronised across many axes.</p>
+
+${xnote('The layer model above is drawn to be understood. When you just need to look one up &mdash; which layer a protocol sits at, or what rate a bus actually runs &mdash; <a href="/signals/data/">the signal reference</a> has the same material as tables.')}
 
 ${S('One cable, several networks', 'What a VLAN actually does',
   ['A VLAN splits one physical switch into several logical ones. Ports in VLAN 10 can talk to each other and cannot reach ports in VLAN 20, even though they are in the same box on the same rack.',
