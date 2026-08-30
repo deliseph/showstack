@@ -4794,3 +4794,101 @@ export function ddpPacket(pixels = [], opts = {}) {
       : 'The push bit is clear, so the controller stores this data and shows nothing until a later packet pushes. A first DDP test that appears to do nothing is usually this.',
   }
 }
+
+// ------------------------------------------------------------------ levels
+/**
+ * dBu, dBV and volts, and the alignment level that connects them to dBFS.
+ *
+ * Three reference points that all get called "dB" and are not the same thing:
+ * dBu is referenced to 0.7746 V (the voltage that dissipates 1 mW in 600 ohms,
+ * which is why the number is not round), dBV to 1 V, and dBFS to the largest
+ * number the format holds. The first two are absolute voltage and convert
+ * exactly. The third does not convert at all without knowing where the system
+ * decided to put its alignment level - and that decision is regional, which is
+ * the single commonest cause of a feed arriving 4 dB out.
+ */
+export const DBU_REF_V = 0.7745966692414834   // sqrt(0.6)
+export const ALIGNMENT = {
+  ebu: { label: 'EBU R68 (Europe)', dbu: 0, dbfs: -18 },
+  smpte: { label: 'SMPTE RP155 (US)', dbu: 4, dbfs: -20 },
+  'ebu-plus6': { label: 'EBU, +6 headroom variant', dbu: 0, dbfs: -12 },
+}
+
+export function levels(value, unit = 'dbu', opts = {}) {
+  const v = Number(value)
+  if (!Number.isFinite(v)) return null
+  const align = ALIGNMENT[opts.alignment ?? 'ebu']
+  if (!align) return null
+
+  let volts
+  if (unit === 'dbu') volts = DBU_REF_V * 10 ** (v / 20)
+  else if (unit === 'dbv') volts = 10 ** (v / 20)
+  else if (unit === 'v') { if (v <= 0) return null; volts = v }
+  else return null
+
+  const dbu = 20 * Math.log10(volts / DBU_REF_V)
+  const dbv = 20 * Math.log10(volts)
+  // dBFS only exists relative to the alignment point the system chose.
+  const dbfs = align.dbfs + (dbu - align.dbu)
+  const r = (x, n = 2) => +x.toFixed(n)
+
+  return {
+    volts: r(volts, 4),
+    voltsPeak: r(volts * Math.SQRT2, 4),
+    dbu: r(dbu),
+    dbv: r(dbv),
+    dbfs: r(dbfs),
+    alignment: align.label,
+    alignmentDbu: align.dbu,
+    alignmentDbfs: align.dbfs,
+    headroomDb: r(0 - dbfs),
+    note: dbfs > 0
+      ? 'Above full scale. In a converter this is clipped, permanently, in the data.'
+      : `${r(0 - dbfs, 1)} dB of headroom left before the converter runs out of numbers. dBu and dBV are absolute voltages and convert exactly; dBFS does not exist until somebody picks an alignment level, and picking a different one moves every dBFS figure here by the difference.`,
+  }
+}
+
+/**
+ * LED wall pixel pitch and how far away you have to stand.
+ *
+ * The number quoted with every panel is the pitch in millimetres, and the
+ * question it decides is the one people ask last: how close can the audience
+ * get before it stops being a picture and starts being a grid of dots.
+ *
+ * The retina distance is the honest one - the distance at which one pixel
+ * subtends one arcminute, which is the same acuity figure the senses page
+ * uses for legible text. Below it people can resolve individual pixels; it is
+ * a threshold rather than a rule, and front rows are routinely inside it.
+ */
+export function pixelPitch(pitchMm, opts = {}) {
+  const p = Number(pitchMm)
+  if (!Number.isFinite(p) || p <= 0 || p > 200) return null
+  const wM = Number(opts.widthM ?? 0)
+  const hM = Number(opts.heightM ?? 0)
+  if (!Number.isFinite(wM) || !Number.isFinite(hM) || wM < 0 || hM < 0) return null
+
+  // One pixel subtending one arcminute: distance = pitch * arcminutes per radian
+  const retinaM = (p * ARCMIN_PER_RADIAN) / 1000
+  const r = (x, n = 2) => +x.toFixed(n)
+
+  const out = {
+    pitchMm: p,
+    retinaM: r(retinaM),
+    comfortableM: r(retinaM * 0.7),
+    closestM: r(retinaM * 0.4),
+    note: `At ${r(retinaM, 1)} m one pixel subtends one arcminute, which is where a normal eye stops resolving them individually. It is a threshold, not a rule: the front row is usually inside it and the content is what decides whether that matters. Hard-edged graphics and small text show the grid long before a soft image does.`,
+  }
+
+  if (wM > 0 && hM > 0) {
+    const cols = Math.round((wM * 1000) / p)
+    const rows = Math.round((hM * 1000) / p)
+    out.width = { metres: wM, pixels: cols }
+    out.height = { metres: hM, pixels: rows }
+    out.totalPixels = cols * rows
+    out.megapixels = r((cols * rows) / 1e6, 2)
+    // 24-bit colour, 60 frames a second, before any transport overhead
+    out.bitrateGbps = r((cols * rows * 24 * 60) / 1e9, 2)
+    out.dataNote = `${cols} x ${rows} is ${r((cols * rows) / 1e6, 2)} megapixels, which at 24-bit colour and 60 fps is ${r((cols * rows * 24 * 60) / 1e9, 2)} Gbit/s of raw pixel data before any transport overhead. That is the number that decides how many processor outputs the wall needs.`
+  }
+  return out
+}

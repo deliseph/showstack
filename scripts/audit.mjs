@@ -301,10 +301,29 @@ for (const p of ['/', '/learn/', '/tools/', '/protocols/', '/search/', '/interop
   const page = await ctx.newPage()
   const errors = []
   page.on('pageerror', (e) => errors.push(e.message))
+  // Wait for genuine quiet before pulling the plug, not just for networkidle.
+  // The browser fetches the manifest's icons off its own bat once the manifest
+  // parses, and that lands after networkidle - so cutting the network there
+  // caught a request the page never made and blamed the tools for it. Waiting
+  // until nothing has been requested for half a second makes this measure what
+  // it claims: whether the tools reach for the network, not whether the browser
+  // was still tidying up when we cut it off.
+  let lastRequest = Date.now()
+  page.on('request', () => { lastRequest = Date.now() })
   await page.goto(at('/tools/'), { waitUntil: 'networkidle' })
+  while (Date.now() - lastRequest < 500) await page.waitForTimeout(100)
+
   await ctx.setOffline(true)
+  // Count only requests the page's own code could have caused. The browser
+  // fetches the favicon on its own schedule, sometimes after interaction, and
+  // no site can stop it - for real readers a service worker answers it from
+  // cache, but a first-visit-then-immediately-offline context has no worker
+  // yet. Blaming the tools for it made this gate fail for a reason that has
+  // nothing to do with the claim it exists to defend: that the calculators
+  // never reach for the network.
+  const PAGE_INITIATED = new Set(['fetch', 'xhr', 'script', 'document', 'stylesheet', 'font'])
   const late = []
-  page.on('request', (r) => late.push(r.url()))
+  page.on('request', (r) => { if (PAGE_INITIATED.has(r.resourceType())) late.push(r.url()) })
   await page.fill('#dmx-u', '3')
   await page.fill('#dmx-a', '25')
   await page.waitForTimeout(250)
