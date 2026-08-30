@@ -149,6 +149,17 @@ writeFileSync(join(ROOT, 'packages', 'showstack-py', 'showstack', 'showstack.jso
 // CDN, and offline in a production office with no wifi. It lives at /search/
 // rather than at / because a wall of search results is a poor answer to
 // "what is this site" - the front page has that job now.
+// Must stay in step with COLS in site/search.html; a test asserts they match.
+const GH_URL = 'https://github.com/deliseph/showstack'
+const SEARCH_TABS = [
+  ['protocols', 'protocols', db.protocols.length],
+  ['software', 'software', db.software.length],
+  ['hardware', 'hardware', db.hardware.length],
+  ['standards', 'standards', db.standards.length],
+  ['terms', 'glossary', db.terms.length],
+]
+const total = stats.total
+
 const searchTpl = readFileSync(join(ROOT, 'site', 'search.html'), 'utf8')
 mkdirSync(join(DIST, 'search'), { recursive: true })
 writeFileSync(join(DIST, 'search', 'index.html'), searchTpl
@@ -156,6 +167,26 @@ writeFileSync(join(DIST, 'search', 'index.html'), searchTpl
   .replace('/*__SHOWSTACK_BASE__*/', BASE_CSS)
   .replace('/*__SHOWSTACK_SHELL__*/', SHELL_CSS)
   .replace('/*__SHOWSTACK_NAV__*/', navBar('/search/'))
+  // The category tabs, rendered here rather than by the page script. Their
+  // labels are fixed and their counts are a build-time fact, so waiting for
+  // JavaScript bought nothing and cost a 94px row appearing after first
+  // paint - which pushed the whole page down and was the single largest
+  // layout shift on the site.
+  .replace('<!--__SHOWSTACK_TABS__-->', [['all', 'all', total], ...SEARCH_TABS]
+    .map(([key, label, n]) =>
+      `<button class="tab" role="tab" data-k="${key}" aria-selected="${key === 'all'}">${label}<b>${n}</b></button>`)
+    .join(''))
+  // Same reasoning for the stats strip directly beneath them.
+  .replace('<!--__SHOWSTACK_STATS__-->',
+    `<span><b>${stats.total}</b> entries</span>` +
+    `<span><b>${Math.round((stats.verified_share ?? 0) * 100)}%</b> verified against a primary source</span>` +
+    `<span><b>${stats.open_gaps}</b> open gaps</span>` +
+    (contributors.length ? `<span><b>${contributors.length}</b> contributors</span>` : '') +
+    `<span>built ${stats.generated}</span>`)
+  .replace('<!--__SHOWSTACK_FOOT__-->',
+    `Built ${stats.generated} from ${stats.total} YAML files. <a href="${GH_URL}">Source</a> ` +
+    `&middot; <a href="/api/v1/index.json">API</a> ` +
+    `&middot; <a href="${GH_URL}/blob/main/CONTRIBUTING.md">Contribute</a>`)
   .replace('/*__SHOWSTACK_LABELS__*/null', JSON.stringify(LABEL_MAPS))
   .replace('/*__SHOWSTACK_DATA__*/null', JSON.stringify(bundle)))
 

@@ -465,6 +465,53 @@ describe('tool grouping', () => {
   })
 })
 
+describe('search page chrome is in the markup', () => {
+  // Everything in the search page's header is a build-time fact: the tab
+  // labels are fixed, the counts come from the bundle. Building them in the
+  // page script meant an empty 94px row and an empty stats strip that filled
+  // in after first paint and pushed the whole document down - 0.78 CLS on a
+  // phone, on the page this site is most used through.
+  //
+  // It hid for so long because it only appears once a service worker is
+  // serving the document, and the audit's own test server did not serve .js
+  // as JavaScript, so no service worker ever registered under test.
+  const html = readFileSync(join(DIST, 'search', 'index.html'), 'utf8')
+  const tabs = html.match(/<div class="tabs rail" id="tabs" role="tablist">([\s\S]*?)<\/div>/)
+
+  test('the category tabs are rendered, not left for the script', () => {
+    assert.ok(tabs, 'no tabs container in the markup')
+    const rendered = [...tabs[1].matchAll(/data-k="(\w+)"[^>]*>([^<]+)<b>(\d+)</g)]
+      .map((m) => [m[1], m[2], Number(m[3])])
+    assert.ok(rendered.length > 1, 'the tabs container is empty; the script would have to fill it')
+    // 'all' plus one per collection, with the counts the bundle actually holds
+    const expected = [['all', 'all', bundle.total],
+      ['protocols', 'protocols', bundle.protocols.length],
+      ['software', 'software', bundle.software.length],
+      ['hardware', 'hardware', bundle.hardware.length],
+      ['standards', 'standards', bundle.standards.length],
+      ['terms', 'glossary', bundle.terms.length]]
+    assert.deepEqual(rendered, expected)
+  })
+
+  test('exactly one tab is selected, and it is the one the script defaults to', () => {
+    const sel = [...tabs[1].matchAll(/aria-selected="(true|false)"/g)].filter((m) => m[1] === 'true')
+    assert.equal(sel.length, 1, 'a tablist needs exactly one selected tab')
+    assert.match(tabs[1], /data-k="all" aria-selected="true"/, 'the selected tab must be the script default')
+  })
+
+  test('the stats strip and footer line are rendered too', () => {
+    const stats = html.match(/<div class="stats" id="stats">([\s\S]*?)<\/div>\s*<div/)
+    assert.ok(stats && /<span>/.test(stats[1]), 'stats strip is empty in the markup')
+    assert.match(stats[1], new RegExp(`<b>${bundle.total}</b> entries`))
+    const foot = html.match(/<p id="foot">([\s\S]*?)<\/p>/)
+    assert.ok(foot && foot[1].trim().length > 20, 'footer line is empty in the markup')
+  })
+
+  test('no build placeholder survived into the page', () => {
+    assert.doesNotMatch(html, /__SHOWSTACK_[A-Z]+__/, 'an unsubstituted build placeholder shipped')
+  })
+})
+
 describe('the reading serif', () => {
   // The brief asks for a reading serif on explainer prose and nowhere else.
   // Both halves matter: a serif that leaks into a calculator readout or a
