@@ -28,8 +28,8 @@ import { LEARN_TOPICS, LEARN_COUNT } from './learn-kit.mjs'
  */
 export const TOOL_GROUPS = [
   ['Addressing & show control', ['dmx', 'dmxload', 'dip', 'dmxrate', 'uid', 'tc', 'midi', 'relay']],
-  ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'dose', 'modes', 'array', 'wave', 'pan', 'wfs']],
-  ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'aspect', 'mix', 'whites', 'mired', 'stops']],
+  ['Audio', ['delay', 'spl', 'latency', 'spkz', 'audiounits', 'levels', 'dose', 'modes', 'array', 'wave', 'pan', 'wfs']],
+  ['Lighting & video', ['beam', 'led', 'throw', 'screen', 'pitch', 'aspect', 'mix', 'whites', 'mired', 'stops']],
   ['Power & electrical', ['power', 'vdrop', 'derate', 'phase', 'thd', 'ohm', 'heat', 'battery']],
   ['Rigging, load & weather', ['bridle', 'wind', 'dew']],
   ['Scenic & illusion', ['peppers', 'forced']],
@@ -57,8 +57,9 @@ import {
   vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS, artnetDmx, artnetPoll, ARTNET_OPCODES,
   rdmPacket, RDM_COMMAND_CLASSES, RDM_PIDS, mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, SACN_ACN_ID,
-  channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
+  channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS, MTC_RATES,
   sendCommand, wolPacket, viscaOverIp, VISCA_COMMANDS, VISCA_PAYLOAD_TYPES, ddpPacket,
+  levels, ALIGNMENT, pixelPitch, ARCMIN_PER_RADIAN, DBU_REF_V,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -91,6 +92,7 @@ const MATH_SRC = [
   oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
   sendCommand, wolPacket, viscaOverIp, ddpPacket,
+  levels, pixelPitch,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
@@ -112,11 +114,15 @@ const ARTNET_OPCODES = ${JSON.stringify(ARTNET_OPCODES)};
 const RDM_COMMAND_CLASSES = ${JSON.stringify(RDM_COMMAND_CLASSES)};
 const RDM_PIDS = ${JSON.stringify(RDM_PIDS)};
 const MMC_COMMANDS = ${JSON.stringify(MMC_COMMANDS)};
+const MTC_RATES = ${JSON.stringify(MTC_RATES)};
 const SACN_ACN_ID = ${JSON.stringify(SACN_ACN_ID)};
 const OPTICAL_FORMATS = ${JSON.stringify(OPTICAL_FORMATS)};
 const WAVE_SHAPES = ${JSON.stringify(WAVE_SHAPES)};
 const VISCA_COMMANDS = ${JSON.stringify(VISCA_COMMANDS)};
 const VISCA_PAYLOAD_TYPES = ${JSON.stringify(VISCA_PAYLOAD_TYPES)};
+const ALIGNMENT = ${JSON.stringify(ALIGNMENT)};
+const ARCMIN_PER_RADIAN = ${JSON.stringify(ARCMIN_PER_RADIAN)};
+const DBU_REF_V = ${JSON.stringify(DBU_REF_V)};
 const IP_RANGES = ${JSON.stringify(IP_RANGES)};
 const NET_COMMANDS = ${JSON.stringify(NET_COMMANDS)};
 const enc = new TextEncoder();
@@ -278,11 +284,34 @@ function shotResult(tool, out, btn){
       /* Two ways to get a result out. Text for a terminal or a note; an image
          for a production group chat, where a pasted link shows nothing and a
          screenshot loses the numbers to compression. */
+      /* One flex row rather than three absolutely-positioned buttons. Their
+         labels change on click - "copy" becomes "copied", "link" becomes
+         "link copied" - so any fixed offset that clears them at rest can
+         still collide a moment later. A row cannot. */
+      var acts=document.createElement('div');
+      acts.className='tacts';
+
       var img=document.createElement('button');
       img.type='button'; img.className='tcopy tshot'; img.textContent='image';
       img.setAttribute('aria-label','Copy this result as an image');
       img.addEventListener('click',function(){ shotResult(t,out,img) });
-      w.appendChild(img);
+      acts.appendChild(img);
+
+      /* And a third: the link, which carries the numbers. Copying the answer
+         gives somebody your result; copying the link gives them the working,
+         so they can change one input and see what it does. That is the one
+         worth sharing, and nobody would have found it in the address bar. */
+      var lk=document.createElement('button');
+      lk.type='button'; lk.className='tcopy tlink'; lk.textContent='link';
+      lk.setAttribute('aria-label','Copy a link to this calculation, with these numbers in it');
+      lk.addEventListener('click',function(){
+        writeState(t);
+        var url=location.origin+location.pathname+location.hash;
+        if(navigator.clipboard)navigator.clipboard.writeText(url).catch(function(){});
+        lk.textContent='link copied'; lk.setAttribute('data-done','');
+        setTimeout(function(){lk.textContent='link';lk.removeAttribute('data-done')},1600);
+      });
+      acts.appendChild(lk);
 
       var c=document.createElement('button');
       c.type='button'; c.className='tcopy'; c.textContent='copy';
@@ -293,7 +322,8 @@ function shotResult(tool, out, btn){
         c.textContent='copied'; c.setAttribute('data-done','');
         setTimeout(function(){c.textContent='copy';c.removeAttribute('data-done')},1400);
       });
-      w.appendChild(c);
+      acts.appendChild(c);
+      w.appendChild(acts);
     }
   });
 
@@ -369,10 +399,85 @@ function shotResult(tool, out, btn){
   });
   paintRecent();
 
-  /* --- deep link straight to one tool --- */
-  if(location.hash){
-    var t=document.querySelector(location.hash);
-    if(t&&t.classList.contains('tool'))t.scrollIntoView({block:'center'});
+  /* --- a link that carries the numbers ---------------------------------
+     Sixty-five calculators and, until now, no way to send anybody the answer.
+     A shared link went to the tool with its defaults, so the person receiving
+     it had to be told the inputs separately, which meant nobody shared one.
+
+     The state lives in the hash rather than the query string on purpose. A
+     query string changes the URL the service worker caches against, so
+     /tools/?x=1 would miss the cache and need the network - which would break
+     the one promise this page makes. A hash is never sent to the server and
+     never part of a cache key, so a link with numbers in it still opens in a
+     basement.
+
+     Encoded as #toolid?field=value, using the element ids themselves. They
+     are unique across the page and a test enforces that, so this needs no
+     per-tool code and cannot drift as tools are added. */
+  var applying = false;
+
+  function toolFields(tool){
+    return [].slice.call(tool.querySelectorAll('input,select'))
+      .filter(function(el){ return el.id && el.type !== 'button'; });
+  }
+
+  function writeState(tool){
+    if (applying || !tool || !tool.id) return;
+    var parts = [];
+    toolFields(tool).forEach(function(el){
+      var v = el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value;
+      if (v === '' || v == null) return;
+      parts.push(encodeURIComponent(el.id) + '=' + encodeURIComponent(v));
+    });
+    var hash = '#' + tool.id + (parts.length ? '?' + parts.join('&') : '');
+    /* replaceState, not pushState: typing in a field should not fill the back
+       button with one entry per keystroke. */
+    try { history.replaceState(null, '', hash); } catch (e) {}
+  }
+
+  function readState(){
+    var raw = location.hash.replace(/^#/, '');
+    if (!raw) return null;
+    var cut = raw.indexOf('?');
+    var id = cut < 0 ? raw : raw.slice(0, cut);
+    var qs = cut < 0 ? '' : raw.slice(cut + 1);
+    var vals = {};
+    if (qs) qs.split('&').forEach(function(pair){
+      var kv = pair.split('=');
+      if (kv.length === 2) /* Quadrupled in the source: this is inside a template literal, so a
+         single backslash collapses and leaves /+/g, which is not a valid
+         regex at all. The page script dies silently on the first read. */
+      vals[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1].replace(/\\+/g, ' '));
+    });
+    return { id: id, vals: vals };
+  }
+
+  document.addEventListener('input', function(e){
+    var tool = e.target.closest && e.target.closest('.tool');
+    if (tool) writeState(tool);
+  });
+  document.addEventListener('change', function(e){
+    var tool = e.target.closest && e.target.closest('.tool');
+    if (tool) writeState(tool);
+  });
+
+  /* --- deep link straight to one tool, with whatever it was sent with --- */
+  var st = readState();
+  if (st) {
+    var t = document.getElementById(st.id);
+    if (t && t.classList.contains('tool')) {
+      applying = true;
+      Object.keys(st.vals).forEach(function(k){
+        var el = document.getElementById(k);
+        if (!el || !t.contains(el)) return;   // only fields of the named tool
+        if (el.type === 'checkbox') el.checked = st.vals[k] === '1';
+        else el.value = st.vals[k];
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      applying = false;
+      t.scrollIntoView({ block: 'center' });
+    }
   }
 })();
 `
@@ -447,20 +552,22 @@ font-family:var(--mono);font-size:13px;cursor:pointer}
 .fllist li{margin:3px 0;color:var(--ink-muted)}
 .out .err:first-of-type,.out .ok:first-of-type{font-size:inherit}
 .outwrap{position:relative}
-.tcopy{position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:10px;letter-spacing:.5px;
+.tcopy{font-family:var(--mono);font-size:10px;letter-spacing:.5px;
 text-transform:uppercase;color:var(--ink-faint);background:var(--surface-raised);border:1px solid var(--rule-strong);
-border-radius:var(--r-pill);min-height:44px;min-width:56px;padding:0 12px;cursor:pointer;opacity:0;
+border-radius:var(--r-pill);min-height:44px;min-width:56px;padding:0 12px;cursor:pointer;
 display:inline-flex;align-items:center;justify-content:center;
 transition:opacity var(--dur-fast),color var(--dur-fast)}
-.tool:hover .tcopy,.tcopy:focus-visible{opacity:1}
+.tool:hover .tacts,.tacts:focus-within{opacity:1}
 .tcopy:hover{color:var(--signal);border-color:var(--signal)}
-.tcopy[data-done]{color:var(--verified);border-color:var(--verified);opacity:1}
-@media(hover:none){.tcopy{opacity:1}}
+.tcopy[data-done]{color:var(--verified);border-color:var(--verified)}
+.tool:has(.tcopy[data-done]) .tacts{opacity:1}
+@media(hover:none){.tacts{opacity:1}}
 /* Declared after .tcopy, not before it: .tshot carries both classes, both
    selectors weigh the same, so whichever is written last sets the offset. When
    this sat above, the image button was parked underneath the copy button and
    could not be clicked at all. */
-.tshot{right:min(70px,38%)}
+.tacts{position:absolute;top:5px;right:5px;display:flex;gap:6px;align-items:center;
+opacity:0;transition:opacity var(--dur-fast)}
 
 /* Find a tool. Forty-two calculators in one scroll is a reference; a rigger
    on a phone should not pass nineteen of them to reach voltage drop. */
@@ -850,6 +957,18 @@ HORN = GO &amp; (A | B)</textarea></div>
   <p class="note">Ohms (Ω) also names two different things on this page. <b>Resistance</b> — the Ohm's law tool below, a lamp or heater element — opposes current the same way at any frequency, all of it dissipated as heat. <b>Impedance</b> — the Speaker load tool above — is resistance's AC generalisation, Z = R + jX: a reactance X from the driver's voice coil and crossover that shifts with frequency. A loudspeaker's "8 Ω" is a nominal average, not a fixed value — the real number can swing from under 5 Ω to well over 40 Ω near cone resonance. That is why the speaker load arithmetic above is exact for a stated nominal figure, while Ohm's law's resistive-only assumption is indicative, not exact, once it is pointed at a driver instead of a lamp.</p>
   <p class="note">Light and sound both obey the <b>inverse square law</b> because both radiate from a small source across an expanding sphere: double the distance and the energy spreads over 4× the area, so the level at any point is quartered. For light that is illuminance — lux = candela ÷ throw², see <a href="#beam">Beam &amp; throw</a> below — a fixture twice as far away lights its target at a quarter the lux, all else equal. For sound in a free field (no walls or ground reflection filling it back in) the same physics shows up as a level drop rather than a ratio: −6 dB every doubling of distance, +6 dB every halving. How to use it: to sanity-check a claimed SPL at FOH against a spec measured at 1 m, count doublings of distance and subtract 6 dB each — a source rated 100 dB at 1 m is roughly 88 dB by 4 m (two doublings) outdoors. Indoors, reflections refill part of that drop, so 6 dB/doubling is the conservative, worst-case figure for clearance and neighbour-noise planning, not what a meter will actually read in a live room.</p>
 </div>
+<div class="tool wide" id="levels">
+  <h3>dBu, dBV, volts and dBFS</h3>
+  <div class="row">
+    <div class="field"><label for="lv-v">Level</label><input id="lv-v" type="number" step="any" value="4" inputmode="decimal" style="width:110px"></div>
+    <div class="field"><label for="lv-u">is in</label><select id="lv-u">
+      <option value="dbu" selected>dBu</option><option value="dbv">dBV</option><option value="v">volts RMS</option>
+    </select></div>
+    <div class="field"><label for="lv-a">Alignment</label><select id="lv-a"></select></div>
+  </div>
+  <div class="out" id="lv-out" role="status" aria-live="polite"></div>
+  <p class="note">Three things called dB that are not the same. <b>dBu</b> is referenced to 0.7746&nbsp;V &mdash; the voltage that dissipates a milliwatt in 600 ohms, which is why the number is not round. <b>dBV</b> is referenced to 1&nbsp;V, so the two differ by a constant 2.2&nbsp;dB and convert exactly. <b>dBFS</b> converts to neither until somebody decides where the alignment level sits, and that decision is regional: Europe puts 0&nbsp;dBu at &minus;18&nbsp;dBFS, the US puts +4&nbsp;dBu at &minus;20&nbsp;dBFS. A feed arriving consistently 4&nbsp;dB out between a European and an American facility is almost always this and not a fault.</p>
+</div>
 <div class="tool wide" id="dose">
   <h3>Noise exposure dose</h3>
   <div class="row">
@@ -971,6 +1090,16 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="sc-out" role="status" aria-live="polite"></div>
   <p class="note">Incident light is lux = lumens ÷ area. What the audience sees is luminance: fL = lumens × gain ÷ area in ft², and 1 fL = 3.4263 cd/m² (nits). <a href="https://www.dcimovies.com/specification/" rel="noopener nofollow">DCI cinema reference</a> is 48 cd/m² (14 fL) in the dark; ambient light on the screen is the number that actually kills contrast. Gain redirects light toward the axis rather than creating it, so high gain trades viewing angle.</p>
+</div>
+<div class="tool wide" id="pitch">
+  <h3>LED wall pitch and viewing distance</h3>
+  <div class="row">
+    <div class="field"><label for="px-p">Pixel pitch (mm)</label><input id="px-p" type="number" step="any" min="0.5" value="2.6" inputmode="decimal" style="width:130px"></div>
+    <div class="field"><label for="px-w">Wall width (m)</label><input id="px-w" type="number" step="any" min="0" value="10" inputmode="decimal" style="width:130px"></div>
+    <div class="field"><label for="px-h">Wall height (m)</label><input id="px-h" type="number" step="any" min="0" value="5" inputmode="decimal" style="width:130px"></div>
+  </div>
+  <div class="out" id="px-out" role="status" aria-live="polite"></div>
+  <p class="note">The retina distance is where one pixel subtends one arcminute, which is the same acuity figure behind legible text on <a href="/learn/senses/">the senses page</a>. It is a threshold rather than a rule: the front row is routinely inside it, and the content decides whether that matters. Hard-edged graphics and small text show the grid a long way before a soft image does. The data rate is raw pixels at 24-bit colour and 60&nbsp;fps before any transport overhead, which is the number that decides how many processor outputs the wall needs.</p>
 </div>
 <div class="tool wide" id="aspect">
   <h3>Aspect fit</h3>
@@ -2913,6 +3042,38 @@ function mbRender(){
 ["#mb-kind","#mb-fmt","#mb-cmd","#mb-mmc"].forEach(id => $(id).addEventListener("change", mbRender));
 
 
+/* ---- levels: dBu, dBV, volts, dBFS ---- */
+function lvRender(){
+  var r = levels(Number($("#lv-v").value), $("#lv-u").value, { alignment: $("#lv-a").value });
+  if(!r){ $("#lv-out").innerHTML = '<span class="err">Volts must be above zero; dBu and dBV can be negative.</span>'; return; }
+  $("#lv-out").innerHTML =
+    '<b>' + r.dbu + '</b> dBu &middot; <b>' + r.dbv + '</b> dBV &middot; <b>' + r.volts + '</b> V rms'
+    + ' <span class="dim">(' + r.voltsPeak + ' V peak)</span>'
+    + '<br><b>' + r.dbfs + '</b> dBFS against ' + r.alignment
+    + '<br><span class="dim">' + r.note + '</span>';
+}
+["#lv-v","#lv-u","#lv-a"].forEach(function(id){
+  $(id).addEventListener("input", lvRender); $(id).addEventListener("change", lvRender);
+});
+
+/* ---- LED wall pitch ---- */
+function pxRender(){
+  var r = pixelPitch(Number($("#px-p").value), {
+    widthM: Number($("#px-w").value), heightM: Number($("#px-h").value) });
+  if(!r){ $("#px-out").innerHTML = '<span class="err">Pitch above zero, and sizes cannot be negative.</span>'; return; }
+  var html = 'One pixel per arcminute at <b>' + r.retinaM + ' m</b>'
+    + ' &middot; comfortable from <b>' + r.comfortableM + ' m</b>'
+    + ' &middot; visibly a grid closer than <b>' + r.closestM + ' m</b>';
+  if (r.totalPixels) {
+    html += '<br><b>' + r.width.pixels + ' &times; ' + r.height.pixels + '</b> pixels'
+      + ' &middot; <b>' + r.megapixels + '</b> MP'
+      + ' &middot; <b>' + r.bitrateGbps + '</b> Gbit/s raw at 60 fps';
+  }
+  html += '<br><span class="dim">' + r.note + '</span>';
+  $("#px-out").innerHTML = html;
+}
+["#px-p","#px-w","#px-h"].forEach(function(id){ $(id).addEventListener("input", pxRender); });
+
 /* ---- put it on the wire ----------------------------------------------
    A browser has no UDP socket and no raw TCP, and this site has no backend
    to relay through, so it cannot send any of these itself. Pretending
@@ -3031,7 +3192,9 @@ var pjSend = wireSend("pj", function(){ return built.pj; }, "tcp");
     .map(k => opt(k, VISCA_COMMANDS[k].label, k === "home")).join("")
     + opt("preset-recall", "Recall preset") + opt("preset-set", "Store preset");
   osRender(); pjRender(); anRender(); saRender(); rpRender(); mbRender();
-  wkRender(); vsRender(); ddRender();
+  $("#lv-a").innerHTML = Object.keys(ALIGNMENT)
+    .map(k => opt(k, ALIGNMENT[k].label, k === "ebu")).join("");
+  wkRender(); vsRender(); ddRender(); lvRender(); pxRender();
 })();
 
 /* ---- the analogue layer -------------------------------------------------- */

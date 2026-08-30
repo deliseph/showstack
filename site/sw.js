@@ -44,6 +44,15 @@ const PRECACHE = [
   '/offline/',
   '/assets/fonts/plex-sans-latin.woff2',
   '/assets/fonts/jetbrains-mono-latin.woff2',
+  // The manifest icons. An installed app that has to reach the network to draw
+  // its own icon is not installed in any useful sense, and the browser fetches
+  // these off its own bat once the manifest parses - which, on a device that
+  // went offline in between, is a request nothing asked for and nothing serves.
+  // Four small files, and it makes "works with no signal" true of the icon too.
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/icons/icon-maskable.png',
+  '/assets/icons/apple-touch.png',
 ]
 
 self.addEventListener('install', (e) => {

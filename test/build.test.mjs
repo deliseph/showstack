@@ -512,6 +512,76 @@ describe('search page chrome is in the markup', () => {
   })
 })
 
+describe('a tool link carries its numbers', () => {
+  // Sixty-seven calculators and, until now, no way to send anybody the answer.
+  // A shared link went to the tool with its defaults, so the recipient had to
+  // be told the inputs separately - which meant nobody shared one.
+  const html = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+
+  test('state goes in the hash, never the query string', () => {
+    // A query string changes the URL the service worker caches against, so
+    // /tools/?x=1 would miss the cache and need the network - breaking the one
+    // promise this page makes. A hash is never part of a cache key.
+    assert.match(html, /history\.replaceState\(null, '', hash\)/,
+      'tool state is not written to the hash')
+    assert.doesNotMatch(html, /history\.(replace|push)State\([^)]*location\.search/,
+      'tool state must not go in the query string')
+  })
+
+  test('it replaces history rather than pushing, so typing does not fill the back button', () => {
+    assert.doesNotMatch(html, /history\.pushState/, 'a keystroke must not add a history entry')
+  })
+
+  test('a link button exists beside copy and image', () => {
+    assert.match(html, /className='tcopy tlink'/)
+    assert.match(html, /location\.origin\+location\.pathname\+location\.hash/)
+  })
+
+  test('restoring only touches fields of the tool the link names', () => {
+    // Otherwise a crafted link could set values in a tool the reader is not
+    // looking at, and they would never see it happen.
+    assert.match(html, /if \(!el \|\| !t\.contains\(el\)\) return;/)
+  })
+})
+
+describe('embedded tool maths carries its own tables', () => {
+  // The tool functions are embedded in the page by Function.prototype.toString,
+  // so a page cannot drift from its tests. What toString cannot carry is a
+  // module constant the function closes over: it arrives as a bare identifier
+  // and the page dies the first time that tool renders. That has now happened
+  // three times - WAVE_SHAPES, VISCA_PAYLOAD_TYPES, DBU_REF_V - each found by
+  // a browser rather than a test.
+  //
+  // Scanned over the maths function bodies rather than the whole page script,
+  // because the page script is mostly prose and every acronym in it (SMPTE,
+  // RGB, RMS) would look like an undeclared constant.
+  test('every constant an embedded function closes over is serialised beside it', async () => {
+    const math = await import('../scripts/toolmath.mjs')
+    const html = readFileSync(join(DIST, 'tools', 'index.html'), 'utf8')
+
+    const declared = new Set()
+    for (const m of html.matchAll(/\bconst\s+([A-Z][A-Z0-9_]{2,})\s*=/g)) declared.add(m[1])
+
+    const missing = []
+    for (const [name, fn] of Object.entries(math)) {
+      if (typeof fn !== 'function') continue
+      // only the functions this page actually embeds
+      if (!new RegExp(`function ${name}\\b`).test(html)) continue
+      const body = fn.toString()
+        .replace(/\/\*[\s\S]*?\*\//g, ' ')
+        .replace(/\/\/[^\n]*/g, ' ')
+        .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+        .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+        .replace(/`(?:[^`\\]|\\.)*`/g, '``')
+      for (const m of body.matchAll(/(^|[^.\w$])([A-Z][A-Z0-9_]{2,})\b/gm)) {
+        const id = m[2]
+        if (id in math && !declared.has(id)) missing.push(`${name}() closes over ${id}, which is not in the page`)
+      }
+    }
+    assert.deepEqual([...new Set(missing)], [])
+  })
+})
+
 describe('animated figures', () => {
   // The explainers teach through motion as much as prose, so a figure that
   // silently stops animating is a silent loss of content.

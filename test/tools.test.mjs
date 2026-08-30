@@ -33,6 +33,7 @@ import {
   visualAcuity, ARCMIN_PER_RADIAN, interauralDelay,
   ipAddressKind, IP_RANGES, NET_COMMANDS,
   sendCommand, wolPacket, viscaOverIp, ddpPacket,
+  levels, pixelPitch, DBU_REF_V,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3440,5 +3441,96 @@ describe('DDP', () => {
     assert.ok(ddpPacket(new Array(1440).fill(0)))
     assert.equal(ddpPacket([256]), null)
     assert.equal(ddpPacket([-1]), null)
+  })
+})
+
+
+describe('levels: dBu, dBV, volts and dBFS', () => {
+  test('the reference voltages are the standard ones', () => {
+    // 0 dBu is the voltage that dissipates 1 mW in 600 ohms: sqrt(0.6).
+    assert.ok(Math.abs(DBU_REF_V - 0.7746) < 0.0001)
+    assert.equal(levels(0, 'dbu').volts, 0.7746)
+    assert.equal(levels(0, 'dbv').volts, 1)
+  })
+
+  test('dBu and dBV differ by the constant 2.2 dB, in both directions', () => {
+    for (const v of [-20, -6, 0, 4, 12]) {
+      const a = levels(v, 'dbu')
+      assert.ok(Math.abs((a.dbu - a.dbv) - 2.2185) < 0.01, `${v} dBu`)
+    }
+    assert.equal(levels(1, 'v').dbv, 0)
+    assert.ok(Math.abs(levels(1, 'v').dbu - 2.2185) < 0.01)
+  })
+
+  test('a round trip through any unit lands back on the same voltage', () => {
+    // Within rounding: the dB figures are reported to two decimals, so feeding
+    // one back is accurate to about a thousandth of a volt, not exactly.
+    const start = levels(4, 'dbu')
+    assert.ok(Math.abs(levels(start.dbv, 'dbv').volts - start.volts) < 0.001)
+    assert.equal(levels(start.volts, 'v').dbu, start.dbu)
+  })
+
+  test('the alignment standards put their own reference where they say', () => {
+    // This is the definition of each standard, so it is the thing to pin.
+    assert.equal(levels(0, 'dbu', { alignment: 'ebu' }).dbfs, -18)
+    assert.equal(levels(4, 'dbu', { alignment: 'smpte' }).dbfs, -20)
+  })
+
+  test('the same signal reads differently under different alignments', () => {
+    // Which is the whole reason a feed arrives 4 dB out between regions.
+    const ebu = levels(4, 'dbu', { alignment: 'ebu' }).dbfs
+    const smpte = levels(4, 'dbu', { alignment: 'smpte' }).dbfs
+    assert.equal(+(ebu - smpte).toFixed(2), 6)
+  })
+
+  test('above full scale is called out rather than reported as headroom', () => {
+    const hot = levels(24, 'dbu', { alignment: 'ebu' })
+    assert.ok(hot.dbfs > 0)
+    assert.match(hot.note, /Above full scale/)
+  })
+
+  test('bad input returns null', () => {
+    assert.equal(levels('x', 'dbu'), null)
+    assert.equal(levels(0, 'nope'), null)
+    assert.equal(levels(0, 'v'), null, 'zero volts has no dB value')
+    assert.equal(levels(-1, 'v'), null)
+    assert.equal(levels(0, 'dbu', { alignment: 'invented' }), null)
+  })
+})
+
+describe('LED wall pitch', () => {
+  test('retina distance is the pitch times arcminutes per radian', () => {
+    // 2.6 mm pitch -> 2.6 * 3437.75 / 1000 = 8.94 m
+    assert.equal(pixelPitch(2.6).retinaM, 8.94)
+    assert.equal(pixelPitch(10).retinaM, 34.38)
+    // and it scales linearly, which is the useful mental model. Compared
+    // loosely because both sides are already rounded to the centimetre.
+    assert.ok(Math.abs(pixelPitch(5).retinaM / pixelPitch(2.5).retinaM - 2) < 0.002)
+  })
+
+  test('pixel count follows from the pitch and the physical size', () => {
+    const w = pixelPitch(2.6, { widthM: 10, heightM: 5 })
+    assert.equal(w.width.pixels, Math.round(10000 / 2.6))
+    assert.equal(w.height.pixels, Math.round(5000 / 2.6))
+    assert.equal(w.totalPixels, w.width.pixels * w.height.pixels)
+  })
+
+  test('the data rate is raw pixels at 24-bit and 60 fps', () => {
+    const w = pixelPitch(2.6, { widthM: 10, heightM: 5 })
+    const expected = (w.totalPixels * 24 * 60) / 1e9
+    assert.equal(w.bitrateGbps, +expected.toFixed(2))
+  })
+
+  test('a pitch on its own still answers the distance question', () => {
+    const p = pixelPitch(4)
+    assert.ok(p.retinaM > 0)
+    assert.equal(p.totalPixels, undefined, 'no size given, so no pixel count invented')
+  })
+
+  test('bad input returns null', () => {
+    assert.equal(pixelPitch(0), null)
+    assert.equal(pixelPitch(-1), null)
+    assert.equal(pixelPitch('x'), null)
+    assert.equal(pixelPitch(2.6, { widthM: -1 }), null)
   })
 })
