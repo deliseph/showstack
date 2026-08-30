@@ -37,7 +37,7 @@ export const TOOL_GROUPS = [
   ['Content & timing', ['frame', 'pyro', 'storage']],
   ['Networking', ['subnet', 'addrkind', 'netcmd', 'fibre', 'sdi']],
   ['Analogue & components', ['optical', 'rc', 'xfmr']],
-  ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb']],
+  ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb', 'wol', 'visca', 'ddp']],
   ['RF', ['im', 'rf']],
 ]
 
@@ -58,6 +58,7 @@ import {
   oscMessage, md5, pjlinkCommand, PJLINK_COMMANDS, artnetDmx, artnetPoll, ARTNET_OPCODES,
   rdmPacket, RDM_COMMAND_CLASSES, RDM_PIDS, mmcCommand, MMC_COMMANDS, mscCommand, sacnPacket, SACN_ACN_ID,
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS,
+  sendCommand, wolPacket, viscaOverIp, VISCA_COMMANDS, VISCA_PAYLOAD_TYPES, ddpPacket,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -89,6 +90,7 @@ const MATH_SRC = [
   opticalSpot, rcFilter, transformer, waveHarmonics, vbapStereo, dbapGains, wfsAliasing,
   oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
+  sendCommand, wolPacket, viscaOverIp, ddpPacket,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
@@ -113,6 +115,8 @@ const MMC_COMMANDS = ${JSON.stringify(MMC_COMMANDS)};
 const SACN_ACN_ID = ${JSON.stringify(SACN_ACN_ID)};
 const OPTICAL_FORMATS = ${JSON.stringify(OPTICAL_FORMATS)};
 const WAVE_SHAPES = ${JSON.stringify(WAVE_SHAPES)};
+const VISCA_COMMANDS = ${JSON.stringify(VISCA_COMMANDS)};
+const VISCA_PAYLOAD_TYPES = ${JSON.stringify(VISCA_PAYLOAD_TYPES)};
 const IP_RANGES = ${JSON.stringify(IP_RANGES)};
 const NET_COMMANDS = ${JSON.stringify(NET_COMMANDS)};
 const enc = new TextEncoder();
@@ -413,6 +417,14 @@ display:inline-block;vertical-align:-1px}
 .sw b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;
 color:var(--ink-faint);padding:8px 10px 2px}
 .sw em{display:block;font-style:normal;font-family:var(--mono);font-size:12.5px;color:var(--ink);padding:0 10px 9px}
+/* The send row. Deliberately styled as a distinct step rather than as more
+   fields, because it is the one part of these tools that leaves the page. */
+.sendrow{margin-top:12px;padding-top:12px;border-top:1px dashed var(--rule-strong)}
+.sendout:empty{display:none}
+.cmdline{display:block;font-family:var(--mono);font-size:12px;line-height:1.6;
+white-space:pre-wrap;word-break:break-all;background:var(--panel2);color:var(--ink);
+border:1px solid var(--rule);border-radius:var(--r-sm);padding:10px 12px;margin:6px 0 0}
+.sendnote{margin-top:7px;font-size:13px;line-height:1.55;color:var(--ink-faint)}
 .bytes{font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--ink-muted);
 background:var(--surface-sunken);border:1px solid var(--rule);border-radius:var(--r-sm);
 padding:10px 12px;margin:10px 0 0;overflow-x:auto;word-break:break-all}
@@ -1362,6 +1374,11 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="os-out" role="status" aria-live="polite"></div>
   <div class="bytes" id="os-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="os-host">Send to</label><input id="os-host" type="text" value="127.0.0.1" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="os-port">Port</label><input id="os-port" type="number" min="1" max="65535" value="8000" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="os-send"></div>
   <p class="note">Four rules and everything follows. Strings are null-terminated then padded with more nulls to a multiple of four. Numbers are big-endian, four bytes. The type tag string starts with a comma and names each argument in order. And the whole message is <b>always</b> a multiple of four bytes &mdash; which is why an OSC dump is full of trailing zeros that mean nothing. Integers are sent as <span class="mono">i</span>, anything with a decimal point as <span class="mono">f</span>, everything else as <span class="mono">s</span>. Note that <span class="mono">T</span>, <span class="mono">F</span>, <span class="mono">N</span> and <span class="mono">I</span> carry a tag and no bytes at all.</p>
 </div>
 <div class="tool wide" id="pjlink">
@@ -1373,6 +1390,11 @@ HORN = GO &amp; (A | B)</textarea></div>
     <div class="field"><label for="pj-pass">Password</label><input id="pj-pass" type="text" spellcheck="false" autocomplete="off" style="width:150px"></div>
   </div>
   <div class="out" id="pj-out" role="status" aria-live="polite"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="pj-host">Send to</label><input id="pj-host" type="text" value="192.168.1.100" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="pj-port">Port</label><input id="pj-port" type="number" min="1" max="65535" value="4352" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="pj-send"></div>
   <p class="note">TCP port 4352, one line per command: per cent, class, four upper-case letters, space, parameter, carriage return. On connect the projector greets you with <span class="mono">PJLINK 0</span> (no security) or <span class="mono">PJLINK 1 &lt;8 hex digits&gt;</span> &mdash; paste those digits and your password above and the MD5 digest is prepended to the <em>first</em> command only, with no separator. Nothing typed here leaves your device; the password is used to compute a hash locally and is never sent anywhere or stored.</p>
 </div>
 <div class="tool wide" id="artnet">
@@ -1389,6 +1411,11 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="an-out" role="status" aria-live="polite"></div>
   <div class="bytes" id="an-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="an-host">Send to</label><input id="an-host" type="text" value="2.255.255.255" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="an-port">Port</label><input id="an-port" type="number" min="1" max="65535" value="6454" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="an-send"></div>
   <p class="note">Eighteen header bytes and then the slots. Two things trip people: the opcode is sent <b>low byte first</b> while the data length in the same header is sent <b>high byte first</b>, which is a real inconsistency in the protocol rather than a mistake in your reading. And the sequence number is not a counter of slots &mdash; it is 1 to 255 with 0 meaning sequencing is off, used by a receiver to drop packets that overtook each other. ArtPoll is the broadcast that makes every node reply with ArtPollReply, which is how a controller builds its node list.</p>
 </div>
 <div class="tool wide" id="sacn">
@@ -1401,6 +1428,11 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="sa-out" role="status" aria-live="polite"></div>
   <div class="bytes" id="sa-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="sa-host">Send to</label><input id="sa-host" type="text" value="239.255.0.1" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="sa-port">Port</label><input id="sa-port" type="number" min="1" max="65535" value="5568" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="sa-send"></div>
   <p class="note">Three nested PDUs &mdash; root, framing, DMP &mdash; each opening with a combined flags-and-length field where the top nibble is <span class="mono">0x7</span> and the remaining twelve bits are that PDU&rsquo;s own length. Getting one of the three wrong produces a packet some receivers accept and others silently drop, which is a miserable fault to chase. A full universe is 638 bytes: root 622, framing 600, DMP 523. The <b>CID identifies the source, not the universe</b>, and must not change between packets &mdash; a device generating a fresh one each time looks like unlimited new sources and breaks priority arbitration.</p>
 </div>
 <div class="tool wide" id="rdmpkt">
@@ -1444,8 +1476,60 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <p class="note">The one thing on this page that can actually leave the machine. Browsers implement Web MIDI, so with a MIDI interface attached these bytes can be transmitted for real &mdash; your browser will ask permission first, including for system exclusive, which both of these are. Everything stays local: no network, nothing recorded. MSC cue data is <b>ASCII digits</b>, so cue 12 is <span class="mono">31 32</span> and not <span class="mono">0C</span>, which is why a cue number can contain a decimal point. A receiver acts only if <em>both</em> its device ID and its command format match, and a format mismatch is the commonest reason MSC appears to do nothing at all.</p>
 </div>
+<div class="tool wide" id="wol">
+  <h3>Wake-on-LAN</h3>
+  <div class="row">
+    <div class="field"><label for="wk-mac">Target MAC</label><input id="wk-mac" type="text" value="00:1A:2B:3C:4D:5E" spellcheck="false" style="width:190px"></div>
+    <div class="field"><label for="wk-pw">SecureOn password (optional)</label><input id="wk-pw" type="text" placeholder="6 or 4 hex bytes" spellcheck="false" autocomplete="off" style="width:170px"></div>
+  </div>
+  <div class="out" id="wk-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="wk-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="wk-host">Broadcast to</label><input id="wk-host" type="text" value="192.168.1.255" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="wk-port">Port</label><input id="wk-port" type="number" min="1" max="65535" value="9" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="wk-send"></div>
+  <p class="note">Six <span class="mono">FF</span> bytes then the target MAC repeated sixteen times. That is the entire format &mdash; there is no checksum, no reply and no acknowledgement. Send it to the <b>broadcast address of the target subnet</b> rather than to the machine, because a machine that is off has no IP address to be addressed by. It will not cross a router unless directed broadcast is enabled, which it usually is not, so send it from the same VLAN. Port 9 is conventional and 7 is just as common; the network card watches for the byte pattern and does not care which port carried it.</p>
 </div>
-
+<div class="tool wide" id="visca">
+  <h3>VISCA over IP camera command</h3>
+  <div class="row">
+    <div class="field"><label for="vs-cmd">Command</label><select id="vs-cmd"></select></div>
+    <div class="field"><label for="vs-cam">Camera address</label><input id="vs-cam" type="number" min="1" max="7" value="1" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="vs-pre">Preset</label><input id="vs-pre" type="number" min="0" max="254" value="1" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="vs-seq">Sequence number</label><input id="vs-seq" type="number" min="0" value="1" inputmode="numeric" style="width:130px"></div>
+  </div>
+  <div class="out" id="vs-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="vs-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="vs-host">Send to</label><input id="vs-host" type="text" value="192.168.1.50" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="vs-port">Port</label><input id="vs-port" type="number" min="1" max="65535" value="52381" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="vs-send"></div>
+  <p class="note">An eight-byte header in front of an ordinary VISCA message: payload type, payload length, and a sequence number the camera echoes back. The VISCA message itself is unchanged from the serial version, which is why a serial-to-IP converter is only wrapping and unwrapping this header. The address byte is <span class="mono">0x80</span> plus the camera number, which is why every VISCA example starts with <span class="mono">81</span> and never explains it. Sequence numbers matter: some cameras ignore a command whose number has gone backwards, which is why two controllers on one camera behave oddly rather than simply clashing.</p>
+</div>
+<div class="tool wide" id="ddp">
+  <h3>DDP pixel packet</h3>
+  <div class="row">
+    <div class="field"><label for="dd-px">Pixels</label><input id="dd-px" type="number" min="1" max="480" value="3" inputmode="numeric" style="width:100px"></div>
+    <div class="field"><label for="dd-col">Colour</label><select id="dd-col">
+      <option value="255,0,0">red</option><option value="0,255,0">green</option>
+      <option value="0,0,255">blue</option><option value="255,255,255">white</option>
+      <option value="0,0,0">black (all off)</option>
+    </select></div>
+    <div class="field"><label for="dd-off">Data offset</label><input id="dd-off" type="number" min="0" value="0" inputmode="numeric" style="width:120px"></div>
+    <div class="field"><label for="dd-push"><input id="dd-push" type="checkbox" checked> Push (display now)</label></div>
+  </div>
+  <div class="out" id="dd-out" role="status" aria-live="polite"></div>
+  <div class="bytes" id="dd-hex"></div>
+  <div class="row sendrow">
+    <div class="field"><label for="dd-host">Send to</label><input id="dd-host" type="text" value="192.168.1.60" spellcheck="false" style="width:160px"></div>
+    <div class="field"><label for="dd-port">Port</label><input id="dd-port" type="number" min="1" max="65535" value="4048" inputmode="numeric" style="width:100px"></div>
+  </div>
+  <div class="out sendout" id="dd-send"></div>
+  <p class="note">A ten-byte header then pixel data, three bytes per pixel. The <b>push</b> bit is the one that catches people: with it clear the controller stores the data and displays nothing, so a first DDP test appears to do absolutely nothing while being entirely correct. Offset is in bytes, not pixels, so the second pixel starts at offset 3. One packet carries up to 1440 bytes of data, which is 480 pixels; a longer strip is several packets at increasing offsets with push set only on the last.</p>
+</div>
+</div>
 <div class="toolgroup" id="g11">RF</div>
 <div class="toolgrid">
 <div class="tool wide" id="im">
@@ -2697,12 +2781,13 @@ function osRender(){
     return /^-?\\d+$/.test(v) ? parseInt(v, 10) : /^-?\\d*\\.\\d+$/.test(v) ? parseFloat(v) : v;
   }) : [];
   const m = oscMessage($("#os-addr").value.trim(), args);
-  if(!m){ $("#os-out").innerHTML = '<span class="err">An OSC address has to start with a slash.</span>'; $("#os-hex").textContent = ""; return; }
+  if(!m){ $("#os-out").innerHTML = '<span class="err">An OSC address has to start with a slash.</span>'; $("#os-hex").textContent = ""; built.os = null; osSend(); return; }
   /* Single quotes around any string that contains an HTML attribute. This is
      the third time a double-quoted one has killed the page script. */
   $("#os-out").innerHTML = '<b>' + m.length + '</b> bytes &middot; type tags <span class="mono">' + m.typeTags
     + '</span> &middot; <span class="dim">' + m.transport + '</span>';
   $("#os-hex").innerHTML = bytesBlock(m.hex, "the message, on the wire");
+  built.os = m.bytes; osSend();
 }
 ["#os-addr","#os-args"].forEach(id => $(id).addEventListener("input", osRender));
 
@@ -2711,7 +2796,7 @@ function pjRender(){
     challenge: $("#pj-chal").value.trim() || null,
     password: $("#pj-pass").value || null,
   });
-  if(!p){ $("#pj-out").innerHTML = '<span class="err">Check the command, the parameter, and that the challenge is eight hex digits.</span>'; return; }
+  if(!p){ $("#pj-out").innerHTML = '<span class="err">Check the command, the parameter, and that the challenge is eight hex digits.</span>'; built.pj = null; pjSend(); return; }
   let html = "<b>" + p.label + "</b> " + (p.isQuery ? "query" : "set")
     /* Doubled escapes: this string is inside a template literal, so a single
        backslash-r would become a real carriage return in the emitted page and
@@ -2723,6 +2808,7 @@ function pjRender(){
   html += '<br><span class="mono">' + p.netcat.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>';
   html += '<br><span class="dim">' + p.note + "</span>";
   $("#pj-out").innerHTML = html;
+  built.pj = p.bytes; pjSend();
 }
 ["#pj-cmd","#pj-param","#pj-chal","#pj-pass"].forEach(id => $(id).addEventListener("input", pjRender));
 $("#pj-cmd").addEventListener("change", pjRender);
@@ -2734,15 +2820,17 @@ function anRender(){
     $("#an-out").innerHTML = "<b>ArtPoll</b> &middot; " + p.length + " bytes &middot; "
       + p.transport + '<br><span class="dim">' + p.expects + "</span>";
     $("#an-hex").innerHTML = bytesBlock(p.hex, "the whole packet");
+    built.an = p.bytes; anSend();
     return;
   }
   const slots = $("#an-slots").value.split(",").map(t => parseInt(t.trim(), 10)).filter(n => Number.isInteger(n));
   const a = artnetDmx(Number($("#an-net").value), Number($("#an-sub").value), Number($("#an-uni").value), slots);
-  if(!a){ $("#an-out").innerHTML = '<span class="err">Net 0&ndash;127, subnet and universe 0&ndash;15, slot values 0&ndash;255.</span>'; $("#an-hex").textContent = ""; return; }
+  if(!a){ $("#an-out").innerHTML = '<span class="err">Net 0&ndash;127, subnet and universe 0&ndash;15, slot values 0&ndash;255.</span>'; $("#an-hex").textContent = ""; built.an = null; anSend(); return; }
   $("#an-out").innerHTML = "<b>ArtDmx</b> port address <b>" + a.portAddress + "</b> &middot; "
     + a.slots + " slots sent as " + a.dataLength + " &middot; " + a.length + " bytes &middot; "
     + a.transport + '<br><span class="dim">' + a.note + "</span>";
   $("#an-hex").innerHTML = bytesBlock(a.hex, "18-byte header, then the slots");
+  built.an = a.bytes; anSend();
 }
 ["#an-kind","#an-net","#an-sub","#an-uni","#an-slots"].forEach(id => $(id).addEventListener("input", anRender));
 $("#an-kind").addEventListener("change", anRender);
@@ -2752,11 +2840,12 @@ function saRender(){
   const p = sacnPacket(Number($("#sa-uni").value), new Array(n).fill(0), {
     priority: Number($("#sa-pri").value), sourceName: $("#sa-name").value,
   });
-  if(!p){ $("#sa-out").innerHTML = '<span class="err">Universe 1&ndash;63999, priority 0&ndash;200, source name under 64 bytes.</span>'; $("#sa-hex").textContent = ""; return; }
+  if(!p){ $("#sa-out").innerHTML = '<span class="err">Universe 1&ndash;63999, priority 0&ndash;200, source name under 64 bytes.</span>'; $("#sa-hex").textContent = ""; built.sa = null; saSend(); return; }
   $("#sa-out").innerHTML = "<b>" + p.length + "</b> bytes &middot; root PDU " + p.rootPduLength
     + ", framing " + p.framingPduLength + ", DMP " + p.dmpPduLength
     + "<br>" + p.transport + '<br><span class="dim">' + p.note + "</span>";
   $("#sa-hex").innerHTML = bytesBlock(p.hex, "root layer, framing layer, DMP layer");
+  built.sa = p.bytes; saSend();
 }
 ["#sa-uni","#sa-pri","#sa-name","#sa-slots"].forEach(id => $(id).addEventListener("input", saRender));
 
@@ -2802,6 +2891,108 @@ function mbRender(){
 ["#mb-kind","#mb-dev","#mb-fmt","#mb-cmd","#mb-cue","#mb-list","#mb-mmc"].forEach(id => $(id).addEventListener("input", mbRender));
 ["#mb-kind","#mb-fmt","#mb-cmd","#mb-mmc"].forEach(id => $(id).addEventListener("change", mbRender));
 
+
+/* ---- put it on the wire ----------------------------------------------
+   A browser has no UDP socket and no raw TCP, and this site has no backend
+   to relay through, so it cannot send any of these itself. Pretending
+   otherwise would be the one dishonest thing on the page. What it can do is
+   hand over the last step: the exact bytes, already correct, wrapped in a
+   command that will transmit them. Bytes are passed as the Uint8Array, never
+   as the displayed hex, because that is truncated on long packets. */
+/* The command contains a hostname the reader typed, so it is escaped before
+   it goes anywhere near innerHTML. The page script has no esc() of its own -
+   the build-time one is a different scope entirely. */
+function escCmd(t){
+  return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function wireSend(pfx, getPacket, transport){
+  var host = $("#" + pfx + "-host"), port = $("#" + pfx + "-port"), out = $("#" + pfx + "-send");
+  if (!host || !port || !out) return function(){};
+  function paint(){
+    var pk = getPacket();
+    if (!pk) { out.innerHTML = ""; return; }
+    var c = sendCommand(pk, host.value, Number(port.value), { transport: transport });
+    if (!c) { out.innerHTML = '<span class="err">Needs a hostname or IP address, and a port from 1 to 65535.</span>'; return; }
+    out.innerHTML = '<div class="lbl">run this to send it &mdash; ' + c.bytes + ' bytes over ' + c.transport.toUpperCase()
+      + (c.multicast ? ", multicast" : "") + '</div>'
+      + '<code class="cmdline">' + escCmd(c.command) + '</code>'
+      + '<div class="sendnote">' + c.note + '</div>';
+  }
+  host.addEventListener("input", paint);
+  port.addEventListener("input", paint);
+  return paint;
+}
+
+/* ---- Wake-on-LAN ---- */
+var wkSend = wireSend("wk", function(){ var w = wolPacket($("#wk-mac").value, {password: $("#wk-pw").value}); return w && w.bytes ? w.bytes : (w ? w.hex : null); }, "udp");
+function wkRender(){
+  var w = wolPacket($("#wk-mac").value, {password: $("#wk-pw").value});
+  if (!w) { $("#wk-out").innerHTML = '<span class="err">Needs twelve hex digits of MAC. A SecureOn password is 4 or 6 hex bytes.</span>'; $("#wk-hex").textContent = ""; wkSend(); return; }
+  /* Single quotes: this string carries an HTML attribute, and a double-quoted
+     one here has now killed the page script four times. */
+  $("#wk-out").innerHTML = '<b>' + w.length + '</b> bytes to <span class="mono">' + w.mac
+    + '</span><br><span class="dim">' + w.note + '</span>';
+  $("#wk-hex").innerHTML = '<div class="lbl">six FF bytes, then the MAC sixteen times</div>'
+    + w.hex.toUpperCase().replace(/(..)/g, "$1 ").trim();
+  wkSend();
+}
+["#wk-mac","#wk-pw"].forEach(function(id){ $(id).addEventListener("input", wkRender); });
+
+/* ---- VISCA over IP ---- */
+function vsPacket(){
+  return viscaOverIp($("#vs-cmd").value, {
+    camera: Number($("#vs-cam").value), preset: Number($("#vs-pre").value), sequence: Number($("#vs-seq").value),
+  });
+}
+var vsSend = wireSend("vs", function(){ var v = vsPacket(); return v ? v.bytes : null; }, "udp");
+function vsRender(){
+  var v = vsPacket();
+  var isPreset = $("#vs-cmd").value.indexOf("preset") === 0;
+  $("#vs-pre").closest(".field").hidden = !isPreset;
+  if (!v) { $("#vs-out").innerHTML = '<span class="err">Camera address 1 to 7, preset 0 to 254.</span>'; $("#vs-hex").textContent = ""; vsSend(); return; }
+  $("#vs-out").innerHTML = "<b>" + v.label + "</b> &middot; " + v.length + " bytes &middot; " + v.payloadTypeName
+    + '<br><span class="dim">' + v.note + "</span>";
+  $("#vs-hex").innerHTML = '<div class="lbl">8-byte header, then the VISCA message ' + v.viscaPayload + '</div>'
+    + v.hex.replace(/(..)/g, "$1 ").trim();
+  vsSend();
+}
+["#vs-cmd","#vs-cam","#vs-pre","#vs-seq"].forEach(function(id){
+  $(id).addEventListener("input", vsRender); $(id).addEventListener("change", vsRender);
+});
+
+/* ---- DDP ---- */
+function ddPacket(){
+  var n = Math.max(1, Math.min(480, Number($("#dd-px").value) || 1));
+  var c = $("#dd-col").value.split(",").map(Number);
+  var px = [];
+  for (var i = 0; i < n; i++) px.push(c[0], c[1], c[2]);
+  return ddpPacket(px, { offset: Number($("#dd-off").value), push: $("#dd-push").checked });
+}
+var ddSend = wireSend("dd", function(){ var d = ddPacket(); return d ? d.bytes : null; }, "udp");
+function ddRender(){
+  var d = ddPacket();
+  if (!d) { $("#dd-out").innerHTML = '<span class="err">Up to 480 pixels in one packet, offset 0 or more.</span>'; $("#dd-hex").textContent = ""; ddSend(); return; }
+  $("#dd-out").innerHTML = "<b>" + d.length + "</b> bytes &middot; " + d.pixels + " pixels &middot; flags " + d.flags
+    + '<br><span class="dim">' + d.note + "</span>";
+  $("#dd-hex").innerHTML = '<div class="lbl">10-byte header, then three bytes per pixel</div>'
+    + (d.hex.length > 240 ? d.hex.slice(0, 240).replace(/(..)/g, "$1 ").trim() + " \u2026" : d.hex.replace(/(..)/g, "$1 ").trim());
+  ddSend();
+}
+["#dd-px","#dd-col","#dd-off","#dd-push"].forEach(function(id){
+  $(id).addEventListener("input", ddRender); $(id).addEventListener("change", ddRender);
+});
+
+
+/* The four builders above that are IP protocols get the same treatment.
+   RDM is a DMX-wire protocol and MSC is MIDI, so neither has an address to
+   send to; putting a host field on them would imply something untrue. */
+var built = {};
+var osSend = wireSend("os", function(){ return built.os; }, "udp");
+var anSend = wireSend("an", function(){ return built.an; }, "udp");
+var saSend = wireSend("sa", function(){ return built.sa; }, "udp");
+var pjSend = wireSend("pj", function(){ return built.pj; }, "tcp");
+
 /* Populate the selects from the same tables the encoders use, so a name can
    never drift from the byte it stands for. */
 (function(){
@@ -2815,7 +3006,11 @@ function mbRender(){
     .map(k => opt(k, RDM_PIDS[k], Number(k) === 0x0060)).join("");
   $("#mb-mmc").innerHTML = Object.keys(MMC_COMMANDS)
     .map(k => opt(k, MMC_COMMANDS[k], Number(k) === 2)).join("");
+  $("#vs-cmd").innerHTML = Object.keys(VISCA_COMMANDS)
+    .map(k => opt(k, VISCA_COMMANDS[k].label, k === "home")).join("")
+    + opt("preset-recall", "Recall preset") + opt("preset-set", "Store preset");
   osRender(); pjRender(); anRender(); saRender(); rpRender(); mbRender();
+  wkRender(); vsRender(); ddRender();
 })();
 
 /* ---- the analogue layer -------------------------------------------------- */

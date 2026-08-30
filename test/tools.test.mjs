@@ -32,6 +32,7 @@ import {
   directPaths, findBridges, checkChain,
   visualAcuity, ARCMIN_PER_RADIAN, interauralDelay,
   ipAddressKind, IP_RANGES, NET_COMMANDS,
+  sendCommand, wolPacket, viscaOverIp, ddpPacket,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3289,5 +3290,155 @@ describe('the network command reference', () => {
     assert.equal(trace.linux, 'traceroute 10.0.0.50')
     const addr = NET_COMMANDS.find((c) => /my address/.test(c.q))
     assert.notEqual(addr.win, addr.linux)
+  })
+})
+
+describe('putting a built packet on the wire', () => {
+  // The site cannot send these itself - a browser has no UDP socket and there
+  // is no backend - so it hands over a command instead. These pin the shape of
+  // that command, because a wrong one is worse than none: it looks like it
+  // worked and quietly sends the wrong bytes somewhere.
+
+  test('the command carries exactly the bytes it was given', () => {
+    const c = sendCommand(Uint8Array.from([0xde, 0xad, 0xbe, 0xef]), '192.168.1.10', 6454)
+    assert.equal(c.bytes, 4)
+    assert.match(c.command, /bytes\.fromhex\('deadbeef'\)/)
+    assert.match(c.command, /\('192\.168\.1\.10',6454\)/)
+    assert.equal(c.transport, 'udp')
+  })
+
+  test('a truncated display string is refused rather than sent short', () => {
+    // The builders truncate their `hex` field for display. Passing one of those
+    // must fail, not send a short packet that looks plausible on a capture.
+    const full = sacnPacket(1, new Array(512).fill(7))
+    assert.ok(full.hex.length / 2 < full.length, 'this test assumes hex is truncated')
+    assert.equal(sendCommand(full.hex, '10.0.0.1', 5568), null)
+    assert.equal(sendCommand(full.bytes, '10.0.0.1', 5568).bytes, 638)
+  })
+
+  test('multicast is detected and given a TTL', () => {
+    assert.equal(sendCommand('ab', '239.255.0.1', 5568).multicast, true)
+    assert.match(sendCommand('ab', '239.255.0.1', 5568).command, /IP_MULTICAST_TTL/)
+    assert.equal(sendCommand('ab', '192.168.1.5', 5568).multicast, false)
+    assert.doesNotMatch(sendCommand('ab', '192.168.1.5', 5568).command, /IP_MULTICAST_TTL/)
+  })
+
+  test('TCP gets a connection rather than a datagram, and reads the reply', () => {
+    const c = sendCommand('ab', 'proj.local', 4352, { transport: 'tcp' })
+    assert.equal(c.transport, 'tcp')
+    assert.match(c.command, /create_connection/)
+    assert.match(c.command, /recv/)
+  })
+
+  test('bad input returns null instead of a broken command', () => {
+    assert.equal(sendCommand('', 'h', 1), null)
+    assert.equal(sendCommand('abc', 'h', 1), null, 'odd number of hex digits')
+    assert.equal(sendCommand('zz', 'h', 1), null)
+    assert.equal(sendCommand('ab', '', 1), null)
+    assert.equal(sendCommand('ab', 'h', 0), null)
+    assert.equal(sendCommand('ab', 'h', 65536), null)
+    // A host that would break out of the quoting
+    assert.equal(sendCommand('ab', "h';rm -rf /;'", 1), null)
+  })
+})
+
+describe('Wake-on-LAN', () => {
+  test('is six FF bytes then the MAC sixteen times', () => {
+    const w = wolPacket('00:1A:2B:3C:4D:5E')
+    assert.equal(w.length, 102)
+    assert.match(w.hex, /^ffffffffffff/)
+    const body = w.hex.slice(12)
+    assert.equal(body.length / 12, 16)
+    assert.ok(body.match(/.{12}/g).every((m) => m === '001a2b3c4d5e'))
+  })
+
+  test('accepts the separators people actually type', () => {
+    const forms = ['00:1a:2b:3c:4d:5e', '00-1A-2B-3C-4D-5E', '001a2b3c4d5e', '001A.2B3C.4D5E']
+    const hexes = forms.map((f) => wolPacket(f).hex)
+    assert.equal(new Set(hexes).size, 1, 'the same MAC written four ways must give one packet')
+  })
+
+  test('a SecureOn password is appended and must be the right length', () => {
+    assert.equal(wolPacket('001a2b3c4d5e', { password: '112233445566' }).length, 108)
+    assert.equal(wolPacket('001a2b3c4d5e', { password: '11223344' }).length, 106)
+    assert.equal(wolPacket('001a2b3c4d5e', { password: '1122' }), null)
+  })
+
+  test('rejects a MAC that is not twelve hex digits', () => {
+    assert.equal(wolPacket('00:1a:2b:3c:4d'), null)
+    assert.equal(wolPacket(''), null)
+    assert.equal(wolPacket('zz:1a:2b:3c:4d:5e'), null)
+  })
+})
+
+describe('VISCA over IP', () => {
+  test('wraps the serial message in the eight-byte header', () => {
+    const v = viscaOverIp('home', { camera: 1, sequence: 1 })
+    // 0100 = command, 0005 = payload length, 00000001 = sequence
+    assert.equal(v.hex, '010000050000000181010604FF')
+    assert.equal(v.viscaPayload, '81010604FF')
+    assert.equal(v.payloadBytes, 5)
+    assert.equal(v.length, 13)
+    assert.equal(v.port, 52381)
+  })
+
+  test('the address byte is 0x80 plus the camera number', () => {
+    for (const n of [1, 2, 7]) {
+      assert.match(viscaOverIp('home', { camera: n }).viscaPayload,
+        new RegExp('^' + (0x80 | n).toString(16).toUpperCase()))
+    }
+    assert.equal(viscaOverIp('home', { camera: 0 }), null)
+    assert.equal(viscaOverIp('home', { camera: 8 }), null)
+  })
+
+  test('the declared payload length matches the payload actually sent', () => {
+    for (const cmd of ['power-on', 'zoom-tele', 'focus-auto', 'home']) {
+      const v = viscaOverIp(cmd)
+      const declared = parseInt(v.hex.slice(4, 8), 16)
+      assert.equal(declared, v.viscaPayload.length / 2, `${cmd} declares the wrong length`)
+      assert.equal(v.length, 8 + declared)
+    }
+  })
+
+  test('preset recall and store differ by one nibble, and the number is carried', () => {
+    const recall = viscaOverIp('preset-recall', { preset: 3 })
+    const store = viscaOverIp('preset-set', { preset: 3 })
+    assert.match(recall.viscaPayload, /043F0203FF$/)
+    assert.match(store.viscaPayload, /043F0103FF$/)
+    assert.equal(viscaOverIp('preset-recall', { preset: 255 }), null)
+  })
+
+  test('an unknown command is refused', () => {
+    assert.equal(viscaOverIp('explode'), null)
+  })
+})
+
+describe('DDP', () => {
+  test('header is ten bytes and the declared length matches the data', () => {
+    const d = ddpPacket([255, 0, 0, 0, 255, 0])
+    assert.equal(d.length, 16)
+    assert.equal(d.dataLength, 6)
+    assert.equal(d.pixels, 2)
+    assert.equal((d.bytes[8] << 8) | d.bytes[9], 6, 'length field must match the payload')
+  })
+
+  test('the push bit is what makes anything appear', () => {
+    assert.equal(ddpPacket([1, 2, 3], { push: true }).bytes[0] & 0x01, 1)
+    assert.equal(ddpPacket([1, 2, 3], { push: false }).bytes[0] & 0x01, 0)
+    // version 1 in the top two bits either way
+    assert.equal(ddpPacket([1, 2, 3], { push: false }).bytes[0] >> 6, 1)
+    assert.match(ddpPacket([1, 2, 3], { push: false }).note, /stores this data and shows nothing/)
+  })
+
+  test('the offset is written big-endian across four bytes', () => {
+    const d = ddpPacket([1, 2, 3], { offset: 0x01020304 })
+    assert.deepEqual([...d.bytes.slice(4, 8)], [1, 2, 3, 4])
+  })
+
+  test('refuses more than one packet will hold, and bad pixel values', () => {
+    assert.equal(ddpPacket(new Array(1441).fill(0)), null)
+    assert.ok(ddpPacket(new Array(1440).fill(0)))
+    assert.equal(ddpPacket([256]), null)
+    assert.equal(ddpPacket([-1]), null)
   })
 })
