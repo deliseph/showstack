@@ -78,7 +78,7 @@ letter-spacing:.5px;margin-top:4px}
   <rect x="326" y="52" width="44" height="34" rx="5" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
   <path d="M338 86 L358 86 L362 100 L334 100 Z" fill="var(--accent)" opacity=".35"/>
   ${['26 kg', '480 W', 'ch 214', 'universe 3', '19° lens'].map((t, i) => `
-  <text class="meta${i ? ` m${i + 1}` : ''}" x="392" y="${44 + i * 17}" class="lbl" font-size="9.5" fill="var(--accent2)">${t}</text>`).join('')}
+  <text class="lbl meta${i ? ` m${i + 1}` : ''}" x="392" y="${44 + i * 17}" font-size="9.5" fill="var(--accent2)">${t}</text>`).join('')}
   <text x="348" y="132" class="lbl" font-size="9" text-anchor="middle">the drawing and the paperwork</text>
   <text x="348" y="147" class="lbl" font-size="9" text-anchor="middle">are the same database</text>
   <text x="230" y="180" class="lbl" text-anchor="middle" font-size="9.5">this is the whole difference between drafting and entertainment CAD</text>

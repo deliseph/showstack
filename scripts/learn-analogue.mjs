@@ -36,6 +36,22 @@ export function learnAnaloguePage({ esc, shell, SITE, GH }) {
 
   const style = LEARN_CSS + `
 /* A charging capacitor, drawn as the curve it actually follows. */
+/* One half cycle of the mains, with the firing point sweeping. The conducting
+   part is revealed by an animated clip, so the lamp gets brighter as the
+   thyristor fires earlier - which is the whole of phase-angle dimming. */
+/* The clip rect and the marker share one keyframe, so the shaded edge and the
+   line that names it can never drift apart. A percentage inset cannot do that:
+   it resolves against each element's own box, which is how the first version
+   ended up marking the firing point 80px from where the shading started. */
+@keyframes thy-slide{0%,100%{transform:translateX(0)}50%{transform:translateX(-196px)}}
+@keyframes thy-lamp{0%,100%{opacity:.22}50%{opacity:1}}
+@keyframes thy-edge{0%,100%{opacity:.35}50%{opacity:1}}
+.thyfig .cliprect,.thyfig .mark{animation:thy-slide 4.6s ease-in-out infinite}
+/* A base opacity matching the firing angle the figure freezes at, so the
+   reduced-motion reader does not see a late firing point next to a lamp at
+   full brightness. The keyframes override it whenever motion is allowed. */
+.thyfig .lamp{opacity:.34;animation:thy-lamp 4.6s ease-in-out infinite}
+.thyfig .edge{animation:thy-edge 4.6s ease-in-out infinite}
 @keyframes rc-charge{from{stroke-dashoffset:400}to{stroke-dashoffset:0}}
 .rcfig .curve{stroke-dasharray:400;animation:rc-charge 4s ease-out infinite}
 @keyframes rc-mark{0%,55%{opacity:0}70%,100%{opacity:1}}
@@ -79,6 +95,43 @@ color:var(--ink-muted);line-height:1.55}
   <text x="330" y="188" class="lbl" text-anchor="middle">3&tau; &mdash; 95%</text>
   <text x="480" y="188" class="lbl" text-anchor="middle">5&tau; &mdash; 99%</text>
   <text x="60" y="212" class="lbl">The same two components are a filter in the frequency domain and a delay in the time domain. One fact, two views.</text>
+</svg>`
+
+
+  const thyFig = `
+<svg viewBox="0 0 560 208" role="img" class="thyfig">
+  <defs>
+    <clipPath id="thy-cut" clipPathUnits="userSpaceOnUse">
+      <rect class="cliprect" x="236" y="0" width="220" height="208"/>
+    </clipPath>
+  </defs>
+
+  <text x="40" y="24" class="lbl">one half cycle of the mains</text>
+  <line x1="40" y1="150" x2="330" y2="150" stroke="var(--rule)" stroke-width="1.5"/>
+
+  <path d="M40 150 C104 46 226 46 290 150" fill="none" stroke="var(--rule-strong)"
+        stroke-width="1.5" stroke-dasharray="4 4"/>
+
+  <g clip-path="url(#thy-cut)">
+    <path d="M40 150 C104 46 226 46 290 150 Z" fill="var(--accent2)" fill-opacity=".24"/>
+    <path d="M40 150 C104 46 226 46 290 150" fill="none" stroke="var(--accent2)" stroke-width="2.5"/>
+  </g>
+
+  <g class="mark">
+    <line class="edge" x1="236" y1="52" x2="236" y2="160" stroke="var(--fail)" stroke-width="2"/>
+    <!-- to the right of the line: the marker travels left, and an end-anchored
+         label would run off the canvas at the far end of its sweep -->
+    <text x="244" y="46" class="lbl" style="fill:var(--fail)">fires here</text>
+  </g>
+
+  <text x="40" y="186" class="lbl">the shaded part is all the lamp ever gets</text>
+
+  <circle cx="452" cy="92" r="30" fill="none" stroke="var(--rule-strong)" stroke-width="1.5"/>
+  <circle class="lamp" cx="452" cy="92" r="26" fill="var(--accent2)"/>
+  <line x1="452" y1="122" x2="452" y2="146" stroke="var(--rule-strong)" stroke-width="2"/>
+  <line x1="432" y1="146" x2="472" y2="146" stroke="var(--rule-strong)" stroke-width="2"/>
+  <text x="452" y="186" class="lbl" text-anchor="middle">fire earlier, more light</text>
+  <text x="452" y="24" class="lbl" text-anchor="middle">repeats every half cycle</text>
 </svg>`
 
   const discFig = `
@@ -156,6 +209,8 @@ ${S('The dimmer', 'Three ways to make a lamp half bright, two of them obsolete',
    '<strong>The autotransformer dimmer</strong> &mdash; a Variac, a tapped winding with a sliding brush &mdash; fixed both faults at once. It transforms rather than burns, so it is efficient and runs cool, and because it varies the voltage rather than dividing it, it is load independent: any lamp within its rating fades properly. What it is instead is <em>enormous</em>. One iron-cored transformer per channel, each the size of a paint tin, which is why a 60-way autotransformer board is a piece of furniture and why they were operated by hand, sometimes with mechanical linkages so one lever could move several.',
    '<strong>The thyristor dimmer</strong> is what replaced both and what almost every dimmer still is. It does not reduce the voltage at all &mdash; it switches the mains on partway through each half cycle and lets the rest through, so the lamp sees a chopped waveform and averages it. Cheap, small, load independent, and controllable by a tiny signal, which is what made a remote console with hundreds of channels practical.',
    'And it introduced the problems we still have. Chopping the waveform generates harmonics, the third among them, which is a triplen &mdash; and triplens do not cancel in a three-phase neutral, they <a href="/learn/power/">add up in it</a>. It also makes the filament move: the sudden switch-on each half cycle is a mechanical shock, which is filament sing, and the choke in every dimmer exists to slow that edge down. A dimmer that buzzes has a choke doing its job; a lamp that buzzes has one that is not big enough.'])}
+
+${fig(thyFig, 'It never reduces the voltage. It waits, then lets the rest of each half cycle through, and the lamp averages what it gets. That abrupt start is the harmonics and the filament sing, both.')}
 
 ${bites([
   '<b>A resistance dimmer will not black out an undersized lamp.</b> If it is on a historic rig and it will not go to zero, check the lamp wattage against the dimmer before assuming a fault.',
