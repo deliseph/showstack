@@ -4586,3 +4586,211 @@ export const NET_COMMANDS = [
     look: 'The packets themselves. Filter to the port you care about first — an unfiltered capture on a show network is unreadable within seconds.',
   },
 ]
+
+// ---------------------------------------------------------------- send it
+/**
+ * Turn a built packet into a command that actually puts it on the wire.
+ *
+ * The builders on this site get the bytes right, which is the hard part -
+ * sACN's three nested PDUs, Art-Net's opcode endianness, PJLink's MD5
+ * digest. What they cannot do is send them: a browser has no UDP socket and
+ * no raw TCP, and this site has no backend to relay through. Pretending
+ * otherwise would be the one dishonest thing on the page.
+ *
+ * So it hands over the last step instead. Python is the default because it
+ * is present on every macOS and Linux machine a technician will be sitting
+ * at, it handles binary without shell-quoting hazards, and it is one line.
+ *
+ * Returns null rather than a broken command for input it cannot vouch for.
+ */
+export function sendCommand(packet, host, port, opts = {}) {
+  // Takes the raw bytes, or a hex string. The builders' own `hex` field is
+  // truncated for display on long packets, and it is important that passing
+  // one of those fails rather than quietly sending a short packet - the
+  // ellipsis is not hex, so it does, and that is the safe direction.
+  const clean = (packet instanceof Uint8Array || Array.isArray(packet))
+    ? [...packet].map((b) => (b & 0xff).toString(16).padStart(2, '0')).join('')
+    : String(packet ?? '').replace(/[\s:]/g, '').toLowerCase()
+  if (!clean || clean.length % 2 || !/^[0-9a-f]+$/.test(clean)) return null
+  const h = String(host ?? '').trim()
+  // Enough to stop a typo becoming a command that does something else, not a
+  // hostname validator. Single-quoting below is what actually contains it.
+  if (!h || !/^[A-Za-z0-9._:-]{1,253}$/.test(h)) return null
+  const p = Number(port)
+  if (!Number.isInteger(p) || p < 1 || p > 65535) return null
+
+  const tcp = opts.transport === 'tcp'
+  const multicast = !tcp && /^2(2[4-9]|3[0-9])\./.test(h)
+  const bytes = clean.length / 2
+
+  const udp = `python3 -c "import socket;s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);`
+    + (multicast ? `s.setsockopt(socket.IPPROTO_IP,socket.IP_MULTICAST_TTL,${Number(opts.ttl ?? 1)});` : '')
+    + `s.sendto(bytes.fromhex('${clean}'),('${h}',${p}))"`
+
+  const tcpCmd = `python3 -c "import socket;s=socket.create_connection(('${h}',${p}),5);`
+    + `s.sendall(bytes.fromhex('${clean}'));print(s.recv(1024))"`
+
+  return {
+    bytes,
+    transport: tcp ? 'tcp' : 'udp',
+    multicast,
+    command: tcp ? tcpCmd : udp,
+    // Windows without Python. Kept separate rather than offered as an equal
+    // because it is markedly harder to read and easier to mistype.
+    powershell: tcp
+      ? `$c=[Net.Sockets.TcpClient]::new('${h}',${p});$b=[byte[]]@(${clean.match(/../g).map((x) => `0x${x}`).join(',')});$c.GetStream().Write($b,0,$b.Length)`
+      : `$u=[Net.Sockets.UdpClient]::new();$b=[byte[]]@(${clean.match(/../g).map((x) => `0x${x}`).join(',')});$u.Send($b,$b.Length,'${h}',${p})`,
+    note: multicast
+      ? 'A multicast address needs the packet to leave the right interface. On a machine with wifi and a show network both up, the kernel will usually pick the wrong one; bind the source or pull the other interface down first.'
+      : tcp
+        ? 'Prints whatever comes back, so an empty reply means it connected and the device said nothing - which is different from it not being there.'
+        : 'UDP is fire and forget. A command that returns silently has sent the packet; it is not evidence that anything received it.',
+  }
+}
+
+/**
+ * Wake-on-LAN magic packet.
+ *
+ * Six 0xFF bytes then the target MAC sixteen times, which is the whole
+ * format. Broadcast to the subnet, because the machine being woken has no
+ * IP address to be addressed by - that is the point of it.
+ */
+export function wolPacket(mac, opts = {}) {
+  const hexMac = String(mac ?? '').replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+  if (hexMac.length !== 12) return null
+  const parts = hexMac.match(/../g)
+  const body = parts.join('').repeat(16)
+  const hex = 'ff'.repeat(6) + body
+  const password = String(opts.password ?? '').replace(/[^0-9a-fA-F]/g, '').toLowerCase()
+  if (password && password.length !== 8 && password.length !== 12) return null
+  return {
+    hex: hex + password,
+    length: 102 + password.length / 2,
+    mac: parts.join(':'),
+    port: 9,
+    note: 'Sent to the broadcast address of the target subnet, not to the machine - it has no IP yet. Port 9 is conventional and 7 is equally common; the device listens for the pattern, not the port. It will not cross a router unless directed broadcast is enabled, which it usually is not, so send it from the same VLAN.',
+  }
+}
+
+/**
+ * VISCA over IP (Sony), the camera control nearly every show has somewhere.
+ *
+ * An 8-byte header in front of an ordinary VISCA message: payload type,
+ * payload length, and a sequence number the camera echoes back. The VISCA
+ * message itself is unchanged from the serial version, which is why a
+ * converter box is only ever wrapping and unwrapping this header.
+ */
+export const VISCA_PAYLOAD_TYPES = {
+  '0100': 'VISCA command',
+  '0110': 'VISCA inquiry',
+  '0120': 'VISCA reply',
+  '0130': 'VISCA device setting',
+  '0200': 'Control command',
+}
+
+/** The commands people actually send, as VISCA payload hex without the address byte. */
+export const VISCA_COMMANDS = {
+  'power-on': { tail: '040002FF', label: 'Power on' },
+  'power-off': { tail: '040003FF', label: 'Power off (standby)' },
+  home: { tail: '0604FF', label: 'Pan/tilt home' },
+  reset: { tail: '0605FF', label: 'Pan/tilt reset' },
+  'zoom-tele': { tail: '040702FF', label: 'Zoom tele (standard speed)' },
+  'zoom-wide': { tail: '040703FF', label: 'Zoom wide (standard speed)' },
+  'zoom-stop': { tail: '040700FF', label: 'Zoom stop' },
+  'focus-auto': { tail: '043802FF', label: 'Autofocus on' },
+  'focus-manual': { tail: '043803FF', label: 'Autofocus off (manual)' },
+}
+
+export function viscaOverIp(command, opts = {}) {
+  const cam = Number(opts.camera ?? 1)
+  if (!Number.isInteger(cam) || cam < 1 || cam > 7) return null
+  const seq = Number(opts.sequence ?? 1)
+  if (!Number.isInteger(seq) || seq < 0 || seq > 0xffffffff) return null
+
+  let tail, label
+  if (command === 'preset-recall' || command === 'preset-set') {
+    const n = Number(opts.preset ?? 0)
+    if (!Number.isInteger(n) || n < 0 || n > 254) return null
+    tail = `043F0${command === 'preset-set' ? '1' : '2'}${n.toString(16).padStart(2, '0')}FF`
+    label = `${command === 'preset-set' ? 'Store' : 'Recall'} preset ${n}`
+  } else {
+    const c = VISCA_COMMANDS[command]
+    if (!c) return null
+    tail = c.tail
+    label = c.label
+  }
+
+  // 0x80 | address. Camera 1 is 0x81, which is why every VISCA example on
+  // the internet starts with 81 and never says why.
+  const payload = ((0x80 | cam).toString(16) + '01' + tail).toUpperCase()
+  const payloadBytes = payload.length / 2
+  const header = '0100' + payloadBytes.toString(16).padStart(4, '0')
+    + seq.toString(16).padStart(8, '0')
+  const hex = (header + payload).toUpperCase()
+
+  return {
+    label,
+    camera: cam,
+    sequence: seq,
+    payloadType: '0100',
+    payloadTypeName: VISCA_PAYLOAD_TYPES['0100'],
+    payloadBytes,
+    viscaPayload: payload,
+    hex,
+    bytes: Uint8Array.from(hex.match(/../g).map((h) => parseInt(h, 16))),
+    length: hex.length / 2,
+    port: 52381,
+    transport: 'UDP port 52381',
+    note: 'The camera replies to the port the request came from, with the same sequence number, so a reply that does not match is a different controller talking to the same camera. Sequence numbers matter: some cameras drop a command whose number has gone backwards, which is what makes two controllers on one camera behave strangely rather than simply clashing.',
+  }
+}
+
+/**
+ * DDP, which is what a great many LED controllers actually take.
+ *
+ * A 10-byte header and then pixel data. The push flag is the one that
+ * matters: without it the controller stores the data and shows nothing,
+ * which is the single most common reason a first DDP test appears to do
+ * nothing at all.
+ */
+export function ddpPacket(pixels = [], opts = {}) {
+  if (!Array.isArray(pixels) || pixels.length > 1440) return null
+  if (!pixels.every((v) => Number.isInteger(v) && v >= 0 && v <= 255)) return null
+  const offset = Number(opts.offset ?? 0)
+  if (!Number.isInteger(offset) || offset < 0 || offset > 0xffffffff) return null
+  const seq = Number(opts.sequence ?? 1)
+  if (!Number.isInteger(seq) || seq < 0 || seq > 15) return null
+  const dest = Number(opts.destination ?? 1)
+  if (!Number.isInteger(dest) || dest < 0 || dest > 255) return null
+  const push = opts.push !== false
+
+  // bits: version 01, then reserved, timecode, storage, reply, query, push
+  const flags = 0x40 | (push ? 0x01 : 0x00)
+  const out = new Uint8Array(10 + pixels.length)
+  const dv = new DataView(out.buffer)
+  out[0] = flags
+  out[1] = seq & 0x0f
+  out[2] = 0x01           // data type: customary default for RGB pixel data
+  out[3] = dest
+  dv.setUint32(4, offset, false)
+  dv.setUint16(8, pixels.length, false)
+  out.set(pixels, 10)
+
+  return {
+    flags: '0x' + flags.toString(16).padStart(2, '0'),
+    push,
+    sequence: seq,
+    destination: dest,
+    offset,
+    dataLength: pixels.length,
+    pixels: Math.floor(pixels.length / 3),
+    bytes: out,
+    hex: [...out].map((b) => b.toString(16).padStart(2, '0')).join('').toUpperCase(),
+    length: out.length,
+    port: 4048,
+    transport: 'UDP port 4048',
+    note: push
+      ? 'The push bit is set, so the controller displays this frame on arrival.'
+      : 'The push bit is clear, so the controller stores this data and shows nothing until a later packet pushes. A first DDP test that appears to do nothing is usually this.',
+  }
+}
