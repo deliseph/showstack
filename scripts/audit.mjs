@@ -54,9 +54,18 @@ const PAGES = [
 ]
 const WIDTHS = [375, 768, 1024, 1440]
 
+// A browser refuses to register a service worker that is not served as
+// JavaScript, so a missing '.js' here meant sw.js came back as
+// application/octet-stream, registration failed on every page, and the audit
+// was structurally incapable of noticing a broken service worker - the one
+// thing the whole "works offline after load" promise rests on. Production
+// serves these correctly; the harness has to as well or it is testing a
+// different site.
 const MIME = {
   '.html': 'text/html', '.woff2': 'font/woff2', '.json': 'application/json',
   '.txt': 'text/plain', '.xml': 'application/xml', '.svg': 'image/svg+xml',
+  '.js': 'text/javascript', '.webmanifest': 'application/manifest+json',
+  '.png': 'image/png', '.ico': 'image/x-icon',
 }
 const server = createServer((req, res) => {
   let f = join(DIST, decodeURIComponent(req.url.split('?')[0]))

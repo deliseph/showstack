@@ -209,7 +209,7 @@
   <div class="searchrow">
     <input id="q" type="search" placeholder="search: 5568, psn, 吊桿, safety curtain…" autocomplete="off"
            spellcheck="false" aria-label="Search showstack">
-    <div class="tabs rail" id="tabs" role="tablist"></div>
+    <div class="tabs rail" id="tabs" role="tablist"><!--__SHOWSTACK_TABS__--></div>
   </div>
 </div></header>
 <div class="trust"><div class="wrap">
@@ -223,7 +223,7 @@
     <p class="searchlede">Every protocol, standard, software tool, piece of hardware and glossary term, searched at once
        — by name, by port number, by vendor, or in 繁體中文. Runs offline once the page has loaded.
        <a href="/">What is showstack?</a></p>
-    <div class="stats" id="stats"></div>
+    <div class="stats" id="stats"><!--__SHOWSTACK_STATS__--></div>
     <div class="quicktools" aria-label="Field tools">
       <span class="qlabel">Field tools</span>
       <a href="/tools/#dmx">DMX address</a>
@@ -269,7 +269,7 @@
     <p>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
        <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
        <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a></p>
-    <p id="foot"></p>
+    <p id="foot"><!--__SHOWSTACK_FOOT__--></p>
   </div>
 </footer>
 
@@ -436,21 +436,34 @@ function render(){
 function boot(){
   if (!DATA){ $("#results").innerHTML = `<div class="empty">Run <code>npm run build</code> to generate the index.</div>`; return; }
   document.querySelectorAll("#ghtop,#ctalink").forEach(a => a.href = a.href.replace("https://github.com/deliseph/showstack", REPO));
-  $("#tabs").innerHTML = [{key:"all",label:"all"}, ...COLS].map(c =>
-    `<button class="tab" role="tab" data-k="${c.key}" aria-selected="${c.key === active}">${c.label}<b>${c.key === "all" ? ITEMS.length : (DATA[c.key] ?? []).length}</b></button>`).join("");
+  /* The tabs are rendered into the markup at build time, because their
+     labels and counts are both build-time facts. Building them here used to
+     mean an empty 94px-tall row at first paint that filled in a moment later
+     and pushed the entire page down - 0.78 CLS on a phone, on the page this
+     site is most used through, and invisible in testing because it only
+     showed once a service worker was serving the document. Rebuild only if
+     the markup somehow arrived empty, so the page still works if this file
+     is opened directly rather than through the build. */
+  if (!$("#tabs").children.length) {
+    $("#tabs").innerHTML = [{key:"all",label:"all"}, ...COLS].map(c =>
+      `<button class="tab" role="tab" data-k="${c.key}" aria-selected="${c.key === active}">${c.label}<b>${c.key === "all" ? ITEMS.length : (DATA[c.key] ?? []).length}</b></button>`).join("");
+  }
   $("#tabs").addEventListener("click", e => {
     const b = e.target.closest(".tab"); if (!b) return;
     active = b.dataset.k;
     document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.k === active));
     render();
   });
+  /* Rendered at build time for the same reason as the tabs: every number in
+     it is a build-time fact, and an empty row filling in after first paint
+     moved everything below it. Rebuilt only if the markup arrived empty. */
   const contributorCount = (DATA.contributors ?? []).length;
-  $("#stats").innerHTML = `<span><b>${DATA.total}</b> entries</span>
+  if (!$("#stats").children.length) $("#stats").innerHTML = `<span><b>${DATA.total}</b> entries</span>
     <span><b>${Math.round((DATA.verified_share ?? 0) * 100)}%</b> verified against a primary source</span>
     <span><b>${DATA.open_gaps}</b> open gaps</span>
     ${contributorCount ? `<span><b>${contributorCount}</b> contributors</span>` : ""}
     <span>built ${DATA.generated}</span>`;
-  $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
+  if (!$("#foot").children.length) $("#foot").innerHTML = `Built ${DATA.generated} from ${DATA.total} YAML files. <a href="${REPO}">Source</a> · <a href="/api/v1/index.json">API</a> · <a href="${REPO}/blob/main/CONTRIBUTING.md">Contribute</a>`;
   $("#q").addEventListener("input", render);
   compactOnScroll();
   window.addEventListener("keydown", e => { if (e.key === "/" && document.activeElement !== $("#q")){ e.preventDefault(); $("#q").focus() } });
