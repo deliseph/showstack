@@ -19,33 +19,27 @@ export function signalsDataPage({ esc, shell, SITE, GH }) {
 table{margin-top:6px}
 table + p.note{margin-top:12px}
 
-/* serial vs parallel flow */
-.flowviz{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:14px 0}
-.flowlane{margin-bottom:16px}
-.flowlane:last-child{margin-bottom:0}
-.flowlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer);display:block;margin-bottom:9px}
-.wires{display:flex;flex-direction:column;gap:7px}
-.wire{position:relative;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-.wire.wide{height:11px}
-.bit{position:absolute;top:50%;left:-8px;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--accent);animation:flowmove 1.8s linear infinite}
-.wire.skew .bit{background:var(--warn);animation-duration:2.15s}
-.wire.wide .bit{width:7px;height:7px;margin-top:-3.5px;background:var(--accent2);animation:flowmove .6s linear infinite}
-@keyframes flowmove{from{left:-8px}to{left:100%}}
-.flowcaption{font-size:12px;color:var(--dimmer);margin-top:2px}
-.flowcaption b{color:var(--warn)}
 
-/* OSI stack */
-.osistack{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin:14px 0}
-.osilayer{display:grid;grid-template-columns:40px 1.1fr 1.3fr;gap:14px;align-items:center;padding:11px 16px;
-  border-bottom:1px solid var(--line);background:var(--panel)}
-.osilayer:last-child{border-bottom:none}
-.osilayer:nth-child(odd){background:var(--panel2)}
-.osilayer.dim{opacity:.6}
-.osinum{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--accent);text-align:center}
-.osiname{font-weight:600;font-size:14.5px}
-.osiname small{display:block;font-weight:400;color:var(--dim);font-size:12.5px;margin-top:2px}
-.osiex{font-family:var(--mono);font-size:12px;color:var(--dimmer)}
-@media(max-width:640px){.osilayer{grid-template-columns:30px 1fr}.osiex{grid-column:1 / -1;margin-top:4px}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media(max-width:640px){}
 
 /* analog vs digital waveforms */
 .wavegrid{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:14px 0}
@@ -62,99 +56,75 @@ table + p.note{margin-top:12px}
 .wv-dead{stroke:var(--warn)}
 .wv-deadcap{color:var(--warn)}
 
-/* EtherCAT frame flow */
-.ecatviz{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin:14px 0}
-.ecatrow{margin-bottom:20px}
-.ecatrow:last-child{margin-bottom:0}
-.ecatlabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer);display:block;margin-bottom:12px}
-.ecattrack{position:relative;display:flex;justify-content:space-between;align-items:center;height:26px;padding:0 11px}
-.ecattrack::before{content:"";position:absolute;left:11px;right:11px;top:50%;height:2px;background:var(--line);transform:translateY(-50%)}
-.ecatdev{position:relative;z-index:1;width:22px;height:22px;border-radius:5px;background:var(--panel);border:2px solid var(--line)}
-.ecatframe{position:absolute;top:50%;left:11px;width:14px;height:14px;margin-top:-7px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent);z-index:2}
-.ecat-stepped .ecatframe{animation:ecatstep 4s steps(1,end) infinite}
-.ecat-flow .ecatframe{animation:ecatflow 2s linear infinite}
-@keyframes ecatflow{from{left:11px}to{left:calc(100% - 25px)}}
-@keyframes ecatstep{0%,12%{left:11px}25%,37%{left:calc(33% - 6px)}50%,62%{left:calc(66% - 6px)}75%,100%{left:calc(100% - 25px)}}
-.ecat-flow .ecatdev:nth-child(1){animation:ecatpulse 2s ease-in-out infinite 0s}
-.ecat-flow .ecatdev:nth-child(2){animation:ecatpulse 2s ease-in-out infinite .5s}
-.ecat-flow .ecatdev:nth-child(3){animation:ecatpulse 2s ease-in-out infinite 1s}
-.ecat-flow .ecatdev:nth-child(4){animation:ecatpulse 2s ease-in-out infinite 1.5s}
-.ecat-stepped .ecatdev:nth-child(1){animation:ecatpulselong 4s steps(1,end) infinite 0s}
-.ecat-stepped .ecatdev:nth-child(2){animation:ecatpulselong 4s steps(1,end) infinite 1s}
-.ecat-stepped .ecatdev:nth-child(3){animation:ecatpulselong 4s steps(1,end) infinite 2s}
-.ecat-stepped .ecatdev:nth-child(4){animation:ecatpulselong 4s steps(1,end) infinite 3s}
-@keyframes ecatpulse{0%,80%,100%{border-color:var(--line);background:var(--panel)}15%,45%{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--panel))}}
-@keyframes ecatpulselong{0%,24%,100%{border-color:var(--line);background:var(--panel)}2%,22%{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 22%,var(--panel))}}
-@media(prefers-reduced-motion:reduce){.bit,.oicon,.ecatframe,.ecatdev{animation:none!important}.bit{left:40%}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media(prefers-reduced-motion:reduce){}
 `
 
   const body = `
 <div class="crumb"><a href="/">showstack</a> / <a href="/signals/">signals</a> / data</div>
 <h2>Data &amp; networking fundamentals</h2>
-<p class="lede">How data actually moves, independent of which protocol is riding on top of it: wires-in-parallel vs one fast lane, the layer model everything else on this site slots into, why "digital" fails differently than "analog," and what EtherCAT does differently from plain Ethernet to get sub-millisecond cycle times.</p>
+<p class="lede">Lookup tables for how data moves, independent of which protocol is riding on top. The layer everything on this site slots into, the rates the common serial buses actually run at, and where analogue and digital fail differently. The explanations behind these live in the explainers, linked from each table.</p>
+
+
+
 
 <div class="tool">
-  <h3>Serial vs parallel data</h3>
-  <p>A parallel bus sends many bits at once, one per wire, and relies on every wire arriving in step — GPIB, SCSI, PATA/IDE, the old Centronics printer port, even VGA's separate RGB + sync lines are all parallel in spirit. It is simple at low clock rates, but as clocks climb the wires' propagation delays stop matching (<b>skew</b>), and crosstalk between adjacent conductors gets worse, not better, as you add more of them. A serial link sends one bit at a time down far fewer conductors — usually one differential pair per lane — which lets it run the clock enormously higher and use proper differential signalling for noise immunity.</p>
-  <div class="flowviz">
-    <div class="flowlane">
-      <span class="flowlabel">Parallel — 4 wires, one bit each, in step</span>
-      <div class="wires">
-        <div class="wire"><i class="bit"></i></div>
-        <div class="wire"><i class="bit"></i></div>
-        <div class="wire skew"><i class="bit"></i></div>
-        <div class="wire"><i class="bit"></i></div>
-      </div>
-      <p class="flowcaption">All four should land together. The <b>orange</b> wire is running the same distance slower — that gap between wires is skew, and it only gets worse as you push the clock higher or add more wires.</p>
-    </div>
-    <div class="flowlane">
-      <span class="flowlabel">Serial — 1 differential pair, bits back-to-back</span>
-      <div class="wires">
-        <div class="wire wide"><i class="bit"></i><i class="bit" style="animation-delay:.15s"></i><i class="bit" style="animation-delay:.3s"></i><i class="bit" style="animation-delay:.45s"></i></div>
-      </div>
-      <p class="flowcaption">No wire-to-wire alignment to keep — there's only one lane, so nothing can drift relative to anything else. That's the trade: fewer conductors, much higher clock, no skew budget to manage.</p>
-    </div>
-  </div>
-  <p class="note">That trade is why almost everything fast today — USB, SATA, PCIe, Ethernet, DMX512/RS-485, and the TMDS lanes inside HDMI and DisplayPort — is serial: multiple fast serial lanes beat one wide slow parallel bus once you are past a few tens of MHz.</p>
+  <h3>The layer model, as a lookup</h3>
+  <p>Where each thing indexed on this site sits, and what it therefore can and cannot do. <a href="/learn/network/">The network explainer</a> has the animated version and the reasoning.</p>
+  <table>
+    <tr><th>Layer</th><th>Name</th><th>What lives there</th><th>On a show</th></tr>
+    <tr><td>7</td><td>Application</td><td>What the data means</td><td>sACN, Art-Net, OSC, PJLink, NDI, Dante control</td></tr>
+    <tr><td>6</td><td>Presentation</td><td>Encoding and encryption</td><td>Rarely separated out in practice</td></tr>
+    <tr><td>5</td><td>Session</td><td>Who is talking to whom, and for how long</td><td>RTSP connection management in RAVENNA</td></tr>
+    <tr><td>4</td><td>Transport</td><td>Ports, and whether delivery is guaranteed</td><td>UDP for nearly everything on a show; TCP for PJLink and Ember+</td></tr>
+    <tr><td>3</td><td>Network</td><td>Addresses that route between subnets</td><td>IP, and the multicast groups sACN and PTP use</td></tr>
+    <tr><td>2</td><td>Data link</td><td>Addresses on one wire, and frames</td><td>Ethernet and MAC addresses, VLANs, AVB, AES50, CobraNet</td></tr>
+    <tr><td>1</td><td>Physical</td><td>Voltage, light, radio</td><td>Cat6, fibre, RS-485 &mdash; and DMX512, which sits here with nothing above it</td></tr>
+  </table>
+  <p class="note">Two things worth reading off this. <b>DMX512 has no layers above 1 and 2 at all</b>, which is why it cannot be routed, addressed or acknowledged &mdash; every limitation follows from that row. And a protocol at layer 7 inherits every property of the layers under it, which is why &ldquo;is it on the network?&rdquo; is a different question from &ldquo;can the switch see it?&rdquo;</p>
 </div>
-
 <div class="tool">
-  <h3>The OSI model, briefly</h3>
-  <p>Seven layers, physical wire at the bottom, meaning at the top. Most protocols indexed on this site live at layer 7, riding on layer 3/4 (IP/UDP) or, for DMX512, straight on layer 1/2 (RS-485).</p>
-  <div class="osistack">
-    <div class="osilayer"><span class="osinum">7</span><span class="osiname">Application<small>What the data actually means</small></span><span class="osiex">DMX512 channel data, an OSC message, an NDI video frame</span></div>
-    <div class="osilayer dim"><span class="osinum">6</span><span class="osiname">Presentation<small>Encoding/encryption of the payload</small></span><span class="osiex">Rarely a distinct layer in show protocols</span></div>
-    <div class="osilayer dim"><span class="osinum">5</span><span class="osiname">Session<small>Setting up and tearing down a conversation</small></span><span class="osiex">Rarely distinct here either</span></div>
-    <div class="osilayer"><span class="osinum">4</span><span class="osiname">Transport<small>Delivery: ordered/reliable or not</small></span><span class="osiex">sACN and Art-Net both ride UDP; RDMnet uses TCP for some traffic</span></div>
-    <div class="osilayer"><span class="osinum">3</span><span class="osiname">Network<small>Addressing and routing between networks</small></span><span class="osiex">IP addressing, sACN's multicast group</span></div>
-    <div class="osilayer"><span class="osinum">2</span><span class="osiname">Data link<small>Framing and addressing on one local segment</small></span><span class="osiex">Ethernet frames and MAC addresses; EtherCAT operates almost entirely here</span></div>
-    <div class="osilayer"><span class="osinum">1</span><span class="osiname">Physical<small>The actual bits on the wire</small></span><span class="osiex">Cat6 copper, RS-485 differential signalling, OM3 fibre</span></div>
-  </div>
-  <p class="note">Per ISO/IEC 7498-1. Layers 5 and 6 are dimmed above because almost nothing on a show network implements them as a separate step — most show protocols go straight from application data to a transport/network layer that already handles session and encoding concerns, or skips them entirely.</p>
+  <h3>Serial bus rates</h3>
+  <p>Signalling rates for the buses that turn up in a rack, so a spec sheet can be read against what the cable can actually carry. Usable throughput is always lower &mdash; encoding overhead, protocol overhead, and in the case of USB a shared bus.</p>
+  <table>
+    <tr><th>Bus</th><th>Generation</th><th>Raw rate</th><th>Notes</th></tr>
+    <tr><td rowspan="4">USB</td><td>2.0 High Speed</td><td>480 Mbit/s</td><td>Shared across everything on the controller</td></tr>
+    <tr><td>3.2 Gen 1</td><td>5 Gbit/s</td><td>Was USB 3.0, then 3.1 Gen 1 &mdash; same thing renamed twice</td></tr>
+    <tr><td>3.2 Gen 2</td><td>10 Gbit/s</td><td>Was 3.1 Gen 2</td></tr>
+    <tr><td>4</td><td>40 Gbit/s</td><td>Requires a certified cable; falls back silently on a cheap one</td></tr>
+    <tr><td rowspan="2">Thunderbolt</td><td>3 and 4</td><td>40 Gbit/s</td><td>Carries PCIe and DisplayPort together</td></tr>
+    <tr><td>5</td><td>80 Gbit/s</td><td>120 Gbit/s asymmetric for displays</td></tr>
+    <tr><td rowspan="3">PCIe</td><td>Gen 3, per lane</td><td>8 GT/s</td><td>About 985 MB/s of payload per lane</td></tr>
+    <tr><td>Gen 4, per lane</td><td>16 GT/s</td><td>Doubles again</td></tr>
+    <tr><td>Gen 5, per lane</td><td>32 GT/s</td><td>Lane count multiplies it: x4, x8, x16</td></tr>
+    <tr><td rowspan="4">Ethernet</td><td>1000BASE-T</td><td>1 Gbit/s</td><td>Cat5e is enough, and still the show-network default</td></tr>
+    <tr><td>2.5G / 5GBASE-T</td><td>2.5 / 5 Gbit/s</td><td>Runs on existing Cat5e and Cat6</td></tr>
+    <tr><td>10GBASE-T</td><td>10 Gbit/s</td><td>Cat6a to 100 m; Cat6 only to about 55 m</td></tr>
+    <tr><td>25G and above</td><td>25&ndash;400 Gbit/s</td><td>Fibre or twinax in practice</td></tr>
+  </table>
+  <p class="note">Bits and bytes are the trap here: a 10 Gbit/s link moves at most 1.25 GB/s before overhead, and <b>GT/s is not Gbit/s</b> &mdash; PCIe transfers carry encoding, so gen 3 at 8 GT/s yields about 7.88 Gbit/s of payload per lane. <a href="/tools/#storage">The storage calculator</a> works in bytes; the numbers above are in bits.</p>
 </div>
-
-<div class="tool">
-  <h3>Why EtherCAT is fast</h3>
-  <p>EtherCAT does not use faster wiring — it still runs over ordinary 100BASE-TX Ethernet cable. The speed comes from how each device handles the frame. Standard Ethernet/IP devices are store-and-forward: receive a whole frame, process it, generate a fresh reply frame. EtherCAT devices instead read and write their own slice of data <b>as the frame passes through them</b>, in dedicated hardware, without ever fully buffering it — "processing on the fly."</p>
-  <div class="ecatviz">
-    <div class="ecatrow">
-      <span class="ecatlabel">Standard Ethernet/IP — store &amp; forward, one device polled at a time</span>
-      <div class="ecattrack ecat-stepped">
-        <div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div>
-        <div class="ecatframe"></div>
-      </div>
-    </div>
-    <div class="ecatrow">
-      <span class="ecatlabel">EtherCAT — processed on the fly, one pass updates every device</span>
-      <div class="ecattrack ecat-flow">
-        <div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div><div class="ecatdev"></div>
-        <div class="ecatframe"></div>
-      </div>
-    </div>
-  </div>
-  <p class="note">One frame does a complete loop through every device on the segment and returns with every device's data updated in a single pass, instead of the controller polling each device one at a time. That is what gets automation systems into sub-millisecond, deterministic cycle times. In entertainment it shows up in automated rigging, winch and moving-scenery control, where motion needs to be tightly synchronised across many axes.</p>
-</div>
-
 <div class="tool">
   <h3>Analog vs digital — and what it changes per department</h3>
   <p>An analog signal represents its value directly as a continuously variable voltage, current or light level — every metre of cable, every connector and every amplifier stage adds a little noise and loss that cannot be undone. A digital signal encodes the value as discrete symbols; as long as the receiver can still tell the symbols apart, it can be regenerated bit-perfect at every hop, which is why digital chains tolerate long runs and many hops that would visibly degrade an analog one — and why, past their rated distance, digital links tend to fail hard (the "cliff effect") rather than gracefully.</p>
