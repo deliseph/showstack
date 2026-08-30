@@ -244,6 +244,20 @@ ${S('Private and public', 'Why a show network lives in numbers nobody can route 
 
 ${rule('Private ranges are private because <b>the internet refuses to carry them</b>. That is the mechanism, and everything else about them follows from it.')}
 
+${S('The browser cannot get there', 'Why no web page will ever talk to your rig directly',
+  ['This one comes up constantly, usually as &ldquo;there is a web tool that does this, why do we need a box?&rdquo; The answer is a deliberate boundary rather than a missing feature, and it is worth knowing because it decides what a browser-based control surface can and cannot be.',
+   'There are <strong>two separate walls</strong>, and people usually only know about the first. A browser has no UDP socket and no raw TCP: <span class="mono">fetch</span> and WebSocket speak HTTP and WebSocket and nothing else, so no page can emit sACN, Art-Net, PJLink or anything else that is not those. That alone rules out most of this industry&rsquo;s protocols.',
+   'The second wall is the interesting one. Even for the protocols a browser <em>can</em> speak, a page served from a public address is not allowed to reach a private one. A page on some public site cannot quietly open <span class="mono">http://192.168.1.1</span> and reconfigure your router, or work through 192.168.1.0/24 looking for what answers. Browsers block that crossing on purpose &mdash; the mechanism is called Private Network Access, and it was previously CORS-RFC1918 &mdash; and a public page that tries gets refused before a packet is sent. Your private numbers being unroutable from outside is the <em>point</em> of them, as the section above says, and the browser is enforcing the same idea one layer up.',
+   'So the shapes that actually work are the ones you see in the field. Software that runs <em>on</em> the network, serving its own web interface from inside it &mdash; which is why a console&rsquo;s remote is served by the console. A page loaded from the device itself, which is same-origin and private-to-private, so neither wall applies. A native application, which has real sockets. Or a page that does the thinking and hands the sending to something that can, which is what the <a href="/tools/#sacn">packet builders</a> do: the arithmetic happens in the browser, and the command it gives you runs on your machine, on your network, where there is no public-to-private hop to be blocked.',
+   'The useful test when somebody proposes a browser-based anything: <em>where is the page served from, and where does the packet have to go?</em> Same private network, and it is fine. Public site reaching into a private range, and it will not work, no matter how well written it is.'])}
+
+${bites([
+  '<b>A device&rsquo;s own web UI is not an exception to this.</b> It is served from the device, so the page and the target are the same private origin. Nothing is crossing.',
+  '<b>An HTTPS page cannot call a plain HTTP device</b> either. Mixed content is blocked separately, which is why a device with no certificate is awkward to reach from a page loaded over HTTPS.',
+  '<b>&ldquo;It works on my laptop&rdquo; is often localhost.</b> A tool running locally is same-origin to itself; the same page on a public URL is a different situation entirely.',
+  '<b>This is a security feature and it protects you.</b> The alternative is any site you visit being able to inventory and reconfigure the network you are sitting on.',
+])}
+
 ${S('The addresses that are a diagnosis', 'What 169.254 and 127.0.0.1 are telling you',
   ['Several reserved ranges are not configuration at all &mdash; they are the network reporting a state, and reading them saves a great deal of time.',
    '<strong>169.254.x.x</strong> is the one worth recognising instantly. It means DHCP failed and the device gave up and named itself &mdash; link-local, RFC 3927. A device on one of these can reach other devices that did the same thing on the same wire, and nothing else. It is not a working configuration that happens to look odd; it is a device saying it never got an address. The fix is upstream: no DHCP server, a cable in the wrong VLAN, or a server that ran out of leases.',
