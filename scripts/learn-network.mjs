@@ -20,6 +20,24 @@ export function learnNetworkPage({ esc, shell, SITE, GH }) {
   const S = sec(esc)
 
   const style = LEARN_CSS + `
+/* The Four Flows grid. The colours are the model's own code and are the same
+   ones the protocol entries use, so the association is learned once and read
+   everywhere after. Each card sets one hue and everything inside inherits it. */
+.flowgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:22px 0 26px}
+.fcard{--fl:var(--dimmer);background:var(--panel);border:1px solid var(--line);
+border-top:3px solid var(--fl);border-radius:var(--r-sm);padding:15px 17px}
+.fcard h4{margin:0 0 10px;font-size:16px;color:var(--fl);display:flex;align-items:center;gap:8px}
+.fcard h4 span{width:9px;height:9px;border-radius:50%;background:var(--fl);flex:0 0 auto}
+.fcard p{margin:0 0 9px;font-size:14.5px;line-height:1.65;color:var(--dim)}
+.fcard .fkill{padding-top:9px;border-top:1px solid var(--line)}
+.fcard .fkill b{color:var(--ink)}
+.fcard .fex{margin:0;font-family:var(--mono);font-size:12.5px;color:var(--dimmer)}
+.fcard .fex a{color:var(--fl)}
+.f-control{--fl:var(--accent2)}
+.f-media{--fl:var(--accent)}
+.f-clock{--fl:var(--ok)}
+.f-management{--fl:var(--warn)}
+
 /* queue animation: a small clock packet stuck behind a big file transfer */
 /* Moved here from the signals reference. Both are illustrated ideas about
    how a network behaves, which is this page's subject; the reference
@@ -237,6 +255,47 @@ ${fig(mcastFig, 'One sender, five ports, two subscribers. Watch where the packet
 ${rule('Multicast needs <b>IGMP snooping plus a querier</b>. Snooping alone, with nothing prompting devices to report, degrades back to flooding.')}
 
 ${xnote('QoS is protecting a latency figure, and that figure was chosen because of a human being. A late clock becomes drifting audio, which becomes a mouth and a voice on opposite sides of the <b>audiovisual binding window</b> — the point at which sight and sound stop being one event. Nobody in the room will say "the network is congested"; they will say it felt off.')}
+
+<div id="flows"></div>
+${S('One model, four kinds of traffic', 'The Four Flows, and what kills each one',
+  ['Everything on a show network is one of four things. That is the whole model, and it is worth more than any single protocol fact on this site, because it turns "what is this packet" into "what should I expect this switch to do to it".',
+   'The four are <strong>control</strong>, <strong>media</strong>, <strong>clock</strong> and <strong>management</strong>. Each has a character, and — this is the half that makes the model predictive rather than decorative — each has one specific thing that kills it.',
+   'Every protocol entry on this site names its flow, and says so before it gives you a single port number, because the flow is the frame the numbers sit in.'])}
+
+<div class="flowgrid">
+  <div class="fcard f-control">
+    <h4><span></span>Control</h4>
+    <p class="fchar">Small, urgent, must arrive. Either it repeats constantly or it fires once, and which of those it is changes everything.</p>
+    <p class="fkill"><b>Killed by</b> latency, and by loss on the messages that fire once. A DMX level held at 50% repeats 44 times a second, so a dropped packet costs nothing. A GO does not repeat, and a dropped GO is a cue that did not happen.</p>
+    <p class="fex"><a href="/protocols/sacn/">sACN</a>, <a href="/protocols/art-net/">Art-Net</a>, <a href="/protocols/osc/">OSC</a>, <a href="/protocols/dmx512/">DMX512</a></p>
+  </div>
+  <div class="fcard f-media">
+    <h4><span></span>Media</h4>
+    <p class="fchar">Large, continuous, and it has to arrive on time and in order. This is the flow that has to be sized, because it is the only one big enough to fill a link.</p>
+    <p class="fkill"><b>Killed by</b> anything that starves the link — almost always a management transfer nobody scheduled — and by jitter that outruns the receive buffer.</p>
+    <p class="fex"><a href="/protocols/dante/">Dante</a>, <a href="/protocols/ndi/">NDI</a>, <a href="/protocols/smpte-st-2110/">ST&nbsp;2110</a>, <a href="/protocols/aes67/">AES67</a></p>
+  </div>
+  <div class="fcard f-clock">
+    <h4><span></span>Clock and sync</h4>
+    <p class="fchar">Tiny and ruthlessly regular. It carries no content at all — only agreement about <em>when</em>. Its entire value is in its regularity, so it is the one flow where being early is as bad as being late.</p>
+    <p class="fkill"><b>Killed by</b> jitter, by an unaware switch adding delay to the very timestamps meant to correct for delay, and by two devices both convinced they are the master.</p>
+    <p class="fex"><a href="/protocols/ptp-1588/">PTP</a>, <a href="/protocols/ltc/">LTC</a>, <a href="/protocols/word-clock/">word clock</a>, <a href="/protocols/genlock/">genlock</a></p>
+  </div>
+  <div class="fcard f-management">
+    <h4><span></span>Management</h4>
+    <p class="fchar">Discovery, monitoring, configuration, backups, updates. All useful. None of it has a deadline of its own.</p>
+    <p class="fkill"><b>Nothing kills it</b> — and that is the problem. With no deadline it has no manners, and it will cheerfully starve every flow that does have one. This is the villain of the model.</p>
+    <p class="fex"><a href="/protocols/rdm/">RDM</a>, <a href="/protocols/snmp/">SNMP</a>, <a href="/protocols/mdns-dns-sd/">mDNS</a>, <a href="/protocols/dhcp/">DHCP</a></p>
+  </div>
+</div>
+
+${rule('Management traffic is the one to keep off a show VLAN. It has <b>no deadline, therefore no manners</b>, and a 4&nbsp;GB file copy during a rehearsal is the commonest self-inflicted wound in the industry.')}
+
+${S('Why the model earns its keep', 'Because it predicts, rather than describes',
+  ['A category tells you what a protocol is <em>for</em>. A flow tells you what it <em>behaves like</em>, and the two come apart more often than you would guess — which is exactly when the model is worth having.',
+   '<a href="/protocols/rdm/">RDM</a> travels on the DMX pair and is filed with lighting control everywhere you look. Its flow is management: discovery and configuration, with no show deadline, competing with traffic that has one. That is precisely why RDM is scheduled into the gaps between lighting frames rather than alongside them — and the flow model predicts that, where the category does not.',
+   '<a href="/protocols/rtp/">RTP</a> looks like plumbing and is filed under network transport. Its flow is media, because it is the thing AES67, RAVENNA and ST&nbsp;2110 all actually ride on.',
+   'And some entries have no flow at all. <a href="/protocols/poe/">PoE</a> is power. <a href="/protocols/rs-485/">RS-485</a> is a pair of wires and a voltage convention. Giving either a flow would be a guess in a fact\u2019s clothing, so those entries say so and leave it blank.'])}
 
 ${S('First principles', 'Two addresses, because two different jobs',
   ['Everything above assumed you already knew what an address is, which is the kind of assumption that leaves people quietly stuck. So, plainly: every device on a network has <strong>two</strong> addresses, and the reason is that they answer two different questions.',

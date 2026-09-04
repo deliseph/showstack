@@ -13,6 +13,7 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { COLLECTIONS, loadAll } from '../scripts/lib/load.mjs'
+import { flowOf, FLOWS, byFlow } from '../scripts/flows.mjs'
 
 const all = loadAll()
 
@@ -155,5 +156,58 @@ describe('freshness', () => {
       [],
       'entries dated in the future'
     )
+  })
+})
+
+describe('the Four Flows', () => {
+  // The point of the model is that it covers everything. A protocol with no
+  // decision behind it is the one case that must not be possible: it would
+  // either show a blank where a reader expects an answer, or inherit whatever
+  // its category happened to imply, which is a guess wearing a fact's clothes.
+  test('every protocol has been assigned a flow, or explicitly given none', () => {
+    const undecided = all.protocols.map((e) => e.doc).filter((p) => flowOf(p) === null).map((p) => p.id)
+    assert.deepEqual(undecided, [],
+      `these protocols have no flow decision — add them to BY_CATEGORY, OVERRIDE or NOT_A_FLOW in scripts/flows.mjs: ${undecided.join(', ')}`)
+  })
+
+  test('every assigned flow is one of the four', () => {
+    for (const { doc: p } of all.protocols) {
+      const r = flowOf(p)
+      if (r.flow === null) continue
+      assert.ok(Object.hasOwn(FLOWS, r.flow), `${p.id} claims flow "${r.flow}"`)
+    }
+  })
+
+  test('an entry with no flow says why, so a blank is never mistaken for an oversight', () => {
+    for (const { doc: p } of all.protocols) {
+      const r = flowOf(p)
+      if (r.flow !== null) continue
+      assert.ok(typeof r.reason === 'string' && r.reason.length > 20,
+        `${p.id} carries no flow and no reason for it`)
+    }
+  })
+
+  test('an override says why it differs from its category', () => {
+    for (const { doc: p } of all.protocols) {
+      const r = flowOf(p)
+      if (!r || r.flow === null || r.reason === null) continue
+      assert.ok(r.reason.length > 20, `${p.id}: an override needs a real reason, got "${r.reason}"`)
+    }
+  })
+
+  test('all four flows are actually populated', () => {
+    const g = byFlow(all.protocols.map((e) => e.doc))
+    for (const k of Object.keys(FLOWS)) {
+      assert.ok(g[k].length > 0, `nothing is classified as ${k}`)
+    }
+  })
+
+  test('every flow carries the two things the model is for', () => {
+    for (const [k, v] of Object.entries(FLOWS)) {
+      assert.ok(v.character && v.character.length > 40, `${k} has no character`)
+      // "What kills it" is the half that makes the model predictive rather
+      // than decorative, so it is not optional.
+      assert.ok(v.kills && v.kills.length > 40, `${k} does not say what kills it`)
+    }
   })
 })

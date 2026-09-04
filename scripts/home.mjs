@@ -221,6 +221,13 @@ border-color:color-mix(in srgb,var(--accent) 42%,var(--line))}
     frame budget, pyro fire time. The same arithmetic the test suite runs.</em>
     <span class="dn">offline once loaded &middot; no login</span>
   </a>
+  <a class="door" href="/diagnose/">
+    <span class="dk">When it breaks</span>
+    <b>Find the fault</b>
+    <em>Six failures that have taken real shows down, investigated a step at a time. You are answered on the
+    <b>order</b> you look in, because naming it after forty minutes of guessing is not the same as finding it.</em>
+    <span class="dn">nothing scored &middot; nothing stored</span>
+  </a>
   <a class="door" href="/build/">
     <span class="dk">Build on it</span>
     <b>The API</b>

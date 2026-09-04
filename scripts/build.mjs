@@ -9,6 +9,7 @@
  * has to be written once, on the software or hardware entry.
  */
 import { mkdirSync, writeFileSync, readFileSync, cpSync, existsSync, rmSync } from 'node:fs'
+import { flowOf } from './flows.mjs'
 import { join } from 'node:path'
 import { COLLECTIONS, loadCollection, ROOT } from './lib/load.mjs'
 import { buildPages, TOKENS, BASE_CSS, SHELL_CSS, navBar } from './pages.mjs'
@@ -118,6 +119,17 @@ for (const col of COLLECTIONS) {
     })
     if (missing.length) gaps.push({ collection: col.key, id: entry.id, name: entry.name ?? entry.en ?? entry.designation, missing })
   }
+}
+
+// The Four Flows are a derived field, not an authored one: they come from a
+// decision table in flows.mjs that a test forces somebody to keep complete.
+// Injected here rather than written into 90 YAML files, so the reasoning lives
+// in one reviewable place and the API still carries the answer per entry.
+for (const p of db.protocols) {
+  const fl = flowOf(p)
+  if (!fl) continue
+  p.flow = fl.flow
+  if (fl.reason) p.flow_note = fl.reason
 }
 
 const stats = {

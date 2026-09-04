@@ -45,7 +45,13 @@ Two things fall out of that matrix for free:
 - **[Can these two talk?](https://showstack-inky.vercel.app/interop/)** — pick any two products and get the protocols they share, in which direction, with the confidence and any licence catch. Runs entirely in the browser, so it works backstage with no signal.
 - **[Comparisons](https://showstack-inky.vercel.app/compare/)** — Art-Net vs sACN, Dante vs AES67, PSN vs RTTrPM and the rest, generated from the index rather than written by hand, so correcting one entry fixes every page it appears on.
 
-And for load-in itself: **[the field tools](https://showstack-inky.vercel.app/tools/)** — DMX address, DIP switch, speaker delay, timecode, power load, beam, LED wall and RF calculators, all offline-capable, all running the same arithmetic the test suite checks.
+And for load-in itself, three pages that assume you are standing up:
+
+- **[The field tools](https://showstack-inky.vercel.app/tools/)** — DMX address, DIP switch, speaker delay, timecode, power load, PoE budget, beam, LED wall and RF calculators, all offline-capable, all running the same arithmetic the test suite checks. The ones where method matters print their working, because a number you cannot check is a number you have to trust.
+- **[The field card](https://showstack-inky.vercel.app/field/)** — the commands, what their output actually means, the addresses that are a diagnosis, and the numbers not worth looking up. One page, ordered the way you should work rather than alphabetically.
+- **[Find the fault](https://showstack-inky.vercel.app/diagnose/)** — six failures that have taken real shows down. You are answered on the *order* you investigate in, not just the answer, because bottom-up diagnosis is the actual skill. Nothing scored, nothing stored.
+
+Every protocol entry also names its **flow** — control, media, clock or management — which is what it behaves like on a wire rather than what it is for. The two come apart more often than you would think, and where they do, the flow is the more useful of the two.
 
 ## Use it
 

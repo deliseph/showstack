@@ -34,6 +34,7 @@ import {
   ipAddressKind, IP_RANGES, NET_COMMANDS,
   sendCommand, wolPacket, viscaOverIp, ddpPacket,
   levels, pixelPitch, DBU_REF_V,
+  poeBudget, poeSwitchBudget, POE_STANDARDS, POE_CABLE,
 } from '../scripts/toolmath.mjs'
 
 describe('sACN multicast', () => {
@@ -3532,5 +3533,106 @@ describe('LED wall pitch', () => {
     assert.equal(pixelPitch(-1), null)
     assert.equal(pixelPitch('x'), null)
     assert.equal(pixelPitch(2.6, { widthM: -1 }), null)
+  })
+})
+
+describe('Power over Ethernet', () => {
+  // The two figures every PoE datasheet quotes are not independent: the PD
+  // guarantee is the PSE allowance minus the loss in the worst cable the
+  // standard tolerates. If these drift apart, one of them has been mistyped.
+  test('the standard PD guarantees are the PSE allowance minus the worst-case cable loss', () => {
+    // Type 1: 350 mA into the 20 ohm loop 802.3af permits.
+    assert.ok(Math.abs((POE_STANDARDS.af.pse - 0.35 ** 2 * 20) - POE_STANDARDS.af.pd) < 0.01)
+    // Type 2: 600 mA into the 12.5 ohm loop 802.3at permits.
+    assert.ok(Math.abs((POE_STANDARDS.at.pse - 0.6 ** 2 * 12.5) - POE_STANDARDS.at.pd) < 0.01)
+  })
+
+  test('real cable loses far less than the standard budgets for', () => {
+    // The whole point of the tool: 100 m of decent Cat5e is nowhere near the
+    // 12.5 ohm worst case, so a PoE+ device gets much more than its 25.5 W floor.
+    const r = poeBudget('at', 100, { cable: 'cat5e-24' })
+    assert.ok(r.lossW < 4.5, `expected under the 4.5 W worst case, got ${r.lossW}`)
+    assert.ok(r.withinPortBudget)
+    assert.ok(r.aboveMinVolts)
+  })
+
+  test('loss rises with the square of current, not linearly with length', () => {
+    const short = poeBudget('at', 25, { cable: 'cat5e-24' })
+    const long = poeBudget('at', 100, { cable: 'cat5e-24' })
+    // Four times the length is a little over four times the loss, because the
+    // current also rises as the voltage at the device sags.
+    assert.ok(long.lossW > short.lossW * 4)
+    assert.ok(long.lossW < short.lossW * 4.6)
+  })
+
+  test('four-pair working halves the loop resistance for the same cable', () => {
+    const two = poeBudget('at', 100, { cable: 'cat5e-24', drawW: 25 })
+    const four = poeBudget('bt3', 100, { cable: 'cat5e-24', drawW: 25 })
+    assert.ok(Math.abs(four.lossW - two.lossW / 2) < 0.15)
+  })
+
+  test('CCA is the trap it is sold as not being', () => {
+    const cu = poeBudget('at', 100, { cable: 'cat5e-24' })
+    const cca = poeBudget('at', 100, { cable: 'cca-24' })
+    assert.ok(cca.lossW > cu.lossW * 1.5)
+    // At the bottom of the permitted supply range it stops being academic.
+    const low = poeBudget('at', 100, { cable: 'cca-24', volts: 50 })
+    assert.equal(low.aboveMinVolts, false)
+  })
+
+  test('a long run on thin patch cord runs out of port budget', () => {
+    const r = poeBudget('at', 100, { cable: 'patch-26', drawW: 25.5 })
+    assert.ok(r.pseDrawW > r.drawW)
+    const worse = poeBudget('af', 100, { cable: 'patch-26', drawW: 12.95 })
+    assert.ok(worse.pseDrawW < worse.pseMaxW)
+  })
+
+  test('rejects nonsense rather than guessing', () => {
+    assert.equal(poeBudget('nope', 50), null)
+    assert.equal(poeBudget('at', -1), null)
+    assert.equal(poeBudget('at', 500), null)
+    assert.equal(poeBudget('at', 50, { cable: 'string' }), null)
+    assert.equal(poeBudget('at', 50, { volts: 12 }), null)
+    assert.equal(poeBudget('at', 50, { drawW: 0 }), null)
+  })
+
+  test('every cable grade and standard produces a usable answer at 1 m', () => {
+    for (const std of Object.keys(POE_STANDARDS)) {
+      for (const cable of Object.keys(POE_CABLE)) {
+        const r = poeBudget(std, 1, { cable })
+        assert.ok(r && r.withinPortBudget && r.aboveMinVolts, `${std}/${cable}`)
+      }
+    }
+  })
+
+  test('switch budget is a separate limit from the per-port one', () => {
+    // Every port individually legal, the switch as a whole nowhere near it.
+    const r = poeSwitchBudget([{ count: 24, drawW: 25.5 }], 370)
+    assert.equal(r.withinBudget, false)
+    assert.equal(r.ports, 24)
+    assert.ok(r.portsSupported < 24)
+    assert.ok(r.portsSupported > 0)
+  })
+
+  test('the 20% planning reserve is applied, and is adjustable', () => {
+    const strict = poeSwitchBudget([{ count: 10, drawW: 25 }], 300)
+    assert.equal(strict.usableW, 240)
+    assert.equal(strict.withinBudget, false)
+    const none = poeSwitchBudget([{ count: 10, drawW: 25 }], 300, { reservePercent: 0 })
+    assert.equal(none.usableW, 300)
+    assert.equal(none.withinBudget, true)
+  })
+
+  test('zero counts do not create phantom ports', () => {
+    const r = poeSwitchBudget([{ count: 0, drawW: 30 }, { count: 4, drawW: 15 }], 200)
+    assert.equal(r.ports, 4)
+    assert.equal(r.totalW, 60)
+  })
+
+  test('switch budget rejects nonsense', () => {
+    assert.equal(poeSwitchBudget([{ count: 1, drawW: 5 }], 0), null)
+    assert.equal(poeSwitchBudget('nope', 100), null)
+    assert.equal(poeSwitchBudget([{ count: -1, drawW: 5 }], 100), null)
+    assert.equal(poeSwitchBudget([{ count: 1, drawW: 5 }], 100, { reservePercent: 100 }), null)
   })
 })
