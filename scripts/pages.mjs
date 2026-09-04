@@ -69,6 +69,9 @@ import { buildPage } from './build-page.mjs'
 import { homePage } from './home.mjs'
 import { offlinePage } from './offline-page.mjs'
 import { checkPage } from './check-page.mjs'
+import { flowOf, FLOWS } from './flows.mjs'
+import { fieldPage } from './field.mjs'
+import { diagnosePage } from './diagnose.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
@@ -512,6 +515,30 @@ margin:0 0 16px;background:var(--line);border:1px solid var(--line);border-radiu
 .mediarow dd{margin:0;color:var(--ink);font-size:15px;line-height:1.5}
 .gotcha{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent2);padding:12px 16px;
 margin-bottom:10px;border-radius:var(--r-sm);color:var(--dim);font-size:15px}
+/* The Four Flows box on a protocol entry.
+
+   The colour is the model's own code, used identically wherever a flow is
+   named, so somebody who has met it once reads the next one without the
+   legend. Each flow's hue is set on the box and everything inside inherits
+   from it, so adding a fifth would be one rule rather than five. */
+.flowbox{--fl:var(--dimmer);background:var(--panel);border:1px solid var(--line);
+border-left:3px solid var(--fl);border-radius:var(--r-sm);padding:14px 17px;margin:20px 0 24px}
+.flowbox p{margin:0 0 8px;color:var(--dim);font-size:14.5px;line-height:1.65}
+.flowbox p:last-child{margin-bottom:0}
+.flowhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+.flowhead b{color:var(--fl);font-size:15px}
+.flowdot{width:9px;height:9px;border-radius:50%;background:var(--fl);flex:0 0 auto}
+.flowshort{font-family:var(--mono);font-size:12px;color:var(--dimmer);
+text-transform:uppercase;letter-spacing:.5px}
+.flowbox .flowkills b,.flowbox .flowwhy b{color:var(--ink)}
+.flowbox .flowwhy{font-size:13.5px;color:var(--dimmer);padding-top:8px;border-top:1px solid var(--line)}
+.flowbox .flowlink{margin-top:10px;font-size:13.5px}
+.flowbox .flowlink a{color:var(--accent)}
+.flow-control{--fl:var(--accent2)}
+.flow-media{--fl:var(--accent)}
+.flow-clock{--fl:var(--ok)}
+.flow-management{--fl:var(--warn)}
+.flow-none{--fl:var(--dimmer)}
 /* A flex column with a gap, not margins on the children: the box holds two
    or three paragraphs now and margin:0 on all of them ran them together. */
 .cta{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel2)),var(--panel2));
@@ -602,8 +629,8 @@ export function navBar(canonical) {
     return `<a href="${href}"${active ? ' class="active" aria-current="page"' : ''}>${label}</a>`
   }
   const home = link('/', 'Home')
-  const main = ['/learn/', '/search/', '/tools/', '/check/', '/build/']
-    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Check', 'Build'][i])).join('')
+  const main = ['/learn/', '/search/', '/tools/', '/check/', '/diagnose/', '/field/', '/build/']
+    .map((h, i) => link(h, ['Learn', 'Search', 'Tools', 'Check', 'Diagnose', 'Field', 'Build'][i])).join('')
   const index = ['/protocols/', '/standards/', '/software/', '/hardware/', '/glossary/']
     .map((h, i) => link(h, ['Protocols', 'Standards', 'Software', 'Hardware', 'Glossary'][i])).join('')
   const views = ['/interop/', '/compare/', '/ports/', '/signals/', '/network/', '/rf/']
@@ -824,6 +851,30 @@ function protocolPage(p, gap) {
   if (p.status && p.status !== 'current') b += `<span class="pill" data-value="${esc(p.status)}">${esc(human('status', p.status))}</span>`
   b += `</div>`
   b += creditLine(p)
+
+  // What this behaves like on a wire, which is a different question from what
+  // it is for. Placed before the numbers because it is the frame the numbers
+  // sit in: knowing sACN is control tells you a dropped packet costs nothing,
+  // and no port number will tell you that.
+  const fl = flowOf(p)
+  if (fl) {
+    if (fl.flow) {
+      const f = FLOWS[fl.flow]
+      b += `<div class="flowbox flow-${esc(fl.flow)}">
+        <div class="flowhead"><span class="flowdot"></span><b>${esc(f.label)}</b>
+          <span class="flowshort">${esc(f.short)}</span></div>
+        <p>${esc(f.character)}</p>
+        <p class="flowkills"><b>What kills it.</b> ${esc(f.kills)}</p>
+        ${fl.reason ? `<p class="flowwhy"><b>Why this one, and not what the category suggests.</b> ${esc(fl.reason)}</p>` : ''}
+        <p class="flowlink"><a href="/learn/network/#flows">The four flows, and why the model is worth having &rarr;</a></p>
+      </div>`
+    } else {
+      b += `<div class="flowbox flow-none">
+        <div class="flowhead"><span class="flowdot"></span><b>Not a traffic flow</b></div>
+        <p>${esc(fl.reason)}</p>
+      </div>`
+    }
+  }
 
   if (ports.length) {
     b += `<h3>Ports</h3>`
@@ -1303,6 +1354,16 @@ export function buildPages(db, dist) {
   write('tools', toolsPage({ esc, shell, SITE, GH, SPONSOR }))
   urls.push(`${SITE}/check/`)
   write('check', checkPage({ esc, shell, SITE, GH }))
+
+  // The card you open in a machine room. Commands, what their output means,
+  // and the numbers that are not worth looking up.
+  write('field', fieldPage({ esc, shell, SITE, GH }))
+  urls.push(`${SITE}/field/`)
+
+  // The other half of /check/: something is already wrong, and the skill being
+  // practised is the order you investigate in rather than the answer.
+  write('diagnose', diagnosePage({ esc, shell, jsonForScript, SITE, GH }))
+  urls.push(`${SITE}/diagnose/`)
   urls.push(`${SITE}/tools/`)
 
   // The converged-network planner: QoS queues, DSCP collisions, link fill.

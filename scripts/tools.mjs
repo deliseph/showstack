@@ -35,7 +35,7 @@ export const TOOL_GROUPS = [
   ['Scenic & illusion', ['peppers', 'forced']],
   ['Access', ['flash', 'ada']],
   ['Content & timing', ['frame', 'pyro', 'storage']],
-  ['Networking', ['subnet', 'addrkind', 'netcmd', 'fibre', 'sdi']],
+  ['Networking', ['subnet', 'addrkind', 'netcmd', 'poe', 'poesw', 'fibre', 'sdi']],
   ['Analogue & components', ['optical', 'rc', 'xfmr']],
   ['Protocol builders', ['osc', 'pjlink', 'artnet', 'sacn', 'rdmpkt', 'mscb', 'wol', 'visca', 'ddp']],
   ['RF', ['im', 'rf']],
@@ -60,6 +60,7 @@ import {
   channelDetail, sysexDetail, MIDI_CHANNEL, MIDI_SYSTEM, NOTE_NAMES, MSC_FORMATS, MSC_COMMANDS, MTC_RATES,
   sendCommand, wolPacket, viscaOverIp, VISCA_COMMANDS, VISCA_PAYLOAD_TYPES, ddpPacket,
   levels, ALIGNMENT, pixelPitch, ARCMIN_PER_RADIAN, DBU_REF_V,
+  poeBudget, poeSwitchBudget, POE_STANDARDS, POE_CABLE,
   sacnMulticast, artnetCompose, artnetSplit,
   dmxAbsolute, dmxFromAbsolute, dipSwitches, dipToAddress,
   speakerDelay, tcToFrames, framesToTc,
@@ -92,12 +93,14 @@ const MATH_SRC = [
   oscMessage, md5, pjlinkCommand, artnetDmx, artnetPoll, rdmPacket, mmcCommand, mscCommand, sacnPacket,
   channelDetail, sysexDetail,
   sendCommand, wolPacket, viscaOverIp, ddpPacket,
-  levels, pixelPitch,
+  levels, pixelPitch, poeBudget, poeSwitchBudget,
 ].map((f) => f.toString()).join('\n\n')
 
 // Two of the new tools need their reference tables in the page as well as the
 // function, so they are serialised beside the source rather than duplicated.
-const MATH_TABLES = `const CORRECTION_GELS = ${JSON.stringify(CORRECTION_GELS)};
+const MATH_TABLES = `const POE_STANDARDS = ${JSON.stringify(POE_STANDARDS)};
+const POE_CABLE = ${JSON.stringify(POE_CABLE)};
+const CORRECTION_GELS = ${JSON.stringify(CORRECTION_GELS)};
 const FIBRE_ATTENUATION = ${JSON.stringify(FIBRE_ATTENUATION)};
 const BEAUFORT = ${JSON.stringify(BEAUFORT)};
 const BUNDLE_FACTORS = ${JSON.stringify(BUNDLE_FACTORS)};
@@ -677,6 +680,26 @@ font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;color:var(--ink-fain
 .dipkey b{position:absolute;top:17px;right:0;font-weight:400;color:var(--signal)}
 .dipkey i{position:absolute;bottom:5px;right:0;font-style:normal}
 .note{font-size:13.5px;color:var(--dimmer);margin-top:8px}
+/* The working. A result you cannot check is a result you have to trust, and
+   this project does not ask anyone to trust it anywhere else. Collapsed by
+   default so the answer stays the answer, and the arithmetic is one tap away
+   for the person who has to defend the number to a production manager.
+   The <pre> is in the markup and only its text changes, so a collapsed
+   details block is the same height before and after the first render and
+   nothing shifts. */
+.work{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.work summary{font-size:13px;color:var(--dim);cursor:pointer;padding:6px 2px;
+min-height:24px;display:flex;align-items:center;gap:6px;list-style:none}
+.work summary::-webkit-details-marker{display:none}
+.work summary::before{content:"+";font-family:var(--mono);color:var(--signal);
+width:12px;display:inline-block;text-align:center}
+.work[open] summary::before{content:"−"}
+.work summary:hover{color:var(--ink-muted)}
+.work summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.work pre{margin:4px 0 0;padding:10px 12px;background:var(--surface-sunken);
+border:1px solid var(--line);border-radius:8px;overflow-x:auto;
+font-family:var(--mono);font-size:12.5px;line-height:1.75;color:var(--ink-muted);
+white-space:pre;tab-size:2}
 .note a{color:var(--accent)}
 label.inline{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--dim);
 margin-top:8px;min-height:44px;cursor:pointer}
@@ -828,6 +851,7 @@ if the calculation you need is missing, it is one pull request.</p>
   </div>
   <div class="meter" id="dl-meter"></div>
   <div class="out" id="dl-out" role="status" aria-live="polite"></div>
+  <details class="work"><summary>Show the working</summary><pre id="dl-work"></pre></details>
   <p class="note">RS-485 caps a segment at <b>32 unit loads</b>, not 32 fixtures. A modern receiver is often 1/4 or 1/8 UL, so a line can carry far more than thirty-two boxes — and a rig of old 1 UL gear cannot. The figure is in the fixture manual; assume 1 UL if it is not stated. <a href="/learn/dmx/">Why this is the limit →</a></p>
 </div>
 <div class="tool" id="dip">
@@ -905,6 +929,7 @@ HORN = GO &amp; (A | B)</textarea></div>
     <div class="field"><label for="del-t">Air temp °C</label><input id="del-t" type="number" value="20" inputmode="numeric"></div>
   </div>
   <div class="out" id="del-out" role="status" aria-live="polite"></div>
+  <details class="work"><summary>Show the working</summary><pre id="del-work"></pre></details>
   <p class="note">Speed of sound = 331.3 + 0.606 × T m/s. Temperature is not pedantry: a 30 m throw shifts by several milliseconds between a cold morning line check and a hot afternoon show.</p>
 </div>
 <div class="tool" id="spl">
@@ -915,6 +940,7 @@ HORN = GO &amp; (A | B)</textarea></div>
     <div class="field"><label for="sp-d">Listener at (m)</label><input id="sp-d" type="number" value="30" min="0.1" step="0.5" inputmode="decimal" style="width:120px"></div>
   </div>
   <div class="out" id="sp-out" role="status" aria-live="polite"></div>
+  <details class="work"><summary>Show the working</summary><pre id="sp-work"></pre></details>
   <p class="note">Inverse square law: −6 dB per doubling of distance, in a free field. Indoors reflections give some back, so this is the conservative figure for neighbour-noise and clearance work and the pessimistic one for coverage. <a href="/learn/sound/">Why 6 dB →</a></p>
 </div>
 <div class="tool" id="latency">
@@ -1179,6 +1205,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="pw-out" role="status" aria-live="polite"></div>
   <div class="meter" id="pw-meter" aria-hidden="true"></div>
+  <details class="work"><summary>Show the working</summary><pre id="pw-work"></pre></details>
   <p class="note">Single phase: A = W ÷ (V × PF). Three phase: A = W ÷ (√3 × V × PF), volts line-to-line. Moving lights and LED fixtures with a poor power factor draw more current than the wattage alone suggests. Circuit fill rules (like the 80% continuous-load rule) are jurisdiction-specific — check the code that applies to your venue.</p>
 </div>
 <div class="tool" id="vdrop">
@@ -1193,6 +1220,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="vd-out" role="status" aria-live="polite"></div>
   <div class="scene" id="vd-viz" aria-hidden="true"></div>
+  <details class="work"><summary>Show the working</summary><pre id="vd-work"></pre></details>
   <p class="note">Single phase drops over the out-and-back pair (k = 2); a balanced three-phase line-to-line drop uses √3. Resistivity is taken at 20 °C, so a warm cable on a busy dimmer run is worse than this says. The 3 % and 5 % marks are the usual lighting and power conventions from installation practice — your local wiring rules, <a href="/standards/bs-7671/">BS 7671</a> or <a href="/standards/nfpa-70/">NFPA 70</a>, are what actually apply.</p>
 </div>
 <div class="tool wide" id="derate">
@@ -1387,6 +1415,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="fb-out" role="status" aria-live="polite"></div>
   <div class="scene" id="fb-viz" aria-hidden="true"></div>
+  <details class="work"><summary>Show the working</summary><pre id="fb-work"></pre></details>
   <p class="note">Every stage of a real-time pipeline spends part of the same frame period, and a pipeline that overruns does not run slightly slower — it drops frames. The achievable rate shown is what the measured work can actually hold. <a href="/learn/engines/">Why real-time is a timing problem →</a></p>
 </div>
 <div class="tool" id="pyro">
@@ -1422,6 +1451,7 @@ HORN = GO &amp; (A | B)</textarea></div>
   </div>
   <div class="out" id="sb-out" role="status" aria-live="polite"></div>
   <div class="ttwrap"><table class="tt" id="sb-table"></table></div>
+  <details class="work"><summary>Show the working</summary><pre id="sb-work"></pre></details>
   <p class="note">The mask says how many of the 32 bits are the network; everything else follows from that. A /31 is a point-to-point link with both addresses usable (RFC 3021) and a /32 is a single host, which is why neither reserves a broadcast address. <a href="/learn/network/">How to calculate it by hand →</a></p>
 </div>
 <div class="tool wide" id="addrkind">
@@ -1444,6 +1474,34 @@ HORN = GO &amp; (A | B)</textarea></div>
   <div class="ttwrap"><table class="tt" id="nc-table"></table></div>
   <p class="note">Nearly every network question on a show has a one-line answer from a terminal, and the reason people do not use them is that the command has a different name on every platform and the output is unlabelled. The third column is the part a cheat sheet usually leaves out: <b>what in the output actually answers the question</b>. Two of these are worth learning before the others &mdash; the route table, because a laptop with both wifi and a show network has two default routes and traffic vanishes into the wrong one; and the multicast joins, because a receiver that has not joined the group will never see it however correctly you send.</p>
 </div>
+<div class="tool wide" id="poe">
+  <h3>Power over Ethernet budget</h3>
+  <div class="row">
+    <div class="field"><label for="pe-s">Standard</label><select id="pe-s"></select></div>
+    <div class="field"><label for="pe-l">Run length (m)</label><input id="pe-l" type="number" min="0" max="200" step="5" value="90" inputmode="numeric" style="width:110px"></div>
+    <div class="field"><label for="pe-c">Cable</label><select id="pe-c"></select></div>
+    <div class="field"><label for="pe-d">Device draw (W)</label><input id="pe-d" type="number" min="0.5" step="0.5" value="25.5" inputmode="decimal" style="width:110px"></div>
+  </div>
+  <div class="out" id="pe-out" role="status" aria-live="polite"></div>
+  <div class="ttwrap"><table class="tt" id="pe-table"></table></div>
+  <details class="work"><summary>Show the working</summary><pre id="pe-work"></pre></details>
+  <p class="note">Two numbers, and confusing them is how a rig of cameras browns out on day two. The <b>PSE</b> figure is what the switch port may put on the cable; the <b>PD</b> figure is what the standard guarantees at the far end. The gap between them is the cable, sized by IEEE for 100&nbsp;m of the worst compliant cable &mdash; so the guarantee is a floor, not a prediction, and real cable does much better. <b>CCA is not a cost saving</b>: about 60% more resistance than copper, which turns a working bench test into a brownout on a long run. <a href="/learn/power/">How power gets to the thing →</a></p>
+</div>
+<div class="tool wide" id="poesw">
+  <h3>PoE switch budget</h3>
+  <div class="row">
+    <div class="field"><label for="pw1-n">Devices at</label><input id="pw1-n" type="number" min="0" value="12" inputmode="numeric" style="width:86px"></div>
+    <div class="field"><label for="pw1-w">W each</label><input id="pw1-w" type="number" min="0" step="0.5" value="25.5" inputmode="decimal" style="width:92px"></div>
+    <div class="field"><label for="pw2-n">and</label><input id="pw2-n" type="number" min="0" value="4" inputmode="numeric" style="width:86px"></div>
+    <div class="field"><label for="pw2-w">W each</label><input id="pw2-w" type="number" min="0" step="0.5" value="51" inputmode="decimal" style="width:92px"></div>
+    <div class="field"><label for="pw-b">Switch PoE budget (W)</label><input id="pw-b" type="number" min="1" step="10" value="370" inputmode="numeric" style="width:130px"></div>
+    <div class="field"><label for="pw-r">Reserve %</label><input id="pw-r" type="number" min="0" max="90" step="5" value="20" inputmode="numeric" style="width:96px"></div>
+  </div>
+  <div class="out" id="pws-out" role="status" aria-live="polite"></div>
+  <div class="meter" id="pws-meter"></div>
+  <details class="work"><summary>Show the working</summary><pre id="pws-work"></pre></details>
+  <p class="note">The per-port maximum and the whole-switch budget are separate limits, and passing one says nothing about the other. A 24-port switch advertising PoE+ on every port almost never has a supply that can do 24&nbsp;&times;&nbsp;30&nbsp;W. When it runs out it <b>sheds ports by priority</b> rather than derating them all &mdash; so the question is not whether it copes but <em>which</em> ports you have decided may fail. Set that deliberately, or the switch decides for you on the show day.</p>
+</div>
 <div class="tool wide" id="fibre">
   <h3>Fibre loss budget</h3>
   <div class="row">
@@ -1454,6 +1512,7 @@ HORN = GO &amp; (A | B)</textarea></div>
     <div class="field"><label for="fi-b">Link budget (dB)</label><input id="fi-b" type="number" min="1" max="40" step="0.5" value="8" inputmode="decimal"></div>
   </div>
   <div class="out" id="fi-out" role="status" aria-live="polite"></div>
+  <details class="work"><summary>Show the working</summary><pre id="fi-work"></pre></details>
   <p class="note">Attenuation figures are typical values per TIA-568 and FOA guidance: OM3/OM4 about 3.0&nbsp;dB/km at 850&nbsp;nm and 1.0 at 1300; OS2 about 0.4 at 1310 and 0.3 at 1550. Connector pairs are counted at 0.3&nbsp;dB (TIA allows up to 0.75) and fusion splices at 0.1. The link budget belongs to the optics, not the glass &mdash; take it from the transceiver datasheet rather than this default. A run that passes with under 3&nbsp;dB spare works on the day and fails after one re-terminated connector.</p>
 </div>
 <div class="tool wide" id="sdi">
@@ -1734,6 +1793,15 @@ ${MATH_SRC}
 
 const $ = (s) => document.querySelector(s);
 
+// Fill a calculator's working block. Called with the raw result before the
+// null check, so a bad input clears the working rather than leaving the last
+// good one sitting under a red error.
+function wk(sel, r){
+  const e = $(sel);
+  if (!e) return;
+  e.textContent = (r && r.working && r.working.length) ? r.working.join(String.fromCharCode(10)) : '';
+}
+
 // ---- DMX address ----
 // Two-way binding: editing universe/address updates absolute, editing
 // absolute updates universe/address. The lastEdited flag prevents loops.
@@ -1796,6 +1864,7 @@ function delayRender() {
   let d = Number($("#del-d").value);
   if ($("#del-unit").value === "ft") d = d * 0.3048;
   const r = speakerDelay(d, $("#del-t").value);
+  wk("#del-work", r);
   if (!r) { $("#del-out").innerHTML = '<span class="err">Distance and temperature must be numbers.</span>'; return; }
   $("#del-out").innerHTML =
     '<b>' + r.ms.toFixed(2) + ' ms</b> at ' + r.speedOfSound + ' m/s' +
@@ -1831,6 +1900,7 @@ $("#tc-frames").addEventListener("input", tcRenderFromFrames);
 // ---- Power load ----
 function powerRender() {
   const r = powerLoad($("#pw-w").value, $("#pw-v").value, Number($("#pw-ph").value), $("#pw-pf").value);
+  wk("#pw-work", r);
   if (!r) { $("#pw-out").innerHTML = '<span class="err">Watts, volts and power factor must be sensible numbers.</span>'; return; }
   $("#pw-out").innerHTML = '<b>' + r.amps + ' A</b> at ' + $("#pw-v").value + ' V ' +
     ($("#pw-ph").value === "3" ? 'three-phase (per line)' : 'single phase');
@@ -2137,6 +2207,7 @@ $("#br-an").addEventListener("input", () => brRender(false));
 function vdRender() {
   const r = voltageDrop($("#vd-i").value, $("#vd-l").value, $("#vd-a").value,
                         $("#vd-v").value, Number($("#vd-ph").value), $("#vd-m").value);
+  wk("#vd-work", r);
   if (!r) { $("#vd-out").innerHTML = '<span class="err">Check the inputs: conductor and supply must be above zero.</span>'; $("#vd-viz").innerHTML = ""; return; }
   const verdict = r.withinLighting ? '<span class="ok">inside the 3% lighting convention</span>'
     : r.withinPower ? '<span class="err">over 3%</span> — inside the 5% power convention'
@@ -2278,6 +2349,7 @@ function dlRender(){
     {count: Number($("#dl-8").value) || 0, unitLoad: 0.125},
   ];
   const r = dmxLineBudget(g);
+  wk("#dl-work", r);
   if (!r) { $("#dl-out").innerHTML = '<span class="err">Counts must be zero or more.</span>'; return; }
   const scale = Math.max(r.limit / 0.75, r.unitLoads * 1.08);
   $("#dl-meter").innerHTML =
@@ -2294,6 +2366,7 @@ for (const id of ["#dl-1","#dl-2","#dl-4","#dl-8"]) $(id).addEventListener("inpu
 function fbRender(){
   const r = frameBudget($("#fb-fps").value,
     [$("#fb-a").value, $("#fb-b").value, $("#fb-c").value, $("#fb-d").value]);
+  wk("#fb-work", r);
   if (!r) { $("#fb-out").textContent = "Enter a frame rate."; $("#fb-viz").innerHTML = ""; return; }
   const verdict = r.withinBudget
     ? '<b>' + r.headroomMs + ' ms</b> of headroom left'
@@ -2337,6 +2410,7 @@ function sbRender(fromNum){
   const p = Number($("#sb-p").value);
   $("#sb-plab").textContent = p;
   const r = subnetCidr($("#sb-ip").value.trim(), p);
+  wk("#sb-work", r);
   if (!r) {
     $("#sb-out").innerHTML = '<span class="err">Four numbers 0–255 separated by dots, and a prefix 0–32.</span>';
     $("#sb-table").innerHTML = "";
@@ -2359,6 +2433,7 @@ $("#sb-pn").addEventListener("input", () => sbRender(true));
 // ---- SPL over distance ----
 function spRender(){
   const r = splAtDistance($("#sp-l").value, $("#sp-r").value, $("#sp-d").value);
+  wk("#sp-work", r);
   if (!r) { $("#sp-out").innerHTML = '<span class="err">Distances must be greater than zero.</span>'; return; }
   $("#sp-out").innerHTML = '<b>' + r.spl + ' dB</b> at ' + $("#sp-d").value + ' m — down <b>' + r.dropDb +
     ' dB</b> over ' + r.doublings + ' doublings of distance (free field)';
@@ -2419,12 +2494,65 @@ function miRender(){
 ["#mi-s","#mi-t"].forEach(id => $(id).addEventListener("input", miRender));
 miRender();
 
+/* ---- Power over Ethernet ------------------------------------------------ */
+$("#pe-s").innerHTML = Object.entries(POE_STANDARDS)
+  .map(([k,v]) => '<option value="' + k + '"' + (k === "at" ? " selected" : "") + '>' + v.label + '</option>').join("");
+$("#pe-c").innerHTML = Object.entries(POE_CABLE)
+  .map(([k,v]) => '<option value="' + k + '"' + (k === "cat5e-24" ? " selected" : "") + '>' + v.label + '</option>').join("");
+
+function peRender(fromStd){
+  const std = $("#pe-s").value;
+  // Changing the standard retargets the draw to what that standard guarantees,
+  // otherwise the box keeps a figure that belongs to a different class of device.
+  if (fromStd) $("#pe-d").value = POE_STANDARDS[std].pd;
+  const r = poeBudget(std, $("#pe-l").value, { cable: $("#pe-c").value, drawW: $("#pe-d").value });
+  wk("#pe-work", r);
+  if (!r) { $("#pe-out").innerHTML = '<span class="err">Length 0&ndash;200 m, and a draw above zero.</span>'; $("#pe-table").innerHTML = ""; return; }
+  const verdict = !r.withinPortBudget
+    ? '<span class="err">over the ' + r.pseMaxW + ' W port budget</span>'
+    : !r.aboveMinVolts
+      ? '<span class="err">voltage at the device is below what it may expect</span>'
+      : '<span class="ok">inside budget</span>';
+  $("#pe-out").innerHTML = '<b>' + r.lossW + ' W</b> lost in the cable · port must source <b>' +
+    r.pseDrawW + ' W</b> of ' + r.pseMaxW + ' · ' + verdict;
+  const row = (k,v) => '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+  $("#pe-table").innerHTML =
+    row("Device draw", r.drawW + " W") +
+    row("Lost in cable", r.lossW + " W (" + r.lossPercent + "% of what the port sources)") +
+    row("Port must source", r.pseDrawW + " W of " + r.pseMaxW + " W") +
+    row("Volts at the device", r.voltsAtPd + " V") +
+    row("Standard guarantees", r.pdGuaranteedW + " W at any compliant 100 m run");
+}
+$("#pe-s").addEventListener("input", () => peRender(true));
+for (const id of ["#pe-l","#pe-c","#pe-d"]) $(id).addEventListener("input", () => peRender(false));
+
+function pwsRender(){
+  const d = [
+    {count: Number($("#pw1-n").value) || 0, drawW: Number($("#pw1-w").value) || 0},
+    {count: Number($("#pw2-n").value) || 0, drawW: Number($("#pw2-w").value) || 0},
+  ];
+  const r = poeSwitchBudget(d, $("#pw-b").value, { reservePercent: Number($("#pw-r").value) });
+  wk("#pws-work", r);
+  if (!r) { $("#pws-out").innerHTML = '<span class="err">Counts and watts zero or more, budget above zero, reserve under 100%.</span>'; $("#pws-meter").innerHTML = ""; return; }
+  const scale = Math.max(r.switchBudgetW * 1.02, r.totalW * 1.08);
+  $("#pws-meter").innerHTML =
+    '<div class="fill" style="width:' + Math.min(100, (r.totalW / scale) * 100) + '%' +
+    (r.withinBudget ? '' : ';background:linear-gradient(90deg,var(--accent2),var(--warn))') + '"></div>' +
+    '<div class="tick" style="left:' + ((r.usableW / scale) * 100) + '%"><span>' + r.usableW + ' W planned</span></div>';
+  $("#pws-out").innerHTML = r.withinBudget
+    ? '<b>' + r.totalW + ' W</b> across ' + r.ports + ' ports · <span class="ok">' + r.headroomW + ' W spare</span> against a ' + r.switchBudgetW + ' W switch'
+    : '<b>' + r.totalW + ' W</b> across ' + r.ports + ' ports · <span class="err">over by ' + Math.abs(r.headroomW) + ' W</span> — about ' + r.portsSupported + ' of ' + r.ports + ' ports come up';
+}
+for (const id of ["#pw1-n","#pw1-w","#pw2-n","#pw2-w","#pw-b","#pw-r"]) $(id).addEventListener("input", pwsRender);
+peRender(false); pwsRender();
+
 /* ---- fibre loss budget ------------------------------------------------- */
 $("#fi-t").innerHTML = Object.entries(FIBRE_ATTENUATION)
   .map(([k,v]) => '<option value="' + k + '">' + v.label + " (" + v.dbPerKm + " dB/km)</option>").join("");
 function fiRender(){
   const r = fibreLossBudget($("#fi-l").value, $("#fi-t").value, $("#fi-c").value, $("#fi-s").value,
     { linkBudgetDb: $("#fi-b").value });
+  wk("#fi-work", r);
   if(!r){ $("#fi-out").innerHTML = '<span class="err">Check the length and counts.</span>'; return; }
   let verdict;
   if (!r.ok) verdict = '<span class="err">over budget by ' + Math.abs(r.marginDb) + " dB</span>";

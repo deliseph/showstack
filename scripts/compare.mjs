@@ -16,6 +16,7 @@
  */
 
 import { MEDIA_ROWS, hasMedia, mediaNotes } from './media.mjs'
+import { flowOf, FLOWS } from './flows.mjs'
 
 /**
  * Curated pairs. `ask` is the question a real person types, in their words.
@@ -44,6 +45,10 @@ export const PAIRS = [
 /** Fields compared, in the order a reader wants them. */
 const ROWS = [
   ['Category', (p) => p.category],
+  // Above ports on purpose. Two protocols in the same flow are alternatives;
+  // two in different flows are usually not a choice at all, and a reader who
+  // learns that in row two is spared the other eighteen.
+  ['Flow', (p) => { const f = flowOf(p); return f && f.flow ? `${FLOWS[f.flow].label} — ${FLOWS[f.flow].short.toLowerCase()}` : '' }],
   ['Ports', (p) => (p.default_ports ?? []).map((x) => `${x.transport.toUpperCase()} ${x.number}`).join(', ')],
   ['Transport', (p) => (p.transport ?? []).join(', ')],
   ['Multicast', (p) => (p.multicast?.used ? (p.multicast.ranges ?? []).join(', ') || 'yes' : p.multicast ? 'no' : '')],
@@ -89,6 +94,23 @@ export function comparisonPage(a, b, ask, { esc, trunc, shell, SITE, GH, product
   const head = `<tr><th></th><th><a href="/protocols/${esc(a.id)}/">${esc(a.name)}</a></th><th><a href="/protocols/${esc(b.id)}/">${esc(b.name)}</a></th></tr>`
 
   body += `<h3>Side by side</h3><table>${head}${rows}</table>`
+
+  // The flow tells you what to worry about, and it is the same sentence for
+  // every protocol in that flow — so say it once when they match, and say
+  // both when they do not, because that difference is the answer to the
+  // question the page is titled with.
+  const fa = flowOf(a)
+  const fb = flowOf(b)
+  if (fa?.flow && fb?.flow) {
+    if (fa.flow === fb.flow) {
+      body += `<p style="color:var(--dim)"><strong>Both are ${esc(FLOWS[fa.flow].label.toLowerCase())} flows.</strong>
+        ${esc(FLOWS[fa.flow].kills)} That applies equally to either, so it is not a discriminator here.</p>`
+    } else {
+      body += `<p style="color:var(--dim)"><strong>These are not the same kind of traffic.</strong>
+        ${esc(a.name)} is a ${esc(FLOWS[fa.flow].label.toLowerCase())} flow: ${esc(FLOWS[fa.flow].kills)}
+        ${esc(b.name)} is a ${esc(FLOWS[fb.flow].label.toLowerCase())} flow: ${esc(FLOWS[fb.flow].kills)}</p>`
+    }
+  }
 
   // ---- what each one can actually carry ----
   // Kept out of the table above rather than appended to it. That table answers

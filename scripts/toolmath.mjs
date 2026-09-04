@@ -98,6 +98,13 @@ export function speakerDelay(distanceMeters, tempC = 20) {
     speedOfSound: Math.round(c * 10) / 10,
     samples48k: Math.round((ms / 1000) * 48000),
     samples96k: Math.round((ms / 1000) * 96000),
+    working: [
+      `Speed of sound at ${t} °C:  c = 331.3 + 0.606 × ${t} = ${Math.round(c * 10) / 10} m/s`,
+      `Time for ${d} m:            t = d / c = ${d} / ${Math.round(c * 10) / 10} = ${Math.round(ms * 100) / 100} ms`,
+      `As samples at 48 kHz:     ${Math.round(ms * 100) / 100} ms × 48 = ${Math.round((ms / 1000) * 48000)} samples`,
+      'Temperature is not a rounding error: 10 °C either side of 20 °C moves the answer by about 2%,',
+      'which over a 40 m delay tower is roughly half a millisecond.',
+    ],
   }
 }
 
@@ -143,7 +150,22 @@ export function powerLoad(watts, volts, phase = 1, pf = 1) {
   if (!Number.isFinite(w) || w < 0 || !Number.isFinite(v) || v <= 0) return null
   if (!(p === 1 || p === 3) || !Number.isFinite(f) || f <= 0 || f > 1) return null
   const amps = p === 3 ? w / (Math.sqrt(3) * v * f) : w / (v * f)
-  return { amps: Math.round(amps * 100) / 100 }
+  return {
+    amps: Math.round(amps * 100) / 100,
+    working: p === 3
+      ? [
+        'Three phase:  I = W / (√3 × V × pf)',
+        `              I = ${w} / (1.732 × ${v} × ${f})`,
+        `              I = ${Math.round(amps * 100) / 100} A per phase`,
+        'That is the current in each line conductor, not the total drawn.',
+      ]
+      : [
+        'Single phase:  I = W / (V × pf)',
+        `               I = ${w} / (${v}${f === 1 ? '' : ` × ${f}`})`,
+        `               I = ${Math.round(amps * 100) / 100} A`,
+        ...(f === 1 ? ['Power factor is taken as 1. Anything with a switch-mode supply draws more than this.'] : []),
+      ],
+  }
 }
 
 /**
@@ -508,6 +530,15 @@ export function voltageDrop(amps, lengthM, csaMm2, volts, phase = 1, material = 
     dropVolts: r2(drop),
     dropPercent: r2(pct),
     voltsAtLoad: r2(v - drop),
+    working: [
+      `${p === 3 ? 'Three phase' : 'Single phase'}, so the path length factor k = ${p === 3 ? '√3 = 1.732' : '2 (out and back)'}.`,
+      `Resistivity of ${material}: ρ = ${rho} Ω·mm²/m`,
+      'Drop = k × I × L × ρ / A',
+      `     = ${p === 3 ? '1.732' : '2'} × ${i} × ${l} × ${rho} / ${a}`,
+      `     = ${r2(drop)} V, which is ${r2(pct)}% of ${v} V`,
+      `At the load: ${v} − ${r2(drop)} = ${r2(v - drop)} V`,
+      `${pct <= 3 ? 'Inside the 3% usually held for lighting.' : pct <= 5 ? 'Over 3% (lighting) but inside 5% (power).' : 'Over 5%. Size up the cable or shorten the run.'}`,
+    ],
     // 3% is the usual limit for a lighting circuit, 5% for power. Both are
     // conventions from installation practice, not a single global rule.
     withinLighting: pct <= 3,
@@ -694,6 +725,38 @@ export function subnetCidr(ip, prefix) {
     isPrivate: octets[0] === 10
       || (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31)
       || (octets[0] === 192 && octets[1] === 168),
+    // The block-size method, which is how this is done on paper in a corridor.
+    // Find the octet the prefix lands in, take 256 minus the mask value there,
+    // and count blocks of that size until you pass the address.
+    working: (() => {
+      const oi = Math.min(3, Math.floor(p / 8))
+      const maskOctet = (mask >>> (8 * (3 - oi))) & 255
+      const block = 256 - maskOctet
+      const nth = ['first', 'second', 'third', 'fourth'][oi]
+      const netOctets = toStr(network).split('.')
+      const lines = [
+        `/${p} is ${p} network bits then ${32 - p} host bits.`,
+        `Mask        ${toStr(mask)}`,
+      ]
+      if (p % 8 === 0 || p === 0) {
+        lines.push(`The prefix lands on an octet boundary, so the first ${p / 8} octet${p / 8 === 1 ? '' : 's'} ${p / 8 === 1 ? 'is' : 'are'} the network and the rest is host.`)
+      } else {
+        lines.push(
+          `Interesting octet: the ${nth}, where the mask reads ${maskOctet}.`,
+          `Block size  = 256 − ${maskOctet} = ${block}`,
+          `Blocks run  ${[0, block, block * 2, block * 3].filter((n) => n < 256).join(', ')}${block * 4 < 256 ? ', …' : ''}`,
+          `${octets[oi]} falls in the block starting ${netOctets[oi]}.`,
+        )
+      }
+      lines.push(
+        `Network     ${toStr(network)}`,
+        p >= 31 ? `Broadcast   none at /${p}` : `Broadcast   ${toStr(broadcast)}`,
+        p === 32 ? 'Usable      a single host' : `Usable      ${firstHost} to ${lastHost}  (${usable.toLocaleString()} addresses)`,
+      )
+      if (p < 31) lines.push(`Usable count = 2^(32−${p}) − 2 = ${total.toLocaleString()} − 2 = ${usable.toLocaleString()}`)
+      else if (p === 31) lines.push('RFC 3021: on a point-to-point link both addresses are usable, so nothing is subtracted.')
+      return lines
+    })(),
   }
 }
 
@@ -732,6 +795,17 @@ export function dmxLineBudget(groups, limit = 32) {
     // Segments needed if the load is split evenly across splitter outputs.
     segmentsNeeded: unitLoads === 0 ? 0 : Math.ceil(unitLoads / lim),
     headroomUnitLoads: r2(lim - unitLoads),
+    working: [
+      ...groups
+        .filter((g) => Number(g?.count) > 0)
+        .map((g) => `${`${String(Number(g.count)).padStart(4)} × ${Number(g.unitLoad)} unit load${Number(g.unitLoad) === 1 ? '' : 's'}`.padEnd(24)}= ${r2(Number(g.count) * Number(g.unitLoad))}`),
+      `Total on the line: ${r2(unitLoads)} unit loads against a limit of ${lim}`,
+      unitLoads <= lim
+        ? `${r2(lim - unitLoads)} unit loads spare. One run is enough.`
+        : `Over by ${r2(unitLoads - lim)}. Split it across ${Math.ceil(unitLoads / lim)} runs through a splitter.`,
+      'The limit is an RS-485 electrical limit, not a DMX one. A line over budget often still',
+      'works on the bench and fails when the rig is hot and the cable is long.',
+    ],
   }
 }
 
@@ -757,6 +831,14 @@ export function splAtDistance(splRef, refMeters, distMeters) {
     spl: r1(l - drop),
     dropDb: r1(drop),
     doublings: r1(Math.log2(d2 / d1)),
+    working: [
+      `${d2} m is ${r1(Math.log2(d2 / d1))} doublings away from the ${d1} m reference.`,
+      'Inverse square law in decibels:  drop = 20 log10(d2 / d1)',
+      `                                 drop = 20 log10(${d2} / ${d1}) = ${r1(drop)} dB`,
+      `${l} dB − ${r1(drop)} dB = ${r1(l - drop)} dB at ${d2} m`,
+      'Free field only. Indoors, reflections refill part of that loss, so this is the',
+      'conservative figure for neighbour noise and the optimistic one for coverage.',
+    ],
   }
 }
 
@@ -790,6 +872,14 @@ export function frameBudget(fps, stages = []) {
     headroomMs: r2(headroom),
     percentUsed: r2((used / period) * 100),
     withinBudget: used <= period,
+    working: [
+      `At ${f} fps one frame lasts 1000 / ${f} = ${r2(period)} ms. Every stage spends part of that same budget.`,
+      ...stages.map((x) => Number(x)).filter((n) => Number.isFinite(n) && n >= 0).map((n) => `  + ${n} ms`),
+      `Used: ${r2(used)} ms of ${r2(period)} ms (${r2((used / period) * 100)}%)`,
+      used <= period
+        ? `${r2(headroom)} ms spare.`
+        : `Over by ${r2(-headroom)} ms. A pipeline over budget does not run slightly slower, it drops frames.`,
+    ],
     // If it will not fit, the honest answer is the rate it *can* hold.
     achievableFps: used > 0 ? r2(Math.min(f, 1000 / used)) : f,
   }
@@ -1390,6 +1480,20 @@ export function fibreLossBudget(lengthM, fibreType, connectorPairs = 2, splices 
     maxLengthM: f.dbPerKm > 0
       ? Math.max(0, Math.round(((budget - connLoss - splLoss) / f.dbPerKm) * 1000))
       : null,
+    working: [
+      `${f.label} attenuates ${f.dbPerKm} dB per km.`,
+      `Fibre:      ${len} m ÷ 1000 × ${f.dbPerKm} = ${r2(fibreLoss)} dB`,
+      `Connectors: ${conns} pair${conns === 1 ? '' : 's'} × ${connectorLoss} dB = ${r2(connLoss)} dB`,
+      `Splices:    ${spl} × ${spliceLoss} dB = ${r2(splLoss)} dB`,
+      `Total loss: ${r2(total)} dB against a link budget of ${r2(budget)} dB`,
+      `Margin:     ${r2(budget - total)} dB`,
+      total > budget
+        ? 'Over budget. It will not link, or it will link and fail intermittently.'
+        : budget - total < 3
+          ? 'Under 3 dB of margin. It passes today and fails after one re-terminated or dirty end face.'
+          : 'Comfortable margin.',
+      'On a short run the connectors, not the glass, are almost all of the loss.',
+    ],
   }
 }
 
@@ -4891,4 +4995,175 @@ export function pixelPitch(pitchMm, opts = {}) {
     out.dataNote = `${cols} x ${rows} is ${r((cols * rows) / 1e6, 2)} megapixels, which at 24-bit colour and 60 fps is ${r((cols * rows * 24 * 60) / 1e9, 2)} Gbit/s of raw pixel data before any transport overhead. That is the number that decides how many processor outputs the wall needs.`
   }
   return out
+}
+
+/**
+ * Power over Ethernet: what actually arrives at the device, and whether the
+ * switch can feed all of them at once.
+ *
+ * Two numbers get confused constantly, and the confusion is the reason a rig
+ * of PTZ cameras browns out on the second show day:
+ *
+ *   PSE power   what the switch port is allowed to put ON the cable
+ *   PD power    what the standard GUARANTEES at the far end
+ *
+ * The gap between them is the cable. IEEE 802.3 sizes it for 100 m of the
+ * worst compliant cable, so at 100 m on thin CCA patch cord you really do
+ * lose that much, and at 15 m on solid 23 AWG you lose almost none. Which is
+ * why a camera that works on the bench fails on a long run: nothing changed
+ * except the cable, and the cable was always the budget.
+ *
+ * The other half is the switch budget. A 24-port switch advertising "PoE+ on
+ * every port" nearly always has a shared power supply that cannot do 24 x 30 W,
+ * and the ports that lose the argument shut down in priority order — usually
+ * the ones you plugged in last, on the show day.
+ *
+ * Loss here is modelled as I^2R on the loop resistance of the pairs actually
+ * carrying power, which is the mechanism rather than a table lookup, so it
+ * keeps working between the cable grades.
+ */
+export const POE_STANDARDS = {
+  af: { label: '802.3af (PoE, Type 1)', pse: 15.4, pd: 12.95, pairs: 2, maxV: 57, minV: 44 },
+  at: { label: '802.3at (PoE+, Type 2)', pse: 30, pd: 25.5, pairs: 2, maxV: 57, minV: 50 },
+  bt3: { label: '802.3bt Type 3 (PoE++)', pse: 60, pd: 51, pairs: 4, maxV: 57, minV: 50 },
+  bt4: { label: '802.3bt Type 4 (PoE++)', pse: 90, pd: 71.3, pairs: 4, maxV: 57, minV: 52 },
+}
+
+/**
+ * DC resistance of ONE conductor, ohms per metre at 20 degrees C.
+ *
+ * The channel limits IEEE works to (20 ohms loop for Type 1, 12.5 for Type 2)
+ * are worst-case allowances covering connectors, elevated temperature and the
+ * poorest compliant cable. Real cable is better than that, which is why the
+ * PD guarantee is a floor and not a prediction — and why this tool models the
+ * cable in front of you rather than quoting the floor back at you.
+ */
+export const POE_CABLE = {
+  'cat6a-23': { label: 'Cat6A, solid 23 AWG', ohmsPerM: 0.0668 },
+  'cat5e-24': { label: 'Cat5e/Cat6, solid 24 AWG', ohmsPerM: 0.0842 },
+  'patch-26': { label: 'Stranded patch cord, 26 AWG', ohmsPerM: 0.1339 },
+  'cca-24': { label: 'CCA (copper-clad aluminium), 24 AWG', ohmsPerM: 0.1350 },
+}
+
+export function poeBudget(standard, lengthM, opts = {}) {
+  const std = POE_STANDARDS[standard]
+  const cable = POE_CABLE[opts.cable ?? 'cat5e-24']
+  const len = Number(lengthM)
+  if (!std || !cable) return null
+  if (!Number.isFinite(len) || len < 0 || len > 200) return null
+
+  // Voltage the switch presents. 802.3 allows down to the standard's minimum;
+  // a supply at the bottom of the range has less to give away to the cable.
+  const volts = Number(opts.volts ?? std.maxV)
+  if (!Number.isFinite(volts) || volts < 37 || volts > 57) return null
+
+  // Power the device actually wants, defaulting to everything the standard
+  // guarantees it.
+  const draw = Number(opts.drawW ?? std.pd)
+  if (!Number.isFinite(draw) || draw <= 0) return null
+
+  // Out on half the powered pairs, back on the other half, with the two
+  // conductors of each pair in parallel. For 2-pair working that is one
+  // conductor's resistance out and one back, so the loop is simply R over the
+  // length; 4-pair halves it because twice as much copper carries each leg.
+  const pairs = std.pairs
+  const loopOhms = pairs === 4 ? (cable.ohmsPerM * len) / 2 : cable.ohmsPerM * len
+  // Solve I from P = V*I - I^2*R for the delivered power, iteratively: the
+  // current depends on the loss and the loss depends on the current.
+  let amps = draw / volts
+  for (let i = 0; i < 40; i += 1) {
+    const vAtPd = volts - amps * loopOhms
+    if (vAtPd <= 0) break
+    amps = draw / vAtPd
+  }
+  const lossW = amps * amps * loopOhms
+  const voltsAtPd = volts - amps * loopOhms
+  const r2 = (x) => Math.round(x * 100) / 100
+
+  const pseDraw = draw + lossW
+  return {
+    standard: std.label,
+    cable: cable.label,
+    lengthM: len,
+    pseMaxW: std.pse,
+    pdGuaranteedW: std.pd,
+    drawW: r2(draw),
+    lossW: r2(lossW),
+    pseDrawW: r2(pseDraw),
+    voltsAtPd: r2(voltsAtPd),
+    ampsPerPair: Math.round((amps / pairs) * 1000) / 1000,
+    // The port can only source what the standard allows it to.
+    withinPortBudget: pseDraw <= std.pse,
+    // Below this the device drops off, whatever the wattage arithmetic says.
+    aboveMinVolts: voltsAtPd >= std.minV,
+    lossPercent: r2((lossW / pseDraw) * 100),
+    working: [
+      `${std.label}: the port may source ${std.pse} W and the standard guarantees ${std.pd} W at the device.`,
+      `${cable.label} over ${len} m on ${pairs} powered pairs.`,
+      pairs === 4
+        ? `Loop resistance = ${cable.ohmsPerM} Ω/m × ${len} m ÷ 2 = ${r2(loopOhms)} Ω  (4 pairs, so twice the copper per leg)`
+        : `Loop resistance = ${cable.ohmsPerM} Ω/m × ${len} m = ${r2(loopOhms)} Ω  (out on one pair, back on the other)`,
+      `At ${draw} W drawn: I = ${Math.round(amps * 1000) / 1000} A, so I²R = ${r2(lossW)} W lost in the cable`,
+      `The port must therefore source ${r2(pseDraw)} W of its ${std.pse} W`,
+      `Voltage at the device: ${volts} − (${Math.round(amps * 1000) / 1000} × ${r2(loopOhms)}) = ${r2(voltsAtPd)} V`,
+      pseDraw > std.pse
+        ? `Over the port budget by ${r2(pseDraw - std.pse)} W. Move up a class, shorten the run, or use better cable.`
+        : voltsAtPd < std.minV
+          ? `Under the ${std.minV} V the device is allowed to expect. It will drop off even though the wattage looks fine.`
+          : `Inside budget with ${r2(std.pse - pseDraw)} W of port headroom.`,
+      'CCA cable is not a cost saving here: it has about 60% more resistance than copper,',
+      'so it turns the same run into a brownout that only shows up under load.',
+    ],
+  }
+}
+
+/**
+ * The other half: can the switch feed everything plugged into it?
+ *
+ * `devices` is [{ count, drawW }]. Switch budgets are shared, and a switch
+ * that runs out sheds ports rather than derating them all, so the useful
+ * output is how many ports the remaining budget supports.
+ */
+export function poeSwitchBudget(devices, switchBudgetW, opts = {}) {
+  const budget = Number(switchBudgetW)
+  if (!Array.isArray(devices) || !Number.isFinite(budget) || budget <= 0) return null
+  // Headroom left for the ports that must not shed. 20% is the usual planning
+  // margin, and it is a convention rather than a standard.
+  const reserve = Number(opts.reservePercent ?? 20)
+  if (!Number.isFinite(reserve) || reserve < 0 || reserve >= 100) return null
+
+  let total = 0
+  let ports = 0
+  const lines = []
+  for (const d of devices) {
+    const c = Number(d?.count), w = Number(d?.drawW)
+    if (!Number.isFinite(c) || c < 0 || !Number.isFinite(w) || w < 0) return null
+    if (c === 0) continue
+    total += c * w
+    ports += c
+    lines.push(`${String(c).padStart(3)} × ${w} W`.padEnd(18) + `= ${Math.round(c * w * 10) / 10} W`)
+  }
+  const r2 = (x) => Math.round(x * 100) / 100
+  const usable = budget * (1 - reserve / 100)
+  return {
+    ports,
+    totalW: r2(total),
+    switchBudgetW: budget,
+    usableW: r2(usable),
+    headroomW: r2(usable - total),
+    percentUsed: r2((total / budget) * 100),
+    withinBudget: total <= usable,
+    // Over budget, a switch sheds ports by priority. This is how many of the
+    // ones you plugged in would actually come up.
+    portsSupported: ports === 0 ? 0 : Math.min(ports, Math.floor(usable / (total / ports))),
+    working: [
+      ...lines,
+      `Total demand: ${r2(total)} W across ${ports} port${ports === 1 ? '' : 's'}`,
+      `Switch budget ${budget} W, planned to ${100 - reserve}% = ${r2(usable)} W usable`,
+      total <= usable
+        ? `${r2(usable - total)} W spare.`
+        : `Over by ${r2(total - usable)} W. A switch out of budget sheds ports by priority rather than derating them all, so about ${Math.min(ports, Math.floor(usable / (total / ports)))} of ${ports} come up — and which ones is a configuration decision somebody should have made deliberately.`,
+      'The per-port maximum and the whole-switch budget are separate limits. Passing one says nothing about the other.',
+    ],
+  }
 }

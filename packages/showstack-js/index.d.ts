@@ -65,6 +65,10 @@ export interface Protocol {
   }
   /** For lighting-control protocols: how addressing works. e.g. '512 slots per universe, universes 1-63999'. */
   universe_model?: string
+  /** DERIVED, not authored. Which of the Four Flows this behaves like on a wire: control, media, clock or management. Injected at build time from the decision table in scripts/flows.mjs, and null for entries that are not traffic at all (PoE is power; RS-485 is an electrical layer). Do not write this into a YAML file - it is computed, and a test fails the build if any protocol has no decision behind it. */
+  flow?: "control" | "media" | "clock" | "management" | null
+  /** DERIVED. Why this entry's flow differs from what its category implies, or why it carries no flow. Present only where there is something to explain. */
+  flow_note?: string
   /** Can an integrator legally get the spec, and at what cost? This is the field people most often need and least often find. */
   openness: "open-published" | "open-free-registration" | "published-paid" | "proprietary-documented" | "proprietary-closed" | "reverse-engineered"
   spec_url?: Link

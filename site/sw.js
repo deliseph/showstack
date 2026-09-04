@@ -35,6 +35,7 @@ const ASSETS = 'showstack-assets'
 const PRECACHE = [
   '/',
   '/tools/',
+  '/field/',
   '/learn/',
   '/build/',
   '/interop/',

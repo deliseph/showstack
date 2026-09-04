@@ -65,6 +65,16 @@
       "maxLength": 200,
       "description": "For lighting-control protocols: how addressing works. e.g. '512 slots per universe, universes 1-63999'."
     },
+    "flow": {
+      "type": ["string", "null"],
+      "enum": ["control", "media", "clock", "management", null],
+      "description": "DERIVED, not authored. Which of the Four Flows this behaves like on a wire: control, media, clock or management. Injected at build time from the decision table in scripts/flows.mjs, and null for entries that are not traffic at all (PoE is power; RS-485 is an electrical layer). Do not write this into a YAML file - it is computed, and a test fails the build if any protocol has no decision behind it."
+    },
+    "flow_note": {
+      "type": "string",
+      "maxLength": 400,
+      "description": "DERIVED. Why this entry's flow differs from what its category implies, or why it carries no flow. Present only where there is something to explain."
+    },
     "openness": {
       "type": "string",
       "enum": [
