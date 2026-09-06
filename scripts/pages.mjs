@@ -706,7 +706,8 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
   <a href="${GH}">Source and corrections</a>.
   <a href="/verify/">Vendors: verify your own entry</a>.
-  <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
+  <br>Created by <a href="https://migu-leung-portfolio.vercel.app/" rel="noopener">Migu Mianizt Leung</a> —
+  <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">LinkedIn</a> ·
   <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
   <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
   <div class="fund">
