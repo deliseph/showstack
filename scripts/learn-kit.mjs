@@ -23,6 +23,18 @@
  */
 
 export const LEARN_CSS = `
+/* where a topic is taught properly, at the foot of the rail */
+.taught{margin:18px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-md);
+background:var(--panel2)}
+.taught .tk{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.7px;
+text-transform:uppercase;color:var(--dimmer);margin-bottom:9px}
+.taught ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.taught li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:14px}
+.taught li a{color:var(--accent2);text-decoration:none;font-weight:600}
+.taught li a:hover{text-decoration:underline}
+.taught li span{color:var(--dim);font-size:13px}
+.taught .tnote{margin:10px 0 0;color:var(--dimmer);font-size:12.5px;line-height:1.55;max-width:70ch}
+
 /* ---- section rhythm ------------------------------------------------- */
 .lhero{margin:0 0 34px}
 .lhero h2{font-size:clamp(28px,4.6vw,42px);letter-spacing:-.8px;line-height:1.12;margin:0 0 12px;text-wrap:balance}
@@ -651,6 +663,88 @@ export const LEARN_TOPICS = [
  */
 export const LEARN_COUNT = LEARN_TOPICS.length + 1
 
+/**
+ * Where a topic is taught properly, and by whom.
+ *
+ * showstack is an index: it says what a thing is and cites a source. It is not
+ * a course and should not pretend to be one. Several of these explainers are
+ * the opening paragraph of something that somebody teaches for twenty four or
+ * sixty four hours, and a reader who wants the rest is better served by being
+ * sent there than by this page growing until it is a bad course.
+ *
+ * Four separate courses, taught by the same person, in no particular order and
+ * none of them a prerequisite for another. Each stands somewhere different in
+ * the signal path, which is why the same topic appears in more than one row
+ * with a different treatment.
+ */
+export const COURSES = {
+  electronics: {
+    name: 'Electronics for Theatre',
+    url: 'https://github.com/deliseph/electronics-for-theatre',
+    what: 'what happens below the connector, with a bench and a meter',
+  },
+  systems: {
+    name: 'Computer Systems and Networking for Theatre',
+    url: 'https://github.com/deliseph/theatre-computer-systems',
+    what: 'the machine and the network under the show',
+  },
+  compsci: {
+    name: 'Computer Science for Theatre',
+    url: 'https://github.com/deliseph/Computer-Science',
+    what: 'the instructions themselves: code, AI, and animation as a program',
+  },
+  shownet: {
+    name: 'Show Networking and Control Systems',
+    url: 'https://github.com/deliseph/show-netoworking-control-system',
+    what: 'the agreements between devices, protocol by protocol',
+  },
+}
+
+/** learn slug -> the course that goes deepest on it, and where. */
+export const TAUGHT_IN = {
+  analogue: [['electronics', 'Classes 7 and 8, impedance, balanced lines and hum']],
+  transducers: [['electronics', 'Class 13, sensors and actuators']],
+  bits: [['systems', 'Foundations and Class 2, what a computer actually does'],
+    ['compsci', 'Class 2, what a value and a type actually are']],
+  encoding: [['electronics', 'Class 9, from voltage to meaning']],
+  connectors: [['electronics', 'Class 3, why the industry chose what it chose']],
+  dmx: [['shownet', 'Session 6, DMX512-A, RDM and sACN'],
+    ['electronics', 'Class 9, DMX on the wire and why terminators exist']],
+  network: [['systems', 'Class 3, the OSI ladder, subnets and VLANs'],
+    ['shownet', 'Sessions 4 and 5, running a real show network']],
+  comms: [['shownet', 'Session 3, how a bit crosses a gap']],
+  proto: [['shownet', 'Sessions 6 to 8, protocol by protocol']],
+  timecode: [['shownet', 'Session 8, time and interchange'],
+    ['compsci', 'Class 6, frames as a number rather than a clock']],
+  power: [['electronics', 'Classes 1 and 5, loads, switching and what trips the breaker']],
+  systems: [['systems', 'Class 5, media over IP, clock and designing for failure']],
+  software: [['systems', 'Class 2, what a show computer is and how it is configured']],
+  code: [['compsci', 'the whole course, and Classes 2 and 5 in particular'],
+    ['electronics', 'Classes 11 and 12, the same code on a chip, at a bench']],
+  ai: [['compsci', 'Class 4, how these models work and how to verify what they write']],
+  video: [['systems', 'Class 5, media over IP'],
+    ['compsci', 'Class 6, generating video from data']],
+}
+
+/**
+ * The block itself. Deliberately quiet and at the foot of the rail: it is a
+ * pointer, not a promotion, and a reader who wants the index rather than a
+ * course should be able to ignore it completely.
+ */
+export const taughtIn = (esc, slug) => {
+  const rows = TAUGHT_IN[slug]
+  if (!rows) return ''
+  return `<aside class="taught"><span class="tk">Taught in depth in</span><ul>` +
+    rows.map(([id, where]) => {
+      const c = COURSES[id]
+      return `<li><a href="${esc(c.url)}" rel="noopener">${esc(c.name)}</a>` +
+        `<span>${esc(where)}</span></li>`
+    }).join('') +
+    `</ul><p class="tnote">Four separate courses by one author. None of them requires another, and
+    each stands somewhere different in the signal path, which is why a topic can appear twice here
+    with two different treatments.</p></aside>`
+}
+
 export const learnNav = (esc, currentSlug) => {
   let html = ''
   for (const g of LEARN_GROUPS) {
@@ -664,7 +758,8 @@ export const learnNav = (esc, currentSlug) => {
   return `<nav class="lnav" aria-label="Explainers"><div class="lrail">` +
     `<a href="/learn/"${currentSlug ? '' : ' class="active" aria-current="page"'}>All</a>` +
     `<a href="/learn/${esc(LEARN_CAPSTONE.slug)}/"${cap ? ' class="active" aria-current="page"' : ''}>` +
-    `${esc(LEARN_CAPSTONE.title)}</a>${html}</div></nav>` + chainPosition(esc, currentSlug)
+    `${esc(LEARN_CAPSTONE.title)}</a>${html}</div></nav>` + chainPosition(esc, currentSlug) +
+    taughtIn(esc, currentSlug)
 }
 
 /**

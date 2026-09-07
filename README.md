@@ -187,6 +187,27 @@ curated comparison pairs — the *pairs* are chosen by hand because only a perso
 knows which comparisons people agonise over, but the *content* is derived from
 the data so it cannot go stale.
 
+## Courses that use this index
+
+showstack is an index, not a course: it says what a thing is and cites a source. Several of the
+explainers under `/learn/` are the opening paragraph of something that is taught properly elsewhere,
+so those pages now carry a quiet **Taught in depth in** block pointing at where the rest is.
+
+Four separate courses, by the same author. **They are not a programme and none of them requires
+another** — each stands somewhere different in the signal path, which is why a topic can appear in
+two of them with two genuinely different treatments.
+
+| Course | Stands at | Shape |
+|---|---|---|
+| [Electronics for Theatre](https://github.com/deliseph/electronics-for-theatre) | Below the connector | 16 classes of four hours |
+| [Computer Systems and Networking for Theatre](https://github.com/deliseph/theatre-computer-systems) | The machine and the network | 5 classes, a visit, a practical exam |
+| [Computer Science for Theatre](https://github.com/deliseph/Computer-Science) | The instructions, and who is responsible for them | 6 classes of four hours |
+| [Show Networking and Control Systems](https://github.com/deliseph/show-netoworking-control-system) | The agreements between two devices | 8 sessions of three hours |
+
+All four check their numbers and their bilingual terms against this index, which is what stops the
+same value being taught four slightly different ways. `scripts/learn-kit.mjs` holds the map from a
+learn topic to the course that goes deepest on it; adding a row there is how a new pointer appears.
+
 ## Licence
 
 - **Data** (`data/`, `dist/api/`): [CC BY 4.0](./LICENSE-DATA). Use it commercially, build products on it, just credit showstack.
