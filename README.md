@@ -201,7 +201,7 @@ two of them with two genuinely different treatments.
 |---|---|---|
 | [Electronics for Theatre](https://github.com/deliseph/electronics-for-theatre) | Below the connector | 16 classes of four hours |
 | [Computer Systems and Networking for Theatre](https://github.com/deliseph/theatre-computer-systems) | The machine and the network | 5 classes, a visit, a practical exam |
-| [Computer Science for Theatre](https://github.com/deliseph/Computer-Science) | The instructions, and who is responsible for them | 6 classes of four hours |
+| [Computer Science for Theatre](https://computer-science-theatre.vercel.app) | The instructions, and who is responsible for them | 6 classes of four hours |
 | [Show Networking and Control Systems](https://github.com/deliseph/show-netoworking-control-system) | The agreements between two devices | 8 sessions of three hours |
 
 All four check their numbers and their bilingual terms against this index, which is what stops the

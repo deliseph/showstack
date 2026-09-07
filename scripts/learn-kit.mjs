@@ -690,7 +690,7 @@ export const COURSES = {
   },
   compsci: {
     name: 'Computer Science for Theatre',
-    url: 'https://github.com/deliseph/Computer-Science',
+    url: 'https://computer-science-theatre.vercel.app/',
     what: 'the instructions themselves: code, AI, and animation as a program',
   },
   shownet: {
