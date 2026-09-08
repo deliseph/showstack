@@ -695,7 +695,7 @@ export const COURSES = {
   },
   shownet: {
     name: 'Show Networking and Control Systems',
-    url: 'https://github.com/deliseph/show-netoworking-control-system',
+    url: 'https://show-networking-control-system.vercel.app',
     what: 'the agreements between devices, protocol by protocol',
   },
 }
