@@ -202,8 +202,8 @@ two of them without contradicting itself.
 
 | Course | Who is in it | Stands at |
 |---|---|---|
-| [Electronics for Theatre](https://github.com/deliseph/electronics-for-theatre) | Technical Direction, year 1 · core | Below the connector |
-| [Computer Systems and Networking](https://github.com/deliseph/theatre-computer-systems) | Media Design and Technology, year 1 · core | The machine and the network |
+| [Electronics for Theatre](https://electronics-for-theatre.vercel.app) | Technical Direction, year 1 · core | Below the connector |
+| [Computer Systems and Networking](https://theatre-computer-systems.vercel.app) | Media Design and Technology, year 1 · core | The machine and the network |
 | [Computer Science for Theatre](https://computer-science-theatre.vercel.app/) | Technical Direction, year 2 · core | The instructions, and who is responsible for them |
 | [Show Networking and Control Systems](https://show-networking-control-system.vercel.app) | Elective · assumes none of the others | The agreements between two devices |
 

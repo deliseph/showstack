@@ -680,12 +680,12 @@ export const LEARN_COUNT = LEARN_TOPICS.length + 1
 export const COURSES = {
   electronics: {
     name: 'Electronics for Theatre',
-    url: 'https://github.com/deliseph/electronics-for-theatre',
+    url: 'https://electronics-for-theatre.vercel.app',
     what: 'what happens below the connector, with a bench and a meter',
   },
   systems: {
     name: 'Computer Systems and Networking for Theatre',
-    url: 'https://github.com/deliseph/theatre-computer-systems',
+    url: 'https://theatre-computer-systems.vercel.app',
     what: 'the machine and the network under the show',
   },
   compsci: {
