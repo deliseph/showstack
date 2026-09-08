@@ -740,9 +740,9 @@ export const taughtIn = (esc, slug) => {
       return `<li><a href="${esc(c.url)}" rel="noopener">${esc(c.name)}</a>` +
         `<span>${esc(where)}</span></li>`
     }).join('') +
-    `</ul><p class="tnote">Four separate courses by one author. None of them requires another, and
-    each stands somewhere different in the signal path, which is why a topic can appear twice here
-    with two different treatments.</p></aside>`
+    `</ul><p class="tnote">Different courses for different cohorts, by one author. A topic can appear
+    twice here because the two rooms ask different questions of it: what is on the pair, what it is
+    as data, what your code does with it, or what the two devices agreed.</p></aside>`
 }
 
 export const learnNav = (esc, currentSlug) => {

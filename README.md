@@ -193,16 +193,19 @@ showstack is an index, not a course: it says what a thing is and cites a source.
 explainers under `/learn/` are the opening paragraph of something that is taught properly elsewhere,
 so those pages now carry a quiet **Taught in depth in** block pointing at where the rest is.
 
-Four separate courses, by the same author. **They are not a programme and none of them requires
-another** — each stands somewhere different in the signal path, which is why a topic can appear in
-two of them with two genuinely different treatments.
+Three cohorts, four courses, and **no student who takes all four**. Technical Direction takes
+Electronics in year one and Computer Science in year two, which is the only real progression among
+them. Media Design and Technology takes Computer Systems and neither of the others. Show Networking
+is an elective that assumes none of them. So where two courses reach the same topic they reach it
+from different positions and ask different questions of it, which is why a `TAUGHT_IN` row can name
+two of them without contradicting itself.
 
-| Course | Stands at | Shape |
+| Course | Who is in it | Stands at |
 |---|---|---|
-| [Electronics for Theatre](https://github.com/deliseph/electronics-for-theatre) | Below the connector | 16 classes of four hours |
-| [Computer Systems and Networking for Theatre](https://github.com/deliseph/theatre-computer-systems) | The machine and the network | 5 classes, a visit, a practical exam |
-| [Computer Science for Theatre](https://computer-science-theatre.vercel.app) | The instructions, and who is responsible for them | 6 classes of four hours |
-| [Show Networking and Control Systems](https://github.com/deliseph/show-netoworking-control-system) | The agreements between two devices | 8 sessions of three hours |
+| [Electronics for Theatre](https://github.com/deliseph/electronics-for-theatre) | Technical Direction, year 1 · core | Below the connector |
+| [Computer Systems and Networking](https://github.com/deliseph/theatre-computer-systems) | Media Design and Technology, year 1 · core | The machine and the network |
+| [Computer Science for Theatre](https://computer-science-theatre.vercel.app/) | Technical Direction, year 2 · core | The instructions, and who is responsible for them |
+| [Show Networking and Control Systems](https://github.com/deliseph/show-netoworking-control-system) | Elective · assumes none of the others | The agreements between two devices |
 
 All four check their numbers and their bilingual terms against this index, which is what stops the
 same value being taught four slightly different ways. `scripts/learn-kit.mjs` holds the map from a
