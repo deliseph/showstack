@@ -1,0 +1,29 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: go
+en: Go
+zh_hant: Go 語言
+domain: general
+definition_en: >-
+  An open-source programming language designed at Google for building simple,
+  reliable and efficient software, with built-in concurrency and a fast
+  compiler. It is commonly used for network services, command-line tools and
+  infrastructure software.
+definition_zh_hant: >-
+  Google 設計的開源程式語言，用於建構簡單、可靠且高效的軟體，內建並行處理功能並具備快速編譯器，
+  常用於網路服務、命令列工具與基礎設施軟體。
+tags:
+  - software
+  - programming-language
+  - infrastructure
+sources:
+  - title: The Go Programming Language
+    url: https://go.dev/
+    publisher: The Go Authors
+    accessed: '2026-09-09'
+    primary: true
+confidence: reported
+contributed_by:
+  - johnfinnerty-nz
+updated: '2026-09-09'
