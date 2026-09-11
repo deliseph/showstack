@@ -1,0 +1,83 @@
+# showstack entry — hardware
+# Schema: ../../schema/hardware.schema.json
+
+id: enttec-dmx-usb-pro
+name: ENTTEC DMX USB Pro
+aka:
+  - "70304"
+vendor: ENTTEC
+category: io-interface
+status: current
+summary: >-
+  Single-universe USB interface for sending or receiving DMX512 from a computer,
+  with buffered timing handled by the device and optional RDM firmware.
+
+speaks:
+  - protocol: dmx512
+    direction: bidirectional
+    note: One 512-channel universe; the linked input and output ports are used in one direction at a time.
+    confidence: verified
+  - protocol: rdm
+    direction: bidirectional
+    note: Requires the DMX/RDM firmware; ENTTEC also supplies separate DMX-only firmware.
+    confidence: verified
+
+physical_ports:
+  - 1x USB Type-B
+  - 1x XLR5F DMX output
+  - 1x XLR5M DMX input
+
+form_factor: Compact USB interface, 112 x 73 x 45 mm, 0.25 kg
+
+homepage:
+  url: https://www.enttec.com/product/dmx-usb-interfaces/dmx-usb-pro-professional-1u-usb-to-dmx512-converter/
+  label: DMX USB Pro
+
+docs:
+  url: https://cdn.enttec.com/pdf/assets/70304/70304_DMX_USB_PRO_USER_MANUAL.pdf
+  label: DMX USB Pro user manual
+
+gotchas:
+  - >-
+    Only one application can use an ENTTEC USB DMX interface at a time. Close EMU
+    and other lighting software before trying to connect from the show application.
+  - >-
+    The DMX input and output connectors share the same internal DMX port. Treat the
+    unit as input or output, because simultaneous use can degrade the stream and flicker.
+  - >-
+    ENTTEC offers DMX-only and DMX/RDM firmware. Some software only connects with
+    the DMX-only image, while enabling RDM can upset older fixtures that do not support it.
+
+confidence: verified
+tags:
+  - dmx
+  - rdm
+  - usb
+  - interface
+  - enttec
+
+sources:
+  - title: DMX USB Pro product page
+    url: https://www.enttec.com/product/dmx-usb-interfaces/dmx-usb-pro-professional-1u-usb-to-dmx512-converter/
+    publisher: ENTTEC
+    accessed: 2026-09-10
+    primary: true
+  - title: DMX USB Pro user manual
+    url: https://cdn.enttec.com/pdf/assets/70304/70304_DMX_USB_PRO_USER_MANUAL.pdf
+    publisher: ENTTEC
+    accessed: 2026-09-10
+    primary: true
+  - title: "USB to DMX interfaces: input and output"
+    url: https://support.enttec.com/dmx/usbdmx/usbdmx-input-output
+    publisher: ENTTEC
+    accessed: 2026-09-10
+    primary: true
+  - title: "DMX USB Pro: RDM"
+    url: https://support.enttec.com/dmx/usbdmx-dmx-usb-pro-70304/dmx-usb-pro-rdm
+    publisher: ENTTEC
+    accessed: 2026-09-10
+    primary: true
+
+contributed_by:
+  - iibaranov-IG
+updated: 2026-09-10
