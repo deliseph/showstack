@@ -1,34 +1,93 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
 id: midi
 name: MIDI 1.0
 aka:
-- Musical Instrument Digital Interface
+  - Musical Instrument Digital Interface
+  - MIDI
+
 category: audio-control
-summary: The original 1983 serial protocol for exchanging musical performance data (notes, control/program
-  changes, sysex) between instruments, controllers, consoles, and show-control gear; the base layer that
-  MIDI Show Control and MIDI Time Code both ride on top of.
+summary: >-
+  A serial message protocol carrying notes, performance gestures, controller
+  values, program changes and timing between instruments, computers and show
+  equipment. It controls sound and cues but does not transport audio.
+
 transport:
-- midi-din
-openness: open-free-registration
+  - midi-din
+
+openness: published-paid
 spec_url:
-  url: https://www.midi.org/specifications/midi1-specifications/m1-v4-2-1-midi-1-0-detailed-specification-96-1-4
+  url: https://midi.org/midi-1-0-core-specifications
+  label: MIDI Association — MIDI 1.0 Core Specifications
 steward: MIDI Association (MMA/AMEI)
+first_published: 1983
 status: current
+
+typical_use:
+  - Keyboards and electronic instruments sending notes and performance controls to sound modules or software
+  - Control surfaces operating mixer faders, mutes, transport and plug-in parameters
+  - Program changes selecting patches, snapshots or show states
+  - MIDI clock and transport synchronising sequencers, drum machines and playback systems
+
 gotchas:
-- Classic 5-pin DIN MIDI runs at 31,250 baud (8-N-1 async serial) and is one-way per cable; most modern
-  rigs tunnel MIDI over USB or Bluetooth LE instead of DIN.
-- MIDI Show Control and MIDI Time Code are message subprofiles of MIDI 1.0, not separate wire protocols,
-  which confuses people troubleshooting compatibility.
-- Only 16 channels per port/cable, which limits large-scale device addressing without merge/split boxes
-  or additional interfaces.
+  - >-
+    MIDI channel numbers occupy four bits in the status byte. Software commonly
+    labels them 1 through 16 while protocol documentation shows the encoded
+    values as 0 through 15, creating an easy off-by-one configuration error.
+  - >-
+    Note, velocity and ordinary controller data are seven-bit values from 0 to
+    127. A fader or encoder that needs more resolution requires a defined pair
+    of messages, RPN/NRPN, or manufacturer-specific SysEx support at both ends.
+  - >-
+    A successful send only means bytes left the interface. Basic channel voice
+    messages contain no acknowledgement or device discovery, so a wrong cable,
+    receive channel or mapping can fail silently.
+  - >-
+    The traditional 5-pin connection is directional. MIDI OUT feeds MIDI IN;
+    an IN socket cannot return state, and a separate reverse connection is
+    required for bidirectional control.
+  - >-
+    MIDI carries performance and control events rather than sampled audio. A
+    device advertised as "MIDI over USB" may expose control while its audio
+    still requires a separate USB Audio interface and driver.
+
 implementations:
-- name: RtMidi
-  url: https://github.com/thestk/rtmidi
-  language: C++
+  - name: RtMidi
+    url: https://github.com/thestk/rtmidi
+    language: C++
+    license: MIT
+    role: both
+
 confidence: verified
+tags:
+  - midi
+  - audio-control
+  - instruments
+  - control-surfaces
+
 sources:
-- title: MIDI 1.0 Detailed Specification - MIDI Association
-  url: https://www.midi.org/specifications/midi1-specifications/m1-v4-2-1-midi-1-0-detailed-specification-96-1-4
-  primary: true
-- title: MIDI - Wikipedia
-  url: https://en.wikipedia.org/wiki/MIDI
-updated: '2026-08-17'
+  - title: MIDI 1.0 Core Specifications
+    url: https://midi.org/midi-1-0-core-specifications
+    publisher: MIDI Association
+    accessed: 2026-09-11
+    primary: true
+  - title: Summary of MIDI 1.0 Messages
+    url: https://midi.org/summary-of-midi-1-0-messages
+    publisher: MIDI Association
+    accessed: 2026-09-11
+    primary: true
+  - title: Expanded MIDI 1.0 Messages List (Status Bytes)
+    url: https://midi.org/expanded-midi-1-0-messages-list
+    publisher: MIDI Association
+    accessed: 2026-09-11
+    primary: true
+  - title: 5 Pin DIN Electrical Specs (CA-033)
+    url: https://midi.org/5-pin-din-electrical-specs
+    publisher: MIDI Association
+    accessed: 2026-09-11
+    primary: true
+
+contributed_by:
+  - iibaranov-IG
+updated: 2026-09-11
