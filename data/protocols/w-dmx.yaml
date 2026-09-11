@@ -1,0 +1,68 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: w-dmx
+name: W-DMX
+aka:
+  - Wireless DMX
+category: lighting-control
+summary: >-
+  Proprietary radio system for carrying DMX512 and supported RDM traffic between
+  lighting controllers, transmitters, receivers and fixtures without a DMX cable.
+
+transport:
+  - wireless-rf
+
+universe_model: One or more 512-channel DMX universes, with capacity determined by the transmitter and radio mode.
+openness: proprietary-closed
+steward: Wireless Solution / LumenRadio
+status: current
+
+typical_use:
+  - Sending DMX to fixtures where running a data cable is impractical
+  - Temporary stage and event lighting links
+  - Built-in wireless control of moving lights and battery fixtures
+  - Bidirectional RDM discovery and configuration on supported products
+
+gotchas:
+  - >-
+    W-DMX generations and radio modes are compatibility settings, not cosmetic labels.
+    Changing the transmitter control mode requires receivers to be linked again.
+  - >-
+    Frequency-band support depends on the hardware. G3 uses 2.4 GHz; later G4S and
+    G5 equipment may also offer 5.2 or 5.8 GHz, but not every receiver supports them.
+  - >-
+    A transmitter and receiver must be linked before DMX passes. A receiver remembered
+    from another rig can appear healthy while ignoring the transmitter on this show.
+  - >-
+    RDM support depends on the product and selected mode. Verify the whole chain before
+    relying on remote fixture discovery or configuration during a live setup.
+
+confidence: verified
+tags:
+  - dmx
+  - rdm
+  - wireless
+  - lighting
+  - rf
+
+sources:
+  - title: W-DMX G5 user manual
+    url: https://lumenradio.com/wp-content/uploads/2023/06/W-DMX-G5-User-Manual-2017_October.pdf
+    publisher: Wireless Solution
+    accessed: 2026-09-10
+    primary: true
+  - title: W-DMX OEM implementation guide, revision 4
+    url: https://lumenradio.com/wp-content/uploads/2023/06/Implementation-Guide-2021_revision_4.pdf
+    publisher: Wireless Solution
+    accessed: 2026-09-10
+    primary: true
+  - title: LumenRadio upgrades CRMX with W-DMX support
+    url: https://lumenradio.com/stories/lumenradio-upgrades-the-crmx-protocol-to-add-support-for-multiple-universes-and-the-w-dmx-protocol/
+    publisher: LumenRadio
+    accessed: 2026-09-10
+    primary: true
+
+contributed_by:
+  - iibaranov-IG
+updated: 2026-09-10
