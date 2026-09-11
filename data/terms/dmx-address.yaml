@@ -1,0 +1,48 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dmx-address
+en: DMX address
+zh_hant: DMX 位址
+zh_hans: DMX 地址
+domain: lighting
+definition_en: >-
+  A numbered control slot from 1 to 512 within one DMX universe. A fixture's
+  start address is the first slot it reads; a fixture with a larger DMX
+  footprint then uses the following consecutive slots for its remaining
+  parameters.
+definition_zh_hant: >-
+  一個 DMX universe 內由 1 至 512 編號的控制位址。燈具的起始位址是它讀取的第一個位址；
+  若燈具的 DMX footprint 較大，其餘參數會依次使用後續位址。
+regional_variants:
+  - region: UK / US
+    term: DMX address / start address
+  - region: HK / TW
+    term: DMX address / DMX 位址
+false_friends:
+  - >-
+    A console channel is a user-facing control number and may be patched to a
+    different DMX address; the two numbers are not necessarily the same.
+  - >-
+    An address is only unique inside its universe. Address 1 in universe 1 and
+    address 1 in universe 2 control different slots.
+see_also:
+  - patch
+  - dmx-universe
+related_protocols:
+  - dmx512
+safety_critical: false
+confidence: reported
+tags:
+  - lighting
+  - dmx
+  - addressing
+sources:
+  - title: ANSI E1.11 - 2024, Entertainment Technology - USITT DMX512-A
+    url: https://tsp.esta.org/tsp/documents/published_docs.php
+    publisher: ESTA Technical Standards Program
+    accessed: 2026-09-11
+    primary: true
+contributed_by:
+  - iibaranov-IG
+updated: 2026-09-11
