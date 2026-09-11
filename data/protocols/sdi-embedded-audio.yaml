@@ -1,0 +1,76 @@
+# showstack entry — protocol
+# Schema: ../../schema/protocol.schema.json
+
+id: sdi-embedded-audio
+name: SDI Embedded Audio
+aka:
+  - Embedded audio
+  - SDI audio
+category: audio-transport
+summary: >-
+  AES3-derived digital audio mapped into the ancillary data space of an SDI
+  video signal. It carries programme, mix-minus and isolated feeds with the
+  picture instead of on separate audio cables.
+
+transport:
+  - other
+  - fibre
+
+openness: open-published
+spec_url:
+  url: https://pub.smpte.org/latest/st299-1/st0299-1-2009.pdf
+  label: SMPTE ST 299-1:2009 — 24-Bit Digital Audio Format for SMPTE 292
+steward: SMPTE (Society of Motion Picture and Television Engineers)
+status: current
+
+typical_use:
+  - Camera and replay audio carried with video into a production switcher
+  - Programme and mix-minus feeds through SDI routers and distribution amplifiers
+  - Audio extraction at recorders, monitors and streaming encoders
+
+media:
+  audio:
+    sample_rates_khz: [32, 44.1, 48, 96]
+    bit_depths: [24]
+    max_channels: 16
+    encoding: AES3-derived linear PCM or SMPTE ST 337 non-PCM data
+    note: >-
+      ST 299-1 carries four groups of four channels at up to 48 kHz. At 96 kHz,
+      each group carries two channels, reducing the maximum to eight.
+
+gotchas:
+  - >-
+    Channels travel in groups of four. An embedder or de-embedder configured
+    for the wrong group can pass clean video while returning silence on the
+    expected audio pair.
+  - >-
+    The 16-channel maximum applies at 32, 44.1 or 48 kHz. At 96 kHz ST 299-1
+    carries eight channels, so raising the sample rate halves the available
+    channel count.
+  - >-
+    Audio data and audio control packets occupy different ancillary spaces.
+    Equipment that processes or strips ancillary data can preserve the picture
+    while losing embedded audio or its control information.
+
+confidence: verified
+tags:
+  - audio
+  - video
+  - sdi
+  - embedded-audio
+  - smpte
+
+sources:
+  - title: SMPTE ST 299-1:2009 — 24-Bit Digital Audio Format for SMPTE 292
+    url: https://pub.smpte.org/latest/st299-1/st0299-1-2009.pdf
+    publisher: SMPTE
+    accessed: 2026-09-11
+    primary: true
+  - title: SMPTE 299-0:2010 — Roadmap for the 299 Document Suite
+    url: https://pub.smpte.org/doc/ov299-0/20100721-pub/ov0299-0-2010.pdf
+    publisher: SMPTE
+    accessed: 2026-09-11
+    primary: true
+
+contributed_by: [iibaranov-IG]
+updated: 2026-09-11
