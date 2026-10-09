@@ -1,0 +1,57 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: heads-up
+en: Heads up
+zh_hant: 小心上方／HEADS UP
+zh_hans: 小心上方／HEADS UP
+domain: safety
+definition_en: >-
+  The call shouted when something is falling, or is about to move, overhead. It
+  is not a general notification and it is not a figure of speech: it means
+  something is coming down, protect yourself, and in most houses the correct
+  response is to move rather than to look up. It is one of a very small number
+  of calls anybody on a stage may make without authority, because the time cost
+  of asking permission is the whole problem.
+definition_zh_hant: >-
+  當有物件掉落、或上方即將有動作時喊出的警告。它不是一般的通知，也不是日常用語：它的意思是「有東西從上面
+  下來，保護自己」，而在多數劇場裡正確反應是立刻離開該位置，而不是抬頭看。這是少數任何在台上的人都可以不經
+  授權直接喊出的警示之一，因為請示的時間成本正是問題本身。
+regional_variants:
+  - region: UK
+    term: Heads / heads up
+    note: The bare "heads" is the older and still common UK call.
+  - region: US
+    term: Heads up
+  - region: HK / TW
+    term: Heads up／小心
+false_friends:
+  - >-
+    In ordinary speech a heads-up means advance notice of something minor. On a
+    stage it means an object is in the air. Using it to mean "just so you know"
+    is how the call gets ignored when it matters.
+  - >-
+    The intuitive response — looking up to find the hazard — presents your face
+    to it. Most houses teach moving out from under, or covering your head, and
+    looking afterwards.
+  - >-
+    It is distinct from "walking", which warns that a load is moving horizontally
+    through a space at ground level.
+see_also:
+  - go
+  - hold
+safety_critical: true
+confidence: reported
+tags:
+  - safety
+  - rigging
+  - vocabulary
+  - stage-management
+sources:
+  - title: Theatrecrafts glossary of technical theatre terms
+    url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+    publisher: Theatrecrafts / ABTT heritage
+    accessed: '2026-10-09'
+    primary: true
+contributed_by: []
+updated: '2026-10-09'

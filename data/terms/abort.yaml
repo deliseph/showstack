@@ -1,0 +1,61 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: abort
+en: Abort
+zh_hant: 中止／ABORT
+zh_hans: 中止／ABORT
+domain: stage-management
+definition_en: >-
+  The instruction to abandon a sequence rather than pause it. Where a hold
+  freezes everything in place, an abort ends the attempt: automation comes off
+  its move, an effect is not fired, and the show recovers by some other route
+  that the stage manager will name. On pyrotechnics, flame and automation it is
+  usually tied to a physical control rather than a spoken word, because a word
+  can be misheard and a key cannot.
+definition_zh_hant: >-
+  放棄整個序列、而非暫停它的指令。Hold 是把一切凍結在原地，abort 則是終止這次執行：自動化退出動作、效果
+  不發射，演出改由舞台監督另行指定的方式接續。在煙火、火焰與自動化系統上，abort 通常綁定在實體控制上而
+  不是一句口令，因為口令可能聽錯，鑰匙與按鈕不會。
+regional_variants:
+  - region: UK / US
+    term: Abort
+  - region: HK / TW
+    term: Abort
+false_friends:
+  - >-
+    An abort is not a hold. Hold means stop here and wait for instructions;
+    abort means this is not happening. Treating an abort as a hold leaves a
+    sequence loaded and liable to continue.
+  - >-
+    An abort is not necessarily a stop of the show. It abandons one sequence,
+    and the performance frequently continues around it.
+  - >-
+    On effects systems the abort is usually hardware for a reason, and it is
+    distinct from an emergency stop, which removes power and is a different
+    decision with different consequences.
+see_also:
+  - hold
+  - go
+  - standby
+related_protocols:
+  - midi-show-control
+safety_critical: true
+confidence: reported
+tags:
+  - stage-management
+  - cueing
+  - safety
+  - vocabulary
+sources:
+  - title: Theatrecrafts glossary of technical theatre terms
+    url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+    publisher: Theatrecrafts / ABTT heritage
+    accessed: '2026-10-09'
+    primary: true
+  - title: NFPA 160 Standard for the Use of Flame Effects Before an Audience
+    url: https://www.nfpa.org/codes-and-standards/nfpa-160-standard-development/160
+    publisher: National Fire Protection Association
+    accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'
