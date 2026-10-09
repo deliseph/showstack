@@ -166,3 +166,35 @@ export const LABEL_FIELDS = Object.keys(MAPS)
 
 /** Exposed so a test can assert that no dataset value falls through. */
 export const LABEL_MAPS = MAPS
+
+/**
+ * The short form of a steward, for a pill.
+ *
+ * A steward is often a sentence rather than a name: "ESTA/PLASA (Entertainment
+ * Services and Technology Association), via ANSI" is 72 characters, and 45 of
+ * the 92 protocol entries hold something over 30. Rendered whole into a pill
+ * it stops being a label and becomes a paragraph with a border round it, which
+ * on a phone wraps to two lines and crowds out the pills that actually
+ * discriminate between entries.
+ *
+ * So the pill gets the organisation and the page keeps the rest. The cut is at
+ * the first expansion or qualifier — an opening bracket, a comma, a semicolon
+ * or a dash — because in every case in the dataset the name comes first and
+ * the elaboration follows. Anything still too long is truncated on a word
+ * boundary rather than mid-word.
+ *
+ * Returns the input unchanged when it is already short, so callers can compare
+ * the two to decide whether the full version still needs saying.
+ */
+export function stewardShort(steward, max = 34) {
+  const full = String(steward ?? '').trim()
+  if (!full) return ''
+  const cut = full.search(/\s*[(,;]|\s+[—–-]\s+/)
+  let short = cut > 0 ? full.slice(0, cut).trim() : full
+  if (short.length > max) {
+    const clip = short.slice(0, max)
+    const sp = clip.lastIndexOf(' ')
+    short = `${(sp > max * 0.6 ? clip.slice(0, sp) : clip).trim()}…`
+  }
+  return short
+}

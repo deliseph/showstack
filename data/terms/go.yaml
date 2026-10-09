@@ -1,0 +1,59 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: go
+en: Go
+zh_hant: GO／執行
+zh_hans: GO／执行
+domain: stage-management
+definition_en: >-
+  The single word that executes a cue. It is said last, on its own, at the exact
+  frame the action should happen, and it is the only thing on a headset that
+  means act now. The convention around it is deliberate: the cue is named in the
+  standby, acknowledged by each department, and then the operator is given
+  nothing further to parse except the word itself.
+definition_zh_hant: >-
+  執行 cue 的唯一指令詞。它單獨出現、放在最後、落在動作應該發生的那一刻，也是通訊系統上唯一代表「現在動作」
+  的字。這套慣例是刻意的：cue 編號在 standby 時已經報過並由各部門確認，到了動作點，操作者除了這個字之外
+  不需要再分析任何資訊。
+regional_variants:
+  - region: UK / US
+    term: Go
+  - region: HK / TW
+    term: GO
+    note: 中文製作同樣直接喊英文 GO，不會譯成中文，正是因為這個字必須短、清楚、不會聽錯。
+false_friends:
+  - >-
+    "Go" is not the Go programming language, however often a search engine
+    disagrees. In a control room it is a cue trigger and nothing else.
+  - >-
+    Never say the word go in any other sense while a standby is live. "Can you go
+    and check the DSL boom" will fire a cue. The usual phrasings that avoid it are
+    "head over to" and "take a look at".
+  - >-
+    The cue number belongs in the standby, not the go. Naming it again invites
+    the operator to act on hearing the number, which is how a cue goes early.
+see_also:
+  - standby
+  - cue
+  - call
+  - deputy-stage-manager
+safety_critical: true
+confidence: reported
+tags:
+  - stage-management
+  - cueing
+  - headset
+  - vocabulary
+sources:
+  - title: Theatrecrafts glossary of technical theatre terms
+    url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+    publisher: Theatrecrafts / ABTT heritage
+    accessed: '2026-10-09'
+    primary: true
+  - title: 舞台表演的操作管理（麥秋）
+    url: https://www.edb.gov.hk/attachment/tc/public-admin/related-bodies-schemes/edu-schemes-fund/drama/ch22.pdf
+    publisher: 香港教育局
+    accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'

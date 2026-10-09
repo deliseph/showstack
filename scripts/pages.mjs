@@ -75,7 +75,7 @@ import { diagnosePage } from './diagnose.mjs'
 import { LEARN_TOPICS, LEARN_GROUPS, LEARN_CAPSTONE, setLearnReading} from './learn-kit.mjs'
 import { buildBacklinks, learnFor, learnBox, learnFooter, RELATED_CSS, READ_JS} from './related.mjs'
 import { SUPER_DOMAINS, superDomain } from './graph.mjs'
-import { label as human, labelList } from './labels.mjs'
+import { label as human, labelList, stewardShort } from './labels.mjs'
 import { quizBlock, QUIZ_CSS, QUIZ_JS } from './quiz.mjs'
 
 const SITE = process.env.SHOWSTACK_SITE ?? 'https://showstack.dev'
@@ -244,6 +244,12 @@ overscroll-behavior-x:contain;scroll-snap-type:x proximity}
 @media(max-width:1100px){
   header nav{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
     mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  /* Once the rail has been scrolled there is nav off the LEFT edge too, and a
+     one-sided fade actively implies there is not. Fade both ends so the rail
+     reads as a strip you can move in either direction. */
+  header nav.rail.scrolled{
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
 }
 @media(max-width:860px){
   header{padding:4px 0}
@@ -539,6 +545,26 @@ text-transform:uppercase;letter-spacing:.5px}
 .flow-clock{--fl:var(--ok)}
 .flow-management{--fl:var(--warn)}
 .flow-none{--fl:var(--dimmer)}
+/* The cross-reference cards, used for both directions of the term/protocol
+   relationship and for term-to-term.
+
+   A plain <ul> of ids was the obvious thing and the wrong one: a list of
+   slugs makes the reader click to find out whether they wanted it. Carrying
+   the first clause of the definition turns the block into something you can
+   read instead of navigate, which is the difference between a cross-reference
+   and a dead end. Auto-fill rather than auto-fit so two cards do not stretch
+   to half the page each. */
+.seealso{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:10px;margin:14px 0 22px}
+.seealso a{display:flex;flex-direction:column;gap:5px;padding:13px 15px;border:1px solid var(--line);
+border-radius:var(--r-sm);background:var(--panel);color:inherit;
+transition:border-color .18s,transform .18s}
+.seealso a:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));transform:translateY(-2px);
+text-decoration:none}
+.seealso a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seealso b{color:var(--ink);font-size:15px;line-height:1.25}
+.seealso .zh{color:var(--dim);font-size:13px;margin-left:7px;font-weight:400}
+.seealso em{font-style:normal;color:var(--dim);font-size:13.2px;line-height:1.55}
+.stewardfull{margin:-6px 0 18px;font-size:13.5px;color:var(--dimmer);line-height:1.55}
 /* A flex column with a gap, not margins on the children: the box holds two
    or three paragraphs now and margin:0 on all of them ran them together. */
 .cta{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--panel2)),var(--panel2));
@@ -605,11 +631,33 @@ const THEME_JS = `
        can start off-screen to the right. Scroll the rail itself rather than
        calling scrollIntoView on the link: scrollIntoView sets the sequential
        focus navigation starting point, which made the first Tab land in the
-       middle of the nav and skip the skip link entirely. */
+       middle of the nav and skip the skip link entirely.
+
+       Scroll the MINIMUM that brings the active link into view, not enough to
+       centre it. Centring looked tidier and cost far too much: on a 390px
+       phone it scrolled the rail 552px, leaving 3 of 19 links visible and
+       pushing Home, Learn, Search, Tools, Check, Diagnose and Field off the
+       LEFT edge, where nothing suggested they existed. Somebody arriving on a
+       protocol page from a search engine could not see that the site had a
+       search. The crumb above the heading already says which section you are
+       in, so the active pill is not carrying that information alone — but
+       nothing else tells you the site has a Tools page. */
     var nav=document.querySelector('header nav.rail');
     var cur=nav&&nav.querySelector('a.active');
     if(nav&&cur&&nav.scrollWidth>nav.clientWidth+1){
-      nav.scrollLeft=Math.max(0,cur.offsetLeft-(nav.clientWidth-cur.offsetWidth)/2);
+      var pad=16;
+      var right=cur.offsetLeft+cur.offsetWidth+pad-nav.clientWidth;
+      /* On a phone even the minimum scroll costs more than it buys. At 390px
+         only three links fit, so showing the active one necessarily hides
+         Home, Learn and Search — and a reference site whose search is
+         invisible to someone who arrived from a search engine has its
+         priorities backwards. Below this width the rail stays at the start and
+         the crumb carries the you-are-here. */
+      if(right>0&&nav.clientWidth>=560)nav.scrollLeft=right;
+      nav.classList.toggle('scrolled',nav.scrollLeft>2);
+      nav.addEventListener('scroll',function(){
+        nav.classList.toggle('scrolled',nav.scrollLeft>2);
+      },{passive:true});
     }
   });
 })();
@@ -832,7 +880,7 @@ function sourcesBlock(sources = []) {
 }
 
 // --------------------------------------------------------------- protocols
-function protocolPage(p, gap) {
+function protocolPage(p, gap, vocab = []) {
   const ports = (p.default_ports ?? [])
   const portStr = ports.map((x) => `${x.transport.toUpperCase()} ${x.number}`).join(', ')
   const title = `${p.name}${portStr ? ` — ${portStr}` : ''} | showstack`
@@ -846,10 +894,16 @@ function protocolPage(p, gap) {
   b += `<div class="meta">`
   b += `<span class="pill dom-${superDomain(p.category)}" data-value="${esc(p.category)}">${esc(human('category', p.category))}</span>`
   if (p.openness) b += `<span class="pill" data-value="${esc(p.openness)}" title="${esc(p.openness)}">${esc(human('openness-short', p.openness))}</span>`
-  if (p.steward) b += `<span class="pill">${esc(p.steward)}</span>`
+  // Short form in the pill, full text kept below. A pill is a label you scan
+  // past; 45 of the protocol entries hold a steward string too long to work as
+  // one, and the longest is 75 characters.
+  if (p.steward) b += `<span class="pill" title="${esc(p.steward)}">${esc(stewardShort(p.steward))}</span>`
   if (p.confidence) b += `<span class="pill ${esc(p.confidence)}" data-value="${esc(p.confidence)}" title="${esc(human('confidence', p.confidence))}">${esc(p.confidence === 'verified' ? 'Verified' : 'Reported')}</span>`
   if (p.status && p.status !== 'current') b += `<span class="pill" data-value="${esc(p.status)}">${esc(human('status', p.status))}</span>`
   b += `</div>`
+  if (p.steward && stewardShort(p.steward) !== p.steward) {
+    b += `<p class="stewardfull">Stewarded by ${esc(p.steward)}.</p>`
+  }
   b += creditLine(p)
 
   // What this behaves like on a wire, which is a different question from what
@@ -942,6 +996,16 @@ function protocolPage(p, gap) {
   }
   if (p.typical_use?.length) b += `<h3>Typical use</h3><ul>` + p.typical_use.map((u) => `<li>${esc(u)}</li>`).join('') + `</ul>`
 
+  // The reverse of the term's `related_protocols`. Computed, so adding a word
+  // to the glossary makes the protocol entry richer without anybody editing
+  // the protocol file. Someone who has just read the gotchas is precisely the
+  // person who needs the vocabulary for them.
+  if (vocab.length) {
+    b += `<h3>The words for it</h3>
+      <p style="color:var(--dim)">Glossary entries that name ${esc(p.name)}, with the false friends that catch people out.</p>
+      <div class="seealso">` + vocab.map((t) =>
+      `<a href="/glossary/${esc(t.id)}/"><b>${esc(t.en)}</b>${t.zh_hant ? `<span class="zh">${esc(t.zh_hant)}</span>` : ''}<em>${esc(trunc(t.definition_en, 110))}</em></a>`).join('') + `</div>`
+  }
   b += sourcesBlock(p.sources)
   b += relatedLearn('protocols', p)
   b += contributeBox('protocols', p.id, gap, p)
@@ -992,7 +1056,7 @@ function portPage(number, entries) {
 }
 
 // ------------------------------------------------------------------- terms
-function termPage(t, gap) {
+function termPage(t, gap, byId) {
   const title = `${t.en}${t.zh_hant ? ` / ${t.zh_hant}` : ''} — theatre and live events glossary | showstack`
   const description = trunc(`${t.en}${t.zh_hant ? ` (${t.zh_hant})` : ''}: ${t.definition_en}`)
 
@@ -1008,6 +1072,25 @@ function termPage(t, gap) {
   if (t.false_friends?.length) {
     b += `<h3>Easy to get wrong</h3>`
     for (const f of t.false_friends) b += `<div class="gotcha">${esc(f)}</div>`
+  }
+  // The relationships the data has carried all along and the page threw away.
+  // `see_also` was on 122 of 138 terms and `related_protocols` on 14, both
+  // validated so they could not rot and neither one ever rendered. A glossary
+  // whose entries do not reach each other is a list of definitions; the point
+  // of a vocabulary is that the words explain each other.
+  if (t.see_also?.length) {
+    const near = t.see_also.map((id) => byId.terms.get(id)).filter(Boolean)
+    if (near.length) {
+      b += `<h3>Next to this</h3><div class="seealso">` + near.map((o) =>
+        `<a href="/glossary/${esc(o.id)}/"><b>${esc(o.en)}</b>${o.zh_hant ? `<span class="zh">${esc(o.zh_hant)}</span>` : ''}<em>${esc(trunc(o.definition_en, 110))}</em></a>`).join('') + `</div>`
+    }
+  }
+  if (t.related_protocols?.length) {
+    const protos = t.related_protocols.map((id) => byId.protocols.get(id)).filter(Boolean)
+    if (protos.length) {
+      b += `<h3>Where it shows up on the wire</h3><div class="seealso">` + protos.map((o) =>
+        `<a href="/protocols/${esc(o.id)}/"><b>${esc(o.name)}</b><em>${esc(trunc(o.summary, 110))}</em></a>`).join('') + `</div>`
+    }
   }
   b += sourcesBlock(t.sources)
   b += relatedLearn('glossary', t)
@@ -1297,8 +1380,25 @@ export function buildPages(db, dist) {
   if (hub) learnHtml.set('', hub[1]())
   BACKLINKS = buildBacklinks(new Map([...learnHtml].filter(([k]) => k)))
 
-  for (const p of db.protocols) { write(`protocols/${p.id}`, protocolPage(p, gapOf('protocols', p.id))); urls.push(`${SITE}/protocols/${p.id}/`) }
-  for (const t of db.terms)     { write(`glossary/${t.id}`,  termPage(t, gapOf('terms', t.id)));          urls.push(`${SITE}/glossary/${t.id}/`) }
+  // One index for the relationships that run between collections, and one
+  // reverse index built from the same field. `related_protocols` is authored on
+  // the term, exactly once, and the protocol side falls out of it — the same
+  // trick `speaks` uses for products, and the reason nobody has to remember to
+  // update two files to keep one relationship true.
+  const byId = {
+    terms: new Map(db.terms.map((t) => [t.id, t])),
+    protocols: new Map(db.protocols.map((p) => [p.id, p])),
+  }
+  const vocabOf = new Map()
+  for (const t of db.terms) {
+    for (const id of t.related_protocols ?? []) {
+      if (!vocabOf.has(id)) vocabOf.set(id, [])
+      vocabOf.get(id).push(t)
+    }
+  }
+
+  for (const p of db.protocols) { write(`protocols/${p.id}`, protocolPage(p, gapOf('protocols', p.id), vocabOf.get(p.id) ?? [])); urls.push(`${SITE}/protocols/${p.id}/`) }
+  for (const t of db.terms)     { write(`glossary/${t.id}`,  termPage(t, gapOf('terms', t.id), byId));    urls.push(`${SITE}/glossary/${t.id}/`) }
   for (const s of db.standards) { write(`standards/${s.id}`, standardPage(s, gapOf('standards', s.id)));  urls.push(`${SITE}/standards/${s.id}/`) }
   for (const e of db.software)  { write(`software/${e.id}`,  productPage('software', e, gapOf('software', e.id))); urls.push(`${SITE}/software/${e.id}/`) }
   for (const e of db.hardware)  { write(`hardware/${e.id}`,  productPage('hardware', e, gapOf('hardware', e.id))); urls.push(`${SITE}/hardware/${e.id}/`) }

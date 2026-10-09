@@ -30,6 +30,8 @@ sources:
   publisher: IEEE
   accessed: '2026-08-26'
   primary: true
+related_protocols:
+  - poe
 confidence: reported
 contributed_by: []
 updated: '2026-08-26'

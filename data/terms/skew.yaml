@@ -20,6 +20,8 @@ false_friends:
   of the picture bending left or right — a mechanical tape problem,
   unrelated to digital timing.
 safety_critical: false
+related_protocols:
+  - rs-485
 confidence: reported
 tags:
 - networking

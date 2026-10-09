@@ -1,0 +1,52 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: hold
+en: Hold
+zh_hant: 暫停／HOLD
+zh_hans: 暂停／HOLD
+domain: stage-management
+definition_en: >-
+  The instruction to stop where you are without resetting. A hold freezes the
+  sequence: a fade stops part way, a move stops mid-travel, and everything stays
+  put until the stage manager either releases the hold or calls a reset. It is
+  the instruction that buys thinking time, which is why it exists as a separate
+  word from abort.
+definition_zh_hant: >-
+  要求「停在原地、不要歸零」的指令。Hold 會凍結整個序列：淡入淡出停在中途，移動停在半路，一切保持現狀，
+  直到舞台監督解除 hold 或另外下令歸位。它的作用是爭取思考時間，這也是它必須與 abort 分開成兩個字的原因。
+regional_variants:
+  - region: UK / US
+    term: Hold
+  - region: HK / TW
+    term: Hold
+    note: 中文製作同樣直接講 hold，與 GO 一樣保留英文以免聽錯。
+false_friends:
+  - >-
+    A hold is not an abort. Hold means stay here and wait; abort means abandon
+    the sequence. On moving automation the difference is a safety one.
+  - >-
+    A hold is not a pause button. Nothing resets, and a fade left half way is a
+    lighting state nobody designed. Wait to be told what to do next.
+  - >-
+    Not a cargo hold, and not the grip sense of the word. On a headset it is
+    always the sequence instruction.
+see_also:
+  - go
+  - standby
+  - cue
+safety_critical: true
+confidence: reported
+tags:
+  - stage-management
+  - cueing
+  - headset
+  - vocabulary
+sources:
+  - title: Theatrecrafts glossary of technical theatre terms
+    url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+    publisher: Theatrecrafts / ABTT heritage
+    accessed: '2026-10-09'
+    primary: true
+contributed_by: []
+updated: '2026-10-09'

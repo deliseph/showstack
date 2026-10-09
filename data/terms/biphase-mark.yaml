@@ -32,6 +32,8 @@ sources:
   publisher: SMPTE
   accessed: '2026-08-29'
   primary: true
+related_protocols:
+  - ltc
 confidence: reported
 contributed_by: []
 updated: '2026-08-29'

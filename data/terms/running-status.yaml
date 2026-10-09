@@ -32,6 +32,8 @@ sources:
   publisher: MIDI Association
   accessed: '2026-08-29'
   primary: true
+related_protocols:
+  - midi
 confidence: reported
 contributed_by: []
 updated: '2026-08-29'

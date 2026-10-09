@@ -18,6 +18,7 @@ definition_zh_hant: >-
 see_also:
 - daisy-chain
 related_protocols:
+- rs-485
 - dmx512
 safety_critical: false
 confidence: reported
