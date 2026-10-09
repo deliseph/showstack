@@ -19,6 +19,17 @@ status: current
 typical_use:
   - Q-SYS Core to peripheral audio and video transport in installed systems
   - Corporate, hospitality and themed-venue AV backbones built on Q-SYS
+media:
+  audio:
+    bit_depths: [32]
+    encoding: 32-bit floating point linear PCM
+    note: >-
+      QSC documents the word length and the packet layout — 16 samples for each of
+      up to 16 channels per stream packet, 1100 octets including overhead, up to 128
+      streams per Core — but does not state a sample rate in current documentation.
+      The 48 kHz figure widely quoted for Q-LAN traces back to a 2009 white paper, so
+      it is deliberately not repeated here. Confirm against your Q-SYS release.
+
 gotchas:
   - >-
     Q-LAN marks its PTPv2 clock DSCP 46 (EF) and audio DSCP 34, while Dante
@@ -38,6 +49,11 @@ tags:
   - networking
   - qsys
 sources:
+  - title: Q-LAN Networking, Q-SYS 8.1 help
+    url: https://q-syshelp.qsc.com/q-sys_8.1/Content/Networking/01_Q-LAN_Networking.htm
+    publisher: QSC
+    accessed: '2026-10-09'
+    primary: true
   - title: Quality of Service settings across QLAN, Dante, and AES67
     url: https://support.qsys.com/en_US/awareness/awareness-%7C-quality-of-service-settings-across-qlan-dante-and-aes67
     publisher: Q-SYS (QSC)

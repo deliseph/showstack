@@ -14,6 +14,16 @@ typical_use:
 - Running plug-in racks on a live console
 - Multitrack recording and virtual soundcheck
 - Offloading processing from a mixing surface
+media:
+  audio:
+    sample_rates_khz: [44.1, 48, 96]
+    note: >-
+      Channel capacity halves as the rate doubles: an interface rated 128 channels at
+      48 kHz carries 64 at 96 kHz. Bandwidth is also counted per receiving device, so
+      64 channels sent to four destinations spends 256 channels of it. Bit depth is a
+      property of the interface rather than the transport, and several console cards
+      are held to their host console's rates, so check both ends.
+
 gotchas:
 - SoundGrid wants its own dedicated network interface and its own switch. Sharing the NIC
   with a show network or the internet is the standard cause of dropouts.
@@ -27,6 +37,11 @@ tags:
 - plugins
 - network-audio
 sources:
+- title: Waves Live — common questions answered
+  url: https://www.waves.com/support/waves-live-common-questions-answered
+  publisher: Waves Audio
+  accessed: '2026-10-09'
+  primary: true
 - title: Waves SoundGrid
   url: https://www.waves.com/
   publisher: Waves Audio

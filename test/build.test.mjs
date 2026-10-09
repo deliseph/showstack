@@ -303,7 +303,19 @@ describe('media capability', () => {
       assert.ok(filled.length, `${p.id} has a media block with nothing in it`)
       for (const [kind, essence] of Object.entries(p.media)) {
         const facts = Object.keys(essence).filter((k) => k !== 'note')
-        assert.ok(facts.length, `${p.id} media.${kind} has only a note and no facts`)
+        // A sub-block holding ONLY a note is legitimate, and the renderer
+        // already assumes it: `unfixed()` in media.mjs exists precisely to say
+        // "not fixed by the specification" where a media sub-block is present
+        // and the numbers are not. HDBaseT is that case for audio — it
+        // transports the HDMI stream and defines no audio format of its own,
+        // so "there is no number here, and that is the answer" is the most
+        // useful thing the entry can say.
+        //
+        // What must still fail is a sub-block with nothing in it at all. That
+        // passes the schema, renders as silence, and looks like data while
+        // being none — which is the thing this test was written for.
+        assert.ok(facts.length || (essence.note ?? '').length > 40,
+          `${p.id} media.${kind} is empty: give it facts, or a note saying why the specification fixes none`)
       }
     }
   })
@@ -958,5 +970,80 @@ describe('no duplicate element ids', () => {
       for (const [id, n] of seen) if (n > 1) clashes.push(`/${page}/: #${id} x${n}`)
     }
     assert.deepEqual(clashes, [], 'duplicate ids')
+  })
+})
+
+describe('built pages are well-formed enough to nest correctly', () => {
+  // WHY this exists.
+  //
+  // `sec()` in learn-kit.mjs opened a <section> and never closed it. The pages
+  // looked right, so nobody noticed for the life of the project. What actually
+  // happened is that HTML parsers do not auto-close <section> the way they do
+  // <p> or <li>: each one became a child of the one before, and /learn/network/
+  // parsed into 17 sections nested 16 deep.
+  //
+  // The cost was not only a strange DOM. `.lsec:first-of-type` drops the rule
+  // above the first section — and when every section is an only child, every
+  // section is first-of-type, so the separator and the 30px above each heading
+  // never rendered on any explainer. A deliberate piece of design, written and
+  // then silently eaten.
+  //
+  // Counting tags in the source cannot be fooled by the browser being
+  // forgiving, which is the whole point: the browser's forgiveness is what hid
+  // this.
+  const CONTAINERS = ['section', 'article', 'table', 'details', 'figure', 'nav', 'main', 'ul', 'ol']
+
+  /**
+   * Markup only. <style> and <script> hold prose and code that mentions tags —
+   * the first run of this test failed on a CSS comment reading "a plain <ul> of
+   * ids was the obvious thing", which is a sentence, not an element. Counting
+   * inside them measures the comments rather than the document.
+   */
+  const markupOnly = (html) => html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+
+  /** Every built page, so a new page cannot opt out by not being listed. */
+  const pages = []
+  const walk = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, e.name)
+      if (e.isDirectory()) walk(full)
+      else if (e.name === 'index.html') pages.push(full)
+    }
+  }
+  if (existsSync(DIST)) walk(DIST)
+
+  test('every container element that opens also closes', () => {
+    const bad = []
+    for (const file of pages) {
+      const html = markupOnly(readFileSync(file, 'utf8'))
+      for (const tag of CONTAINERS) {
+        const open = (html.match(new RegExp(`<${tag}[\\s>]`, 'g')) ?? []).length
+        const close = (html.match(new RegExp(`</${tag}>`, 'g')) ?? []).length
+        if (open !== close) {
+          bad.push(`${file.replace(DIST, '')}: <${tag}> opened ${open}, closed ${close}`)
+        }
+      }
+    }
+    assert.deepEqual(bad, [], `unbalanced container tags:\n  ${bad.join('\n  ')}`)
+  })
+
+  test('no explainer section is nested inside another', () => {
+    // The specific shape of the original bug, asserted directly: sections are
+    // siblings. A regex is enough because the generator never legitimately
+    // puts one <section> inside another.
+    const bad = []
+    for (const file of pages.filter((f) => f.includes('/learn/'))) {
+      const html = markupOnly(readFileSync(file, 'utf8'))
+      let depth = 0
+      let max = 0
+      for (const m of html.matchAll(/<section[\s>]|<\/section>/g)) {
+        depth += m[0] === '</section>' ? -1 : 1
+        max = Math.max(max, depth)
+      }
+      if (max > 1) bad.push(`${file.replace(DIST, '')}: sections nest ${max} deep`)
+    }
+    assert.deepEqual(bad, [], `nested sections:\n  ${bad.join('\n  ')}`)
   })
 })
