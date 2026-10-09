@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: pyro
+en: Pyro
+zh_hant: 煙火效果
+domain: safety
+definition_en: >-
+  Short for pyrotechnics: effects produced by burning a prepared composition before an audience. A separate discipline with a separate legal basis, where the competence to design and fire is licensed rather than learned informally. In the United States, NFPA 1126 governs pyrotechnics before a proximate audience and NFPA 160 governs flame effects; elsewhere the local authority having jurisdiction has the final say.
+definition_zh_hant: >-
+  Pyrotechnics 的簡稱：在觀眾面前燃燒特製藥劑所產生的效果。這是一門法律基礎獨立的專業，設計與擊發的資格需要執照，而非自行習得。在美國，近距離觀眾的煙火適用 NFPA 1126，火焰效果適用 NFPA 160；其他地區以當地主管機關的規定為準。
+false_friends:
+- >-
+  Pyro is not an atmospheric effect, even when the visible result is a cloud. Coloured smoke burns a composition and falls under pyrotechnic rules.
+- >-
+  A device sold as "proximate" is not thereby safe in your room. The rating describes the device; separation distance, what is above it and the authority having jurisdiction decide its use.
+see_also:
+- smoke
+- flame-effect
+safety_critical: true
+confidence: reported
+tags:
+- pyro
+- effects
+- safety
+- vocabulary
+sources:
+- title: NFPA 1126, Standard for the Use of Pyrotechnics Before a Proximate Audience
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1126-standard-development/1126
+  publisher: National Fire Protection Association
+  accessed: '2026-10-09'
+  primary: true
+- title: NFPA 160, Standard for the Use of Flame Effects Before an Audience
+  url: https://www.nfpa.org/codes-and-standards/nfpa-160-standard-development/160
+  publisher: National Fire Protection Association
+  accessed: '2026-10-09'
+  primary: true
+contributed_by: []
+updated: '2026-10-09'

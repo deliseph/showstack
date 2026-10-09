@@ -485,6 +485,14 @@ export const LEARN_TOPICS = [
     questions: ['Beam angle or field angle?', 'How wide will that beam be?', 'What does blending not fix?'],
   },
   {
+    slug: 'atmospherics',
+    group: 'room',
+    tag: 'Atmospherics',
+    title: 'Making air visible',
+    blurb: 'A beam is invisible in clean air \u2014 what you see is particles scattering it sideways, and their size decides everything. Why haze reveals a beam without fogging the picture, why low fog comes back a minute later, what the exposure standards do and do not cover, and the pyrotechnic vocabulary.',
+    questions: ['Haze or fog?', 'Why did my low fog rise?', 'Will it set the alarm off?'],
+  },
+  {
     slug: 'illusion',
     group: 'room',
     tag: 'Illusion',

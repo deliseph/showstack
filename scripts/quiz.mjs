@@ -260,6 +260,53 @@ const BANK = {
       ],
     },
   ],
+  atmospherics: [
+    {
+      q: 'A designer asks for "more haze" because the beams are not reading. The hazer is already at full output and the room looks slightly milky. What is most likely wrong?',
+      options: [
+        { text: 'The fluid is wrong for the machine', why: 'Possible, and it changes droplet size — but a milky room says particles are present in quantity, so this is not the first thing to check.' },
+        { text: 'There is already too much, and the problem is that the air is being moved', correct: true, why: 'Right. A milky room is a room with plenty of particles in it. If the beams still do not read, the usual culprit is air handling: haze needs to sit and spread evenly, and a room with air moving through it never builds the even suspension that makes a beam look solid. Turning the machine up adds output to a space that is carrying it away, and the result is a grey room with weak beams — the worst of both.' },
+        { text: 'The lamps need to be brighter', why: 'Beam visibility is about what is in the air, not about output. A brighter lamp in moving air gives you a brighter lamp and the same weak beam.' },
+        { text: 'The haze needs to be colder', why: 'That is how you make low fog, which is a different effect. Chilled haze would sink to the floor and leave the beams emptier still.' },
+      ],
+    },
+    {
+      q: 'Your low fog looks perfect for the number. A minute later the lighting designer is complaining that the beams have gone soft. What happened?',
+      options: [
+        { text: 'The hazer cut in on a timer', why: 'Worth ruling out, but the timing points elsewhere — a minute is exactly how long the real cause takes.' },
+        { text: 'The low fog warmed up, became neutrally buoyant and rose', correct: true, why: 'Right, and it is the thing that catches everybody once. Low fog is ordinary fog chilled below room temperature; that is the entire trick. As it warms it stops sinking, and it does not disperse where it lay — it rises into the beams as ordinary fog. The effect has a tail, and the tail belongs to the lighting department.' },
+        { text: 'The fog fluid was contaminated', why: 'Contamination changes output and residue, not the buoyancy of a layer over the course of a minute.' },
+        { text: 'The air conditioning started', why: 'Air handling certainly moves it, but the layer would thin and scatter rather than arrive in the beams on that timescale.' },
+      ],
+    },
+    {
+      q: 'A venue agrees to isolate the smoke detection in the auditorium for your haze. What has actually been agreed?',
+      options: [
+        { text: 'That the haze is now safe to use', why: 'Isolation says nothing about the haze. It says the thing that would have noticed a fire has been switched off.' },
+        { text: 'That a protection has been removed, and something has to replace it', correct: true, why: 'Right, and this is the part that gets treated as paperwork. Detection is a safety system; isolating a zone removes it for the duration. The permit is the record of what stands in its place — usually a named person watching that space who knows they are the replacement. If nobody can say who that is, the isolation has not been arranged, it has just been requested.' },
+        { text: 'That the fire brigade has approved the effect', why: 'Isolation is a venue and system decision. It is not an approval of your effect and it does not transfer responsibility.' },
+        { text: 'That the detectors will ignore haze but still see fire', why: 'They cannot distinguish. A photoelectric detector looks for light scattered by particles, which is exactly what haze is for.' },
+      ],
+    },
+    {
+      q: 'Coloured smoke is requested for an indoor finale. What is the first thing to say?',
+      options: [
+        { text: 'That it needs a different fluid in the hazer', why: 'There is no fluid for it. Coloured smoke is not made by a fog machine at all.' },
+        { text: 'That it is pyrotechnic, not atmospheric, and is regulated as such', correct: true, why: 'Right. Coloured smoke burns a composition that sublimes a dye, so it involves combustion, heat and solid residue, and it falls under pyrotechnic rules rather than the fog standards. The name invites exactly this confusion. Indoors it is also a poor idea on its own terms: the residue coats surfaces, the smell persists, and the particulate is a real respiratory exposure rather than the engineered one a fog standard describes.' },
+        { text: 'That it will set off the detectors', why: 'It will, but that is true of the atmospheric effects too. The distinction that matters here is the legal and hazard class.' },
+        { text: 'That the colour will not read under stage lighting', why: 'An aesthetic point, and secondary. The first answer is that this is a different discipline with a different legal basis.' },
+      ],
+    },
+    {
+      q: 'ANSI E1.5 describes fogs "not likely to be harmful to otherwise healthy performers, technicians or audience members aged 18 to 64". Your cast includes two children. What does the standard tell you?',
+      options: [
+        { text: 'The same limits apply, with a margin', why: 'The standard does not say that. Reading a margin into silence is inventing a figure the document declines to give.' },
+        { text: 'Nothing — it makes no statement about them', correct: true, why: 'Right, and this is the most-skipped sentence in the whole subject. The scope is explicit about the population it covers, and children are outside it. A review commissioned for the US film industry made the same point about child actors and about audiences generally. Silence is not permission: it means the standard has not answered your question and you need a different basis for the decision.' },
+        { text: 'Children must not be exposed to any fog', why: 'The standard does not say that either. It declines to make a statement, which is not the same as a prohibition — but it does mean you cannot cite E1.5 as your justification.' },
+        { text: 'Halve the exposure limit', why: 'That number is not in the standard, and a figure somebody invented is worse in a risk assessment than an acknowledged gap.' },
+      ],
+    },
+  ],
   outdoors: [
     {
       q: 'A 3 × 6 m banner is fine in this morning’s 8 m/s breeze. By afternoon the wind has doubled to 16 m/s. What has happened to the load on the structure?',

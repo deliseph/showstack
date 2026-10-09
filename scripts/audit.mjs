@@ -50,7 +50,7 @@ const PAGES = [
   // capability block, so that grid and its contrast get audited too.
   '/protocols/dante/', '/compare/ndi-vs-smpte-st-2110/',
   '/network/', '/signals/', '/check/', '/field/', '/diagnose/', '/verify/', '/offline/',
-  '/learn/outdoors/', '/learn/access/', '/learn/power/', '/learn/mixing/', '/learn/timecode/', '/learn/empathy/', '/learn/illusion/', '/learn/analogue/', '/learn/space/', '/learn/proto/',
+  '/learn/atmospherics/', '/learn/outdoors/', '/learn/access/', '/learn/power/', '/learn/mixing/', '/learn/timecode/', '/learn/empathy/', '/learn/illusion/', '/learn/analogue/', '/learn/space/', '/learn/proto/',
 ]
 const WIDTHS = [375, 768, 1024, 1440]
 

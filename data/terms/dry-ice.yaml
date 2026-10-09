@@ -1,0 +1,38 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: dry-ice
+en: Dry ice
+zh_hant: 乾冰
+domain: safety
+definition_en: >-
+  Solid carbon dioxide at about minus 78 degrees Celsius. Dropped into hot water it produces dense white low fog, doing the chilling and the fog-making in one gesture and with no machine in the sight line. It sublimes directly from solid to gas, so it leaves no liquid behind.
+definition_zh_hant: >-
+  固態二氧化碳，約攝氏零下 78 度。投入熱水即產生濃密的白色低空煙，同時完成冷卻與造霧，且視線內不需要機器。它由固態直接昇華為氣體，不會留下液體。
+false_friends:
+- >-
+  The visible white cloud is condensed water vapour from the air, not the carbon dioxide. The gas itself is invisible, and it is the gas that displaces air.
+- >-
+  It is a contact hazard as well as an atmosphere one. At minus 78 degrees it causes cold burns, and it must never be transported in a sealed container or in an unventilated vehicle cab.
+see_also:
+- low-fog
+- fog
+safety_critical: true
+confidence: reported
+tags:
+- atmospherics
+- effects
+- safety
+- vocabulary
+sources:
+- title: ANSI E1.23 — Design, Execution, and Maintenance of Atmospheric Effects
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_ANSI_E1-23-2010-R2015.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-10-09'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'

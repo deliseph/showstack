@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: low-fog
+en: Low fog
+zh_hant: 低空煙／貼地煙
+domain: general
+definition_en: >-
+  Fog cooled below the temperature of the room so that it sinks and lies on the deck. Produced by chilling ordinary fog, by dropping solid carbon dioxide into hot water, or with liquid nitrogen. The layer is temporary by definition: as it warms to room temperature it becomes neutrally buoyant again and rises as ordinary fog.
+definition_zh_hant: >-
+  冷卻到低於室溫、因而下沉並停留在地面的霧。可用製冷機冷卻一般霧、將乾冰投入熱水，或使用液態氮產生。這層霧本質上是暫時的：回到室溫後恢復中性浮力，便會像一般霧一樣升起。
+false_friends:
+- >-
+  Low fog does not disperse where it lies. It warms, rises, and arrives in the lighting beams a minute later looking like a hazer fault.
+- >-
+  Dry ice and cryo release carbon dioxide, which displaces air and pools in the low, still places the effect fills — pits, traps, under-stage. A person lying down is in the worst of it.
+see_also:
+- fog
+- haze
+- dry-ice
+safety_critical: true
+confidence: reported
+tags:
+- atmospherics
+- effects
+- safety
+- vocabulary
+sources:
+- title: ANSI E1.23 — Design, Execution, and Maintenance of Atmospheric Effects
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_ANSI_E1-23-2010-R2015.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-10-09'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'

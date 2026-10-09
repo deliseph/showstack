@@ -15,6 +15,9 @@ false_friends:
   effect through a permit process, and un-isolated haze is how a show meets the
   fire brigade mid-number.'
 see_also:
+- fog
+- low-fog
+- smoke
 - blackout
 safety_critical: false
 confidence: reported
