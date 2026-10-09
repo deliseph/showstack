@@ -16,6 +16,17 @@ typical_use:
 - Long fibre runs between FOH, stage and broadcast
 - High channel-count festival distribution
 - Redundant ring backbone for a large audio system
+media:
+  audio:
+    sample_rates_khz: [48, 96, 192]
+    max_channels: 1024
+    note: >-
+      The 1024 figure counts inputs. Outputs are effectively unlimited because the
+      ring carries every channel past every node, so any device can tap any channel
+      without costing anyone else bandwidth — the architectural difference from a
+      switched network, where each subscriber's copy is real traffic. Channel count
+      and sample rate trade against each other on a given ring speed.
+
 gotchas:
 - The ring is the redundancy. Breaking the ring to add a device mid-show removes the protection
   that justified the system.
@@ -29,6 +40,11 @@ tags:
 - redundant-ring
 - stadium
 sources:
+- title: Optocore system overview 10.1
+  url: https://optocore.com/wp-content/uploads/2023/03/Optocore_Overview_10-1.pdf
+  publisher: Optocore
+  accessed: '2026-10-09'
+  primary: true
 - title: Optocore
   url: https://www.optocore.com/
   publisher: Optocore

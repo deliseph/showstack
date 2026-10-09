@@ -26,6 +26,17 @@ first_published: 1992
 typical_use:
 - Wireless intercom beltpacks on theatre, broadcast and touring shows.
 - Any wireless comms where the 2.4 GHz band is already full.
+media:
+  audio:
+    sample_rates_khz: [8, 16]
+    encoding: G.726 ADPCM at 32 kbit/s (narrowband); G.722 (wideband); later editions add G.729.1 and LC3plus
+    note: >-
+      Speech band, not programme audio, and that is the point to take away: a beltpack
+      link is built to carry a voice intelligibly, not to carry a mix. EN 300 175-8
+      names the codecs and each codec fixes its own rate — G.726 samples at 8 kHz,
+      G.722 at 16 kHz for roughly 50 Hz to 7 kHz. Which are mandatory depends on the
+      profile the product implements.
+
 gotchas:
 - Band allocation is national. 1.88–1.90 GHz in Europe and elsewhere; North America uses a different
   slice, so packs are not always portable between regions.
@@ -39,6 +50,11 @@ tags:
 - wireless
 - dect
 sources:
+- title: "ETSI EN 300 175-8 — DECT Common Interface, Part 8: Speech and audio coding"
+  url: https://www.etsi.org/deliver/etsi_en/300100_300199/30017508/02.08.05_20/en_30017508v020805a.pdf
+  publisher: ETSI
+  accessed: '2026-10-09'
+  primary: true
 - title: ETSI DECT
   url: https://www.etsi.org/technologies/dect
   publisher: ETSI

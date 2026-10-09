@@ -26,6 +26,24 @@ typical_use:
   - Distributing switched video around a venue
   - Extending control and Ethernet alongside the picture on one cable
 
+media:
+  video:
+    max_resolution: 3840x2160
+    max_frame_rate: 60
+    colour_sampling: ['4:2:0', '4:4:4']
+    compression: Uncompressed
+    note: >-
+      Version decides which of those you actually get. HDBaseT 1.0 and 2.0 reach 4K60
+      only at 4:2:0; 3.0 roughly doubled the downstream rate and carries 4K60 at 4:4:4.
+      Two bandwidth figures circulate for 3.0 and they are not the same thing — 16
+      Gbit/s is the link rate, not the usable video payload.
+  audio:
+    note: >-
+      HDBaseT fixes no audio format of its own. It transports the HDMI stream, so the
+      audio capability is whatever that HDMI version defines, and a question about
+      channel counts or sample rates is a question about the source and sink rather
+      than about the cable between them.
+
 gotchas:
   - >-
     It uses category cable and RJ45 connectors and is not Ethernet. Putting an

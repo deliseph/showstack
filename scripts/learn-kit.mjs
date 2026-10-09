@@ -240,9 +240,34 @@ border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink-mu
 `
 
 /** An eyebrow + heading + intro, used to open every explainer section. */
+/**
+ * One section of an explainer: eyebrow, heading, paragraphs.
+ *
+ * WHY THIS CLOSES ITSELF AND THE FIGURES SIT OUTSIDE IT.
+ *
+ * This used to emit an opening <section> and never close it, so that the
+ * figures, dials and tables a caller writes after the call would land inside
+ * it. They did — but so did the next section, and the one after that, because
+ * nothing ever closed anything. A learn page parsed into sections nested as
+ * deep as there were sections: /learn/network/ held 17 of them, 16 levels deep.
+ *
+ * That was not merely untidy. `.lsec:first-of-type` removes the top rule from
+ * the first section, and when every section is an only child it is ALSO
+ * first-of-type — so the rule matched all 17, and the separators and the 30px
+ * of breathing space above each heading had never rendered on any explainer
+ * page. The design was written and then silently suppressed by a parse bug.
+ *
+ * Closing the element puts the sections side by side, which is what they are.
+ * The figures that follow a call now sit between sections rather than inside
+ * one, and that is correct: a figure belongs to the idea either side of it,
+ * and none of the styling ever addressed them through their section anyway —
+ * every rule here and in pages.mjs reaches them as `.lsec > p`, `.lsec > ul`
+ * or `.lsec h3`, and a figure is none of those.
+ */
 export const sec = (esc) => (eyebrow, heading, paras = []) =>
   `<section class="lsec"><p class="qline">${esc(eyebrow)}</p><h3>${esc(heading)}</h3>` +
-  paras.map((p) => `<p>${p}</p>`).join('')
+  paras.map((p) => `<p>${p}</p>`).join('') + '</section>'
+
 
 /** The one-sentence takeaway. HTML is allowed so key terms can be marked up. */
 export const rule = (html) =>

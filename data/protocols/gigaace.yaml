@@ -15,6 +15,16 @@ typical_use:
 - Linking a dLive surface to its MixRack
 - Extending a console to a stage rack over fibre
 - Redundant surface-to-rack connection
+media:
+  audio:
+    sample_rates_khz: [96]
+    max_channels: 128
+    note: >-
+      128 channels each way at the dLive signal path's native 96 kHz. Transport
+      latency is quoted in samples rather than milliseconds — about five, or 52 µs —
+      which is the honest unit for a link whose delay scales with the clock, and small
+      enough that the converters either end dominate the budget.
+
 gotchas:
 - It uses Ethernet cabling and connectors and is not Ethernet. Patching gigaACE into a network
   switch does nothing useful and can confuse the switch.
