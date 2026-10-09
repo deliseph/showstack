@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: fog
+en: Fog
+zh_hant: 煙霧／煙
+domain: general
+definition_en: >-
+  A visible cloud of condensed fluid droplets, a few micrometres across, produced by flashing a glycol or glycerin solution to vapour and letting it condense in room air. Large enough to attenuate every visible wavelength about equally, which is why it reads neutral white and why you cannot see through it. Distinct from haze, which is a smaller particle doing a different optical job, and from smoke, which is a product of combustion.
+definition_zh_hant: >-
+  由甘醇或甘油溶液加熱汽化後在室溫空氣中凝結而成的可見霧團，液滴直徑數微米。因為顆粒夠大，對可見光各波長的衰減大致相同，所以呈中性白色且無法透視。與 haze（顆粒更小、作用不同）及 smoke（燃燒產物）均不相同。
+false_friends:
+- >-
+  Fog is not a lot of haze. The difference is droplet size, not quantity: turning a hazer up gives you too much haze, not fog.
+- >-
+  Fog is not smoke. Smoke is solid combustion particulate, falls under different rules, and leaves residue.
+see_also:
+- haze
+- low-fog
+- smoke
+safety_critical: false
+confidence: reported
+tags:
+- atmospherics
+- effects
+- lighting
+- vocabulary
+sources:
+- title: ANSI E1.23 — Design, Execution, and Maintenance of Atmospheric Effects
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_ANSI_E1-23-2010-R2015.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-10-09'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'

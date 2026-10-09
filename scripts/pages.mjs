@@ -59,6 +59,7 @@ import { learnAnaloguePage } from './learn-analogue.mjs'
 import { learnSpacePage } from './learn-space.mjs'
 import { learnProtoPage } from './learn-proto.mjs'
 import { learnEmpathyPage } from './learn-empathy.mjs'
+import { learnAtmosphericsPage } from './learn-atmospherics.mjs'
 import { learnIllusionPage } from './learn-illusion.mjs'
 import { learnTimecodePage } from './learn-timecode.mjs'
 import { learnAccessPage } from './learn-access.mjs'
@@ -1336,6 +1337,7 @@ export function buildPages(db, dist) {
     ['space', () => learnSpacePage(learnArgs)],
     ['proto', () => learnProtoPage(learnArgs)],
     ['empathy', () => learnEmpathyPage(learnArgs)],
+    ['atmospherics', () => learnAtmosphericsPage(learnArgs)],
     ['illusion', () => learnIllusionPage(learnArgs)],
     ['timecode', () => learnTimecodePage(learnArgs)],
     ['access', () => learnAccessPage(learnArgs)],

@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: smoke
+en: Smoke
+zh_hant: 煙（燃燒生成）
+domain: safety
+definition_en: >-
+  Solid and liquid particulate produced by combustion. In an entertainment context it is the output of a pyrotechnic device rather than of a fog machine, and the distinction matters legally as well as practically: smoke involves heat, residue and a different hazard class from a condensed glycol fog. Coloured smoke is a pyrotechnic composition subliming a dye, not a tinted fog.
+definition_zh_hant: >-
+  燃燒產生的固態與液態微粒。在演出場景中，它來自煙火類裝置而非煙霧機；這個區別同時具有法律與實務意義：smoke 涉及熱、殘留物，危害分類也與甘醇冷凝霧不同。彩色煙是煙火藥劑昇華染料的產物，並非染色的霧。
+false_friends:
+- >-
+  "Smoke machine" is the common name for a fog machine, which makes no smoke at all. The machine condenses a fluid; nothing burns.
+- >-
+  Coloured smoke is pyrotechnic. It is regulated as pyro, not as an atmospheric effect, and it is in practice an outdoor effect.
+see_also:
+- fog
+- haze
+- pyro
+safety_critical: true
+confidence: reported
+tags:
+- atmospherics
+- pyro
+- safety
+- vocabulary
+sources:
+- title: ANSI E1.23 — Design, Execution, and Maintenance of Atmospheric Effects
+  url: https://tsp.esta.org/tsp/documents/docs/ESTA_ANSI_E1-23-2010-R2015.pdf
+  publisher: ESTA Technical Standards Program
+  accessed: '2026-10-09'
+  primary: true
+- title: Theatrecrafts glossary of technical theatre terms
+  url: https://theatrecrafts.com/pages/home/topics/beginners/glossary/
+  publisher: Theatrecrafts / ABTT heritage
+  accessed: '2026-10-09'
+contributed_by: []
+updated: '2026-10-09'

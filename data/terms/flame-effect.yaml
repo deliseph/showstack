@@ -1,0 +1,39 @@
+# showstack entry - term
+# Schema: ../../schema/term.schema.json
+
+id: flame-effect
+en: Flame effect
+zh_hant: 火焰效果
+domain: safety
+definition_en: >-
+  A controlled open flame used as part of a performance, fuelled by gas or a liquid fuel rather than by a burning solid composition. Regulated separately from pyrotechnics — in the United States under NFPA 160 — because the hazards differ: a continuous fuel supply, a flame that can be sustained or re-ignited, and an abort that must remove fuel rather than simply stop a sequence.
+definition_zh_hant: >-
+  演出中使用的受控明火，以氣體或液體燃料驅動，而非燃燒固態藥劑。其法規與煙火分開（美國適用 NFPA 160），因為危害性質不同：燃料持續供應、火焰可持續或復燃，而且中止程序必須切斷燃料，不能只是停止序列。
+false_friends:
+- >-
+  A flame effect abort is not a pause. It has to remove the fuel, which is why the control is usually a physical key or valve rather than a spoken cue.
+- >-
+  The hazard is not only the flame. It is also the heat above it, the products of combustion in an enclosed room, and the oxygen it consumes.
+see_also:
+- pyro
+- abort
+safety_critical: true
+confidence: reported
+tags:
+- pyro
+- effects
+- safety
+- vocabulary
+sources:
+- title: NFPA 1126, Standard for the Use of Pyrotechnics Before a Proximate Audience
+  url: https://www.nfpa.org/codes-and-standards/nfpa-1126-standard-development/1126
+  publisher: National Fire Protection Association
+  accessed: '2026-10-09'
+  primary: true
+- title: NFPA 160, Standard for the Use of Flame Effects Before an Audience
+  url: https://www.nfpa.org/codes-and-standards/nfpa-160-standard-development/160
+  publisher: National Fire Protection Association
+  accessed: '2026-10-09'
+  primary: true
+contributed_by: []
+updated: '2026-10-09'
