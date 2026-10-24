@@ -755,9 +755,9 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   Free JSON API at <a href="/api/v1/index.json">/api/v1/</a>, no key.
   <a href="${GH}">Source and corrections</a>.
   <a href="/verify/">Vendors: verify your own entry</a>.
-  <br>Created by <a href="https://www.linkedin.com/in/mi2dev/" rel="noopener">Migu Mianizt Leung</a> —
-  <a href="https://medium.com/@mi2dev" rel="noopener">Medium</a> ·
-  <a href="https://instagram.com/mi2.dev" rel="noopener">Instagram</a>
+  <br>Open craft discovery index — not a storefront.
+  <br>Citation: <a href="https://migu-leung-portfolio.vercel.app" rel="noopener">Migu Mianizt Leung</a> ·
+  <a href="https://medium.com/@mi2dev" rel="noopener">essays on Medium</a>
   <div class="fund">
     <p>Free forever, no ads and no tracking. If it saved you an argument at load-in,
        you can put something toward keeping it maintained.</p>
@@ -1611,9 +1611,10 @@ export function buildPages(db, dist) {
   writeFileSync(join(dist, 'llms.txt'),
 `# showstack
 
-> An open, machine-readable index of live entertainment technology: control
-> protocols, published standards, software and hardware interoperability, and a
-> bilingual English / Traditional Chinese glossary. Every factual field carries a
+> An open, machine-readable craft discovery index of live entertainment
+> technology: control protocols, published standards, software and hardware
+> interoperability, and a bilingual English / Traditional Chinese glossary.
+> Not a storefront, kit shop, or personal diary. Every factual field carries a
 > source citation. Fields that could not be sourced are left empty on purpose.
 
 Licence: data CC BY 4.0, code MIT. Attribute to "showstack contributors".

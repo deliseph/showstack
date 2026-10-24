@@ -787,6 +787,50 @@ describe('vendor verification', () => {
 })
 
 /**
+ * Decision 2 / Option A — ShowStack stays an open craft discovery index only.
+ * Commerce exits belong on Chromatic Mirage later; person essays live on
+ * portfolio / Medium. These tests FAIL closed if a storefront path sneaks in.
+ */
+describe('discovery index posture (dual-brand fence)', () => {
+  /** Drop script bodies — search ships megabytes of YAML prose that mentions "kit". */
+  const shellHtml = (rel) =>
+    readFileSync(join(DIST, rel), 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '')
+
+  const surfaces = [
+    shellHtml('index.html'),
+    shellHtml(join('search', 'index.html')),
+    shellHtml('verify/index.html'),
+    shellHtml('tools/index.html'),
+  ].join('\n')
+
+  const banned = [
+    /stripe\.com/i,
+    /buy\.stripe/i,
+    /chromaticmirage/i,
+    /chromatic-mirage/i,
+    /checkout\.stripe/i,
+    /gumroad\.com/i,
+    /lemonsqueezy\.com/i,
+    /\bwaitlist\b.*\b(pay|charge|checkout)\b/i,
+    /\b(blush|kit)\b.*\b(buy|checkout|stripe)\b/i,
+  ]
+
+  for (const re of banned) {
+    test(`public shell does not match ${re}`, () => {
+      assert.doesNotMatch(surfaces, re)
+    })
+  }
+
+  test('footer citations point at portfolio and Medium, not CM checkout', () => {
+    const home = readFileSync(join(DIST, 'index.html'), 'utf8')
+    assert.match(home, /migu-leung-portfolio\.vercel\.app/)
+    assert.match(home, /medium\.com\/@mi2dev/)
+    assert.match(home, /not a storefront/i)
+    assert.doesNotMatch(home, /chromaticmirage|chromatic-mirage/i)
+  })
+})
+
+/**
  * The tool count, which used to be a lie.
  *
  * "34 calculators" was typed into the prose of three separate files and was
