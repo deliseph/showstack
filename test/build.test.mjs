@@ -821,9 +821,9 @@ describe('discovery index posture (dual-brand fence)', () => {
     })
   }
 
-  test('footer citations point at portfolio and Medium, not CM checkout', () => {
+  test('footer citations point at mi2.dev and Medium, not CM checkout', () => {
     const home = readFileSync(join(DIST, 'index.html'), 'utf8')
-    assert.match(home, /migu-leung-portfolio\.vercel\.app/)
+    assert.match(home, /mi2\.dev/)
     assert.match(home, /medium\.com\/@mi2dev/)
     assert.match(home, /not a storefront/i)
     assert.doesNotMatch(home, /chromaticmirage|chromatic-mirage/i)

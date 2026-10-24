@@ -756,7 +756,7 @@ ${extraScript ? `<script>${extraScript}</script>` : ''}
   <a href="${GH}">Source and corrections</a>.
   <a href="/verify/">Vendors: verify your own entry</a>.
   <br>Open craft discovery index — not a storefront.
-  <br>Citation: <a href="https://migu-leung-portfolio.vercel.app" rel="noopener">Migu Mianizt Leung</a> ·
+  <br>Citation: <a href="https://mi2.dev" rel="noopener">Migu Mianizt Leung</a> ·
   <a href="https://medium.com/@mi2dev" rel="noopener">essays on Medium</a>
   <div class="fund">
     <p>Free forever, no ads and no tracking. If it saved you an argument at load-in,
