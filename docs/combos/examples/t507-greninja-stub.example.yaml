@@ -1,0 +1,39 @@
+# Fictional Soft HOLD example — t507 · Greninja
+# No private job data; safe to share in draft PR.
+
+id: t507-greninja-interop-preflight
+date: 2026-10-28
+status: stub
+
+who: "Greninja seat (systems) — pre-show interop check"
+
+why: >
+  Two consoles claimed the same sACN universe on paper; load-in was in six hours.
+  Needed a reversible preflight that did not touch the show file or publish anything.
+
+what_worked: >
+  Ran showstack interop in the browser offline on a phone hotspot: picked both
+  products, confirmed shared receive paths, then matched universe list to the
+  advance PDF. Wrote mismatches to this stub instead of Notion (M never Notion).
+
+what_failed: >
+  First pass used only port 5568 grep on the switch — missed a second NIC on the
+  media server; interop matrix caught it when the second product was added.
+
+next_prep: >
+  Before next similar gig: export universe map to one YAML stub row, run interop
+  pair check again after any firmware bump, keep under Keep-20 active stubs.
+
+soft_hold:
+  enabled: true
+  keep_20: true
+  publish_face: false
+  stripe: false
+  m_never_notion: true
+  track: t507
+  codename: Greninja
+
+tags:
+  - soft-hold
+  - interop
+  - sacn
