@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://showstack.dev/schema/combo-stub.schema.json",
+  "title": "ComboStub",
+  "description": "Soft HOLD combo stub: bank Who / Why / What worked (and optional failure + next prep) without Notion. Docs-only; not part of the showstack site index.",
+  "type": "object",
+  "required": ["who", "why", "what_worked"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 80,
+      "description": "Stable slug for this stub row (e.g. t507-greninja-interop-preflight)."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the combo was captured (ISO 8601 date)."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stub", "live"],
+      "default": "stub",
+      "description": "stub = Soft HOLD banked row; live = promoted outside this schema (Door required)."
+    },
+    "who": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Who — seat or owner (role + handle ok)."
+    },
+    "why": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "description": "Why — context or trigger that made this combo worth keeping."
+    },
+    "what_worked": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "description": "What worked — the reversible move or pattern to reuse."
+    },
+    "what_failed": {
+      "type": "string",
+      "maxLength": 800,
+      "description": "Optional — what did not work or was rolled back."
+    },
+    "next_prep": {
+      "type": "string",
+      "maxLength": 600,
+      "description": "Optional — next reversible prep before the next attempt."
+    },
+    "soft_hold": {
+      "type": "object",
+      "description": "Soft HOLD policy flags for this row (Keep-20 · no publish face · no Stripe · M never Notion).",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "const": true },
+        "keep_20": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep at most ~20 active stubs per seat; archive or promote via Door."
+        },
+        "publish_face": {
+          "type": "boolean",
+          "const": false,
+          "description": "Must remain false for stubs in this PR path."
+        },
+        "stripe": {
+          "type": "boolean",
+          "const": false,
+          "description": "No billing hooks on stub rows."
+        },
+        "m_never_notion": {
+          "type": "boolean",
+          "const": true,
+          "description": "M seat does not use Notion for combo banking; use file/git paths instead."
+        },
+        "track": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Optional track label (e.g. t507)."
+        },
+        "codename": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Optional seat codename (e.g. Greninja)."
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 40 },
+      "uniqueItems": true
+    }
+  }
+}
